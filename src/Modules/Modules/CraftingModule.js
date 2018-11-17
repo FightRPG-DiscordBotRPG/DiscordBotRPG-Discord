@@ -64,7 +64,7 @@ class CraftingModule extends GModule {
                 break;
 
             case "resources":
-                data = await axios.get("/game/crafting/ressources");
+                data = await axios.get("/game/crafting/resources");
                 data = data.data;
                 if (data.error == null) {
                     msg = data.success;
