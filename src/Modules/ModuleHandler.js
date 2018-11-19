@@ -47,6 +47,9 @@ class ModuleHandler extends GModule {
             return i % 2 ? v : v.split(' ')
         })).filter(Boolean);
 
+
+
+
         let command = args.shift();
         command = command != null ? command.toLowerCase() : "";
 
@@ -58,8 +61,12 @@ class ModuleHandler extends GModule {
             this.logCommand(authorIdentifier, command, Date.now());
             await this.connectUser(message);
 
+            let nonDiscordArgs = [];
+            for (let i in args) {
+                nonDiscordArgs[i] = encodeURIComponent(args[i]);
+            }
             // exec module corresponding to command
-            await this.executeCommand(message, command, args);
+            await this.executeCommand(message, command, nonDiscordArgs);
 
             let axios = Globals.connectedUsers[authorIdentifier].getAxios();
             switch (command) {
@@ -74,10 +81,11 @@ class ModuleHandler extends GModule {
                             msg = "Discord: An error occured when loading the module, module may not exist or can't be reloaded\n";
                         }
 
-                        data = await axios.post("/load_module", {
+                        data = await axios.post("/handler/load_module", {
                             moduleName: args[0],
                         });
                         data = data.data;
+                        console.log(data);
                         if (data.error == null) {
                             msg += data.success;
                         } else {
@@ -93,7 +101,7 @@ class ModuleHandler extends GModule {
                             msg = "Discord: This module doesn't exist\n";
                         }
 
-                        data = await axios.post("/disable_module", {
+                        data = await axios.post("/handler/disable_module", {
                             moduleName: args[0],
                         });
                         data = data.data;
@@ -112,7 +120,7 @@ class ModuleHandler extends GModule {
                             msg = "Discord: This module doesn't exist\n";
                         }
 
-                        data = await axios.post("/enable_module", {
+                        data = await axios.post("/handler/enable_module", {
                             moduleName: args[0],
                         });
                         data = data.data;
@@ -286,7 +294,11 @@ class ModuleHandler extends GModule {
                     console.log(e)
                 });
             }
-            Globals.connectedUsers[message.author.id] = user;
+
+            if (user.token != null) {
+                Globals.connectedUsers[message.author.id] = user;
+            }
+
         }
     }
 

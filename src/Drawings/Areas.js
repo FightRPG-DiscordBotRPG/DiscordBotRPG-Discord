@@ -52,10 +52,11 @@ class Areas {
     monstersToString(monsters, lang = "en") {
         let str = "`\n";
         for (let i in monsters) {
+            let id = parseInt(i) + 1;
             if (monsters[i].number > 1) {
-                str += Translator.getString(lang, "area", "monster_group", [i, monsters[i].name, monsters[i].number - 1, monsters[i].level, monsters[i].type]) + "\n";
+                str += Translator.getString(lang, "area", "monster_group", [id, monsters[i].name, monsters[i].number - 1, monsters[i].level, monsters[i].type]) + "\n";
             } else {
-                str += Translator.getString(lang, "area", "monster", [i, monsters[i].name, monsters[i].level, monsters[i].type]) + "\n";
+                str += Translator.getString(lang, "area", "monster", [id, monsters[i].name, monsters[i].level, monsters[i].type]) + "\n";
             }
         }
         str += "`";

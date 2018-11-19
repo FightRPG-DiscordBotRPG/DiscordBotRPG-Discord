@@ -27,8 +27,8 @@ class User {
         });
         if (res.data && res.data.token) {
             this.token = res.data.token;
-            this.initAxios();
         }
+        this.initAxios();
     }
 
     initAxios() {
