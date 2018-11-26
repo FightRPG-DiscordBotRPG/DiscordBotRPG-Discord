@@ -13,21 +13,31 @@ class Areas {
     }
 
     cityStr(data) {
-        let forge;
+        let forge, shop, marketplace;
         let area = data.area;
         let lang = data.lang;
-        if (area.craft.isActive == true) {
-            forge = "- Blacksmith (Craft : " + Translator.getString(lang, "general", "lvl") + " " + area.craft.minLevel + " - " + area.craft.maxLevel + ")";
-        }
+
         if (!area.haveOwner) {
-            area.tax = 0;
+            area.marketplace.tax = 0;
+            area.shop.tax = 0;
         }
+
+        if (area.craft.isActive == true) {
+            forge = "\n- " + Translator.getString(lang, "area", "service_forge", [area.craft.minLevel, area.craft.maxLevel]);
+        }
+        if (area.shop.isActive == true) {
+            shop = "\n- " + Translator.getString(lang, "area", "service_shop", [area.shop.tax]);
+        }
+        if (area.marketplace.isActive == true) {
+            marketplace = "- " + Translator.getString(lang, "area", "service_marketplace", [area.marketplace.tax]);
+        }
+
 
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by") + " : " + area.owner, area.image)
+            .setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by") + ": " + area.owner, area.image)
             .addField(Translator.getString(lang, "general", "description"), area.desc)
-            .addField("Services", "```- Marketplace " + "(" + area.tax + "%)" + "\n" + forge + "```")
+            .addField("Services", "```" + marketplace + forge + shop + "```")
             .setImage(area.image);
 
     }

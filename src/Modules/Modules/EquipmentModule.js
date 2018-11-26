@@ -56,7 +56,8 @@ class EquipmentModule extends GModule {
 
             case "use":
                 data = await axios.post("/game/equipment/use", {
-                    idItem: args[0]
+                    idItem: args[0],
+                    amount: args[1],
                 });
                 data = data.data;
                 if (data.error == null) {

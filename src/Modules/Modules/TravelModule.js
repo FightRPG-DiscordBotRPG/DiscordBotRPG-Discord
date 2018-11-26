@@ -100,7 +100,6 @@ class TravelModule extends GModule {
             case "travelregion":
                 data = await axios.get("/game/travel/inforegion/" + args[0]);
                 data = data.data;
-                console.log(data);
                 if (data.error == null) {
 
                     checkEmoji = Emojis.getID("vmark");
