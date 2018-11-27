@@ -3,6 +3,7 @@ const Globals = require("../../Globals");
 const Translator = require("../../Translator/Translator");
 const ItemShow = require("../../Drawings/ItemShow");
 const Inventory = require("../../Drawings/Inventory");
+const Emojis = require("../../Drawings/Emojis");
 
 
 class InventoryModule extends GModule {
@@ -26,10 +27,66 @@ class InventoryModule extends GModule {
                 data = await axios.get("/game/inventory/item/" + args[0]);
                 data = data.data;
                 if (data.error == null) {
+                    let itemmsg;
                     if (data.equippedStats != null) {
-                        msg = ItemShow.showInInventoryItem(data);
+                        itemmsg = ItemShow.showInInventoryItem(data);
                     } else {
-                        msg = ItemShow.showEquippedItem(data);
+                        itemmsg = ItemShow.showEquippedItem(data);
+                    }
+
+                    let sellEmoji = Emojis.getID("money_bag");
+                    let favoEmoji = data.item.isFavorite == false ? Emojis.getID("star") : Emojis.getID("eight_pointed_black_star");
+                    let itemmsgsent = await message.channel.send(itemmsg).catch(() => null);
+
+                    await Promise.all([
+                        itemmsgsent.react(sellEmoji),
+                        itemmsgsent.react(favoEmoji)
+                    ]).catch(() => null);
+
+                    const filter = (reaction, user) => {
+                        return [sellEmoji, favoEmoji].includes(reaction.emoji.name) && user.id === message.author.id;
+                    };
+
+
+                    const collected = await itemmsgsent.awaitReactions(filter, {
+                        max: 1,
+                        time: 22000
+                    });
+                    const reaction = collected.first();
+                    if (reaction != null) {
+                        switch (reaction.emoji.name) {
+                            case sellEmoji:
+                                data = await axios.post("/game/inventory/sell", {
+                                    idItem: args[0],
+                                    number: 1,
+                                });
+                                data = data.data;
+                                if (data.error == null) {
+                                    msg = data.success;
+                                } else {
+                                    msg = data.error;
+                                }
+
+                                break;
+
+                            case favoEmoji:
+                                if (data.item.isFavorite == false) {
+                                    data = await axios.post("/game/inventory/itemfav", {
+                                        idItem: args[0]
+                                    });
+                                } else {
+                                    data = await axios.post("/game/inventory/itemunfav", {
+                                        idItem: args[0]
+                                    });
+                                }
+                                data = data.data;
+                                if (data.error == null) {
+                                    msg = data.success;
+                                } else {
+                                    msg = data.error;
+                                }
+                                break;
+                        }
                     }
                 } else {
                     msg = data.error;

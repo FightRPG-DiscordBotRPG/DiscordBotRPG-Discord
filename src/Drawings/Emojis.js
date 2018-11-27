@@ -55,6 +55,9 @@ Emojis.general = {
     "nine": "9⃣",
     "red_circle": "🔴",
     "blue_circle": "🔵",
+    "money_bag": "💰",
+    "star": "⭐",
+    "eight_pointed_black_star": "✴",
 }
 
 module.exports = Emojis;
