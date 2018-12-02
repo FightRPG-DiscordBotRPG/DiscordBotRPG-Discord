@@ -11,7 +11,7 @@ class Marketplace {
         let orders = data.orders;
         if (orders.length > 0) {
             for (let order of orders) {
-                str += order.seller_name + " - " + order.idItem + " - " + order.item.name + " - " + order.item.type + " (" + order.item.subType + ")" + " - " + order.item.level + " - " + order.item.rarity + " - " + order.item.power + "%" + " - " + "x" + order.item.number + " - " + order.price + "G" + "\n";
+                str += order.seller_name + " - " + order.idItem + " - " + order.item.name + " - " + order.item.type + " (" + order.item.subType + ")" + " - " + order.item.level + " - " + order.item.rarity + " - " + order.item.power + " - " + "x" + order.item.number + " - " + order.price + "G" + "\n";
             }
             str += "\n";
         } else {

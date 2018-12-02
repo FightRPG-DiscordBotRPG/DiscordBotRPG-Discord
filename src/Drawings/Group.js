@@ -5,16 +5,16 @@ class Group {
     toStr(data) {
         let lang = data.lang;
         let membersOfGroup = "```diff\n";
-        membersOfGroup += "+ " + data.leader.name + " | " + data.leader.level + " | " + data.leader.power + "%" + "\n";
+        membersOfGroup += "+ " + data.leader.name + " | " + data.leader.level + " | " + data.leader.power + "\n";
         for (let member of data.members) {
-            membersOfGroup += "+ " + member.name + " | " + member.level + " | " + member.power + "%" + "\n";
+            membersOfGroup += "+ " + member.name + " | " + member.level + " | " + member.power + "\n";
         }
         membersOfGroup += "```";
 
         let invitedPlayers = "```diff\n";
         if (data.numberOfInvitedPlayers > 0) {
             for (let invited of data.invitedPlayers) {
-                invitedPlayers += "+ " + invited.name + " | " + invited.level + " | " + invited.power + "%" + "\n";
+                invitedPlayers += "+ " + invited.name + " | " + invited.level + " | " + invited.power + "\n";
             }
         } else {
             invitedPlayers += "- " + Translator.getString(lang, "group", "nobody_was_invited");

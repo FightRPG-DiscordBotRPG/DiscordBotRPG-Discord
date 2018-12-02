@@ -100,7 +100,7 @@ class TextDrawings {
         }
 
 
-        let authorTitle = data.username + " | " + Translator.getString(data.lang, "inventory_equipment", "power") + " : " + data.power + "%";
+        let authorTitle = data.username + " | " + Translator.getString(data.lang, "inventory_equipment", "power") + " : " + data.power;
         let statsTitle = Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, data.resetValue]);
         let titleXPFight = Translator.getString(data.lang, "character", "level") + " : " + data.level + " | " + xpOn + " ";
         let titleXPCraft = Translator.getString(data.lang, "character", "craft_level") + " : " + data.craft.level + " | " + xpOnCraft + " ";
