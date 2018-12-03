@@ -3,13 +3,13 @@ const Shop = require("../../Drawings/Shop");
 const Globals = require("../../Globals");
 
 
-class EquipmentModule extends GModule {
+class ShopModule extends GModule {
     constructor() {
         super();
         this.commands = ["sitems", "sbuy"];
-        this.startLoading("Equipment");
+        this.startLoading("Shop");
         this.init();
-        this.endLoading("Equipment");
+        this.endLoading("Shop");
     }
 
     async run(message, command, args) {
@@ -48,4 +48,4 @@ class EquipmentModule extends GModule {
     }
 }
 
-module.exports = EquipmentModule;
+module.exports = ShopModule;
