@@ -6,7 +6,7 @@ const WorldBosses = require("../../Drawings/WorldBosses");
 class WorldBossModule extends GModule {
     constructor() {
         super();
-        this.commands = ["bossshowall", "wbfight", "wbattack", "wblastinfo"];
+        this.commands = ["wbshowall", "wbfight", "wbattack", "wblastinfo"];
         this.startLoading("World Boss");
         this.init();
         this.endLoading("World Boss");
