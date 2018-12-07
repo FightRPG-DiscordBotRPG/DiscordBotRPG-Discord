@@ -1,4 +1,5 @@
 const botkey = require("./conf/botkey");
+const conf = require("./conf/conf");
 
 const {
     ShardingManager
@@ -24,6 +25,19 @@ async function sendDMToSpecificUser(idUser, message) {
 
 }
 
+async function sendWorldBossMessage(message) {
+    let evalDyn = `let channel = this.channels.get("520585589612085258");
+    if(channel != null) {
+        channel.send(\`${message}\`).catch((e) => {null});
+    }
+    `;
+    try {
+        await manager.broadcastEval(evalDyn);
+    } catch (e) {
+        console.log(e);
+    }
+}
+
 const express = require("express"),
     app = express(),
     port = 48921,
@@ -37,7 +51,7 @@ app.use(express.urlencoded({
 app.use(express.json());
 require('express-async-errors');
 
-app.use("/", async (req, res) => {
+app.use("/usr", async (req, res) => {
     if (req.body.id != null && typeof req.body.id == "string") {
         if (req.body.message != null && typeof req.body.message == "string") {
             sendDMToSpecificUser(req.body.id, req.body.message);
@@ -45,6 +59,20 @@ app.use("/", async (req, res) => {
                 sended: "yes"
             });
         }
+    }
+    return res.json({
+        sended: "no"
+    });
+});
+
+app.use("/wb", async (req, res) => {
+    if (req.body.message != null && typeof req.body.message == "string") {
+        if (conf.env == "prod") {
+            sendWorldBossMessage(req.body.message);
+        }
+        return res.json({
+            sended: "yes"
+        });
     }
     return res.json({
         sended: "no"

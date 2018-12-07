@@ -6,7 +6,7 @@ const WorldBosses = require("../../Drawings/WorldBosses");
 class WorldBossModule extends GModule {
     constructor() {
         super();
-        this.commands = ["bossshowall", "bossattack", "bossfight", "lastbossinfo"];
+        this.commands = ["bossshowall", "wbfight", "wbattack", "wblastinfo"];
         this.startLoading("World Boss");
         this.init();
         this.endLoading("World Boss");
@@ -19,7 +19,7 @@ class WorldBossModule extends GModule {
         let axios = Globals.connectedUsers[message.author.id].getAxios();
 
         switch (command) {
-            case "bossshowall":
+            case "wbshowall":
                 data = await axios.get("/game/worldbosses/display/all");
                 data = data.data;
                 if (data.error == null) {
@@ -29,8 +29,8 @@ class WorldBossModule extends GModule {
                 }
                 break;
 
-            case "bossattack":
-            case "bossfight":
+            case "wbfight":
+            case "wbattack":
                 data = await axios.post("/game/worldbosses/fight");
                 data = data.data;
                 if (data.error == null) {
@@ -40,7 +40,7 @@ class WorldBossModule extends GModule {
                 }
                 break;
 
-            case "lastbossinfo":
+            case "wblastinfo":
                 data = await axios.get("/game/worldbosses/display/lastboss");
                 data = data.data;
                 if (data.error == null) {
