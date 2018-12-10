@@ -119,7 +119,35 @@ class InventoryModule extends GModule {
 
             case "inv":
             case "inventory":
-                data = await axios.get("/game/inventory/show/" + args[0]);
+                let idRarity, idType, level, page = 1;;
+                if (args.length > 0) {
+                    if (args.length > 1) {
+                        if (args[0] != null) {
+                            switch (args[0]) {
+                                case "rarity":
+                                    idRarity = args[1];
+                                    break;
+                                case "type":
+                                    idType = args[1];
+                                    break;
+                                case "level":
+                                    level = args[1];
+                                    break;
+                            }
+                        }
+                        page = args[3] != null ? args[3] : 1;
+                    } else {
+                        page = args[0];
+                    }
+                }
+
+                data = await axios.get("/game/inventory/show/" + page, {
+                    params: {
+                        idRarity: idRarity,
+                        idType: idType,
+                        level: level
+                    }
+                });
                 data = data.data;
                 if (data.error == null) {
                     msg = Inventory.ciDisplay(data);

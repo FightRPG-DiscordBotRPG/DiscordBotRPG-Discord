@@ -7,7 +7,7 @@ const Emojis = require("../../Drawings/Emojis");
 class OtherModule extends GModule {
     constructor() {
         super();
-        this.commands = ["lang", "help", "settings"];
+        this.commands = ["lang", "help", "settings", "rarities", "types"];
         this.startLoading("Other");
         this.init();
         this.endLoading("Other");
@@ -115,21 +115,32 @@ class OtherModule extends GModule {
 
 
                 break;
+            case "rarities":
+                data = await axios.get("/game/other/rarities");
+                data = data.data;
+                if (data.error == null) {
+                    for (let i of data.rarities) {
+                        msg += i.idRarity + " => " + i.rarityName + "\n";
+                    }
+                } else {
+                    msg = data.error;
+                }
+                break;
+
+            case "types":
+                data = await axios.get("/game/other/types");
+                data = data.data;
+                if (data.error == null) {
+                    for (let i of data.types) {
+                        msg += i.idType + " => " + i.typeName + "\n";
+                    }
+                } else {
+                    msg = data.error;
+                }
+                break;
         }
 
         this.sendMessage(message, msg);
-    }
-
-    cmdToString(data) {
-        let str = "```apache\n" + "::" + Translator.getString(data.lang, "help_panel", "help") + "::\n";
-        for (let category in data.commands) {
-            str += "[" + category + "]\n";
-            for (let command in data.commands[category]) {
-                str += "::" + command + " : " + data.commands[category][command] + "\n";
-            }
-        }
-        str += "\n" + Translator.getString(data.lang, "general", "page_out_of_x", [data.page, data.maxPage]) + "```"
-        return str;
     }
 }
 

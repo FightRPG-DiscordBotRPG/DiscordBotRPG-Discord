@@ -6,7 +6,7 @@ const Translator = require("../../Translator/Translator");
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -171,6 +171,25 @@ class AdminModule extends GModule {
                     msg = data.success;
                 } else {
                     msg = data.error;
+                }
+                break;
+            case "update_commands_channel":
+                let actualMessages = await message.channel.fetchMessages({
+                    limit: 20
+                });
+                message.channel.bulkDelete(actualMessages);
+                data = await axios.get("/game/other/help/1");
+                data = data.data;
+                let maxPage = data.maxPage;
+                if (data.error == null) {
+                    await message.channel.send(this.cmdToString(data)).catch(e => null);
+                }
+                for (let i = 2; i <= maxPage; i++) {
+                    data = await axios.get("/game/other/help/" + i);
+                    data = data.data;
+                    if (data.error == null) {
+                        await message.channel.send(this.cmdToString(data)).catch(e => null);
+                    }
                 }
                 break;
         }

@@ -1,4 +1,5 @@
 const Globals = require("../Globals");
+const Translator = require("../Translator/Translator");
 
 class GModule {
     constructor() {
@@ -69,6 +70,18 @@ class GModule {
                 break;
         }
         return stat;
+    }
+
+    cmdToString(data) {
+        let str = "```apache\n" + "::" + Translator.getString(data.lang, "help_panel", "help") + "::\n";
+        for (let category in data.commands) {
+            str += "[" + category + "]\n";
+            for (let command in data.commands[category]) {
+                str += "::" + command + " : " + data.commands[category][command] + "\n";
+            }
+        }
+        str += "\n" + Translator.getString(data.lang, "general", "page_out_of_x", [data.page, data.maxPage]) + "```"
+        return str;
     }
 
     getEquipableIDType(string) {

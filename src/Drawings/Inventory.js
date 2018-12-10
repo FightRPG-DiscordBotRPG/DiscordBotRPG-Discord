@@ -13,13 +13,12 @@ class Inventory {
         str += Translator.getString(lang, "inventory_equipment", "rarity") + " - ";
         str += Translator.getString(lang, "inventory_equipment", "power") + "\n\n";
 
-        let index = (data.page - 1) * 10 + 1;
-        if (data.items.length > 0) {
-            for (let item of data.items) {
-                str += index + " - " + ItemShow.itemToStr(item, lang) + "\n";
-                index++;
-            }
-        } else {
+        let empty = true;
+        for (let index in data.items) {
+            str += index + " - " + ItemShow.itemToStr(data.items[index], lang) + "\n";
+            empty = false;
+        }
+        if (empty) {
             str += Translator.getString(lang, "inventory_equipment", "empty_inventory");
         }
 
