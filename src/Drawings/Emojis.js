@@ -58,6 +58,8 @@ Emojis.general = {
     "money_bag": "💰",
     "star": "⭐",
     "eight_pointed_black_star": "✴",
+    "backpack": "🎒",
+    "shield": "🛡"
 }
 
 module.exports = Emojis;

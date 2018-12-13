@@ -26,11 +26,22 @@ async function sendDMToSpecificUser(idUser, message) {
 }
 
 async function sendWorldBossMessage(message) {
-    let evalDyn = `let channel = this.channels.get("520585589612085258");
+    let evalDyn;
+
+    if (conf.env == "dev") {
+        evalDyn = `let channel = this.channels.get("456119917943717888");
     if(channel != null) {
         channel.send(\`${message}\`).catch((e) => {null});
     }
     `;
+    } else {
+        evalDyn = `let channel = this.channels.get("520585589612085258");
+    if(channel != null) {
+        channel.send(\`${message}\`).catch((e) => {null});
+    }
+    `;
+    }
+
     try {
         await manager.broadcastEval(evalDyn);
     } catch (e) {
@@ -67,9 +78,7 @@ app.use("/usr", async (req, res) => {
 
 app.use("/wb", async (req, res) => {
     if (req.body.message != null && typeof req.body.message == "string") {
-        if (conf.env == "prod") {
-            sendWorldBossMessage(req.body.message);
-        }
+        sendWorldBossMessage(req.body.message);
         return res.json({
             sended: "yes"
         });

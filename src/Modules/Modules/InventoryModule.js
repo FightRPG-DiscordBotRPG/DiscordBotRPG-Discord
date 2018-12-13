@@ -34,27 +34,47 @@ class InventoryModule extends GModule {
                         itemmsg = ItemShow.showEquippedItem(data);
                     }
 
+                    let isEquipped = isNaN(parseInt(args[0]));
                     let sellEmoji = Emojis.getID("money_bag");
+                    let equipUnequipEmoji = isEquipped ? Emojis.getID("backpack") : Emojis.getID("shield");
                     let favoEmoji = data.item.isFavorite == false ? Emojis.getID("star") : Emojis.getID("eight_pointed_black_star");
                     let itemmsgsent = await message.channel.send(itemmsg).catch(() => null);
 
-                    await Promise.all([
+                    Promise.all([
                         itemmsgsent.react(sellEmoji),
-                        itemmsgsent.react(favoEmoji)
+                        itemmsgsent.react(favoEmoji),
+                        itemmsgsent.react(equipUnequipEmoji)
                     ]).catch(() => null);
 
                     const filter = (reaction, user) => {
-                        return [sellEmoji, favoEmoji].includes(reaction.emoji.name) && user.id === message.author.id;
+                        return [sellEmoji, favoEmoji, equipUnequipEmoji].includes(reaction.emoji.name) && user.id === message.author.id;
                     };
 
 
                     const collected = await itemmsgsent.awaitReactions(filter, {
-                        max: 1,
+                        max: 2,
                         time: 22000
                     });
                     const reaction = collected.first();
                     if (reaction != null) {
                         switch (reaction.emoji.name) {
+                            case equipUnequipEmoji:
+                                if (isEquipped) {
+                                    data = await axios.post("/game/equipment/unequip", {
+                                        idItem: args[0]
+                                    });
+                                } else {
+                                    data = await axios.post("/game/equipment/equip", {
+                                        idItem: args[0]
+                                    });
+                                }
+                                data = data.data;
+                                if (data.error == null) {
+                                    msg = data.success;
+                                } else {
+                                    msg = data.error;
+                                }
+                                break;
                             case sellEmoji:
                                 data = await axios.post("/game/inventory/sell", {
                                     idItem: args[0],

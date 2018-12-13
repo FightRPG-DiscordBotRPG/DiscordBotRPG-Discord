@@ -8,7 +8,7 @@ axios.defaults.validateStatus = function (status) {
 
 var Globals = {
     connectedUsers: {},
-    "admins": ["241564725870198785", "285789367954440194", "228787710607753216"],
+    "admins": ["241564725870198785", "285789367954440194", "228787710607753216", "403229406585421834"],
     "tutorialLink": "https://docs.google.com/document/d/1ISXdBt5npR7oTjU0nxOkrEc10cd5OAcg-hG-rODmyIQ/edit?usp=sharing",
     getRarityName: (idRarity) => {
         idRarity = parseInt(idRarity);
