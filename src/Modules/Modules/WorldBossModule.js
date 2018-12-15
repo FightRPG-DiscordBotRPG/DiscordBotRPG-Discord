@@ -1,12 +1,13 @@
 const GModule = require("../GModule");
 const Globals = require("../../Globals");
 const WorldBosses = require("../../Drawings/WorldBosses");
+const Leaderboard = require("../../Drawings/Leaderboard");
 
 
 class WorldBossModule extends GModule {
     constructor() {
         super();
-        this.commands = ["wbshowall", "wbfight", "wbattack", "wblastinfo"];
+        this.commands = ["wbshowall", "wbfight", "wbattack", "wblastinfo", "wbleaderboard"];
         this.startLoading("World Boss");
         this.init();
         this.endLoading("World Boss");
@@ -48,6 +49,29 @@ class WorldBossModule extends GModule {
                 } else {
                     msg = data.error;
                 }
+                break;
+            case "wbleaderboard":
+                switch (args[0]) {
+                    case "attacks":
+                        data = await axios.get("/game/worldbosses/leaderboard/attacks");
+                        break;
+                    case "damage":
+                    default:
+                        args[0] = "damage";
+                        data = await axios.get("/game/worldbosses/leaderboard/damage");
+                        break;
+                }
+
+                data = data.data;
+                if (data.error == null) {
+                    for (let i = 0; i < 6; i++) {
+                        data.rankings.push(data.rankings[0]);
+                    }
+                    msg = Leaderboard.ldtostr(data, "wb_" + args[0]);
+                } else {
+                    msg = data.error;
+                }
+
                 break;
         }
 

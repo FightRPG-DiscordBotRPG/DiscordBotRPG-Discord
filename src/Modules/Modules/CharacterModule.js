@@ -39,7 +39,7 @@ class CharacterModule extends GModule {
             case "leaderboard":
                 data = await axios.get("/game/character/leaderboard");
                 data = data.data;
-                msg = data.error != null ? data.error : Leaderboard.leaderboardToString(data);
+                msg = data.error != null ? data.error : Leaderboard.ldtostr(data, "arena");
                 break;
 
             case "info":
