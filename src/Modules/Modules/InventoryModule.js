@@ -21,6 +21,7 @@ class InventoryModule extends GModule {
         let firstMention;
         let data;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
+        let idRarity, idType, level;
 
         switch (command) {
             case "item":
@@ -41,9 +42,9 @@ class InventoryModule extends GModule {
                     let itemmsgsent = await message.channel.send(itemmsg).catch(() => null);
 
                     Promise.all([
-                        itemmsgsent.react(sellEmoji),
+                        data.item.isFavorite == true ? null : itemmsgsent.react(sellEmoji),
                         itemmsgsent.react(favoEmoji),
-                        itemmsgsent.react(equipUnequipEmoji)
+                        data.item.equipable == true ? itemmsgsent.react(equipUnequipEmoji) : null,
                     ]).catch(() => null);
 
                     const filter = (reaction, user) => {
@@ -52,7 +53,7 @@ class InventoryModule extends GModule {
 
 
                     const collected = await itemmsgsent.awaitReactions(filter, {
-                        max: 2,
+                        max: 1,
                         time: 22000
                     });
                     const reaction = collected.first();
@@ -61,11 +62,11 @@ class InventoryModule extends GModule {
                             case equipUnequipEmoji:
                                 if (isEquipped) {
                                     data = await axios.post("/game/equipment/unequip", {
-                                        idItem: args[0]
+                                        idItem: data.idInInventory
                                     });
                                 } else {
                                     data = await axios.post("/game/equipment/equip", {
-                                        idItem: args[0]
+                                        idItem: data.idInInventory
                                     });
                                 }
                                 data = data.data;
@@ -77,7 +78,7 @@ class InventoryModule extends GModule {
                                 break;
                             case sellEmoji:
                                 data = await axios.post("/game/inventory/sell", {
-                                    idItem: args[0],
+                                    idItem: data.idInInventory,
                                     number: 1,
                                 });
                                 data = data.data;
@@ -92,11 +93,11 @@ class InventoryModule extends GModule {
                             case favoEmoji:
                                 if (data.item.isFavorite == false) {
                                     data = await axios.post("/game/inventory/itemfav", {
-                                        idItem: args[0]
+                                        idItem: data.idInInventory
                                     });
                                 } else {
                                     data = await axios.post("/game/inventory/itemunfav", {
-                                        idItem: args[0]
+                                        idItem: data.idInInventory
                                     });
                                 }
                                 data = data.data;
@@ -139,7 +140,7 @@ class InventoryModule extends GModule {
 
             case "inv":
             case "inventory":
-                let idRarity, idType, level, page = 1;;
+                let page = 1;
                 if (args.length > 0) {
                     if (args.length > 1) {
                         if (args[0] != null) {
@@ -155,7 +156,7 @@ class InventoryModule extends GModule {
                                     break;
                             }
                         }
-                        page = args[3] != null ? args[3] : 1;
+                        page = args[2] != null ? args[2] : 1;
                     } else {
                         page = args[0];
                     }
@@ -191,7 +192,29 @@ class InventoryModule extends GModule {
                 break;
 
             case "sellall":
-                data = await axios.post("/game/inventory/sellall");
+                if (args.length > 0) {
+                    if (args.length > 1) {
+                        if (args[0] != null) {
+                            switch (args[0]) {
+                                case "rarity":
+                                    idRarity = args[1];
+                                    break;
+                                case "type":
+                                    idType = args[1];
+                                    break;
+                                case "level":
+                                    level = args[1];
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+                data = await axios.post("/game/inventory/sellall", {
+                    idRarity: idRarity,
+                    idType: idType,
+                    level: level
+                });
                 data = data.data;
                 if (data.error == null) {
                     msg = data.success;

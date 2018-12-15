@@ -29,7 +29,7 @@ bot.on("ready", async () => {
     console.log("Shard Connected");
     bot.user.setPresence({
         game: {
-            name: "On " + await getTotalNumberOfGuilds() + " servers !",
+            name: "On " + await getTotalNumberOfGuilds() + " servers!",
         },
     });
     //console.log(bot.guilds.size, bot.shard.id, bot.shard.count);
@@ -78,7 +78,7 @@ bot.on('message', async (message) => {
 bot.on('guildCreate', async (guild) => {
     bot.user.setPresence({
         game: {
-            name: "On " + await getTotalNumberOfGuilds() + " guilds !",
+            name: "On " + await getTotalNumberOfGuilds() + " servers!",
         },
     });
     DiscordServers.newGuild(guild);
@@ -87,7 +87,7 @@ bot.on('guildCreate', async (guild) => {
 bot.on('guildDelete', async () => {
     bot.user.setPresence({
         game: {
-            name: "On " + await getTotalNumberOfGuilds() + " guilds !",
+            name: "On " + await getTotalNumberOfGuilds() + " servers!",
         },
     });
 });

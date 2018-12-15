@@ -207,10 +207,11 @@ class Areas {
     }
 
     statsAndLevelToStr(data) {
+        let lang = data.lang;
         let str = "```\n";
-        str += "- Actual level : " + data.level + "\n";
-        str += "- Points to distribute : " + data.statPoints + "\n";
-        str += "- Price to next level : " + data.price + "\n";
+        str += "- " + Translator.getString(lang, "area", "conquest_actual_level", [data.level]) + "\n";
+        str += "- " + Translator.getString(lang, "area", "conquest_points_to_distribute", [ata.statPoints]) + "\n";
+        str += "- " + Translator.getString(lang, "area", "conquest_price_to_next_level", [data.price]) + "\n";
         str += "```";
         return str;
     }

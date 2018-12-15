@@ -60,7 +60,7 @@ class CharacterModule extends GModule {
                 data = data.data;
                 if (data.error == null) {
                     msg = Translator.getString(data.lang, "character", "attribute_up_to", [this.getToStrShort(args[0]), data.value]) +
-                        "." + (data.pointsLeft > 1 ?
+                        ". " + (data.pointsLeft > 1 ?
                             Translator.getString(data.lang, "character", "attribute_x_points_available_plural", [data.pointsLeft]) :
                             Translator.getString(data.lang, "character", "attribute_x_points_available", [data.pointsLeft]));
                 } else {
