@@ -1,6 +1,7 @@
 const Translator = require("../Translator/Translator");
 const ProgressBar = require("./ProgressBar");
 const Discord = require("discord.js");
+const Emojis = require("./Emojis");
 
 class TextDrawings {
 
@@ -87,7 +88,7 @@ class TextDrawings {
             xpOn = Translator.getString(data.lang, "character", "maximum_level");
             xpBar = xpProgressBar.draw(1, 1);
         } else {
-            xpOn = data.actualXp + " / " + data.xpNextLevel;
+            xpOn = Intl.NumberFormat(data.lang).format(data.actualXp) + " / " + Intl.NumberFormat(data.lang).format(data.xpNextLevel);
             xpBar = xpProgressBar.draw(data.actualXp, data.xpNextLevel);
         }
 
@@ -95,13 +96,13 @@ class TextDrawings {
             xpOnCraft = Translator.getString(data.lang, "character", "maximum_level");
             xpBarCraft = xpProgressBar.draw(1, 1);
         } else {
-            xpOnCraft = data.craft.xp + " / " + data.craft.xpNextLevel;
+            xpOnCraft = Intl.NumberFormat(data.lang).format(data.craft.xp) + " / " + Intl.NumberFormat(data.lang).format(data.craft.xpNextLevel);
             xpBarCraft = xpProgressBar.draw(data.craft.xp, data.craft.xpNextLevel);
         }
 
 
-        let authorTitle = data.username + " | " + Translator.getString(data.lang, "inventory_equipment", "power") + " : " + data.power;
-        let statsTitle = Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, data.resetValue]);
+        let authorTitle = data.username + " | " + Translator.getString(data.lang, "inventory_equipment", "power") + " : " + Intl.NumberFormat(data.lang).format(data.power);
+        let statsTitle = Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, Intl.NumberFormat(data.lang).format(data.resetValue)]);
         let titleXPFight = Translator.getString(data.lang, "character", "level") + " : " + data.level + " | " + xpOn + " ";
         let titleXPCraft = Translator.getString(data.lang, "character", "craft_level") + " : " + data.craft.level + " | " + xpOnCraft + " ";
 
@@ -112,10 +113,9 @@ class TextDrawings {
             .addField(statsTitle, this.characterStatsToString(data.stats, data.statsEquipment, data.lang))
             .addField(titleXPFight, xpBar, true)
             .addField(titleXPCraft, xpBarCraft, true)
-            .addBlankField(true)
-            .addField(Translator.getString(data.lang, "character", "money"), data.money + " G", true)
-            .addField(Translator.getString(data.lang, "character", "honor"), data.honor, true)
-            .addBlankField(true);
+            .addField(Emojis.getString("red_heart") + " " + Translator.getString(data.lang, "character", "health_points"), Intl.NumberFormat(data.lang).format((data.stats.constitution + data.statsEquipment.constitution) * 10), true)
+            .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "character", "money"), Intl.NumberFormat(data.lang).format(data.money) + " G", true)
+            .addField(Emojis.getString("honor") + " " + Translator.getString(data.lang, "character", "honor"), Intl.NumberFormat(data.lang).format(data.honor), true)
         return embed;
     }
 

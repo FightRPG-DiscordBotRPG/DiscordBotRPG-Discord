@@ -21,6 +21,7 @@ class Translator {
 
             args = Array.isArray(args) ? args : [];
             args.unshift(this.translations[lang][type][name]);
+            console.log(util.formatWithOptions.toString());
             return util.format.apply(util, args);
         }
         if (lang != "en") {

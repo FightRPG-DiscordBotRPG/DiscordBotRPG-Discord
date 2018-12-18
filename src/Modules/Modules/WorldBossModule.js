@@ -64,9 +64,6 @@ class WorldBossModule extends GModule {
 
                 data = data.data;
                 if (data.error == null) {
-                    for (let i = 0; i < 6; i++) {
-                        data.rankings.push(data.rankings[0]);
-                    }
                     msg = Leaderboard.ldtostr(data, "wb_" + args[0]);
                 } else {
                     msg = data.error;

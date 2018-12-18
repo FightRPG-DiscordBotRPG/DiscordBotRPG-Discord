@@ -81,7 +81,7 @@ class Leaderboard {
     static arenaLine(data, i) {
         let offset = data.offset + Number.parseInt(i) + 1;
         let offsetStr = offset.toString();
-        offsetStr = offsetStr.length < Leaderboard.getNumberLength(data.rankings.length + offset - 1) ? ("0" + offsetStr) : offsetStr;
+        offsetStr = offsetStr.length < Leaderboard.getNumberLength(data.rankings.length + data.offset - 1) ? ("0" + offsetStr) : offsetStr;
         let maximumHonorLength = Leaderboard.getNumberLength(data.rankings[0].Honor);
         let user = data.rankings[i];
 
@@ -93,8 +93,7 @@ class Leaderboard {
     static wbLineDamage(data, i) {
         let offset = data.offset + Number.parseInt(i) + 1;
         let offsetStr = offset.toString();
-        console.log(offsetStr.length + " vs " + Leaderboard.getNumberLength(data.rankings.length + offset - 1));
-        offsetStr = offsetStr.length < Leaderboard.getNumberLength(data.rankings.length + offset - 1) ? ("0" + offsetStr) : offsetStr;
+        offsetStr = offsetStr.length < Leaderboard.getNumberLength(data.rankings.length + data.offset - 1) ? ("0" + offsetStr) : offsetStr;
         let maximumDamageLenght = Leaderboard.getNumberLength(data.rankings[0].damage);
         let user = data.rankings[i];
 
@@ -106,7 +105,7 @@ class Leaderboard {
     static wbLineAttacks(data, i) {
         let offset = data.offset + Number.parseInt(i) + 1;
         let offsetStr = offset.toString();
-        offsetStr = offsetStr.length < Leaderboard.getNumberLength(data.rankings.length + offset - 1) ? ("0" + offsetStr) : offsetStr;
+        offsetStr = offsetStr.length < Leaderboard.getNumberLength(data.rankings.length + data.offset - 1) ? ("0" + offsetStr) : offsetStr;
         let maximumAttacksLenght = Leaderboard.getNumberLength(data.rankings[0].attackCount);
         let user = data.rankings[i];
 
