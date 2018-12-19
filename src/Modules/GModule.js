@@ -72,12 +72,12 @@ class GModule {
         return stat;
     }
 
-    cmdToString(data) {
+    cmdToString(data, prefix) {
         let str = "```apache\n" + "::" + Translator.getString(data.lang, "help_panel", "help") + "::\n";
         for (let category in data.commands) {
             str += "[" + category + "]\n";
             for (let command in data.commands[category]) {
-                str += "::" + command + " : " + data.commands[category][command] + "\n";
+                str += prefix + command + " : " + data.commands[category][command] + "\n";
             }
         }
         str += "\n" + Translator.getString(data.lang, "general", "page_out_of_x", [data.page, data.maxPage]) + "```"

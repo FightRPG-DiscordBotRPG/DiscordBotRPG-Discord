@@ -65,7 +65,7 @@ class ModuleHandler extends GModule {
                 nonDiscordArgs[i] = encodeURIComponent(args[i]);
             }
             // exec module corresponding to command
-            await this.executeCommand(message, command, nonDiscordArgs);
+            await this.executeCommand(message, command, nonDiscordArgs, prefix);
 
             let axios = Globals.connectedUsers[authorIdentifier].getAxios();
             switch (command) {
@@ -259,12 +259,12 @@ class ModuleHandler extends GModule {
         return false;
     }
 
-    async executeCommand(message, command, args) {
+    async executeCommand(message, command, args, prefix) {
         let mod = this.commandsReact[command];
         if (mod != null) {
             if (mod.isActive) {
                 try {
-                    await mod.run(message, command, args);
+                    await mod.run(message, command, args, prefix);
                 } catch (err) {
                     if (!this.devMode) {
                         let adminTell = "A module has crashed.\nCommand : " + command + "\nArgs : [" + args.toString() + "]\n" + "User that have crashed the command : " + message.author.username + "#" + message.author.discriminator;

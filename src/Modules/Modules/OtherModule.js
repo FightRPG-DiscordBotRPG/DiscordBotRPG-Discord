@@ -13,7 +13,7 @@ class OtherModule extends GModule {
         this.endLoading("Other");
     }
 
-    async run(message, command, args) {
+    async run(message, command, args, prefix) {
         let msg = "";
         let authorIdentifier = message.author.id;
         let data;
@@ -51,7 +51,7 @@ class OtherModule extends GModule {
                 data = await axios.get("/game/other/help/" + args[0]);
                 data = data.data;
                 if (data.error == null) {
-                    msg = this.cmdToString(data);
+                    msg = this.cmdToString(data, prefix);
                 } else {
                     msg = data.error;
                 }

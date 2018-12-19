@@ -114,7 +114,7 @@ class TextDrawings {
             .addField(statsTitle, this.characterStatsToString(data.stats, data.statsEquipment, data.lang))
             .addField(titleXPFight, xpBar, true)
             .addField(titleXPCraft, xpBarCraft, true)
-            .addField(Emojis.getString("red_heart") + " " + Translator.getString(data.lang, "character", "health_points"), Translator.getFormater(data.lang).format((data.stats.constitution + data.statsEquipment.constitution) * 10), true)
+            .addField(Emojis.getString("red_heart") + " " + Translator.getString(data.lang, "character", "health_points"), Translator.getFormater(data.lang).format((data.stats.constitution + data.statsEquipment.constitution + 1) * 10), true)
             .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "character", "money"), Translator.getFormater(data.lang).format(data.money) + " G", true)
             .addField(Emojis.getString("honor") + " " + Translator.getString(data.lang, "character", "honor"), Translator.getFormater(data.lang).format(data.honor), true)
         return embed;
