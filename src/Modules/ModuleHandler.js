@@ -60,7 +60,6 @@ class ModuleHandler extends GModule {
             let data;
             this.logCommand(authorIdentifier, command, Date.now());
             await this.connectUser(message);
-
             let nonDiscordArgs = [];
             for (let i in args) {
                 nonDiscordArgs[i] = encodeURIComponent(args[i]);
@@ -85,7 +84,6 @@ class ModuleHandler extends GModule {
                             moduleName: args[0],
                         });
                         data = data.data;
-                        console.log(data);
                         if (data.error == null) {
                             msg += data.success;
                         } else {
@@ -285,7 +283,7 @@ class ModuleHandler extends GModule {
     }
 
     async connectUser(message) {
-        if (!Globals.connectedUsers[message.author.id]) {
+        if (Globals.connectedUsers[message.author.id] == null) {
             let user = new User(message.author.id, message.author.tag, message.author.avatarURL);
             await user.load();
             if (user.token == null) {
@@ -294,7 +292,6 @@ class ModuleHandler extends GModule {
                     console.log(e)
                 });
             }
-
             if (user.token != null) {
                 Globals.connectedUsers[message.author.id] = user;
             }

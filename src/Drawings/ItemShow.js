@@ -34,8 +34,8 @@ class ItemShow {
             .addField(Translator.getString(lang, "inventory_equipment", "attributes") + " : ", TextDrawings.itemStatsToStrCompare(item.stats, data.equippedStats, lang));
     }
 
-    itemToStr(item, lang) {
-        let numberStr = item.number > 1 ? " [x" + item.number + "]" : "";
+    itemToStr(item, lang = "en") {
+        let numberStr = item.number > 1 ? " [x" + Translator.getFormater(lang).format(item.number) + "]" : "";
         return item.name + (item.isFavorite == true ? " ★" : "") + numberStr + " - " + item.type + " (" + item.subType + ")" + " - " + item.level + " - " + item.rarity + " - " + item.power;
     }
 }

@@ -17,8 +17,8 @@ class ProgressBar {
             min = max;
         }
         let ratio = min / max;
-        ratio = Math.round(ratio * 10);
-        return this.fill.repeat(ratio) + this.empty.repeat(10 - ratio);
+        ratio = Math.round(ratio * 20);
+        return this.fill.repeat(ratio) + this.empty.repeat(20 - ratio);
     }
 
 }
