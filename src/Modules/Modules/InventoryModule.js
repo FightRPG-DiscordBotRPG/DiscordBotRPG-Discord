@@ -42,7 +42,7 @@ class InventoryModule extends GModule {
                     let itemmsgsent = await message.channel.send(itemmsg).catch(() => null);
 
                     Promise.all([
-                        data.item.isFavorite == true ? null : itemmsgsent.react(sellEmoji),
+                        data.item.isFavorite == true ? null : (isEquipped ? null : itemmsgsent.react(sellEmoji)),
                         itemmsgsent.react(favoEmoji),
                         data.item.equipable == true ? itemmsgsent.react(equipUnequipEmoji) : null,
                     ]).catch(() => null);
@@ -51,64 +51,80 @@ class InventoryModule extends GModule {
                         return [sellEmoji, favoEmoji, equipUnequipEmoji].includes(reaction.emoji.name) && user.id === message.author.id;
                     };
 
-
-                    const collected = await itemmsgsent.awaitReactions(filter, {
-                        max: 1,
-                        time: 22000
+                    const collector = itemmsgsent.createReactionCollector(filter, {
+                        time: 22000,
+                        max: 3,
                     });
-                    const reaction = collected.first();
-                    if (reaction != null) {
+
+                    collector.on('collect', async (reaction) => {
+                        let dataCollector;
+                        let msgCollector = null;
                         switch (reaction.emoji.name) {
                             case equipUnequipEmoji:
                                 if (isEquipped) {
-                                    data = await axios.post("/game/equipment/unequip", {
-                                        idItem: data.idInInventory
+                                    dataCollector = await axios.post("/game/equipment/unequip", {
+                                        idItem: data.item.id,
+                                        isRealID: true,
                                     });
                                 } else {
-                                    data = await axios.post("/game/equipment/equip", {
-                                        idItem: data.idInInventory
+                                    dataCollector = await axios.post("/game/equipment/equip", {
+                                        idItem: data.item.id,
+                                        isRealID: true,
                                     });
                                 }
-                                data = data.data;
-                                if (data.error == null) {
-                                    msg = data.success;
+                                dataCollector = dataCollector.data;
+                                if (dataCollector.error == null) {
+                                    msgCollector = dataCollector.success;
                                 } else {
-                                    msg = data.error;
+                                    msgCollector = dataCollector.error;
                                 }
                                 break;
                             case sellEmoji:
-                                data = await axios.post("/game/inventory/sell", {
-                                    idItem: data.idInInventory,
+                                dataCollector = await axios.post("/game/inventory/sell", {
+                                    idItem: data.item.id,
                                     number: 1,
+                                    isRealID: true,
                                 });
-                                data = data.data;
-                                if (data.error == null) {
-                                    msg = data.success;
+                                dataCollector = dataCollector.data;
+                                if (dataCollector.error == null) {
+                                    msgCollector = dataCollector.success;
                                 } else {
-                                    msg = data.error;
+                                    msgCollector = dataCollector.error;
                                 }
 
                                 break;
 
                             case favoEmoji:
                                 if (data.item.isFavorite == false) {
-                                    data = await axios.post("/game/inventory/itemfav", {
-                                        idItem: data.idInInventory
+                                    dataCollector = await axios.post("/game/inventory/itemfav", {
+                                        idItem: data.item.id,
+                                        isRealID: true,
                                     });
                                 } else {
-                                    data = await axios.post("/game/inventory/itemunfav", {
-                                        idItem: data.idInInventory
+                                    dataCollector = await axios.post("/game/inventory/itemunfav", {
+                                        idItem: data.item.id,
+                                        isRealID: true,
                                     });
                                 }
-                                data = data.data;
-                                if (data.error == null) {
-                                    msg = data.success;
+                                dataCollector = dataCollector.data;
+                                if (dataCollector.error == null) {
+                                    msgCollector = dataCollector.success;
                                 } else {
-                                    msg = data.error;
+                                    msgCollector = dataCollector.error;
                                 }
                                 break;
                         }
-                    }
+                        if (msgCollector != null) {
+                            this.sendMessage(message, msgCollector);
+                        }
+
+                    });
+
+                    collector.on('end', async (reactions) => {
+                        if (!itemmsgsent.deleted) {
+                            itemmsgsent.clearReactions();
+                        }
+                    });
                 } else {
                     msg = data.error;
                 }
@@ -171,11 +187,83 @@ class InventoryModule extends GModule {
                 });
                 data = data.data;
                 if (data.error == null) {
-                    msg = Inventory.ciDisplay(data);
+                    let inventoryMessage = await message.channel.send(Inventory.ciDisplay(data)).catch(e => null);
+                    var invCurrentPage = data.page;
+
+                    let nextEmoji = Emojis.getString("right_arrow");
+                    let backEmoji = Emojis.getString("left_arrow");
+
+                    if (!inventoryMessage.deleted) {
+                        data.page > 1 ? await inventoryMessage.react(backEmoji) : null;
+                        data.page < data.maxPage ? await inventoryMessage.react(nextEmoji) : null;
+                    }
+
+
+                    const filter = (reaction, user) => {
+                        return [nextEmoji, backEmoji].includes(reaction.emoji.name) && user.id === message.author.id;
+                    };
+
+                    const collectorInventory = inventoryMessage.createReactionCollector(filter, {
+                        time: 60000,
+                    });
+
+                    collectorInventory.on('collect', async (reaction) => {
+                        let dataCollector;
+                        let msgCollector = null;
+                        switch (reaction.emoji.name) {
+                            case nextEmoji:
+                                dataCollector = await axios.get("/game/inventory/show/" + (invCurrentPage + 1), {
+                                    params: {
+                                        idRarity: idRarity,
+                                        idType: idType,
+                                        level: level
+                                    }
+                                });
+                                dataCollector = dataCollector.data;
+                                if (dataCollector.error == null) {
+                                    msgCollector = Inventory.ciDisplay(dataCollector);
+                                    invCurrentPage++;
+                                } else {
+                                    msgCollector = dataCollector.error;
+                                }
+                                break;
+                            case backEmoji:
+                                dataCollector = await axios.get("/game/inventory/show/" + (invCurrentPage - 1), {
+                                    params: {
+                                        idRarity: idRarity,
+                                        idType: idType,
+                                        level: level
+                                    }
+                                });
+                                dataCollector = dataCollector.data;
+                                if (dataCollector.error == null) {
+                                    msgCollector = Inventory.ciDisplay(dataCollector);
+                                    invCurrentPage--;
+                                } else {
+                                    msgCollector = dataCollector.error;
+                                }
+                                break;
+                        }
+                        if (msgCollector != null && !inventoryMessage.deleted) {
+                            await inventoryMessage.clearReactions();
+                            await inventoryMessage.edit(msgCollector);
+                            if (dataCollector.error == null) {
+                                dataCollector.page > 1 ? await inventoryMessage.react(backEmoji) : null;
+                                dataCollector.page < dataCollector.maxPage ? await inventoryMessage.react(nextEmoji) : null;
+                            }
+                        }
+
+                    });
+
+                    collectorInventory.on('end', async (reactions) => {
+                        if (!inventoryMessage.deleted) {
+                            inventoryMessage.clearReactions();
+                        }
+                    });
+
                 } else {
                     msg = data.error;
                 }
-
                 break;
 
             case "sell":
@@ -246,6 +334,10 @@ class InventoryModule extends GModule {
         }
 
         this.sendMessage(message, msg);
+    }
+
+    displayInventoryMessage(message, args) {
+
     }
 }
 

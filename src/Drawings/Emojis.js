@@ -34,7 +34,7 @@ Emojis.emojisProd = {
     "honor": {
         id: "403824433837637632",
         string: "<:honor:403824433837637632>"
-    },
+    }
 };
 Emojis.emojisDev = {
     "vmark": {
@@ -48,7 +48,7 @@ Emojis.emojisDev = {
     "honor": {
         id: "403824433837637632",
         string: "<:honor:403824433837637632>"
-    },
+    }
 };
 
 Emojis.general = {
@@ -70,6 +70,9 @@ Emojis.general = {
     "shield": "🛡",
     "id": "🆔",
     "red_heart": "❤️",
+    "black_heart": "🖤",
+    "right_arrow": "▶",
+    "left_arrow": "◀",
 }
 
 module.exports = Emojis;

@@ -101,7 +101,6 @@ class TextDrawings {
         }
 
 
-        console.log(data.statPoints);
         let authorTitle = data.username + " | " + Translator.getString(data.lang, "inventory_equipment", "power") + " : " + Translator.getFormater(data.lang).format(data.power);
         let statsTitle = Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, data.resetValue]);
         let titleXPFight = Translator.getString(data.lang, "character", "level") + " : " + data.level + " | " + xpOn + " ";

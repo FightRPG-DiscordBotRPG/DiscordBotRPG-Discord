@@ -1,4 +1,5 @@
 'use strict';
+const Emojis = require("./Emojis");
 class ProgressBar {
     constructor() {
         this.fill = "█";
