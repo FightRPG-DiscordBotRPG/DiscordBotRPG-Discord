@@ -2,6 +2,7 @@ const GModule = require("../GModule");
 const Globals = require("../../Globals");
 const WorldBosses = require("../../Drawings/WorldBosses");
 const Leaderboard = require("../../Drawings/Leaderboard");
+const Translator = require("../../Translator/Translator");
 
 
 class WorldBossModule extends GModule {
@@ -35,7 +36,7 @@ class WorldBossModule extends GModule {
                 data = await axios.post("/game/worldbosses/fight");
                 data = data.data;
                 if (data.error == null) {
-                    msg = "You've inflicted " + data.damage + " damage";
+                    msg = Translator.getString(data.lang, "world_bosses", "boss_fight_damage_inflicted", [data.damage]);
                 } else {
                     msg = data.error;
                 }

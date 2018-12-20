@@ -121,7 +121,7 @@ class InventoryModule extends GModule {
                     });
 
                     collector.on('end', async (reactions) => {
-                        if (!itemmsgsent.deleted) {
+                        if (!itemmsgsent.deleted && message.channel.type != "dm") {
                             itemmsgsent.clearReactions();
                         }
                     });
@@ -279,7 +279,7 @@ class InventoryModule extends GModule {
                                 inventoryMessage.clearReactions()
                             } else {
                                 for (let i in currentMessageReactions) {
-                                    currentMessageReactions[i] = invcurrentMessageReactions[i].remove();
+                                    currentMessageReactions[i] = currentMessageReactions[i].remove();
                                 }
 
                             }
