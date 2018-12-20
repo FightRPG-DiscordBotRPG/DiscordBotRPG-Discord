@@ -188,14 +188,20 @@ class InventoryModule extends GModule {
                 data = data.data;
                 if (data.error == null) {
                     let inventoryMessage = await message.channel.send(Inventory.ciDisplay(data)).catch(e => null);
+                    let isDM = message.channel.type == "dm";
                     var invCurrentPage = data.page;
+                    let currentMessageReactions = [];
 
                     let nextEmoji = Emojis.getString("right_arrow");
                     let backEmoji = Emojis.getString("left_arrow");
 
                     if (!inventoryMessage.deleted) {
-                        data.page > 1 ? await inventoryMessage.react(backEmoji) : null;
-                        data.page < data.maxPage ? await inventoryMessage.react(nextEmoji) : null;
+                        if (data.page > 1) {
+                            currentMessageReactions.push(await inventoryMessage.react(backEmoji));
+                        }
+                        if (data.page < data.maxPage) {
+                            currentMessageReactions.push(await inventoryMessage.react(nextEmoji));
+                        }
                     }
 
 
@@ -245,11 +251,23 @@ class InventoryModule extends GModule {
                                 break;
                         }
                         if (msgCollector != null && !inventoryMessage.deleted) {
-                            await inventoryMessage.clearReactions();
+                            if (isDM) {
+                                for (let i in currentMessageReactions) {
+                                    currentMessageReactions[i] = currentMessageReactions[i].remove();
+                                }
+                                await Promise.all(currentMessageReactions);
+                                currentMessageReactions = [];
+                            } else {
+                                await inventoryMessage.clearReactions();
+                            }
                             await inventoryMessage.edit(msgCollector);
                             if (dataCollector.error == null) {
-                                dataCollector.page > 1 ? await inventoryMessage.react(backEmoji) : null;
-                                dataCollector.page < dataCollector.maxPage ? await inventoryMessage.react(nextEmoji) : null;
+                                if (dataCollector.page > 1) {
+                                    currentMessageReactions.push(await inventoryMessage.react(backEmoji));
+                                }
+                                if (dataCollector.page < dataCollector.maxPage) {
+                                    currentMessageReactions.push(await inventoryMessage.react(nextEmoji));
+                                }
                             }
                         }
 
@@ -257,7 +275,14 @@ class InventoryModule extends GModule {
 
                     collectorInventory.on('end', async (reactions) => {
                         if (!inventoryMessage.deleted) {
-                            inventoryMessage.clearReactions();
+                            if (!isDM) {
+                                inventoryMessage.clearReactions()
+                            } else {
+                                for (let i in currentMessageReactions) {
+                                    currentMessageReactions[i] = invcurrentMessageReactions[i].remove();
+                                }
+
+                            }
                         }
                     });
 

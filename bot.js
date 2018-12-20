@@ -7,8 +7,8 @@ const DiscordServers = require("./src/Database/DiscordServers");
 
 var bot = new Discord.Client();
 
-process.on('unhandledRejection', up => {
-    throw up;
+process.on('unhandledRejection', err => {
+    console.log(err);
 });
 
 console.log("Shard Starting ...");
