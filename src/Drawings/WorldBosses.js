@@ -1,5 +1,7 @@
 const Translator = require("../Translator/Translator");
 const ProgressBar = require("./ProgressBar");
+const Discord = require("discord.js");
+const Emojis = require("./Emojis");
 
 class WorldBosses {
     listToDiscord(data) {
@@ -11,7 +13,7 @@ class WorldBosses {
                 str += info.regionName + " - " + info.areaName + "\n";
                 str += ""
                 if (info.worldBoss != null) {
-                    str += info.worldBoss.name + " (" + info.worldBoss.actualHP + "/" + info.worldBoss.maxHP + ") " + pb.draw(info.worldBoss.actualHP, info.worldBoss.maxHP);
+                    str += info.worldBoss.name + " (" + Translator.getFormater(data.lang).format(info.worldBoss.actualHP) + "/" + Translator.getFormater(data.lang).format(info.worldBoss.maxHP) + ") " + pb.draw(info.worldBoss.actualHP, info.worldBoss.maxHP);
                 } else {
                     let date = new Date();
                     date.setTime(info.spawnDate);
@@ -35,6 +37,16 @@ class WorldBosses {
         } else {
             return Translator.getString(lang, "world_bosses", "last_boss_never_fight");
         }
+    }
+
+    attackToDiscord(data_fight, data_ranks, data_boss) {
+        let lang = data_fight.lang;
+        return new Discord.RichEmbed()
+            .setAuthor(data_ranks.worldBoss.bossName)
+            .addField(Emojis.getString("sword") + Translator.getString(lang, "fight_general", "combat_log"), Translator.getString(lang, "world_bosses", "boss_fight_damage_inflicted", [data_fight.damage]))
+            .addField(Emojis.getString("win") + Translator.getString(lang, "leaderboards", "wb_damage"), Translator.getString(lang, "world_bosses", "boss_fight_recap_damage_dealt", [data_ranks.worldBoss.damage, data_ranks.worldBoss.damageRank]), true)
+            .addField(Emojis.getString("win") + Translator.getString(lang, "leaderboards", "wb_attacks"), Translator.getString(lang, "world_bosses", "boss_fight_recap_attack_count", [data_ranks.worldBoss.attackCount, data_ranks.worldBoss.attackCountRank]), true)
+            .addField(Emojis.getString("monster") + Translator.getString(lang, "help_panel", "world_boss_title"), this.listToDiscord(data_boss));
     }
 }
 

@@ -268,7 +268,7 @@ class ModuleHandler extends GModule {
                 } catch (err) {
                     if (!this.devMode) {
                         let adminTell = "A module has crashed.\nCommand : " + command + "\nArgs : [" + args.toString() + "]\n" + "User that have crashed the command : " + message.author.username + "#" + message.author.discriminator;
-                        message.channel.send("There is a problem with the discord bot. The following commands is impacted : " + mod.commands.toString()).catch((e) => null);
+                        message.channel.send("Oops an error has occurred, you can still use the bot, it's only on the bot side, not on the game side");
                         message.client.shard.broadcastEval(`let user = this.users.get("241564725870198785");
                             if(user != null) {
                                 user.send(\`${adminTell}\`).catch((e) => {null});
@@ -289,7 +289,9 @@ class ModuleHandler extends GModule {
             if (user.token == null) {
                 await user.createUser();
                 message.author.send(Translator.getString("en", "help_panel", "tutorial", [Globals.tutorialLink])).catch((e) => {
-                    console.log(e)
+                    message.channel.send(Translator.getString("en", "help_panel", "tutorial", [Globals.tutorialLink])).catch((e) => {
+                        console.log(e);
+                    });
                 });
             }
             if (user.token != null) {

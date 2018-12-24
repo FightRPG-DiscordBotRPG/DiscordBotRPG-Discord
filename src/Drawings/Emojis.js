@@ -7,6 +7,7 @@ class Emojis {
             em = Emojis.emojisProd[emojiName];
         } else {
             em = Emojis.emojisDev[emojiName];
+            em = em != null ? em : Emojis.emojisProd[emojiName];
         }
         return em != null ? em.id : Emojis.general[emojiName];
     }
@@ -17,6 +18,7 @@ class Emojis {
             em = Emojis.emojisProd[emojiName];
         } else {
             em = Emojis.emojisDev[emojiName];
+            em = em != null ? em : Emojis.emojisProd[emojiName];
         }
         return em != null ? em.string : Emojis.general[emojiName];
     }
@@ -34,7 +36,37 @@ Emojis.emojisProd = {
     "honor": {
         id: "403824433837637632",
         string: "<:honor:403824433837637632>"
+    },
+    "rusty_broken_sword": {
+        id: "525603434993549312",
+        string: "<:rusty_broken_sword:525603434993549312>"
+    },
+    "rusty_sword": {
+        id: "525603420128935937",
+        string: "<:rusty_sword:525603420128935937>"
+    },
+    "sword2": {
+        id: "525602381258293248",
+        string: "<:sword2:525602381258293248>"
+    },
+    "gold_sword": {
+        id: "525602353009917952",
+        string: "<:gold_sword:525602353009917952>"
+    },
+    "monster": {
+        id: "403149357387350016",
+        string: "<:monstre:403149357387350016>"
+    },
+    "sword": {
+        id: "403574088389361666",
+        string: "<:sword:403574088389361666>"
+    },
+    "win": {
+        id: "403151177153249281",
+        string: "<:win:403151177153249281>"
     }
+
+
 };
 Emojis.emojisDev = {
     "vmark": {
@@ -44,10 +76,6 @@ Emojis.emojisDev = {
     "xmark": {
         id: "403149357387350016",
         string: ":xmark:"
-    },
-    "honor": {
-        id: "403824433837637632",
-        string: "<:honor:403824433837637632>"
     }
 };
 

@@ -3,6 +3,7 @@ const Discord = require("discord.js");
 const ProgressBar = require("./ProgressBar");
 const Globals = require("../Globals");
 const Translator = require("../Translator/Translator");
+const Emojis = require("./Emojis");
 
 class FightManager {
     constructor() {
@@ -277,19 +278,19 @@ class FightManager {
 
 
         if (summary.rounds[ind].monsterType == "elite") {
-            monsterTitle = "<:elite:406090076511141888>";
+            monsterTitle = "<:elite:406090076511141888> ";
         } else if (summary.rounds[ind].monsterType == "boss") {
-            monsterTitle = "<:boss:456113364687388683>";
+            monsterTitle = "<:boss:456113364687388683> ";
         } else {
-            monsterTitle = summary.rounds[ind].monsterDifficultyName + " ";
+            monsterTitle = this.getMonsterDifficultyEmoji(summary.rounds[ind].monsterDifficultyName) + " ";
         }
 
 
         let embed = new Discord.RichEmbed()
             .setColor(color)
             .addField(Translator.getString(lang, "fight_general", "combat_log"), text)
-            .addField(firstName + " | " + Translator.getString(lang, "general", "lvl") + " : " + firstLevel, firstActualHP + "/" + firstMaxHP + "\n" + first, true)
-            .addField(monsterTitle + secondName + " | " + Translator.getString(lang, "general", "lvl") + " : " + secondLevel, secondActualHP + "/" + secondMaxHP + "\n" + second, true);
+            .addField(firstName + " | " + Translator.getString(lang, "general", "lvl") + " : " + firstLevel, Translator.getFormater(lang).format(firstActualHP) + "/" + Translator.getFormater(lang).format(firstMaxHP) + "\n" + first, true)
+            .addField(monsterTitle + secondName + " | " + Translator.getString(lang, "general", "lvl") + " : " + secondLevel, Translator.getFormater(lang).format(secondActualHP) + "/" + Translator.getFormater(lang).format(secondMaxHP) + "\n" + second, true);
         return embed;
     }
 
@@ -334,8 +335,8 @@ class FightManager {
         let embed = new Discord.RichEmbed()
             .setColor(color)
             .addField(Translator.getString(lang, "fight_general", "combat_log"), text)
-            .addField(firstName + " | " + Translator.getString(lang, "general", "lvl") + " : " + firstLevel, firstActualHP + "/" + firstMaxHP + "\n" + first, true)
-            .addField(secondName + " | " + Translator.getString(lang, "general", "lvl") + " : " + secondLevel, secondActualHP + "/" + secondMaxHP + "\n" + second, true);
+            .addField(firstName + " | " + Translator.getString(lang, "general", "lvl") + " : " + firstLevel, Translator.getFormater(lang).format(firstActualHP) + "/" + Translator.getFormater(lang).format(firstMaxHP) + "\n" + first, true)
+            .addField(secondName + " | " + Translator.getString(lang, "general", "lvl") + " : " + secondLevel, Translator.getFormater(lang).format(secondActualHP) + "/" + Translator.getFormater(lang).format(secondMaxHP) + "\n" + second, true);
         return embed;
     }
 
@@ -362,6 +363,21 @@ class FightManager {
         message.channel.send(this.embedPvP(pvpFight.text[0] + pvpFight.text[1] + pvpFight.text[2], pvpFight, null, lang))
             .then(msg => this.discordFightPvP(msg, userid, pvpFight, lang)).catch(e => console.log(e));
 
+    }
+
+    getMonsterDifficultyEmoji(name) {
+        switch (name) {
+            case "Weak":
+                return Emojis.getString("rusty_broken_sword");
+            case "Young":
+                return Emojis.getString("rusty_sword");
+            case "Adult":
+                return Emojis.getString("sword2");
+            case "Alpha":
+                return Emojis.getString("gold_sword");
+            default:
+                return "";
+        }
     }
 
 

@@ -36,7 +36,22 @@ class WorldBossModule extends GModule {
                 data = await axios.post("/game/worldbosses/fight");
                 data = data.data;
                 if (data.error == null) {
-                    msg = Translator.getString(data.lang, "world_bosses", "boss_fight_damage_inflicted", [data.damage]);
+                    let d1 = data;
+                    data = await axios.get("/game/worldbosses/display/lastboss");
+                    data = data.data;
+                    if (data.error == null) {
+                        let d2 = data;
+                        data = await axios.get("/game/worldbosses/display/all");
+                        data = data.data;
+                        if (data.error == null) {
+                            let d3 = data;
+                            msg = WorldBosses.attackToDiscord(d1, d2, d3);
+                        } else {
+                            msg = data.error;
+                        }
+                    } else {
+                        msg = data.error;
+                    }
                 } else {
                     msg = data.error;
                 }
