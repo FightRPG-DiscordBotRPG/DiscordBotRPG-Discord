@@ -35,7 +35,7 @@ class Areas {
 
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by") + ": " + area.owner, area.image)
+            .setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by", [area.owner]), area.image)
             .addField(Translator.getString(lang, "general", "description"), area.desc)
             .addField("Services", "```" + marketplace + forge + shop + "```")
             .setImage(area.image);
@@ -48,7 +48,7 @@ class Areas {
 
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by") + " : " + area.owner, area.image)
+            .setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by", [area.owner]), area.image)
             .addField(Translator.getString(lang, "general", "description"), area.desc + "\n\n" + Translator.getString(lang, "area", "minimum_quality") + " **" + area.minimum_quality + "**")
             .addField(Translator.getString(lang, "general", "monsters"), this.monstersToString(area.monsters, lang))
             .addField(Translator.getString(lang, "general", "resources"), this.resourcesToString(area.resources, lang))
@@ -153,7 +153,7 @@ class Areas {
                     strConnectedAreas += Translator.getString(lang, "area", "dungeon_area", values);
                     break;
             }
-            strConnectedAreas += " | " + Translator.getString(lang, "general", "region") + " : " + area.region_name + "`\n"
+            strConnectedAreas += " | " + Translator.getString(lang, "area", "region", [area.region_name]) + "`\n"
         }
         if (strConnectedAreas == "") {
             strConnectedAreas = Translator.getString(lang, "area", "no_connected_regions");
@@ -182,7 +182,7 @@ class Areas {
 
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(data.name + " | " + data.levels + " | " + Translator.getString(lang, "area", "owned_by") + " : " + data.owner, data.image)
+            .setAuthor(data.name + " | " + data.levels + " | " + Translator.getString(lang, "area", "owned_by", [data.owner]), data.image)
             .addField(Translator.getString(lang, "area", "conquest"), "```" + data.tournament_info + "```")
             .addField(Translator.getString(lang, "bonuses", "bonuses"), this.bonusesToStr(data))
             .addField(Translator.getString(lang, "area", "area_progression"), this.statsAndLevelToStr(data));
