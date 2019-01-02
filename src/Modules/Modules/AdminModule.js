@@ -2,11 +2,12 @@ const GModule = require("../GModule");
 const conn = require("../../../conf/mysql");
 const Globals = require("../../Globals");
 const Translator = require("../../Translator/Translator");
+const Discord = require("discord.js");
 
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -191,6 +192,36 @@ class AdminModule extends GModule {
                         await message.channel.send(this.cmdToString(data)).catch(e => null);
                     }
                 }
+                break;
+            case "bot_info":
+                let allCounts = await message.client.shard.broadcastEval("this.guilds.size");
+                let total = 0;
+                for (count in allCounts) {
+                    total += allCounts[count];
+                }
+
+                let totalSeconds = (message.client.uptime / 1000);
+                let hours = Math.floor(totalSeconds / 3600);
+                totalSeconds %= 3600;
+                let minutes = Math.floor(totalSeconds / 60);
+                let seconds = totalSeconds % 60;
+                let uptime = `${hours} hours, ${minutes} minutes and ${seconds} seconds`;
+                const os = require('os');
+
+                let totalMemory = await message.client.shard.broadcastEval("process.memoryUsage().heapUsed");
+                let totalMemoryMB = 0;
+                for (let c of totalMemory) {
+                    totalMemoryMB += Math.round(c / 1024 / 1024 * 100) / 100;
+                }
+
+
+
+                msg = new Discord.RichEmbed()
+                    .setAuthor("FightRPG")
+                    .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + allCounts.length + " ]", true)
+                    .addField("Version: ", "[ 1.5.10 ]", true).addField("Shard Uptime: ", "[ " + uptime + " ]", true)
+                    .addField("Memory Used: ", "[ " + `${totalMemoryMB} MB` + " ]", true).addField("Ping: ", "[ " + message.client.ping + " ms ]", true)
+                    .addField("Processor: ", "[ " + os.cpus()[0].model + " ]", true)
                 break;
         }
 
