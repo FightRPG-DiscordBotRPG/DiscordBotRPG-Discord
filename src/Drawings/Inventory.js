@@ -1,5 +1,8 @@
 const Translator = require("../Translator/Translator");
 const ItemShow = require("./ItemShow");
+const Discord = require("discord.js");
+const Emojis = require("./Emojis");
+const Globals = require("../Globals");
 
 class Inventory {
     ciDisplay(data) {
@@ -47,6 +50,28 @@ class Inventory {
         }
 
         return str + "```";
+    }
+
+    ciValueSellAllDisplay(data, params) {
+        let lang = data.lang;
+        let str = "";
+        if (params.idRarity != null) {
+            str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_rarity", [Translator.getString(lang, "rarities", Globals.getRarityName(params.idRarity))]);
+        } else if (params.idType != null) {
+            str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_type", [Translator.getString(lang, "item_types", Globals.getTypeName(params.idType))]);
+        } else if (params.level != null) {
+            str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level", [params.level]);
+        } else {
+            str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_all");
+        }
+
+        return new Discord.RichEmbed()
+            .setColor([255, 215, 0])
+            .setAuthor(Translator.getString(lang, "inventory_equipment", "sellall_title"))
+            .addField(Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell"), str)
+            .addField(Translator.getString(lang, "inventory_equipment", "sellall_total_value"), Translator.getFormater(lang).format(data.value) + " G")
+            .addField(Translator.getString(lang, "inventory_equipment", "sellall_are_you_sure"), Translator.getString(data.lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]));
+
     }
 }
 

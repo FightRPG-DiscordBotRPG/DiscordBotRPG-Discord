@@ -322,17 +322,58 @@ class InventoryModule extends GModule {
                         }
                     }
                 }
-
-                data = await axios.post("/game/inventory/sellall", {
+                let paramsSellAll = {
                     idRarity: idRarity,
                     idType: idType,
                     level: level
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
+                };
+                let dataInventoryValue = await axios.post("/game/inventory/sellall/value", paramsSellAll);
+                dataInventoryValue = dataInventoryValue.data;
+
+                if (dataInventoryValue.error == null) {
+                    if (dataInventoryValue.value > 0) {
+                        let sellAllConfirmation = await message.channel.send(Inventory.ciValueSellAllDisplay(dataInventoryValue, paramsSellAll)).catch(e => null);
+                        let checkEmoji = Emojis.getID("vmark");
+                        let xmarkEmoji = Emojis.getID("xmark");
+
+                        Promise.all([
+                            sellAllConfirmation.react(checkEmoji),
+                            sellAllConfirmation.react(xmarkEmoji)
+                        ]).catch(() => null);
+
+                        const filter = (reaction, user) => {
+                            return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && user.id === message.author.id;
+                        };
+
+
+                        const collected = await sellAllConfirmation.awaitReactions(filter, {
+                            max: 1,
+                            time: 25000
+                        });
+                        const reaction = collected.first();
+                        if (reaction != null) {
+                            switch (reaction.emoji.id) {
+                                case checkEmoji:
+                                    data = await axios.post("/game/inventory/sellall", paramsSellAll);
+                                    data = data.data;
+                                    if (data.error == null) {
+                                        msg = data.success;
+                                    } else {
+                                        msg = data.error;
+                                    }
+                                    break;
+
+                                case xmarkEmoji:
+                                    msg = Translator.getString(dataInventoryValue.lang, "inventory_equipment", "sellall_cancel");
+                                    break;
+                            }
+                        }
+                        sellAllConfirmation.delete().catch(() => null);
+                    } else {
+                        msg = Translator.getString(dataInventoryValue.lang, "errors", "economic_cant_sell_nothing");
+                    }
                 } else {
-                    msg = data.error;
+                    msg = dataInventoryValue.error;
                 }
                 break;
 

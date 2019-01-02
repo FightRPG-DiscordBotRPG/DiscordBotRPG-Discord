@@ -72,7 +72,7 @@ class GModule {
         return stat;
     }
 
-    cmdToString(data, prefix) {
+    cmdToString(data, prefix = "::") {
         let str = "```apache\n" + "::" + Translator.getString(data.lang, "help_panel", "help") + "::\n";
         for (let category in data.commands) {
             str += "[" + category + "]\n";

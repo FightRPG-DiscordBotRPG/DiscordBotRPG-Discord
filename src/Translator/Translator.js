@@ -70,6 +70,10 @@ class Translator {
         }
     }
 
+    /**
+     * 
+     * @returns {Intl.NumberFormat}
+     */
     static getFormater(lang = "en") {
         return this.formaters[lang];
     }

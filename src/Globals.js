@@ -32,6 +32,37 @@ var Globals = {
         }
         return rarityName;
     },
+    getTypeName: (idType) => {
+        idType = parseInt(idType);
+        let typeName = "Unknown";
+        switch (idType) {
+            case 1:
+                typeName = "weapon"
+                break;
+            case 2:
+                typeName = "chest"
+                break;
+            case 3:
+                typeName = "legs"
+                break;
+            case 4:
+                typeName = "head"
+                break;
+            case 5:
+                typeName = "resource"
+                break;
+            case 6:
+                typeName = "potion"
+                break;
+            case 7:
+                typeName = "lootbox"
+                break;
+            case 8:
+                typeName = "mount"
+                break;
+        }
+        return typeName;
+    }
 }
 
 module.exports = Globals;
