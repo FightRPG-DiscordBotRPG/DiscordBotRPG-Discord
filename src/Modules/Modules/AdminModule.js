@@ -204,7 +204,7 @@ class AdminModule extends GModule {
                 let hours = Math.floor(totalSeconds / 3600);
                 totalSeconds %= 3600;
                 let minutes = Math.floor(totalSeconds / 60);
-                let seconds = totalSeconds % 60;
+                let seconds = Math.floor(totalSeconds % 60);
                 let uptime = `${hours} hours, ${minutes} minutes and ${seconds} seconds`;
                 const os = require('os');
 
@@ -220,7 +220,7 @@ class AdminModule extends GModule {
                     .setAuthor("FightRPG")
                     .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + allCounts.length + " ]", true)
                     .addField("Version: ", "[ 1.5.10 ]", true).addField("Shard Uptime: ", "[ " + uptime + " ]", true)
-                    .addField("Memory Used: ", "[ " + `${totalMemoryMB} MB` + " ]", true).addField("Ping: ", "[ " + message.client.ping + " ms ]", true)
+                    .addField("Memory Used: ", "[ " + `${totalMemoryMB} MB` + " ]", true).addField("Ping: ", "[ " + Math.round(message.client.ping) + " ms ]", true)
                     .addField("Processor: ", "[ " + os.cpus()[0].model + " ]", true)
                 break;
         }
