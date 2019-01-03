@@ -65,9 +65,8 @@ Emojis.emojisProd = {
         id: "403151177153249281",
         string: "<:win:403151177153249281>"
     }
-
-
 };
+
 Emojis.emojisDev = {
     "vmark": {
         id: "403148210295537664",
@@ -101,6 +100,7 @@ Emojis.general = {
     "black_heart": "🖤",
     "right_arrow": "▶",
     "left_arrow": "◀",
+    "critical": "💢"
 }
 
 module.exports = Emojis;

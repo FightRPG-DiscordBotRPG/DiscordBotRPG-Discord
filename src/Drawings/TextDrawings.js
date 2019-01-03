@@ -105,6 +105,9 @@ class TextDrawings {
         let statsTitle = Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, data.resetValue]);
         let titleXPFight = Translator.getString(data.lang, "character", "level") + " : " + data.level + " | " + xpOn + " ";
         let titleXPCraft = Translator.getString(data.lang, "character", "craft_level") + " : " + data.craft.level + " | " + xpOnCraft + " ";
+        let criticalChance = ((data.stats.dexterity + data.statsEquipment.dexterity) / (data.level * 8));
+        criticalChance = criticalChance > 0.75 ? 0.75 : criticalChance;
+        criticalChance = Math.round(criticalChance * 10000) / 100;
 
 
         let embed = new Discord.RichEmbed()
@@ -116,6 +119,8 @@ class TextDrawings {
             .addField(Emojis.getString("red_heart") + " " + Translator.getString(data.lang, "character", "health_points"), Translator.getFormater(data.lang).format((data.stats.constitution + data.statsEquipment.constitution + 1) * 10), true)
             .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "character", "money"), Translator.getFormater(data.lang).format(data.money) + " G", true)
             .addField(Emojis.getString("honor") + " " + Translator.getString(data.lang, "character", "honor"), Translator.getFormater(data.lang).format(data.honor), true)
+            .addField(Emojis.getString("shield") + " " + Translator.getString(data.lang, "character", "damage_reduction"), Translator.getFormater(data.lang).format(Math.round((data.stats.armor + data.statsEquipment.armor) / ((8 * (Math.pow(data.level, 2))) / 7 + 5) * .5 * 10000) / 100) + "%", true)
+            .addField(Emojis.getString("critical") + " " + Translator.getString(data.lang, "character", "critical_chance"), criticalChance + "%", true)
         return embed;
     }
 
