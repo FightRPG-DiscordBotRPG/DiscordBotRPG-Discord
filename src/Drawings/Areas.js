@@ -194,7 +194,7 @@ class Areas {
         let empty = true;
         for (let bonus of bonuses) {
             if (bonus.percentage > 0) {
-                str += bonus.name + " : " + bonus.percentage + "\n";
+                str += bonus.name + " : " + bonus.percentage + "%" + "\n";
                 empty = false;
             }
         }

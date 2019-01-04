@@ -136,7 +136,17 @@ class FightManager {
                     // TODO For more people participating
                     //this.swapArrayIndexes("<:treasure:403457812535181313> Vous avez gagné un objet (" + rarityName + ") ! Bravo !\n\n", userid);
                     if (summary.drops.length > 0) {
-                        fight = this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "group_drop_item") + "\n\n", fight);
+                        let highestDrop = 0;
+                        let highestDropName = "";
+
+                        for (let drop in summary.drops[0].drop) {
+                            let rname = Translator.getString(lang, "rarities", Globals.getRarityName(drop));
+                            if (highestDrop < drop) {
+                                highestDrop = drop;
+                                highestDropName = rname;
+                            }
+                        }
+                        fight = this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "group_drop_item", [highestDropName]) + "\n\n", fight);
                     }
                     if (summary.levelUpped.length > 0) {
                         fight = this.swapArrayIndexes("<:levelup:403456740139728906>  " + Translator.getString(lang, "fight_pve", "group_level_up") + "\n", fight);

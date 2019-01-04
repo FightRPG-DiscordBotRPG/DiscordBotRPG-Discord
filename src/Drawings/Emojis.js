@@ -100,7 +100,10 @@ Emojis.general = {
     "black_heart": "🖤",
     "right_arrow": "▶",
     "left_arrow": "◀",
-    "critical": "💢"
+    "critical": "💢",
+    "hourglass_not_done": "⏳",
+    "scroll": "📜",
+    "q_mark": "❓"
 }
 
 module.exports = Emojis;

@@ -219,9 +219,9 @@ class AdminModule extends GModule {
                 msg = new Discord.RichEmbed()
                     .setAuthor("FightRPG")
                     .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + allCounts.length + " ]", true)
-                    .addField("Version: ", "[ 1.5.11 ]", true).addField("Shard Uptime: ", "[ " + uptime + " ]", true)
+                    .addField("Version: ", "[ 1.5.12 ]", true).addField("Shard Uptime: ", "[ " + uptime + " ]", true)
                     .addField("Memory Used: ", "[ " + `${totalMemoryMB} MB` + " ]", true).addField("Ping: ", "[ " + Math.round(message.client.ping) + " ms ]", true)
-                    .addField("Processor: ", "[ " + os.cpus()[0].model + " ]", true)
+                    .addField("Processor: ", "[ " + os.cpus()[0].model + " [x" + os.cpus().length + "] ]", true)
                 break;
         }
 

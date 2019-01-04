@@ -21,6 +21,7 @@ class GroupModule extends GModule {
         let axios = Globals.connectedUsers[message.author.id].getAxios();
         let data;
         let firstMention;
+        let usernameToDoSomething = mentions.first() != null ? mentions.first().username + mentions.first().tag : args[0];
 
 
         switch (command) {
@@ -46,7 +47,7 @@ class GroupModule extends GModule {
 
             case "grpkick":
                 data = await axios.post("/game/group/kick", {
-                    username: args[0]
+                    username: usernameToDoSomething
                 });
                 data = data.data;
                 if (data.error == null) {
@@ -57,7 +58,7 @@ class GroupModule extends GModule {
                 break;
             case "grpswap":
                 data = await axios.post("/game/group/swap", {
-                    username: args[0]
+                    username: usernameToDoSomething
                 });
                 data = data.data;
                 if (data.error == null) {

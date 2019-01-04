@@ -197,10 +197,10 @@ class TravelModule extends GModule {
 
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(Translator.getString(data.lang, "travel", "travel_planning", [data.from_name, data.to_name]))
-            .addField(Translator.getString(data.lang, "travel", "wait_time_title"), waitTimeMessage, true)
-            .addField(Translator.getString(data.lang, "travel", "gold_price_title"), Translator.getString(data.lang, "travel", "gold_price_body", [data.costs.goldPrice]), true)
-            .addField(Translator.getString(data.lang, "travel", "sure_to_travel_title"), Translator.getString(data.lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]))
+            .setAuthor(Emojis.getString("scroll") + " " + Translator.getString(data.lang, "travel", "travel_planning", [data.from_name, data.to_name]))
+            .addField(Emojis.getString("hourglass_not_done") + " " + Translator.getString(data.lang, "travel", "wait_time_title"), waitTimeMessage, true)
+            .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "travel", "gold_price_title"), Translator.getString(data.lang, "travel", "gold_price_body", [data.costs.goldPrice]), true)
+            .addField(Emojis.getString("q_mark") + " " + Translator.getString(data.lang, "travel", "sure_to_travel_title"), Translator.getString(data.lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]))
     }
 
 }

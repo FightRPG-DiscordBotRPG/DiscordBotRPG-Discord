@@ -41,13 +41,22 @@ class ModuleHandler extends GModule {
         let msg = "";
         let authorIdentifier = message.author.id;
         let prefix = this.getPrefix(message.channel.guild ? message.channel.guild.id : null);
-        if (!message.content.startsWith(prefix)) return;
+        // If do'nt start by prefix 
+        if (!message.content.startsWith(prefix)) {
+            // If the bot is mention display prefix
+            if (!message.author.bot && message.isMentioned(message.client.user)) {
+                this.sendMessage(message,
+                    new Discord.RichEmbed()
+                    .setColor([0, 128, 128])
+                    .addField(Translator.getString("en", "other", "prefix_title"), prefix)
+                )
+            }
+            return;
+        }
 
         let args = [].concat.apply([], message.content.slice(prefix.length).trim().split('"').map(function (v, i) {
             return i % 2 ? v : v.split(' ')
         })).filter(Boolean);
-
-
 
 
         let command = args.shift();
