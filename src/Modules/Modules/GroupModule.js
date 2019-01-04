@@ -21,8 +21,7 @@ class GroupModule extends GModule {
         let axios = Globals.connectedUsers[message.author.id].getAxios();
         let data;
         let firstMention;
-        let usernameToDoSomething = mentions.first() != null ? mentions.first().username + mentions.first().tag : args[0];
-
+        let usernameToDoSomething = mentions.first() != null ? mentions.first().tag : args[0];
 
         switch (command) {
             case "grpmute":
