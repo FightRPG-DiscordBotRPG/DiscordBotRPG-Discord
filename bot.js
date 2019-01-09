@@ -4,6 +4,9 @@ const conf = require("./conf/conf");
 const ModuleHandler = require("./src/Modules/ModuleHandler");
 const DBL = require("dblapi.js");
 const DiscordServers = require("./src/Database/DiscordServers");
+const Globals = require("./src/Globals");
+const conn = require("./conf/mysql");
+const axios = require("axios").default;
 
 var bot = new Discord.Client();
 
@@ -90,4 +93,29 @@ bot.on('guildDelete', async () => {
             name: "On " + await getTotalNumberOfGuilds() + " servers!",
         },
     });
+});
+
+bot.on("userUpdate", async (oldUser, newUser) => {
+    console.log(oldUser.tag + " vs " + newUser.tag);
+    if(oldUser.tag != newUser.tag) {
+        let axios;
+        if(Globals.connectedUsers[newUser.id]) {
+            axios = Globals.connectedUsers[message.author.id].getAxios();
+        } else {
+            let res = await conn.query("SELECT token FROM users WHERE idUser = ?;", [newUser.id]);
+            if (res[0]) {
+                axios = axios.create({
+                    headers: {
+                        'Authorization': "Bearer " + res[0].token
+                    }
+                })
+            }
+        }
+
+        if(axios != null) {
+            axios.post("/game/character/update", {
+                username: newUser.tag
+            });
+        }
+    }
 });

@@ -14,6 +14,9 @@ class User {
         let res = await conn.query("SELECT token FROM users WHERE idUser = ?;", [this.id]);
         if (res[0]) {
             this.token = res[0].token;
+            axios.post("/game/character/update", {
+                username: this.username
+            });
             this.initAxios();
         }
     }
