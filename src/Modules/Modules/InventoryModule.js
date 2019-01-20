@@ -279,9 +279,10 @@ class InventoryModule extends GModule {
                                 inventoryMessage.clearReactions()
                             } else {
                                 for (let i in currentMessageReactions) {
-                                    currentMessageReactions[i] = currentMessageReactions[i].remove();
+                                    if (typeof currentMessageReactions[i].remove === "function") {
+                                        currentMessageReactions[i] = currentMessageReactions[i].remove();
+                                    }
                                 }
-
                             }
                         }
                     });
