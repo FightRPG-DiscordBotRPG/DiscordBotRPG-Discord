@@ -47,8 +47,8 @@ class ModuleHandler extends GModule {
             if (!message.author.bot && message.isMentioned(message.client.user)) {
                 this.sendMessage(message,
                     new Discord.RichEmbed()
-                    .setColor([0, 128, 128])
-                    .addField(Translator.getString("en", "other", "prefix_title"), prefix)
+                        .setColor([0, 128, 128])
+                        .addField(Translator.getString("en", "other", "prefix_title"), prefix)
                 )
             }
             return;
@@ -148,6 +148,39 @@ class ModuleHandler extends GModule {
                     /* if (isAdmin) {
                          msg = this.getDisabledModules();
                      }*/
+                    break;
+                case "bot_info":
+                    let allCounts = await message.client.shard.broadcastEval("this.guilds.size");
+                    let total = 0;
+                    for (count in allCounts) {
+                        total += allCounts[count];
+                    }
+
+                    let totalSeconds = (message.client.uptime / 1000);
+                    let hours = Math.floor(totalSeconds / 3600);
+                    totalSeconds %= 3600;
+                    let minutes = Math.floor(totalSeconds / 60);
+                    let seconds = Math.floor(totalSeconds % 60);
+                    let uptime = `${hours} hours, ${minutes} minutes and ${seconds} seconds`;
+                    const os = require('os');
+
+                    let totalMemory = await message.client.shard.broadcastEval("process.memoryUsage().heapUsed");
+                    let totalMemoryMB = 0;
+                    for (let c of totalMemory) {
+                        totalMemoryMB += Math.round(c / 1024 / 1024 * 100) / 100;
+                    }
+
+
+                    data = await axios.get("/helpers/versions");
+                    data = data.data;
+
+
+                    msg = new Discord.RichEmbed()
+                        .setAuthor("FightRPG")
+                        .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + allCounts.length + " ]", true)
+                        .addField("Server Version: ", "[ " + data.server + " ]", true).addField("Bot Version: ", "[ " + data.discord + " ]", true).addField("Shard Uptime: ", "[ " + uptime + " ]", true)
+                        .addField("Memory Used: ", "[ " + `${totalMemoryMB} MB` + " ]", true).addField("Ping: ", "[ " + Math.round(message.client.ping) + " ms ]", true)
+                        .addField("Processor: ", "[ " + os.cpus()[0].model + " [x" + os.cpus().length + "] ]", true)
                     break;
             }
 

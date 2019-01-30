@@ -6,7 +6,7 @@ const Guild = require("../../Drawings/Guild");
 class GuildModule extends GModule {
     constructor() {
         super();
-        this.commands = ["guild", "gcreate", "gdisband", "gapply", "gaccept", "gapplies", "gapplyremove", "gappliesremove", "guilds", "gremove", "gmod", "gannounce", "gaddmoney", "gremovemoney", "glevelup", "genroll", "gunenroll", "gleave", "gquit", "gkick", "gleaderswitch"];
+        this.commands = ["guild", "gcreate", "gdisband", "gapply", "gaccept", "gapplies", "gapplyremove", "gappliesremove", "guilds", "gremove", "gmod", "gannounce", "gaddmoney", "gremovemoney", "glevelup", "genroll", "gunenroll", "gleave", "gquit", "gkick", "gleaderswitch", "grename"];
         this.startLoading("Guild");
         this.init();
         this.endLoading("Guild");
@@ -227,6 +227,18 @@ class GuildModule extends GModule {
 
             case "gunenroll":
                 data = await axios.post("/game/guild/unenroll");
+                data = data.data;
+                if (data.error == null) {
+                    msg = data.success;
+                } else {
+                    msg = data.error;
+                }
+                break;
+
+            case "grename":
+                data = await axios.post("/game/guild/rename", {
+                    name: args[0],
+                });
                 data = data.data;
                 if (data.error == null) {
                     msg = data.success;
