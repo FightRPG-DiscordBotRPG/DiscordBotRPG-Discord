@@ -178,7 +178,12 @@ class AdminModule extends GModule {
                 let actualMessages = await message.channel.fetchMessages({
                     limit: 20
                 });
-                await message.channel.bulkDelete(actualMessages);
+
+                let deleting = [];
+                for (let actumsg of actualMessages) {
+                    deleting.push(actumsg[1].delete());
+                }
+                await Promise.all(deleting);
                 data = await axios.get("/game/other/help/1");
                 data = data.data;
                 let maxPage = data.maxPage;
