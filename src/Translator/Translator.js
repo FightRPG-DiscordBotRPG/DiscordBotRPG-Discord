@@ -1,5 +1,7 @@
 const fs = require("fs");
 const Intl = require("intl");
+const axios = require("axios").default;
+const TranslatorConf = require("../../conf/translator");
 
 class Translator {
 
@@ -135,11 +137,17 @@ class Translator {
     }
 }
 
-Translator.translations = {};
-Translator.nbOfTranslations = 0;
-Translator.formaters = {};
-Translator.loadFromJson();
-Translator.loadFormaters();
+
+
+async function loadTranslator() {
+    Translator.translations = {};
+    Translator.nbOfTranslations = 0;
+    Translator.formaters = {};
+    await Translator.loadFromJson();
+    Translator.loadFormaters();
+}
+
+loadTranslator();
 
 /*
 var sizeof = require('object-sizeof');
