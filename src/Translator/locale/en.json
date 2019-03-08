@@ -342,7 +342,8 @@
     "achievement_title": "Achievements List (%d / %d) - %d Points",
     "achievement_earned_word": "Earned",
     "achievement_name": "%s (%d Points)",
-    "no_desc": "No desciption for this achievement"
+    "no_desc": "No desciption for this achievement",
+    "maximum_stun_chance": "Maximum Stun Chance"
   },
   "economic": {
     "sell_for_x": "You sold your item for %dG",
