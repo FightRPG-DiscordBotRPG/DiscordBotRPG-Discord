@@ -103,7 +103,10 @@ Emojis.general = {
     "critical": "💢",
     "hourglass_not_done": "⏳",
     "scroll": "📜",
-    "q_mark": "❓"
+    "q_mark": "❓",
+    "g_vmark": "✅",
+    "g_xmark": "❌",
+    "stun": "🌀",
 }
 
 module.exports = Emojis;

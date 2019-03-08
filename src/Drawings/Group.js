@@ -25,7 +25,7 @@ class Group {
 
         let embed = new Discord.RichEmbed()
             .setColor([0, 127, 255])
-            .setAuthor(Translator.getString(lang, "group", "group") + " | " + Translator.getString(lang, "group", "avg_level", [data.avgPower]) + " | " + Translator.getString(lang, "group", "avg_power", [data.avgPower]), "http://www.cdhh.fr/wp-content/uploads/2012/04/icon_groupe2.jpg")
+            .setAuthor(Translator.getString(lang, "group", "group") + " | " + Translator.getString(lang, "group", "avg_level", [data.avgLevel]) + " | " + Translator.getString(lang, "group", "avg_power", [data.avgPower]), "http://www.cdhh.fr/wp-content/uploads/2012/04/icon_groupe2.jpg")
             .addField(Translator.getString(lang, "group", "members_of_the_group") + " (" + data.numberOfPlayers + " / 5)", membersOfGroup)
             .addField(Translator.getString(lang, "group", "invited_users") + " (" + data.numberOfInvitedPlayers + " / 5)", invitedPlayers);
 

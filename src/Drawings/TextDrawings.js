@@ -109,6 +109,10 @@ class TextDrawings {
         criticalChance = criticalChance > 0.75 ? 0.75 : criticalChance;
         criticalChance = Math.round(criticalChance * 10000) / 100;
 
+        let maximumStunChance = ((data.stats.charisma + data.statsEquipment.charisma) / (data.level) * 8);
+        maximumStunChance = maximumStunChance > 0.5 ? 0.5 : maximumStunChance;
+        maximumStunChance = Math.round(maximumStunChance * 10000) / 100;
+
 
         let embed = new Discord.RichEmbed()
             .setColor([0, 255, 0])
@@ -121,6 +125,7 @@ class TextDrawings {
             .addField(Emojis.getString("honor") + " " + Translator.getString(data.lang, "character", "honor"), Translator.getFormater(data.lang).format(data.honor), true)
             .addField(Emojis.getString("shield") + " " + Translator.getString(data.lang, "character", "damage_reduction"), Translator.getFormater(data.lang).format(Math.round((data.stats.armor + data.statsEquipment.armor) / ((8 * (Math.pow(data.level, 2))) / 7 + 5) * .5 * 10000) / 100) + "%", true)
             .addField(Emojis.getString("critical") + " " + Translator.getString(data.lang, "character", "critical_chance"), Translator.getFormater(data.lang).format(criticalChance) + "%", true)
+            .addField(Emojis.getString("stun") + " " + Translator.getString(data.lang, "character", "maximum_stun_chance"), Translator.getFormater(data.lang).format(maximumStunChance) + "%", true)
         return embed;
     }
 
