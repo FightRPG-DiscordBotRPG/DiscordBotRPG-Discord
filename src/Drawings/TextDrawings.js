@@ -109,7 +109,7 @@ class TextDrawings {
         criticalChance = criticalChance > 0.75 ? 0.75 : criticalChance;
         criticalChance = Math.round(criticalChance * 10000) / 100;
 
-        let maximumStunChance = ((data.stats.charisma + data.statsEquipment.charisma) / (data.level) * 8);
+        let maximumStunChance = ((data.stats.charisma + data.statsEquipment.charisma) / (data.level * 8));
         maximumStunChance = maximumStunChance > 0.5 ? 0.5 : maximumStunChance;
         maximumStunChance = Math.round(maximumStunChance * 10000) / 100;
 

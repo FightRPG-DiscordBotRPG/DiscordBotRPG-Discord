@@ -151,8 +151,11 @@ class AdminModule extends GModule {
                 data = await axios.post("/game/admin/translations/reload");
                 data = data.data;
                 if (data.error == null) {
+                    Translator.translations = {};
                     Translator.nbOfTranslations = 0;
-                    Translator.loadSync();
+                    Translator.formaters = {};
+                    await Translator.loadFromJson();
+                    Translator.loadFormaters();
                     msg = "Local Translations reloaded\n";
                     msg += data.success;
                 } else {
