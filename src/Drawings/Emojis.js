@@ -64,6 +64,18 @@ Emojis.emojisProd = {
     "win": {
         id: "403151177153249281",
         string: "<:win:403151177153249281>"
+    },
+    "idFRPG": {
+        id: "523462148412932105",
+        string: "<:idFRPG:523462148412932105>"
+    },
+    "levelup": {
+        id: "403456740139728906",
+        string: "<:levelup:403456740139728906>"
+    },
+    "exp": {
+        id: "554308999760052242",
+        string: "<:exp:554308999760052242>"
     }
 };
 
@@ -107,6 +119,7 @@ Emojis.general = {
     "g_vmark": "✅",
     "g_xmark": "❌",
     "stun": "🌀",
+    "hammer": "🔨"
 }
 
 module.exports = Emojis;

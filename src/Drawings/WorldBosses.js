@@ -41,9 +41,10 @@ class WorldBosses {
 
     attackToDiscord(data_fight, data_ranks, data_boss) {
         let lang = data_fight.lang;
+        let damageString = data_fight.isCriticalHit ? Translator.getString(lang, "world_bosses", "boss_fight_damage_inflicted_critical", [data_fight.damage]) : Translator.getString(lang, "world_bosses", "boss_fight_damage_inflicted", [data_fight.damage]);
         return new Discord.RichEmbed()
             .setAuthor(data_ranks.worldBoss.bossName)
-            .addField(Emojis.getString("sword") + Translator.getString(lang, "fight_general", "combat_log"), Translator.getString(lang, "world_bosses", "boss_fight_damage_inflicted", [data_fight.damage]))
+            .addField(Emojis.getString("sword") + Translator.getString(lang, "fight_general", "combat_log"), damageString)
             .addField(Emojis.getString("win") + Translator.getString(lang, "leaderboards", "wb_damage"), Translator.getString(lang, "world_bosses", "boss_fight_recap_damage_dealt", [data_ranks.worldBoss.damage, data_ranks.worldBoss.damageRank]), true)
             .addField(Emojis.getString("win") + Translator.getString(lang, "leaderboards", "wb_attacks"), Translator.getString(lang, "world_bosses", "boss_fight_recap_attack_count", [data_ranks.worldBoss.attackCount, data_ranks.worldBoss.attackCountRank]), true)
             .addField(Emojis.getString("monster") + Translator.getString(lang, "help_panel", "world_boss_title"), this.listToDiscord(data_boss));

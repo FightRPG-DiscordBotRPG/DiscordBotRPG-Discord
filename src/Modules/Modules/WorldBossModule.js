@@ -1,7 +1,8 @@
 const GModule = require("../GModule");
 const Globals = require("../../Globals");
 const WorldBosses = require("../../Drawings/WorldBosses");
-const Leaderboard = require("../../Drawings/Leaderboard");
+const LeaderboardWBAttacks = require("../../Drawings/Leaderboard/LeaderboardWBAttacks");
+const LeaderboardWBDamage = require("../../Drawings/Leaderboard/LeaderboardWBDamage");
 const Translator = require("../../Translator/Translator");
 
 
@@ -73,14 +74,25 @@ class WorldBossModule extends GModule {
                         break;
                     case "damage":
                     default:
-                        args[0] = "damage";
                         data = await axios.get("/game/worldbosses/leaderboard/damage");
                         break;
                 }
 
                 data = data.data;
                 if (data.error == null) {
-                    msg = Leaderboard.ldtostr(data, "wb_" + args[0]);
+                    let leaderboardWB = null;
+
+                    switch (args[0]) {
+                        case "attacks":
+                            leaderboardWB = new LeaderboardWBAttacks(data);
+                            break;
+                        case "damage":
+                        default:
+                            leaderboardWB = new LeaderboardWBDamage(data);
+                            break;
+                    }
+
+                    msg = leaderboardWB.draw();
                 } else {
                     msg = data.error;
                 }

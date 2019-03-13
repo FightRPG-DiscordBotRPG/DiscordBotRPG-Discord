@@ -6,6 +6,10 @@ const ProgressBar = require("../../Drawings/ProgressBar");
 const TextDrawing = require("../../Drawings/TextDrawings");
 const Leaderboard = require("../../Drawings/Leaderboard");
 const Achievements = require("../../Drawings/Achievements");
+const LeaderboardPvP = require("../../Drawings/Leaderboard/LeaderboardPvP");
+const LeaderboardLevel = require("../../Drawings/Leaderboard/LeaderboardLevel");
+const LeaderboardGold = require("../../Drawings/Leaderboard/LeaderboardGold");
+const LeaderboardCraftLevel = require("../../Drawings/Leaderboard/LeaderboardCraftLevel");
 
 class CharacterModule extends GModule {
     constructor() {
@@ -38,9 +42,45 @@ class CharacterModule extends GModule {
                 break;
 
             case "leaderboard":
-                data = await axios.get("/game/character/leaderboard");
+                console.log(args[0])
+                switch (args[0]) {
+                    case "level":
+                        data = await axios.get("/game/character/leaderboard/level");
+                        break;
+                    case "gold":
+                        data = await axios.get("/game/character/leaderboard/gold");
+                        break;
+                    case "craftlevel":
+                        data = await axios.get("/game/character/leaderboard/craft/level");
+                        break;
+                    default:
+                    case "arena":
+                        data = await axios.get("/game/character/leaderboard/arena");
+                        break;
+                }
                 data = data.data;
-                msg = data.error != null ? data.error : Leaderboard.ldtostr(data, "arena");
+                let leaderboard;
+                console.log(args[0]);
+                if (data.error == null) {
+                    switch (args[0]) {
+                        case "level":
+                            leaderboard = new LeaderboardLevel(data);
+                            break;
+                        case "gold":
+                            leaderboard = new LeaderboardGold(data);
+                            break;
+                        case "craftlevel":
+                            leaderboard = new LeaderboardCraftLevel(data);
+                            break;
+                        default:
+                        case "arena":
+                            leaderboard = new LeaderboardPvP(data);
+                            break;
+                    }
+                    msg = leaderboard.draw();
+                } else {
+                    msg = data.error;
+                }
                 break;
 
             case "info":
