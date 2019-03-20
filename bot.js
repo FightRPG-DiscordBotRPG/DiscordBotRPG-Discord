@@ -6,7 +6,7 @@ const DBL = require("dblapi.js");
 const DiscordServers = require("./src/Database/DiscordServers");
 const Globals = require("./src/Globals");
 const conn = require("./conf/mysql");
-const axios = require("axios").default;
+const Axios = require("axios").default;
 
 var bot = new Discord.Client();
 
@@ -63,7 +63,13 @@ bot.on('message', async (message) => {
     try {
         await moduleHandler.run(message);
     } catch (err) {
-        let msgError = "Oops something goes wrong, report the issue here (https://github.com/FightRPG-DiscordBotRPG/FightRPG-Discord-BugTracker/issues)\n";
+        let msgError = "";
+        if (err.constructor == Discord.DiscordAPIError) {
+            msgError = "It seems to have an api error, you should check if the bot have all permissions it needs\n";
+        } else {
+            msgError = "Oops something goes wrong, report the issue here (https://github.com/FightRPG-DiscordBotRPG/FightRPG-Discord-BugTracker/issues)\n";
+        }
+
 
         let errorsLines = err.stack.split("\n");
         let nameAndLine = errorsLines[1].split(" ");
@@ -73,7 +79,7 @@ bot.on('message', async (message) => {
         msgError += "```js\n" + errorsLines[0] + "\nat " + nameAndLine + "\n```";
 
         console.log(err);
-        message.channel.send(msgError).catch((e) => null);
+        message.channel.send(msgError).catch((e) => message.author.send(msgError).catch((e) => null));
     }
 
 });
@@ -100,11 +106,11 @@ bot.on("userUpdate", async (oldUser, newUser) => {
     if (oldUser.tag != newUser.tag) {
         let axios;
         if (Globals.connectedUsers[newUser.id]) {
-            axios = Globals.connectedUsers[message.author.id].getAxios();
+            axios = Globals.connectedUsers[newUser.id].getAxios();
         } else {
             let res = await conn.query("SELECT token FROM users WHERE idUser = ?;", [newUser.id]);
             if (res[0]) {
-                axios = axios.create({
+                axios = Axios.create({
                     headers: {
                         'Authorization': "Bearer " + res[0].token
                     }

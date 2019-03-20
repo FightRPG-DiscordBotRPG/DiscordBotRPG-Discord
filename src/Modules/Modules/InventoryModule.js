@@ -187,13 +187,17 @@ class InventoryModule extends GModule {
                 });
                 data = data.data;
                 if (data.error == null) {
-                    let inventoryMessage = await message.channel.send(Inventory.ciDisplay(data)).catch(e => null);
+                    let inventoryMessage = await message.channel.send(Inventory.ciDisplay(data));
                     let isDM = message.channel.type == "dm";
                     var invCurrentPage = data.page;
                     let currentMessageReactions = [];
 
                     let nextEmoji = Emojis.getString("right_arrow");
                     let backEmoji = Emojis.getString("left_arrow");
+
+                    if (inventoryMessage == null) {
+                        break;
+                    }
 
                     if (!inventoryMessage.deleted) {
                         if (data.page > 1) {
