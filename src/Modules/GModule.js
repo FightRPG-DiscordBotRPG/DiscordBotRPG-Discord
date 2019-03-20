@@ -11,7 +11,7 @@ class GModule {
         this.commands = [];
     }
 
-    async run() {}
+    async run() { }
 
     init() {
 
@@ -51,7 +51,7 @@ class GModule {
                 stat = "dexterity";
                 break;
 
-                // Secondaires
+            // Secondaires
 
             case "cha":
                 stat = "charisma";

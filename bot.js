@@ -97,9 +97,9 @@ bot.on('guildDelete', async () => {
 
 bot.on("userUpdate", async (oldUser, newUser) => {
     console.log(oldUser.tag + " vs " + newUser.tag);
-    if(oldUser.tag != newUser.tag) {
+    if (oldUser.tag != newUser.tag) {
         let axios;
-        if(Globals.connectedUsers[newUser.id]) {
+        if (Globals.connectedUsers[newUser.id]) {
             axios = Globals.connectedUsers[message.author.id].getAxios();
         } else {
             let res = await conn.query("SELECT token FROM users WHERE idUser = ?;", [newUser.id]);
@@ -112,7 +112,7 @@ bot.on("userUpdate", async (oldUser, newUser) => {
             }
         }
 
-        if(axios != null) {
+        if (axios != null) {
             axios.post("/game/character/update", {
                 username: newUser.tag
             });
