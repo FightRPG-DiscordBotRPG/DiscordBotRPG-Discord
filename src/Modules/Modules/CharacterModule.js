@@ -42,7 +42,6 @@ class CharacterModule extends GModule {
                 break;
 
             case "leaderboard":
-                console.log(args[0])
                 switch (args[0]) {
                     case "level":
                         data = await axios.get("/game/character/leaderboard/level");
@@ -60,7 +59,6 @@ class CharacterModule extends GModule {
                 }
                 data = data.data;
                 let leaderboard;
-                console.log(args[0]);
                 if (data.error == null) {
                     switch (args[0]) {
                         case "level":
