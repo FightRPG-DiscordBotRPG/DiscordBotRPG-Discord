@@ -4,7 +4,6 @@ const Translator = require("../../Translator/Translator");
 const Emojis = require("../../Drawings/Emojis");
 const ProgressBar = require("../../Drawings/ProgressBar");
 const TextDrawing = require("../../Drawings/TextDrawings");
-const Leaderboard = require("../../Drawings/Leaderboard");
 const Achievements = require("../../Drawings/Achievements");
 const LeaderboardPvP = require("../../Drawings/Leaderboard/LeaderboardPvP");
 const LeaderboardLevel = require("../../Drawings/Leaderboard/LeaderboardLevel");
