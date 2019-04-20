@@ -102,7 +102,6 @@ bot.on('guildDelete', async () => {
 });
 
 bot.on("userUpdate", async (oldUser, newUser) => {
-    console.log(oldUser.tag + " vs " + newUser.tag);
     if (oldUser.tag != newUser.tag) {
         let axios;
         if (Globals.connectedUsers[newUser.id]) {
