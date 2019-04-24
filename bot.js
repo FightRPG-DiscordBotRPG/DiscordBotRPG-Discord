@@ -11,6 +11,8 @@ const Axios = require("axios").default;
 var bot = new Discord.Client();
 
 process.on('unhandledRejection', err => {
+    let errorDate = new Date();
+    console.log(errorDate.toUTCString());
     console.log(err);
 });
 
@@ -78,6 +80,8 @@ bot.on('message', async (message) => {
 
         msgError += "```js\n" + errorsLines[0] + "\nat " + nameAndLine + "\n```";
 
+        let errorDate = new Date();
+        console.log(errorDate.toUTCString());
         console.log(err);
         message.channel.send(msgError).catch((e) => message.author.send(msgError).catch((e) => null));
     }
