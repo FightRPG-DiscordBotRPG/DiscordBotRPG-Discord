@@ -176,7 +176,17 @@ class FightManager {
                 color = [255, 0, 0];
             }
 
-            message.edit(this.embedPvE(fight.text[0] + fight.text[1] + fight.text[2], fight, color, lang)).catch((e) => {
+            message.edit(this.embedPvE(fight.text[0] + fight.text[1] + fight.text[2], fight, color, lang)).then(() => {
+                // Tag users when fight is done
+                // to notify them 
+                let usersToTag = "";
+                for (let userID of summary.usersIds) {
+                    usersToTag += "<@" + userID + "> ";
+                }
+                if (usersToTag != "") {
+                    message.channel.send(usersToTag);
+                }
+            }).catch((e) => {
                 console.log(e)
             });
 
@@ -186,7 +196,7 @@ class FightManager {
 
     }
 
-    deleteFight(userid) {}
+    deleteFight(userid) { }
 
     discordFightPvP(message, userid, fight, lang) {
         let ind = fight.summaryIndex;

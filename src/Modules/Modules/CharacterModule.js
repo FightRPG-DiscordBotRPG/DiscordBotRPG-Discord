@@ -9,6 +9,7 @@ const LeaderboardPvP = require("../../Drawings/Leaderboard/LeaderboardPvP");
 const LeaderboardLevel = require("../../Drawings/Leaderboard/LeaderboardLevel");
 const LeaderboardGold = require("../../Drawings/Leaderboard/LeaderboardGold");
 const LeaderboardCraftLevel = require("../../Drawings/Leaderboard/LeaderboardCraftLevel");
+const Discord = require("discord.js");
 
 class CharacterModule extends GModule {
     constructor() {
@@ -25,19 +26,75 @@ class CharacterModule extends GModule {
         let msg = "";
         let axios = Globals.connectedUsers[message.author.id].getAxios();
         let data;
-
-        //PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_character", 1);
+        let tempMsg;
 
         switch (command) {
 
             case "reset":
-                data = await axios.get("/game/character/reset");
-                data = data.data;
-                if (data.error != null) {
-                    msg = data.error;
+                if (args[0] === "confirm") {
+                    data = await axios.get("/game/character/reset");
+                    data = data.data;
+                    if (data.error != null) {
+                        msg = data.error;
+                    } else {
+                        msg = data.success;
+                    }
+                    break;
                 } else {
-                    msg = data.success;
+                    data = await axios.get("/game/character/info");
+                    data = data.data;
+                    if (data.error != null) {
+                        msg = data.error;
+                    } else {
+                        let lang = data.lang;
+                        let embedMessage = new Discord.RichEmbed()
+                            .setColor([0, 255, 0])
+                            .setAuthor(Emojis.getString("scroll") + " " + Translator.getString(data.lang, "character", "reset_price_title"))
+                            .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "travel", "gold_price_title"), Translator.getString(data.lang, "travel", "gold_price_body", [data.resetValue]), true)
+                            .addField(Emojis.getString("q_mark") + " " + Translator.getString(data.lang, "character", "sure_to_reset_title"), Translator.getString(data.lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]));
+
+                        let checkEmoji = Emojis.getID("vmark");
+                        let xmarkEmoji = Emojis.getID("xmark");
+
+                        tempMsg = await message.channel.send(embedMessage).catch(() => null);
+
+                        Promise.all([
+                            tempMsg.react(checkEmoji),
+                            tempMsg.react(xmarkEmoji)
+                        ]).catch(() => null);
+
+                        const filter = (reaction, user) => {
+                            return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && user.id === message.author.id;
+                        };
+
+
+                        const collected = await tempMsg.awaitReactions(filter, {
+                            max: 1,
+                            time: 25000
+                        });
+                        const reaction = collected.first();
+                        if (reaction != null) {
+                            switch (reaction.emoji.id) {
+                                case checkEmoji:
+                                    data = await axios.get("/game/character/reset");
+                                    data = data.data;
+                                    if (data.error != null) {
+                                        msg = data.error;
+                                    } else {
+                                        msg = data.success;
+                                    }
+                                    break;
+
+                                case xmarkEmoji:
+                                    msg = Translator.getString(data.lang, "character", "reset_cancel");
+                                    break;
+                            }
+                        }
+                        tempMsg.delete().catch(() => null);
+                    }
                 }
+
+
                 break;
 
             case "leaderboard":

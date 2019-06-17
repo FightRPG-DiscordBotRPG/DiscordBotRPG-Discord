@@ -5,7 +5,7 @@ const util = require("util");
 var connection = MySql.createConnection({
     host: 'localhost',
     user: 'discord_bot_rpg',
-    password: 'sdobFWDViY5tgGYe',
+    password: '',
     database: 'discord_bot_rpg',
     charset: "utf8mb4_unicode_ci"
 });

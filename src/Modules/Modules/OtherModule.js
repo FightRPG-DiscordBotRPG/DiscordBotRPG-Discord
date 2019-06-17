@@ -7,7 +7,7 @@ const Emojis = require("../../Drawings/Emojis");
 class OtherModule extends GModule {
     constructor() {
         super();
-        this.commands = ["lang", "help", "settings", "rarities", "types"];
+        this.commands = ["lang", "help", "settings", "rarities", "types", "vote"];
         this.startLoading("Other");
         this.init();
         this.endLoading("Other");
@@ -63,18 +63,25 @@ class OtherModule extends GModule {
                 if (data.error == null) {
                     let one = Emojis.getString("one");
                     let two = Emojis.getString("two");
+                    let three = Emojis.getString("three");
                     let tempMsgContent = "**" + Translator.getString(data.lang, "settings_menu", "title") + "**\n\n" +
-                        one + " : " + "`" + Translator.getString(data.lang, "group", "settings_menu_mute", [(data.isGroupMuted ? Translator.getString(data.lang, "general", "enable") : Translator.getString(data.lang, "general", "disable"))]) + "`\n\n" +
-                        two + " : " + "`" + Translator.getString(data.lang, "marketplace", "settings_menu_mute", [(data.isMarketplaceMuted ? Translator.getString(data.lang, "general", "enable") : Translator.getString(data.lang, "general", "disable"))]) + "`\n\n";
+                        one + " : " + "`"
+                        + Translator.getString(data.lang, "group", "settings_menu_mute", [(data.isGroupMuted ? Translator.getString(data.lang, "general", "enable") : Translator.getString(data.lang, "general", "disable"))]) + "`\n\n" +
+                        two + " : "
+                        + "`" + Translator.getString(data.lang, "marketplace", "settings_menu_mute", [(data.isMarketplaceMuted ? Translator.getString(data.lang, "general", "enable") : Translator.getString(data.lang, "general", "disable"))])
+                        + "`\n\n" +
+                        three + " : " + "`" + Translator.getString(data.lang, "fight_general", "settings_menu_mute", [(data.isFightMuted ? Translator.getString(data.lang, "general", "enable") : Translator.getString(data.lang, "general", "disable"))])
+                        + "`\n\n";
                     let tempMsg = await message.channel.send(tempMsgContent).catch(() => null);
 
                     await Promise.all([
                         tempMsg.react(one),
-                        tempMsg.react(two)
+                        tempMsg.react(two),
+                        tempMsg.react(three),
                     ]).catch(() => null);
 
                     const filter = (reaction, user) => {
-                        return [one, two].includes(reaction.emoji.id || reaction.emoji.name) && user.id === message.author.id;
+                        return [one, two, three].includes(reaction.emoji.id || reaction.emoji.name) && user.id === message.author.id;
                     };
 
                     const collected = await tempMsg.awaitReactions(filter, {
@@ -98,6 +105,16 @@ class OtherModule extends GModule {
                             case two:
                                 data = await axios.post("/game/other/settings", {
                                     mMarket: true,
+                                });
+                                data = data.data;
+                                if (data.error == null) {
+                                    msg = data.success;
+                                } else {
+                                    msg = data.error;
+                                }
+                            case three:
+                                data = await axios.post("/game/other/settings", {
+                                    mFight: true,
                                 });
                                 data = data.data;
                                 if (data.error == null) {
@@ -137,6 +154,10 @@ class OtherModule extends GModule {
                 } else {
                     msg = data.error;
                 }
+                break;
+
+            case "vote":
+                msg = "https://discordbots.org/bot/401421644968624129/vote"
                 break;
         }
 
