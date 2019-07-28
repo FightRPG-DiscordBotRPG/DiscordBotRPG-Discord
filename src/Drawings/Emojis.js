@@ -119,7 +119,10 @@ Emojis.general = {
     "g_vmark": "✅",
     "g_xmark": "❌",
     "stun": "🌀",
-    "hammer": "🔨"
+    "hammer": "🔨",
+    "waving_hand": "👋",
+    "briefcase": "💼",
+    "baggage_claim": "🛄"
 }
 
 module.exports = Emojis;

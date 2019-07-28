@@ -32,7 +32,8 @@ class MarketplaceModule extends GModule {
                 data = await axios.post("/game/marketplace/place", {
                     idItem: args[0],
                     number: args[1],
-                    price: args[2]
+                    price: args[2],
+                    forced: args[3],
                 });
                 data = data.data;
                 if (data.error == null) {

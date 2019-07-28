@@ -123,6 +123,17 @@ class OtherModule extends GModule {
                                     msg = data.error;
                                 }
                                 break;
+                            case four:
+                                data = await axios.post("/game/other/settings", {
+                                    mTrade: true,
+                                });
+                                data = data.data;
+                                if (data.error == null) {
+                                    msg = data.success;
+                                } else {
+                                    msg = data.error;
+                                }
+                                break;
                         }
                     }
                     tempMsg.delete().catch(() => null);

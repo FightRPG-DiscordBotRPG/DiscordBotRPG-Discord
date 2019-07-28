@@ -9,6 +9,7 @@ class GModule {
         this.isLoaded = false;
         this.isActive = true;
         this.commands = [];
+        this.allModulesReference = {};
     }
 
     async run() { }

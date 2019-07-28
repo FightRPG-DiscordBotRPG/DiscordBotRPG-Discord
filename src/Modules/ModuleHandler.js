@@ -222,6 +222,7 @@ class ModuleHandler extends GModule {
                             for (let cmd of mod.commands) {
                                 this.commandsReact[cmd] = mod;
                             }
+                            this.modules[moduleName].allModulesReference = this.modules;
                             return true;
                         } else {
                             delete require.cache[require.resolve("./Modules/" + moduleName + ".js")];

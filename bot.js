@@ -122,9 +122,17 @@ bot.on("userUpdate", async (oldUser, newUser) => {
         }
 
         if (axios != null) {
-            axios.post("/game/character/update", {
+            let data = await axios.post("/game/character/update", {
                 username: newUser.tag
             });
+            if (data.data.error != null) {
+                console.log("Axios Existing.. hd5d6589d");
+                console.log(data.data);
+            }
+        } else {
+            console.log("Axios not existing.. c89d6f5c2");
+            console.log(oldUser.tag + " vs " + newUser.tag);
+            console.log(axios);
         }
     }
 });

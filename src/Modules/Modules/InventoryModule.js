@@ -39,16 +39,24 @@ class InventoryModule extends GModule {
                     let sellEmoji = Emojis.getID("money_bag");
                     let equipUnequipEmoji = isEquipped ? Emojis.getID("backpack") : Emojis.getID("shield");
                     let favoEmoji = data.item.isFavorite == false ? Emojis.getID("star") : Emojis.getID("eight_pointed_black_star");
+                    let addToTradeEmoji = Emojis.getID("baggage_claim");
+
+                    // See if he is trading
+                    let isTrading = await axios.get("/game/character/isTrading");
+                    isTrading = isTrading.data;
+                    isTrading = isTrading.error == null ? isTrading.isTrading : false;
+
                     let itemmsgsent = await message.channel.send(itemmsg).catch(() => null);
 
                     Promise.all([
                         data.item.isFavorite == true ? null : (isEquipped ? null : itemmsgsent.react(sellEmoji)),
                         itemmsgsent.react(favoEmoji),
                         data.item.equipable == true ? itemmsgsent.react(equipUnequipEmoji) : null,
+                        isTrading == true ? itemmsgsent.react(addToTradeEmoji) : null
                     ]).catch(() => null);
 
                     const filter = (reaction, user) => {
-                        return [sellEmoji, favoEmoji, equipUnequipEmoji].includes(reaction.emoji.name) && user.id === message.author.id;
+                        return [sellEmoji, favoEmoji, equipUnequipEmoji, addToTradeEmoji].includes(reaction.emoji.name) && user.id === message.author.id;
                     };
 
                     const collector = itemmsgsent.createReactionCollector(filter, {
@@ -111,6 +119,11 @@ class InventoryModule extends GModule {
                                     msgCollector = dataCollector.success;
                                 } else {
                                     msgCollector = dataCollector.error;
+                                }
+                                break;
+                            case addToTradeEmoji:
+                                if (this.allModulesReference["TradeModule"] != null) {
+                                    this.allModulesReference["TradeModule"].run(message, "tadd", [data.idInInventory, data.item.number]);
                                 }
                                 break;
                         }
