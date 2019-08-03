@@ -5,6 +5,7 @@ const conn = require("../../conf/mysql");
 const Discord = require("discord.js");
 const User = require("../Users/User");
 const Translator = require("../Translator/Translator");
+const version = require("../../conf/version");
 
 class ModuleHandler extends GModule {
     constructor() {
@@ -178,7 +179,7 @@ class ModuleHandler extends GModule {
                     msg = new Discord.RichEmbed()
                         .setAuthor("FightRPG")
                         .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + allCounts.length + " ]", true)
-                        .addField("Server Version: ", "[ " + data.server + " ]", true).addField("Bot Version: ", "[ " + data.discord + " ]", true).addField("Shard Uptime: ", "[ " + uptime + " ]", true)
+                        .addField("Server Version: ", "[ " + data.server + " ]", true).addField("Bot Version: ", "[ " + version + " ]", true).addField("Shard Uptime: ", "[ " + uptime + " ]", true)
                         .addField("Memory Used: ", "[ " + `${totalMemoryMB} MB` + " ]", true).addField("Ping: ", "[ " + Math.round(message.client.ping) + " ms ]", true)
                         .addField("Processor: ", "[ " + os.cpus()[0].model + " [x" + os.cpus().length + "] ]", true)
                     break;

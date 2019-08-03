@@ -67,7 +67,7 @@ class Guild {
     appliancesToString(data) {
         let lang = data.lang;
         let idMaxLength = 10;
-        let nameMaxLength = 35;
+        let nameMaxLength = 39;
         let levelMaxLength = 11;
 
         let id;
@@ -77,7 +77,7 @@ class Guild {
         let str = "```";
 
         if (data.appliances.length > 0) {
-            str += "|" + "    id    " + "|" + "                name                " + "|" + "   level   " + "|" + "\n";
+            str += "|" + "    id    " + "|" + "                  name                  " + "|" + "   level   " + "|" + "\n";
             for (let appliance of data.appliances) {
                 id = appliance.id.toString().length;
                 id = (idMaxLength - id) / 2;
