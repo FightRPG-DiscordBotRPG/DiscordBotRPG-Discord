@@ -163,10 +163,8 @@ class AdminModule extends GModule {
                 }
                 break;
             case "debug":
-                //msg = Globals.connectedUsers[authorIdentifier].character.getInv().getIdItemOfThisEmplacement(args[0]);
-                /*let pb = require("../../ProgressBar");
-                let progress = new pb();
-                msg = progress.draw(0, 0);*/
+                data = await axios.get("/game/admin/debug");
+                msg = "Success"
                 break;
             case "last_command":
                 data = await axios.get("/game/admin/last_command");

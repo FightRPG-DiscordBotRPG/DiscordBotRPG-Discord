@@ -21,7 +21,7 @@ class InventoryModule extends GModule {
         let firstMention;
         let data;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
-        let idRarity, idType, level;
+        let idRarity, idType, level, power;
 
         switch (command) {
             case "item":
@@ -183,6 +183,10 @@ class InventoryModule extends GModule {
                                 case "level":
                                     level = args[1];
                                     break;
+                                case "power":
+                                    power = args[1];
+                                    break;
+
                             }
                         }
                         page = args[2] != null ? args[2] : 1;
@@ -195,7 +199,8 @@ class InventoryModule extends GModule {
                     params: {
                         idRarity: idRarity,
                         idType: idType,
-                        level: level
+                        level: level,
+                        power: power
                     }
                 });
                 data = data.data;
