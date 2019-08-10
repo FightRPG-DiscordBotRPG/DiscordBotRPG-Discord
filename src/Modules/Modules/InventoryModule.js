@@ -244,7 +244,8 @@ class InventoryModule extends GModule {
                                     params: {
                                         idRarity: idRarity,
                                         idType: idType,
-                                        level: level
+                                        level: level,
+                                        power: power
                                     }
                                 });
                                 dataCollector = dataCollector.data;
@@ -260,7 +261,8 @@ class InventoryModule extends GModule {
                                     params: {
                                         idRarity: idRarity,
                                         idType: idType,
-                                        level: level
+                                        level: level,
+                                        power: power
                                     }
                                 });
                                 dataCollector = dataCollector.data;
