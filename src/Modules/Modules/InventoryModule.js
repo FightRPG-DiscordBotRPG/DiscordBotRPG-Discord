@@ -341,6 +341,9 @@ class InventoryModule extends GModule {
                                 case "level":
                                     level = args[1];
                                     break;
+                                case "power":
+                                    power = args[1]
+                                    break;
                             }
                         }
                     }
@@ -348,7 +351,8 @@ class InventoryModule extends GModule {
                 let paramsSellAll = {
                     idRarity: idRarity,
                     idType: idType,
-                    level: level
+                    level: level,
+                    power: power
                 };
                 let dataInventoryValue = await axios.post("/game/inventory/sellall/value", paramsSellAll);
                 dataInventoryValue = dataInventoryValue.data;

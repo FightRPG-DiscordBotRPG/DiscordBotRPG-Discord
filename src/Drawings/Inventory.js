@@ -61,6 +61,8 @@ class Inventory {
             str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_type", [Translator.getString(lang, "item_types", Globals.getTypeName(params.idType))]);
         } else if (params.level != null) {
             str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level", [params.level]);
+        } else if (params.power != null) {
+            str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_sup", [params.power]);
         } else {
             str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_all");
         }
