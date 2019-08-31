@@ -119,10 +119,8 @@ class Areas {
     regionToString(data) {
         let lang = data.lang;
         let region = data.region;
-        let strAreas = "";
-
+        let strAreas = "`";
         for (let area of region.areas) {
-            strAreas += "`";
             let values = [area.id, area.name, area.levels];
             switch (area.type) {
                 case "wild":
@@ -135,12 +133,12 @@ class Areas {
                     strAreas += Translator.getString(lang, "area", "dungeon_area", values);
                     break;
             }
-            strAreas += "`\n";
+            strAreas += "\n";
         }
+        strAreas += "`"
 
-        let strConnectedAreas = "";
+        let strConnectedAreas = "`";
         for (let area of region.connectedAreas) {
-            strConnectedAreas += "`"
             let values = [area.id, area.name, area.levels];
             switch (area.type) {
                 case "wild":
@@ -153,11 +151,12 @@ class Areas {
                     strConnectedAreas += Translator.getString(lang, "area", "dungeon_area", values);
                     break;
             }
-            strConnectedAreas += " | " + Translator.getString(lang, "area", "region", [area.region_name]) + "`\n"
+            strConnectedAreas += " | " + Translator.getString(lang, "area", "region", [area.region_name]) + "\n"
         }
         if (strConnectedAreas == "") {
             strConnectedAreas = Translator.getString(lang, "area", "no_connected_regions");
         }
+        strConnectedAreas += "`"
 
         return new Discord.RichEmbed()
             .setColor([0, 255, 0])
