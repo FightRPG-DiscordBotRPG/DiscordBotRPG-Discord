@@ -130,9 +130,9 @@ bot.on("userUpdate", async (oldUser, newUser) => {
                 console.log(data.data);
             }
         } else {
-            console.log("Axios not existing.. c89d6f5c2");
-            console.log(oldUser.tag + " vs " + newUser.tag);
-            console.log(axios);
+            // console.log("Axios not existing.. c89d6f5c2");
+            // console.log(oldUser.tag + " vs " + newUser.tag);
+            // console.log(axios);
         }
     }
 });

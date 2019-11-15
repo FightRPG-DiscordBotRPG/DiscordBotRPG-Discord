@@ -66,7 +66,7 @@ class TextDrawings {
                 count = 0;
             } else {
 
-                end += " ".repeat(3) + "|" + " ".repeat(3);
+                end += " ".repeat(2) + "|" + " ".repeat(2);
             }
             count++;
             str += "" + statLocaleString + beforeNumber + "[" + statStr + "]" + end;
