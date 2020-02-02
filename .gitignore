@@ -4,3 +4,5 @@ npm-debug.log
 .env
 .DS_Store
 src/Translator/locale
+.vs/
+node_modules/
