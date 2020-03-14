@@ -28,6 +28,18 @@ async function getTotalNumberOfGuilds() {
     return total;
 }
 
+async function startBot() {
+    try {
+        await bot.login(Key);
+    } catch (error) {
+        let errorDate = new Date();
+        console.log("Error when loading Shard. Restarting shard in 30 seconds...");
+        console.log(errorDate.toUTCString());
+        console.log(err);
+        setTimeout(startBot, 30000);
+    }
+}
+
 
 
 bot.on("ready", async () => {
@@ -56,7 +68,8 @@ bot.on("ready", async () => {
 let moduleHandler = new ModuleHandler();
 
 // Key Don't open
-bot.login(Key);
+startBot();
+
 
 
 
