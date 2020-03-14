@@ -56,13 +56,13 @@ class FightManager {
 
             if (summary.rounds[ind].roundType == "Character") {
                 fight = this.swapArrayIndexes("<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "onfight_user_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
-                    (summary.rounds[ind].critical === true ? " (" + Translator.getString(lang, "fight_general", "critical_hit") + " !) " : "") +
-                    (summary.rounds[ind].stun === true ? " (" + Translator.getString(lang, "fight_general", "stun_hit") + " !) " : "") +
+                    (summary.rounds[ind].critical === true ? " (" + Translator.getString(lang, "fight_general", "critical_hit") + "!) " : "") +
+                    (summary.rounds[ind].stun === true ? " (" + Translator.getString(lang, "fight_general", "stun_hit") + "!) " : "") +
                     "\n\n", fight);
             } else if (summary.rounds[ind].roundType == "Monster") {
                 fight = this.swapArrayIndexes("<:monstre:403149357387350016> " + Translator.getString(lang, "fight_pve", "onfight_monster_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
-                    (summary.rounds[ind].critical === true ? " (" + Translator.getString(lang, "fight_general", "critical_hit") + " !) " : "") +
-                    (summary.rounds[ind].stun === true ? " (" + Translator.getString(lang, "fight_general", "stun_hit") + " !) " : "") +
+                    (summary.rounds[ind].critical === true ? " (" + Translator.getString(lang, "fight_general", "critical_hit") + "!) " : "") +
+                    (summary.rounds[ind].stun === true ? " (" + Translator.getString(lang, "fight_general", "stun_hit") + "!) " : "") +
                     "\n\n", fight);
             }
 
