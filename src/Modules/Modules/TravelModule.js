@@ -66,10 +66,10 @@ class TravelModule extends GModule {
                         xmarkEmoji = Emojis.getID("xmark");
                         tempMsg = await message.channel.send(this.getTravelMessage(data)).catch(() => null);
 
-                        Promise.all([
+                        await Promise.all([
                             tempMsg.react(checkEmoji),
                             tempMsg.react(xmarkEmoji)
-                        ]).catch(() => null);
+                        ]);
 
                         const filter = (reaction, user) => {
                             return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && user.id === message.author.id;
