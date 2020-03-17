@@ -1,14 +1,9 @@
 'use strict';
 var MySql = require('mysql');
 const util = require("util");
+const conf = require("./conf");
 
-var connection = MySql.createConnection({
-    host: 'localhost',
-    user: 'discord_bot_rpg',
-    password: '',
-    database: 'discord_bot_rpg',
-    charset: "utf8mb4_unicode_ci"
-});
+var connection = MySql.createConnection(conf.database);
 
 var query = util.promisify(connection.query).bind(connection);
 let connMaker = {
@@ -21,11 +16,6 @@ let connMaker = {
             throw err;
         }
     }
-}
-
-
+};
 
 module.exports = connMaker;
-
-//sdo#FWDViY5tgG*e
-//sdobFWDViY5tgGYe

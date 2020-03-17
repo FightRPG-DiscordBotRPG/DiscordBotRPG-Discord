@@ -1,7 +1,1 @@
-const conf = {
-    env: "dev",
-    discordbotskey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQwMTQyMTY0NDk2ODYyNDEyOSIsImJvdCI6dHJ1ZSwiaWF0IjoxNTMwMjc0MDIyfQ.PIlRw8c0L_cCWkcS7JM3XJNpv6Vj9RymEvbsvIysTFI",
-    registerkey: "rTjXzBzuYq27Z3y0rSlzAM1zDfrtTdUYmgit1C49"
-}
-
-module.exports = conf;
+const conf={env:"dev",topggkey:"",discordbotkey:"",registerkey:"DEFAULT_KEY",database:{host:"localhost",user:"discord_bot_rpg",password:"",database:"discord_bot_rpg",charset:"utf8mb4_unicode_ci",multipleStatements:true}};module.exports=conf;

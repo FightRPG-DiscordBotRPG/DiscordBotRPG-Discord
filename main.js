@@ -1,11 +1,10 @@
-const botkey = require("./conf/botkey");
 const conf = require("./conf/conf");
 
 const {
     ShardingManager
 } = require('discord.js');
 const manager = new ShardingManager('./bot.js', {
-    token: botkey,
+    token: conf.discordbotkey
 });
 
 manager.spawn();

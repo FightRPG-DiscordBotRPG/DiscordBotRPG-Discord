@@ -1,5 +1,4 @@
 const Discord = require("discord.js");
-const Key = require("./conf/botkey.js");
 const conf = require("./conf/conf");
 const ModuleHandler = require("./src/Modules/ModuleHandler");
 const DBL = require("dblapi.js");
@@ -30,10 +29,10 @@ async function getTotalNumberOfGuilds() {
 
 async function startBot() {
     try {
-        await bot.login(Key);
+        await bot.login(conf.discordbotkey);
     } catch (error) {
         let errorDate = new Date();
-        console.log("Error when loading Shard. Restarting shard in 30 seconds...");
+        console.log("Error when connecting Shard. Restarting shard in 30 seconds...");
         console.log(errorDate.toUTCString());
         console.log(err);
         setTimeout(startBot, 30000);
@@ -46,15 +45,15 @@ bot.on("ready", async () => {
     console.log("Shard Connected");
     bot.user.setPresence({
         game: {
-            name: "On " + await getTotalNumberOfGuilds() + " servers!",
-        },
+            name: "On " + await getTotalNumberOfGuilds() + " servers!"
+        }
     });
     //console.log(bot.guilds.size, bot.shard.id, bot.shard.count);
     if (conf.env === "prod") {
-        const dbl = new DBL(conf.discordbotskey, bot);
+        const dbl = new DBL(conf.topggkey, bot);
         setInterval(async () => {
             console.log("Shard: " + bot.shard.id + " => Sending stats to https://discordbots.org/ ...");
-            dbl.postStats(bot.guilds.size, bot.shard.id, bot.shard.count);
+            await dbl.postStats(bot.guilds.size, bot.shard.id, bot.shard.count);
             console.log("Data sent");
         }, 1800000);
     }
