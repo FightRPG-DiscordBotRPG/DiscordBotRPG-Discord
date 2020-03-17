@@ -8,7 +8,7 @@ class Craft {
         let embed = new Discord.RichEmbed()
             .setAuthor(craft.name)
             .setColor(craft.rarityColor)
-            .addField(craft.type + " (" + craft.subType + ")" + " | " + craft.rarity + " | " + Translator.getString(lang, "general", "lvl") + " : " + craft.minLevel + "-" + craft.maxLevel + " | ", craft.desc)
+            .addField(craft.type + " (" + craft.subType + ")" + " | " + craft.rarity + " | " + Translator.getString(lang, "general", "lvl") + ": " + craft.minLevel + "-" + craft.maxLevel + " | ", craft.desc)
             .addField(Translator.getString(lang, "craft", "needed_items"), this.craftRequiredItemsToStr(craft.requiredItems, lang));
         return embed;
     }
