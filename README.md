@@ -26,7 +26,7 @@
 
 ### Setup Database
 
-This project uses a mysql database. 
+This project uses a MariaDB database. 
 You should have already done the DIscordBotRPG-Server setup, use the same credentials for this setup.
 
 With nodejs run "init.js" and follow the instructions
