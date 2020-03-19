@@ -40,7 +40,8 @@ class Guild {
         let embed = new Discord.RichEmbed()
             .setColor([0, 255, 0])
             .setAuthor(data.name + " (ID " + data.id + ")", data.image)
-            .addField(Translator.getString(lang, "guild", "guild_announcement"), (data.message != "" ? data.message : Translator.getString(lang, "guild", "no_guild_announcement")))
+            .addField(Translator.getString(lang, "guild", "guild_announcement"), (data.message !== "" ? data.message : Translator.getString(lang, "guild", "no_guild_announcement")), true)
+            .addField(Translator.getString(lang, "guild", "guild_territory_enroll"), (data.currentTerritoryEnroll !== null ? data.currentTerritoryEnroll : Translator.getString(lang, "general", "none")), true)
             .addField(Translator.getString(lang, "guild", "members_out_of", [nbMembers, data.maxMembers]), allMembersStr)
             .addField(Translator.getString(lang, "guild", "level_out_of", [data.level, data.maxLevel]), Translator.getString(lang, "guild", "required_to_level_up", [data.nextLevelPrice]), true)
             .addField(Translator.getString(lang, "guild", "money_available"), Translator.getString(lang, "guild", "money", [data.money]), true);
