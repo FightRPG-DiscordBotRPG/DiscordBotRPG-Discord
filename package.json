@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "start": "node main.js",
   "author": "Jean-Charles TECHER",
   "license": "SEE LICENCE IN LICENSE.md",
   "dependencies": {
