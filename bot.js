@@ -34,7 +34,7 @@ async function startBot() {
         let errorDate = new Date();
         console.log("Error when connecting Shard. Restarting shard in 30 seconds...");
         console.log(errorDate.toUTCString());
-        console.log(err);
+        console.log(error);
         setTimeout(startBot, 30000);
     }
 }
