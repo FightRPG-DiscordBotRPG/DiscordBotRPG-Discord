@@ -7,3 +7,4 @@ src/Translator/locale
 .vs/
 node_modules/
 conf/conf.js
+.zip
