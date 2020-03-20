@@ -3,7 +3,7 @@ const conf = require("./conf/conf");
 const {
     ShardingManager
 } = require('discord.js');
-const manager = new ShardingManager('./bot.js', {
+const manager = new ShardingManager(__dirname + '/bot.js', {
     token: conf.discordbotkey
 });
 
