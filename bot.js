@@ -81,7 +81,7 @@ bot.on('message', async (message) => {
         if (err.constructor == Discord.DiscordAPIError) {
             msgError = "It seems to have an api error, you should check if the bot have all permissions it needs\n";
         } else {
-            msgError = "Oops something goes wrong, report the issue here (https://github.com/FightRPG-DiscordBotRPG/FightRPG-Discord-BugTracker/issues)\n";
+            msgError = "Oops something went wrong, report the issue here (https://github.com/FightRPG-DiscordBotRPG/FightRPG-Discord-BugTracker/issues)\n";
         }
 
 
