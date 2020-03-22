@@ -60,7 +60,7 @@ class Areas {
     }
 
     monstersToString(monsters, lang = "en") {
-        let str = "`\n";
+        let str = "`";
         for (let i in monsters) {
             let id = parseInt(i) + 1;
             if (monsters[i].number > 1) {
@@ -83,7 +83,7 @@ class Areas {
         let strPlantsHeader = Translator.getString(lang, "resources", "plants") + "\n";
         let strPlants = "";
 
-        let str = "`" + "\n";
+        let str = "`";
         let tempString = "";
 
         let length = 0;
