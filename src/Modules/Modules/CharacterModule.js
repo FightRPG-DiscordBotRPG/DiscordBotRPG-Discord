@@ -2,7 +2,6 @@ const GModule = require("../GModule");
 const Globals = require("../../Globals");
 const Translator = require("../../Translator/Translator");
 const Emojis = require("../../Drawings/Emojis");
-const ProgressBar = require("../../Drawings/ProgressBar");
 const TextDrawing = require("../../Drawings/TextDrawings");
 const Achievements = require("../../Drawings/Achievements");
 const LeaderboardPvP = require("../../Drawings/Leaderboard/LeaderboardPvP");

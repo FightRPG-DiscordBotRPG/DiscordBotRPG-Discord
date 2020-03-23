@@ -76,6 +76,46 @@ Emojis.emojisProd = {
     "exp": {
         id: "554308999760052242",
         string: "<:exp:554308999760052242>"
+    },
+    "bar_white": {
+        id: "691582742214869022",
+        string:"<:bar_white:691582742214869022>"
+    },
+    "bar_white_empty": {
+        id: "691582742261137418",
+        string: "<:bar_white_empty:691582742261137418>"
+    },
+    "bar_red": {
+        id: "691578753931018240",
+        string: "<:bar_red:691578753931018240>"
+    },
+    "bar_red_empty": {
+        id: "691578753884749934",
+        string: "<:bar_red_empty:691578753884749934>"
+    },
+    "bar_blue": {
+        id: "691582741912748063",
+        string: "<:bar_blue:691582741912748063>"
+    },
+    "bar_blue_empty": {
+        id: "691582742206611546",
+        string: "<:bar_blue_empty:691582742206611546>"
+    },
+    "bar_yellow": {
+        id: "691581864825061397",
+        string: "<:bar_yellow:691581864825061397>"
+    },
+    "bar_yellow_empty": {
+        id: "691581865005547530",
+        string: "<:bar_yellow_empty:691581865005547530>"
+    },
+    "bar_green": {
+        id: "691587318317842473",
+        string: "<:bar_green:691587318317842473>"
+    },
+    "bar_green_empty": {
+        id: "691587318339076136",
+        string: "<:bar_green_empty:691587318339076136>"
     }
 };
 

@@ -1,6 +1,6 @@
 'use strict';
 const Discord = require("discord.js");
-const ProgressBar = require("./ProgressBar");
+const ProgressBarHealth = require("./ProgressBars/ProgressBarHealth");
 const Globals = require("../Globals");
 const Translator = require("../Translator/Translator");
 const Emojis = require("./Emojis");
@@ -24,8 +24,8 @@ class FightManager {
         let userid = message.author.id;
         /*console.log(data);
         process.exit();*/
-        let leftName = data.summary.rounds[0].roundEntitiesIndex == 0 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
-        let rightName = data.summary.rounds[0].roundEntitiesIndex == 1 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
+        let leftName = data.summary.rounds[0].roundEntitiesIndex === 0 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
+        let rightName = data.summary.rounds[0].roundEntitiesIndex === 1 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
         let thisPvEFight = {
             text: ["", "", ""],
             summary: data.summary,
@@ -36,7 +36,7 @@ class FightManager {
             team2_number: data.team2_number
         };
 
-        if (data.beingAttacked == true) {
+        if (data.beingAttacked === true) {
             message.channel.send(Translator.getString(lang, "fight_pve", "ganked_by_monster")).catch((e) => console.log(e));
             thisPvEFight.text[2] = "<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "user_get_attacked", [leftName, rightName]) + "\n\n";
         } else {
@@ -54,12 +54,12 @@ class FightManager {
         let summary = fight.summary;
         if (ind < summary.rounds.length) {
 
-            if (summary.rounds[ind].roundType == "Character") {
+            if (summary.rounds[ind].roundType === "Character") {
                 fight = this.swapArrayIndexes("<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "onfight_user_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
                     (summary.rounds[ind].critical === true ? " (" + Translator.getString(lang, "fight_general", "critical_hit") + "!) " : "") +
                     (summary.rounds[ind].stun === true ? " (" + Translator.getString(lang, "fight_general", "stun_hit") + "!) " : "") +
                     "\n\n", fight);
-            } else if (summary.rounds[ind].roundType == "Monster") {
+            } else if (summary.rounds[ind].roundType === "Monster") {
                 fight = this.swapArrayIndexes("<:monstre:403149357387350016> " + Translator.getString(lang, "fight_pve", "onfight_monster_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
                     (summary.rounds[ind].critical === true ? " (" + Translator.getString(lang, "fight_general", "critical_hit") + "!) " : "") +
                     (summary.rounds[ind].stun === true ? " (" + Translator.getString(lang, "fight_general", "stun_hit") + "!) " : "") +
@@ -81,10 +81,10 @@ class FightManager {
 
 
         } else {
-            if (summary.winner == 0) {
+            if (summary.winner === 0) {
                 fight = this.swapArrayIndexes("<:win:403151177153249281> " + Translator.getString(lang, "fight_general", "win") + "\n\n", fight);
 
-                if (fight.team1_number == 1) {
+                if (fight.team1_number === 1) {
                     if (summary.drops.length > 0) {
                         let drop_string = "<:treasure:403457812535181313>  ";
                         let equipDrop = 0;
@@ -105,11 +105,11 @@ class FightManager {
                             }
                         }
 
-                        if (strEquipments != "") {
+                        if (strEquipments !== "") {
                             strEquipments = strEquipments.slice(0, -2);
                             drop_string += Translator.getString(lang, "fight_pve", equipDrop > 1 ? "drop_item_equip_plur" : "drop_item_equip", [strEquipments]) + "\n";
                         }
-                        if (strOthers != "") {
+                        if (strOthers !== "") {
                             strOthers = strOthers.slice(0, -2);
                             drop_string += Translator.getString(lang, "fight_pve", otherDrop > 1 ? "drop_item_other_plur" : "drop_item_other", [strOthers]) + "\n";
                         }
@@ -220,9 +220,9 @@ class FightManager {
 
 
         } else {
-            if (summary.winner == 0) {
+            if (summary.winner === 0) {
                 fight = this.swapArrayIndexes("<:win:403151177153249281> " + Translator.getString(lang, "fight_general", "win") + "\n\n", fight);
-                if (fight.team1_number == 1) {
+                if (fight.team1_number === 1) {
                     if (summary.honor > 0) {
                         fight = this.swapArrayIndexes("<:honor:403824433837637632> " + Translator.getString(lang, "fight_pvp", "honor_gain", [summary.honor]) + "\n", fight);
                     } else {
@@ -231,7 +231,7 @@ class FightManager {
                 }
             } else {
                 fight = this.swapArrayIndexes("<:loose:403153660756099073> " + Translator.getString(lang, "fight_general", "loose") + "\n", fight);
-                if (fight.team1_number == 1) {
+                if (fight.team1_number === 1) {
                     if (summary.honor > 0) {
                         fight = this.swapArrayIndexes("<:honor:403824433837637632> " + Translator.getString(lang, "fight_pvp", "honor_lose", [summary.honor]) + "\n", fight);
                     }
@@ -260,7 +260,7 @@ class FightManager {
     embedPvE(text, fight, color, lang) {
         color = color || [128, 128, 128]
         lang = lang || "en"
-        let healthBar = new ProgressBar();
+        let healthBar = new ProgressBarHealth();
         //console.log(fight);
         let ind = fight.summaryIndex;
         let summary = fight.summary;
@@ -269,7 +269,7 @@ class FightManager {
 
         ind = fight.summaryIndex < summary.rounds.length ? ind : ind - 1;
 
-        if (summary.rounds[ind].roundEntitiesIndex == 0) {
+        if (summary.rounds[ind].roundEntitiesIndex === 0) {
             first = healthBar.draw(summary.rounds[ind].attackerHP, summary.rounds[ind].attackerMaxHP);
             firstName = summary.rounds[ind].attackerName;
             firstLevel = summary.rounds[ind].attackerLevel;
@@ -297,9 +297,9 @@ class FightManager {
         }
 
 
-        if (summary.rounds[ind].monsterType == "elite") {
+        if (summary.rounds[ind].monsterType === "elite") {
             monsterTitle = "<:elite:406090076511141888> ";
-        } else if (summary.rounds[ind].monsterType == "boss") {
+        } else if (summary.rounds[ind].monsterType === "boss") {
             monsterTitle = "<:boss:456113364687388683> ";
         } else {
             monsterTitle = this.getMonsterDifficultyEmoji(summary.rounds[ind].monsterDifficultyName) + " ";
@@ -317,14 +317,14 @@ class FightManager {
     embedPvP(text, fight, color, lang) {
         color = color || [128, 128, 128]
         lang = lang || "en"
-        let healthBar = new ProgressBar();
+        let healthBar = new ProgressBarHealth();
         let ind = fight.summaryIndex;
         let summary = fight.summary;
         let first, second, firstName, secondName, firstLevel, secondLevel, firstActualHP, secondActualHP, firstMaxHP, secondMaxHP;
 
         ind = fight.summaryIndex < summary.rounds.length ? ind : ind - 1;
 
-        if (summary.rounds[ind].roundEntitiesIndex == 0) {
+        if (summary.rounds[ind].roundEntitiesIndex === 0) {
             first = healthBar.draw(summary.rounds[ind].attackerHP, summary.rounds[ind].attackerMaxHP);
             firstName = summary.rounds[ind].attackerName;
             firstLevel = summary.rounds[ind].attackerLevel;
@@ -363,8 +363,8 @@ class FightManager {
     fightPvP(data, message) {
         let lang = data.lang;
         let userid = message.author.id;
-        let leftName = data.summary.rounds[0].roundEntitiesIndex == 0 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
-        let rightName = data.summary.rounds[0].roundEntitiesIndex == 1 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
+        let leftName = data.summary.rounds[0].roundEntitiesIndex === 0 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
+        let rightName = data.summary.rounds[0].roundEntitiesIndex === 1 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
         let pvpFight = {
             text: ["", "", ""],
             summary: data.summary,
@@ -375,7 +375,7 @@ class FightManager {
             team2_number: data.team2_number
         };
 
-        if (data.team1_number == 1) {
+        if (data.team1_number === 1) {
             pvpFight.text[2] = "<:sword:403148210295537664> " + Translator.getString(lang, "fight_pve", "user_attacked", [leftName, rightName]) + "\n\n";
         }
 

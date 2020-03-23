@@ -1,5 +1,5 @@
 const Translator = require("../Translator/Translator");
-const ProgressBar = require("./ProgressBar");
+const ProgressBarHealth = require("./ProgressBars/ProgressBarHealth");
 const Discord = require("discord.js");
 const Emojis = require("./Emojis");
 
@@ -7,13 +7,14 @@ class WorldBosses {
     listToDiscord(data) {
         let lang = data.lang;
         let str = "";
-        let pb = new ProgressBar();
+        let pb = new ProgressBarHealth();
+        pb.setSize(20);
         if (data.bosses.length > 0) {
             for (let info of data.bosses) {
                 str += info.regionName + " - " + info.areaName + "\n";
                 str += ""
                 if (info.worldBoss != null) {
-                    str += info.worldBoss.name + " (" + Translator.getFormater(data.lang).format(info.worldBoss.actualHP) + "/" + Translator.getFormater(data.lang).format(info.worldBoss.maxHP) + ") " + pb.draw(info.worldBoss.actualHP, info.worldBoss.maxHP);
+                    str += info.worldBoss.name + " (" + Translator.getFormater(data.lang).format(info.worldBoss.actualHP) + "/" + Translator.getFormater(data.lang).format(info.worldBoss.maxHP) + ")\n" + pb.draw(info.worldBoss.actualHP, info.worldBoss.maxHP);
                 } else {
                     let date = new Date();
                     date.setTime(info.spawnDate);

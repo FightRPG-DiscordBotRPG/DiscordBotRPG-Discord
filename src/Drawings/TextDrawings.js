@@ -1,7 +1,8 @@
 const Translator = require("../Translator/Translator");
-const ProgressBar = require("./ProgressBar");
+const ProgressBar = require("./ProgressBars/ProgressBar");
 const Discord = require("discord.js");
 const Emojis = require("./Emojis");
+const Color = require("./Color");
 
 class TextDrawings {
 
@@ -77,7 +78,7 @@ class TextDrawings {
 
     userInfoPanel(data) {
         let statPointsPlur = data.statPoints > 1 ? "_plur" : "";
-        let xpProgressBar = new ProgressBar();
+        let xpProgressBar = new ProgressBar(Color.Blue);
         let xpBar = "";
         let xpOn = "";
 
