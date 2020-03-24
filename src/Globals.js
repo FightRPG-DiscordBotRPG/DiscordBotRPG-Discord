@@ -7,6 +7,9 @@ axios.defaults.validateStatus = function (status) {
 
 
 var Globals = {
+    /**
+     * @type {Array<User>}
+     */
     connectedUsers: {},
     "admins": ["241564725870198785", "285789367954440194", "228787710607753216", "403229406585421834"],
     "tutorialLink": "https://wiki.fight-rpg.com/doku.php?id=en:starter_guide",
@@ -62,7 +65,13 @@ var Globals = {
                 break;
         }
         return typeName;
-    }
+    },
+    /**
+     * Minutes before disconnecting
+     */
+    inactiveTimeBeforeDisconnect: 30
 }
 
 module.exports = Globals;
+
+const User = require("./Users/User");

@@ -308,6 +308,7 @@ class ModuleHandler extends GModule {
         if (mod != null) {
             if (mod.isActive) {
                 try {
+                    Globals.connectedUsers[message.author.id].lastCommandUsed = Date.now();
                     await mod.run(message, command, args, prefix);
                 } catch (err) {
                     if (!this.devMode) {

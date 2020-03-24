@@ -30,6 +30,7 @@ async function getTotalNumberOfGuilds() {
 async function startBot() {
     try {
         await bot.login(conf.discordbotkey);
+        removedInactiveUsers();
     } catch (error) {
         let errorDate = new Date();
         console.log("Error when connecting Shard. Restarting shard in 30 seconds...");
@@ -37,6 +38,28 @@ async function startBot() {
         console.log(error);
         setTimeout(startBot, 30000);
     }
+}
+
+async function removedInactiveUsers() {
+    let now = Date.now();
+    let inactiveUsers = 0;
+    for (let idUser in Globals.connectedUsers) {
+        let user = Globals.connectedUsers[idUser];
+        let diff = now - user.lastCommandUsed;
+
+        // 30 minutes inactive before removing some data from globals
+        if (diff / 60000 > Globals.inactiveTimeBeforeDisconnect) {
+            delete Globals.connectedUsers[user.id];
+            inactiveUsers++;
+        }
+    }
+    let totalMemory = await bot.shard.broadcastEval("process.memoryUsage().heapUsed");
+    let totalMemoryMB = 0;
+    for (let c of totalMemory) {
+        totalMemoryMB += Math.round(c / 1048576);
+    }
+    console.log(`Removed: ${inactiveUsers} inactive users. Memory consumption: ${totalMemoryMB} MB`);
+    setTimeout(removedInactiveUsers, Globals.inactiveTimeBeforeDisconnect * 60000);
 }
 
 
