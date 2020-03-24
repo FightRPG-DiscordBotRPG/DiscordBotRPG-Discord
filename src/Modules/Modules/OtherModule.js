@@ -74,11 +74,9 @@ class OtherModule extends GModule {
                         + "`\n\n";
                     let tempMsg = await message.channel.send(tempMsgContent).catch(() => null);
 
-                    await Promise.all([
-                        tempMsg.react(one),
-                        tempMsg.react(two),
-                        tempMsg.react(three),
-                    ]).catch(() => null);
+                    await tempMsg.react(one);
+                    await tempMsg.react(two);
+                    await tempMsg.react(three);
 
                     const filter = (reaction, user) => {
                         return [one, two, three].includes(reaction.emoji.id || reaction.emoji.name) && user.id === message.author.id;
@@ -112,6 +110,7 @@ class OtherModule extends GModule {
                                 } else {
                                     msg = data.error;
                                 }
+                                break;
                             case three:
                                 data = await axios.post("/game/other/settings", {
                                     mFight: true,
