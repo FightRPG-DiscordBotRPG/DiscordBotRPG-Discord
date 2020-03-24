@@ -24,8 +24,8 @@ class FightManager {
         let userid = message.author.id;
         /*console.log(data);
         process.exit();*/
-        let leftName = data.summary.rounds[0].roundEntitiesIndex === 0 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
-        let rightName = data.summary.rounds[0].roundEntitiesIndex === 1 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
+        let leftName = data.summary.rounds[0].roundEntitiesIndex == 0 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
+        let rightName = data.summary.rounds[0].roundEntitiesIndex == 1 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
         let thisPvEFight = {
             text: ["", "", ""],
             summary: data.summary,
@@ -36,7 +36,7 @@ class FightManager {
             team2_number: data.team2_number
         };
 
-        if (data.beingAttacked === true) {
+        if (data.beingAttacked == true) {
             message.channel.send(Translator.getString(lang, "fight_pve", "ganked_by_monster")).catch((e) => console.log(e));
             thisPvEFight.text[2] = "<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "user_get_attacked", [leftName, rightName]) + "\n\n";
         } else {
@@ -55,19 +55,19 @@ class FightManager {
         if (ind < summary.rounds.length) {
             
             let hitText = "";
-            if (summary.rounds[ind].critical === true && summary.rounds[ind].stun === true) {
+            if (summary.rounds[ind].critical == true && summary.rounds[ind].stun == true) {
                 hitText = " (" + Translator.getString(lang, "fight_general", "critstun_hit") + "!) ";
-            } else if (summary.rounds[ind].critical === true) {
+            } else if (summary.rounds[ind].critical == true) {
                 hitText = " (" + Translator.getString(lang, "fight_general", "critical_hit") + "!) ";
-            } else if (summary.rounds[ind].stun === true) {
+            } else if (summary.rounds[ind].stun == true) {
                 hitText = " (" + Translator.getString(lang, "fight_general", "stun_hit") + "!) ";
             }
             
-            if (summary.rounds[ind].roundType === "Character") {
+            if (summary.rounds[ind].roundType == "Character") {
                 fight = this.swapArrayIndexes("<:user:403148210295537664> " + Translator.getString(lang, "fight_pve", "onfight_user_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
                     hitText +
                     "\n\n", fight);
-            } else if (summary.rounds[ind].roundType === "Monster") {
+            } else if (summary.rounds[ind].roundType == "Monster") {
                 fight = this.swapArrayIndexes("<:monstre:403149357387350016> " + Translator.getString(lang, "fight_pve", "onfight_monster_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
                     hitText +
                     "\n\n", fight);
@@ -87,10 +87,10 @@ class FightManager {
 
 
         } else {
-            if (summary.winner === 0) {
+            if (summary.winner == 0) {
                 fight = this.swapArrayIndexes("<:win:403151177153249281> " + Translator.getString(lang, "fight_general", "win") + "\n\n", fight);
 
-                if (fight.team1_number === 1) {
+                if (fight.team1_number == 1) {
                     if (summary.drops.length > 0) {
                         let drop_string = "<:treasure:403457812535181313>  ";
                         let equipDrop = 0;
@@ -128,11 +128,11 @@ class FightManager {
                         fight = this.swapArrayIndexes("<:levelup:403456740139728906>  " + Translator.getString(lang, "fight_pve", "level_up", [summary.levelUpped[0].levelGained, summary.levelUpped[0].newLevel]) + "\n", fight);
                     }
 
-                    if (summary.xp === 0) {
+                    if (summary.xp == 0) {
                         fight = this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "money_gain", [summary.money]) + "\n", fight);
-                    } else if (summary.money === 0) {
+                    } else if (summary.money == 0) {
                         fight = this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "xp_gain", [summary.xp]) + "\n", fight);
-                    } else if (summary.xp === 0 && summary.money === 0) {
+                    } else if (summary.xp == 0 && summary.money == 0) {
                         fight = this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "nothing_gain", [summary.xp]) + "\n", fight);
                     } else {
                         fight = this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "both_gain", [summary.xp, summary.money]) + "\n", fight);
@@ -158,11 +158,11 @@ class FightManager {
                         fight = this.swapArrayIndexes("<:levelup:403456740139728906>  " + Translator.getString(lang, "fight_pve", "group_level_up") + "\n", fight);
                     }
 
-                    if (summary.xp === 0) {
+                    if (summary.xp == 0) {
                         fight = this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "group_money_gain", [summary.money]) + "\n", fight);
-                    } else if (summary.money === 0) {
+                    } else if (summary.money == 0) {
                         fight = this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "group_xp_gain", [summary.xp]) + "\n", fight);
-                    } else if (summary.xp === 0 && summary.money === 0) {
+                    } else if (summary.xp == 0 && summary.money == 0) {
                         fight = this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "group_nothing_gain", [summary.xp]) + "\n", fight);
                     } else {
                         fight = this.swapArrayIndexes("<:treasure:403457812535181313>  " + Translator.getString(lang, "fight_pve", "group_both_gain", [summary.xp, summary.money]) + "\n", fight);
