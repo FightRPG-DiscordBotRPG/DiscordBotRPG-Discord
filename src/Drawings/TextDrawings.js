@@ -104,8 +104,8 @@ class TextDrawings {
 
         let authorTitle = data.username + " | " + Translator.getString(data.lang, "inventory_equipment", "power") + ": " + Translator.getFormater(data.lang).format(data.power);
         let statsTitle = Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, data.resetValue]);
-        let titleXPFight = Translator.getString(data.lang, "character", "level") + ": " + data.level + " | " + xpOn + " ";
-        let titleXPCraft = Translator.getString(data.lang, "character", "craft_level") + ": " + data.craft.level + " | " + xpOnCraft + " ";
+        let titleXPFight = Translator.getString(data.lang, "character", "level") + ": " + data.level + "\n" + xpOn + " ";
+        let titleXPCraft = Translator.getString(data.lang, "character", "craft_level") + ": " + data.craft.level + "\n" + xpOnCraft + " ";
         let criticalChance = ((data.stats.dexterity + data.statsEquipment.dexterity) / (data.level * 8));
         criticalChance = criticalChance > 0.75 ? 0.75 : criticalChance;
         criticalChance = Math.round(criticalChance * 10000) / 100;
