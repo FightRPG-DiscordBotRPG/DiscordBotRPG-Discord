@@ -34,6 +34,9 @@ class Guild {
         rgmStr = rgmStr.slice(0, rgmStr.length - 1) + "`\n";
 
         let allMembersStr = rgmStr + (officerCount > 0 ? roStr : "") + (membersCount > 0 ? rmStr : "");
+        if (allMembersStr.length > 1024) {
+            allMembersStr = allMembersStr.substring(0, 1024);
+        }
 
 
 
