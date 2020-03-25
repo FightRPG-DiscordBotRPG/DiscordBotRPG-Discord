@@ -132,11 +132,8 @@ class TextDrawings {
     
     characterStatsToBigString(stats, otherStats, lang) {
         let str = "```";
-        //let count = 1;
         let totalSpaces = 30;
         for (let stat in stats) {
-            //let end = stat === "luck" ? "" : "   |   ";
-            //let end = "";
             let beforeNumber = "";
             let statStr = "";
             let statTotalStr = "";
@@ -151,14 +148,6 @@ class TextDrawings {
             let nbrChar = statLocaleString.length + 2;
             let lessSpaces = totalSpaces - nbrChar - (2 + statStr.length);
             beforeNumber += " ".repeat(lessSpaces);
-            /*if (count === 2) {
-                end += "\n"
-                count = 0;
-            } else {
-
-                end += " ".repeat(2) + "|" + " ".repeat(2);
-            }
-            count++;*/
             str += "" + statLocaleString + beforeNumber + "[" + statStr + "] " + statTotalStr + "\n"/* + end*/;
         }
         str += "```"
