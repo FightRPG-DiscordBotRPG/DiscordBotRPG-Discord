@@ -129,7 +129,46 @@ class TextDrawings {
             .addField(Emojis.getString("stun") + " " + Translator.getString(data.lang, "character", "maximum_stun_chance"), Translator.getFormater(data.lang).format(maximumStunChance) + "%", true)
         return embed;
     }
+    
+    characterStatsToBigString(stats, otherStats, lang) {
+        let str = "```";
+        let totalSpaces = 30;
+        for (let stat in stats) {
+            let beforeNumber = "";
+            let statStr = "";
+            let statTotalStr = "";
+            let statLocaleString = Translator.getString(lang, "stats", stat);
+            if (stat !== "armor") {
+                statStr = stats[stat].toString() + "+" + otherStats[stat].toString();
+                statTotalStr = (stats[stat] + otherStats[stat]).toString();
+            } else {
+                statStr = otherStats[stat].toString();
+            }
+
+            let nbrChar = statLocaleString.length + 2;
+            let lessSpaces = totalSpaces - nbrChar - (2 + statStr.length);
+            beforeNumber += " ".repeat(lessSpaces);
+            str += "" + statLocaleString + beforeNumber + "[" + statStr + "] " + statTotalStr + "\n"/* + end*/;
+        }
+        str += "```"
+        return str;
+    }
+    
+    userStatsPanel(data) {
+        let statPointsPlur = data.statPoints > 1 ? "_plur" : "";
+
+        let authorTitle = data.username + " | " + Translator.getString(data.lang, "inventory_equipment", "power") + ": " + Translator.getFormater(data.lang).format(data.power);
+        let statsTitle = Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, data.resetValue]);
+        
+        //calls an embed with sum = true
+        let embed = new Discord.RichEmbed()
+            .setColor([0, 255, 0])
+            .setAuthor(authorTitle, data.avatar)
+            .addField(statsTitle, this.characterStatsToBigString(data.stats, data.statsEquipment, data.lang, true))
+        return embed;
+    }
 
 }
 
 module.exports = new TextDrawings();
+
