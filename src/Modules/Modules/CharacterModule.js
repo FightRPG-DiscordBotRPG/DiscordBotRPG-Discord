@@ -13,7 +13,7 @@ const Discord = require("discord.js");
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "up", "achievements"];
+        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -143,6 +143,16 @@ class CharacterModule extends GModule {
                     msg = data.error;
                 } else {
                     msg = TextDrawing.userInfoPanel(data);
+                }
+                break;
+                
+            case "attributes":
+                data = await axios.get("/game/character/info");
+                data = data.data;
+                if (data.error != null) {
+                    msg = data.error;
+                } else {
+                    msg = TextDrawing.userStatsPanel(data);
                 }
                 break;
 
