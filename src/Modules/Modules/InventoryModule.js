@@ -175,10 +175,10 @@ class InventoryModule extends GModule {
                         if (args[0] != null) {
                             switch (args[0]) {
                                 case "rarity":
-                                    idRarity = GModule.tryParseRarity(args[1], data.lang);
+                                    idRarity = GModule.tryParseRarity(args[1]);
                                     break;
                                 case "type":
-                                    idType = GModule.tryParseType(args[1], data.lang);
+                                    idType = GModule.tryParseType(args[1]);
                                     break;
                                 case "level":
                                     level = args[1];
