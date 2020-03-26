@@ -186,7 +186,7 @@ class ModuleHandler extends GModule {
             }
 
             this.sendMessage(message, msg);
-            //console.log("Performing command, took : " + ((Date.now() - dt) / 1000) + " seconds");
+            //console.log("Performing command, took: " + ((Date.now() - dt) / 1000) + " seconds");
         }
     }
 
@@ -313,7 +313,7 @@ class ModuleHandler extends GModule {
                 } catch (err) {
                     if (!this.devMode) {
                         if (err.constructor != Discord.DiscordAPIError) {
-                            let adminTell = "A module has crashed.\nCommand : " + command + "\nArgs : [" + args.toString() + "]\n" + "User that have crashed the command : " + message.author.username + "#" + message.author.discriminator;
+                            let adminTell = "A module has crashed.\nCommand: " + command + "\nArgs: [" + args.toString() + "]\n" + "User that have crashed the command: " + message.author.username + "#" + message.author.discriminator;
                             message.client.shard.broadcastEval(`let user = this.users.get("241564725870198785");
                             if(user != null) {
                                 user.send(\`${adminTell}\`).catch((e) => {null});
@@ -328,7 +328,7 @@ class ModuleHandler extends GModule {
                     throw err;
                 }
             } else {
-                message.channel.send("Due to an error, this module is currently deactivated. The following commands will be disabled : " + mod.commands.toString() + "\nSorry for the inconvenience.").catch((e) => null);
+                message.channel.send("Due to an error, this module is currently deactivated. The following commands will be disabled: " + mod.commands.toString() + "\nSorry for the inconvenience.").catch((e) => null);
             }
         }
     }
