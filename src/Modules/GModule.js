@@ -72,74 +72,61 @@ class GModule {
         }
         return stat;
     }
-    
-    tryParseRarity (rarity, lang) {
+
+    tryParseRarity (rarity) {
         switch (rarity) {
             case "common":
-            case Translator.getString(data.lang, "rarities", "common"):
                 rarity = 1;
                 break;
             case "rare":
-            case Translator.getString(data.lang, "rarities", "rare"):
                 rarity = 2;
                 break;
             case "superior":
-            case Translator.getString(data.lang, "rarities", "superior"):
                 rarity = 3;
                 break;
             case "epic":
-            case Translator.getString(data.lang, "rarities", "epic"):
                 rarity = 4;
                 break;
             case "legendary":
-            case Translator.getString(data.lang, "rarities", "legendary"):
                 rarity = 5;
                 break;
             case "mythic":
-            case Translator.getString(data.lang, "rarities", "mythic"):
                 rarity = 6;
                 break;
         }
         return rarity;
     }
     
-    tryParseType (type, lang) {
+    tryParseType (type) {
         switch (type) {
             case "weapon":
-            case Translator.getString(data.lang, "item_types", "weapon"):
                 type = 1;
                 break;
             case "chest":
-            case Translator.getString(data.lang, "item_types", "chest"):
                 type = 2;
                 break;
             case "legs":
-            case Translator.getString(data.lang, "item_types", "legs"):
                 type = 3;
                 break;
             case "head":
-            case Translator.getString(data.lang, "item_types", "head"):
                 type = 4;
                 break;
             case "resource":
-            case Translator.getString(data.lang, "item_types", "resource"):
                 type = 5;
                 break;
             case "lootbox":
-            case Translator.getString(data.lang, "item_types", "lootbox"):
                 type = 6;
                 break;
             case "potion":
-            case Translator.getString(data.lang, "item_types", "potion"):
                 type = 7;
                 break;
             case "mount":
-            case Translator.getString(data.lang, "item_types", "mount"):
                 type = 8;
                 break;
         }
         return type;
     }
+
 
     cmdToString(data, prefix = "::") {
         let str = "```apache\n" + "::" + Translator.getString(data.lang, "help_panel", "help") + "::\n";
