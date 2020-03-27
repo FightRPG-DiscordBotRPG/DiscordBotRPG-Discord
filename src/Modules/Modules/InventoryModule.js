@@ -175,10 +175,10 @@ class InventoryModule extends GModule {
                         if (args[0] != null) {
                             switch (args[0]) {
                                 case "rarity":
-                                    idRarity = args[1];
+                                    idRarity = this.tryParseRarity(args[1]);
                                     break;
                                 case "type":
-                                    idType = args[1];
+                                    idType = this.tryParseType(args[1]);
                                     break;
                                 case "level":
                                     level = args[1];
@@ -335,10 +335,10 @@ class InventoryModule extends GModule {
                         if (args[0] != null) {
                             switch (args[0]) {
                                 case "rarity":
-                                    idRarity = args[1];
+                                    idRarity = this.tryParseRarity(args[1]);
                                     break;
                                 case "type":
-                                    idType = args[1];
+                                    idType = this.tryParseType(args[1]);
                                     break;
                                 case "level":
                                     level = args[1];

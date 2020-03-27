@@ -73,6 +73,61 @@ class GModule {
         return stat;
     }
 
+    tryParseRarity (rarity) {
+        switch (rarity) {
+            case "common":
+                rarity = 1;
+                break;
+            case "rare":
+                rarity = 2;
+                break;
+            case "superior":
+                rarity = 3;
+                break;
+            case "epic":
+                rarity = 4;
+                break;
+            case "legendary":
+                rarity = 5;
+                break;
+            case "mythic":
+                rarity = 6;
+                break;
+        }
+        return rarity;
+    }
+    
+    tryParseType (type) {
+        switch (type) {
+            case "weapon":
+                type = 1;
+                break;
+            case "chest":
+                type = 2;
+                break;
+            case "legs":
+                type = 3;
+                break;
+            case "head":
+                type = 4;
+                break;
+            case "resource":
+                type = 5;
+                break;
+            case "lootbox":
+                type = 6;
+                break;
+            case "potion":
+                type = 7;
+                break;
+            case "mount":
+                type = 8;
+                break;
+        }
+        return type;
+    }
+
+
     cmdToString(data, prefix = "::") {
         let str = "```apache\n" + "::" + Translator.getString(data.lang, "help_panel", "help") + "::\n";
         for (let category in data.commands) {
