@@ -11,7 +11,7 @@ class Shop {
             for (let item of data.items) {
                 let id = it + (data.perPage * (data.page - 1));
                 let price = (data.tax == true ? item.priceWithTax : item.price);
-                str += id + " - " + item.name + " [x" + item.number + "]" + " - " + item.subType + " - " + item.level + " - " + item.rarity + " - " + Translator.getFormater(data.lang).format(price) + "G\n";
+                str += id + " - " + item.name + " [x" + item.number + "]" + " - " + item.subType + " - " + item.level + " - " + item.rarity + " - " + Translator.getFormater(lang).format(price) + "G\n";
                 it++;
             }
             str += "\n";
