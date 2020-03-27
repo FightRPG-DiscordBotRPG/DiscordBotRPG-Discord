@@ -2,6 +2,7 @@ const fs = require("fs");
 const Intl = require("intl");
 const axios = require("axios").default;
 const TranslatorConf = require("../../conf/translator");
+const Globals = require("../Globals");
 
 class Translator {
 
@@ -155,6 +156,30 @@ class Translator {
             }
         }
     }
+
+    static loadGlobalsRarities() {
+        for (let lang in this.translations) {
+            Globals.raritiesByLang[Translator.getString(lang, "rarities", "common").toLowerCase()] = 1;
+            Globals.raritiesByLang[Translator.getString(lang, "rarities", "rare").toLowerCase()] = 2;
+            Globals.raritiesByLang[Translator.getString(lang, "rarities", "superior").toLowerCase()] = 3;
+            Globals.raritiesByLang[Translator.getString(lang, "rarities", "epic").toLowerCase()] = 4;
+            Globals.raritiesByLang[Translator.getString(lang, "rarities", "legendary").toLowerCase()] = 5;
+            Globals.raritiesByLang[Translator.getString(lang, "rarities", "mythic").toLowerCase()] = 6;
+        }
+    }
+
+    static loadGlobalsTypes() {
+        for (let lang in this.translations) {
+            Globals.typesByLang[Translator.getString(lang, "item_types", "weapon").toLowerCase()] = 1;
+            Globals.typesByLang[Translator.getString(lang, "item_types", "chest").toLowerCase()] = 2;
+            Globals.typesByLang[Translator.getString(lang, "item_types", "legs").toLowerCase()] = 3;
+            Globals.typesByLang[Translator.getString(lang, "item_types", "head").toLowerCase()] = 4;
+            Globals.typesByLang[Translator.getString(lang, "item_types", "resource").toLowerCase()] = 5;
+            Globals.typesByLang[Translator.getString(lang, "item_types", "potion").toLowerCase()] = 6;
+            Globals.typesByLang[Translator.getString(lang, "item_types", "lootbox").toLowerCase()] = 7;
+            Globals.typesByLang[Translator.getString(lang, "item_types", "mount").toLowerCase()] = 8;
+        }
+    }
 }
 
 
@@ -165,6 +190,8 @@ async function loadTranslator() {
     Translator.formaters = {};
     await Translator.loadFromJson();
     Translator.loadFormaters();
+    Translator.loadGlobalsRarities();
+    Translator.loadGlobalsTypes();
 }
 
 loadTranslator();
