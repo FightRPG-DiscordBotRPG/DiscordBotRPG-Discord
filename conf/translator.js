@@ -1,7 +1,7 @@
 // Alaways add the / at the end of url
 
 const conf = {
-    "cdn_translator_url": "https://cdn.fight-rpg.com/localization/"
+    "cdn_translator_url": "https://cdn.fight-rpg.com/dev-localization/"
 }
 
 module.exports = conf;

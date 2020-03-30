@@ -169,7 +169,7 @@ class InventoryModule extends GModule {
 
             case "inv":
             case "inventory":
-                let page = 1;
+                var page = 1;
                 if (args.length > 0) {
                     if (args.length > 1) {
                         if (args[0] != null) {
@@ -350,13 +350,13 @@ class InventoryModule extends GModule {
                         }
                     }
                 }
-                let paramsSellAll = {
+                var paramsSellAll = {
                     idRarity: idRarity,
                     idType: idType,
                     level: level,
                     power: power
                 };
-                let dataInventoryValue = await axios.post("/game/inventory/sellall/value", paramsSellAll);
+                var dataInventoryValue = await axios.post("/game/inventory/sellall/value", paramsSellAll);
                 dataInventoryValue = dataInventoryValue.data;
 
                 if (dataInventoryValue.error == null) {
@@ -408,8 +408,8 @@ class InventoryModule extends GModule {
 
             case "sendmoney":
                 firstMention = mentions.first();
-                let isMention = false;
-                let mId = 0;
+                var isMention = false;
+                var mId = 0;
                 if (firstMention) {
                     args[0] = firstMention.id;
                     isMention = true;

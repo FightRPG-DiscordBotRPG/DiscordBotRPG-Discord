@@ -52,21 +52,22 @@ class Inventory {
         return str + "```";
     }
 
-    ciValueSellAllDisplay(data, params) {
+    ciValueSellAllDisplay(data) {
         let lang = data.lang;
         let str = "";
-        if (params.idRarity != null) {
-            str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_rarity", [Translator.getString(lang, "rarities", Globals.getRarityName(params.idRarity))]);
-        } else if (params.idType != null) {
-            str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_type", [Translator.getString(lang, "item_types", Globals.getTypeName(params.idType))]);
-        } else if (params.level != null) {
-            str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level", [params.level]);
-        } else if (params.power != null) {
-            str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_sup", [params.power]);
+        if (data.isFiltered) {
+            if (data.params.rarity !== 0) {
+                str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_rarity", [Translator.getString(lang, "rarities", Globals.getRarityName(data.params.rarity))]);
+            } else if (data.params.type !== 0) {
+                str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_type", [Translator.getString(lang, "item_types", Globals.getTypeName(data.params.type))]);
+            } else if (data.params.level !== 0) {
+                str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level", [data.params.level]);
+            } else if (data.params.power !== 0) {
+                str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_inf", [data.params.power]);
+            }
         } else {
             str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_all");
         }
-
         return new Discord.RichEmbed()
             .setColor([255, 215, 0])
             .setAuthor(Translator.getString(lang, "inventory_equipment", "sellall_title"))

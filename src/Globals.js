@@ -40,7 +40,7 @@ var Globals = {
     },
     getTypeName: (idType) => {
         idType = parseInt(idType);
-        let typeName = "Unknown";
+        let typeName = "";
         switch (idType) {
             case 1:
                 typeName = "weapon"
