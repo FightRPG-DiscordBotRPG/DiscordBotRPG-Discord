@@ -8,7 +8,7 @@ class User {
         this.avatar = avatar;
         this.token = null;
         this.lastCommandUsed = Date.now();
-        this.axios;
+        this.axios = null;
     }
 
     async load() {
