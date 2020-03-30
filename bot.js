@@ -53,15 +53,45 @@ async function removedInactiveUsers() {
             inactiveUsers++;
         }
     }
+
+    console.log(`Removed: ${inactiveUsers} inactive users. Memory consumption: ${await getMemory()} MB`);
+    //createDummyUsers();
+    setTimeout(removedInactiveUsers, Globals.inactiveTimeBeforeDisconnect * 60000);
+}
+
+async function createDummyUsers() {
+    let nbUsersToCreate = Math.round(Math.random() * 10000);
+    console.log(`Creating ${nbUsersToCreate} fake users...\nMemory before: ${await getMemory()} MB`);
+    let totalRequests = [];
+    const User = require("./src/Users/User");
+
+    const t = Date.now();
+
+    for (let i = 0; i < nbUsersToCreate; i++) {
+        let zerofilled = ('0000000' + Math.floor(Math.random() * 10000000)).slice(-7);
+        let u = new User(zerofilled, "Test User#1111", "");
+        u.token = ""; //When testing use your token don't forget to remove it
+        u.initAxios();
+        totalRequests.push(u.getAxios().get("/game/character/info"));
+        Globals.connectedUsers[zerofilled] = u;
+    }
+    console.log(`Memory after creation: ${await getMemory()} MB`);
+
+    console.time("Requesting");
+    await Promise.all(totalRequests);
+    console.log(`Avg time per requests: ${Math.round((Date.now() - t) / totalRequests.length)}ms; Number of requests per minute: ${1000/Math.round((Date.now() - t) / totalRequests.length)}`);
+    console.log(`Memory after requests: ${await getMemory()} MB`);
+    console.timeEnd("Requesting");
+}
+
+async function getMemory() {
     let totalMemory = await bot.shard.broadcastEval("process.memoryUsage().heapUsed");
     let totalMemoryMB = 0;
     for (let c of totalMemory) {
         totalMemoryMB += Math.round(c / 1048576);
     }
-    console.log(`Removed: ${inactiveUsers} inactive users. Memory consumption: ${totalMemoryMB} MB`);
-    setTimeout(removedInactiveUsers, Globals.inactiveTimeBeforeDisconnect * 60000);
+    return totalMemoryMB;
 }
-
 
 
 bot.on("ready", async () => {
