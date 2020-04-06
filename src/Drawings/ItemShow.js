@@ -7,8 +7,9 @@ class ItemShow {
     showInInventoryItem(data) {
         let item = data.item;
         let lang = data.lang;
+        let numberStr = item.number > 1 ? " [x" + Translator.getFormater(lang).format(item.number) + "]" : "";
         return new Discord.RichEmbed()
-            .setAuthor(item.name + (item.isFavorite == true ? " ★" : ""))
+            .setAuthor(item.name + (item.isFavorite == true ? " ★" : "") + numberStr)
             .setColor(item.rarityColor)
             .addField(item.type + " (" + item.subType + ")" + " | " + item.rarity + " | " + Translator.getString(lang, "general", "lvl") + ": " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + ": " + item.power, item.desc)
             .addField(Translator.getString(lang, "inventory_equipment", "attributes") + ": ", TextDrawings.itemStatsToStrCompare(item.stats, data.equippedStats, lang));
