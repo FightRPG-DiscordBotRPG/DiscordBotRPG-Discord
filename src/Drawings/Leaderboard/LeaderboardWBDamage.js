@@ -31,7 +31,7 @@ class LeaderboardWBDamage extends Leaderboard {
                 let damageString = Translator.getFormater(this.lang).format(user.damage);
                 let userDamageString = "`" + "•".repeat(maximumDamageLenght - damageString.length) + Translator.getFormater(this.lang).format(user.damage) + "`";
 
-                rankings += Emojis.getString("win") + "`" + (offsetStr) + ". `" + Emojis.getString("sword") + userDamageString + " - " + user.userName + "(" + user.actualLevel + ")" + "\n";
+                rankings += Emojis.getString("win") + "`" + (offsetStr) + ". `" + Emojis.getString("sword") + userDamageString + " - " + user.userName + " (" + user.actualLevel + ")" + "\n";
             }
             return "**" + Translator.getString(lang, "leaderboards", "wb_damage") + " (" + this.maximumRank + ")" + "**\n\n" + rankings;
         }
