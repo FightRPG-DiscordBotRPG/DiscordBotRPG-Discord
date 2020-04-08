@@ -31,7 +31,7 @@ class LeaderboardGold extends Leaderboard {
             let userMoneyStringBefore = "`" + "•".repeat(maximumGoldLength - goldString.length) + goldString + "`";
 
 
-            rankings += Emojis.getString("win") + "`" + (offsetStr) + ". `" + Emojis.getString("money_bag") + userMoneyStringBefore + Emojis.getString("idFRPG") + "`" + user.idCharacter + "` - " + user.userName + "\n";
+            rankings += Emojis.getString("win") + "`" + (offsetStr) + ". `" + Emojis.getString("money_bag") + userMoneyStringBefore + Emojis.getString("idFRPG") + "`" + user.idCharacter + "` - " + user.userName + " (" + user.actualLevel + ")" + "\n";
         }
         return "**" + Translator.getString(lang, "leaderboards", "gold", [this.sumOfAll.totalGold]) + " (" + Translator.getFormater(this.lang).format(this.maximumRank) + ")" + "**\n\n" + rankings;
     }
