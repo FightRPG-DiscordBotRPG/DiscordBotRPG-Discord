@@ -32,7 +32,7 @@ class LeaderboardWBAttacks extends Leaderboard {
                 let attackString = Translator.getFormater(this.lang).format(user.attackCount);
                 let userAttackString = "`" + "•".repeat(maximumAttacksLength - attackString.length) + attackString + "`";
 
-                rankings += Emojis.getString("win") + "`" + (offsetStr) + ". `" + Emojis.getString("sword") + userAttackString + " - " + user.userName + "(" + user.actualLevel + ")" + "\n";
+                rankings += Emojis.getString("win") + "`" + (offsetStr) + ". `" + Emojis.getString("sword") + userAttackString + " - " + user.userName + " (" + user.actualLevel + ")" + "\n";
             }
 
 
