@@ -50,7 +50,7 @@ class LeaderboardCraftLevel extends Leaderboard {
 
 
 
-            rankings += Emojis.getString("win") + "`" + (offsetStr) + ". `" + Emojis.getString("hammer") + actualLevelString + Emojis.getString("exp") + actualExpString + Emojis.getString("idFRPG") + "`" + user.idCharacter + "` - " + user.userName + "\n";
+            rankings += Emojis.getString("win") + "`" + (offsetStr) + ". `" + Emojis.getString("hammer") + actualLevelString + Emojis.getString("exp") + actualExpString + Emojis.getString("idFRPG") + "`" + user.idCharacter + "` - " + user.userName + " (" + user.actualLevel + ")" + "\n";
         }
         return "**" + Translator.getString(lang, "leaderboards", "craftlevel", [this.sumOfAll.totalLevels, this.sumOfAll.totalExp]) + " (" + Translator.getFormater(this.lang).format(this.maximumRank) + ")" + "**\n\n" + rankings;
     }
