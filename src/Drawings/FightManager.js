@@ -208,10 +208,19 @@ class FightManager {
         let ind = fight.summaryIndex;
         let summary = fight.summary;
         if (ind < summary.rounds.length) {
+
+            let hitText = "";
+            if (summary.rounds[ind].critical == true && summary.rounds[ind].stun == true) {
+                hitText = " (" + Translator.getString(lang, "fight_general", "critstun_hit") + "!) ";
+            } else if (summary.rounds[ind].critical == true) {
+                hitText = " (" + Translator.getString(lang, "fight_general", "critical_hit") + "!) ";
+            } else if (summary.rounds[ind].stun == true) {
+                hitText = " (" + Translator.getString(lang, "fight_general", "stun_hit") + "!) ";
+            }
+
             fight = this.swapArrayIndexes("<:user:403148210295537664> " + Translator.getString(lang, "fight_pvp", "onfight_user_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
-                (summary.rounds[ind].critical == true ? " (" + Translator.getString(lang, "fight_general", "critical_hit") + " !) " : "") +
-                (summary.rounds[ind].stun == true ? " (" + Translator.getString(lang, "fight_general", "stun_hit") + " !) " : "") +
-                "\n\n", fight);
+                    hitText +
+                    "\n\n", fight);
 
             message.edit(this.embedPvP(fight.text[0] + fight.text[1] + fight.text[2], fight, null, lang))
                 .then(() => {
