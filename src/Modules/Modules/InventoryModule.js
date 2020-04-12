@@ -142,7 +142,7 @@ class InventoryModule extends GModule {
 
                     collector.on('end', async (reactions, reason) => {
                         if (!itemmsgsent.deleted && message.channel.type != "dm") {
-                            itemmsgsent.clearReactions();
+                            itemmsgsent..reactions.removeAll();
                         }
                     });
                 } else {
@@ -289,7 +289,7 @@ class InventoryModule extends GModule {
                                 await Promise.all(currentMessageReactions);
                                 currentMessageReactions = [];
                             } else {
-                                await inventoryMessage.clearReactions();
+                                await inventoryMessage..reactions.removeAll();
                             }
                             await inventoryMessage.edit(msgCollector);
                             if (dataCollector.error == null) {
@@ -307,7 +307,7 @@ class InventoryModule extends GModule {
                     collectorInventory.on('end', async (reactions, reason) => {
                         if (!inventoryMessage.deleted) {
                             if (!isDM) {
-                                inventoryMessage.clearReactions()
+                                inventoryMessage.reactions.removeAll();
                             } else {
                                 for (let i in currentMessageReactions) {
                                     if (typeof currentMessageReactions[i].remove === "function") {
