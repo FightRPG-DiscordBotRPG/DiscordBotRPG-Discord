@@ -8,7 +8,7 @@ class ItemShow {
         let item = data.item;
         let lang = data.lang;
         let numberStr = item.number > 1 ? " [x" + Translator.getFormater(lang).format(item.number) + "]" : "";
-        return new Discord.RichEmbed()
+        return new Discord.MessageEmbed()
             .setAuthor(item.name + (item.isFavorite == true ? " ★" : "") + numberStr)
             .setColor(item.rarityColor)
             .addField(item.type + " (" + item.subType + ")" + " | " + item.rarity + " | " + Translator.getString(lang, "general", "lvl") + ": " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + ": " + item.power, item.desc)
@@ -18,7 +18,7 @@ class ItemShow {
     showEquippedItem(data) {
         let item = data.item;
         let lang = data.lang;
-        return new Discord.RichEmbed()
+        return new Discord.MessageEmbed()
             .setAuthor(item.name + (item.isFavorite == true ? " ★" : ""))
             .setColor(item.rarityColor)
             .addField(item.type + " (" + item.subType + ")" + " | " + item.rarity + " | " + Translator.getString(lang, "general", "lvl") + ": " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + ": " + item.power + " (" + Translator.getString(lang, "inventory_equipment", "currently_equipped") + ")", item.desc)
@@ -28,7 +28,7 @@ class ItemShow {
     showMarketplaceItem(data) {
         let item = data.item;
         let lang = data.lang;
-        return new Discord.RichEmbed()
+        return new Discord.MessageEmbed()
             .setAuthor(item.name)
             .setColor(item.rarityColor)
             .addField(item.type + " (" + item.subType + ")" + " | " + item.rarity + " | " + Translator.getString(lang, "general", "lvl") + ": " + item.level + " | " + Translator.getString(lang, "inventory_equipment", "power") + ": " + item.power, item.desc)

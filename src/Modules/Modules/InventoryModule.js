@@ -4,6 +4,7 @@ const Translator = require("../../Translator/Translator");
 const ItemShow = require("../../Drawings/ItemShow");
 const Inventory = require("../../Drawings/Inventory");
 const Emojis = require("../../Drawings/Emojis");
+const Discord = require("discord.js");
 
 
 class InventoryModule extends GModule {
@@ -15,6 +16,12 @@ class InventoryModule extends GModule {
         this.endLoading("Inventory");
     }
 
+    /**
+     * 
+     * @param {Discord.Message} message
+     * @param {string} command
+     * @param {Array} args
+     */
     async run(message, command, args) {
         let msg = "";
         let mentions = message.mentions.users;
@@ -46,7 +53,7 @@ class InventoryModule extends GModule {
                     isTrading = isTrading.data;
                     isTrading = isTrading.error == null ? isTrading.isTrading : false;
 
-                    let itemmsgsent = await message.channel.send(itemmsg).catch(() => null);
+                    let itemmsgsent = await message.channel.send(itemmsg);
 
                     Promise.all([
                         data.item.isFavorite == true ? null : (isEquipped ? null : itemmsgsent.react(sellEmoji)),
@@ -133,7 +140,7 @@ class InventoryModule extends GModule {
 
                     });
 
-                    collector.on('end', async (reactions) => {
+                    collector.on('end', async (reactions, reason) => {
                         if (!itemmsgsent.deleted && message.channel.type != "dm") {
                             itemmsgsent.clearReactions();
                         }
@@ -235,7 +242,7 @@ class InventoryModule extends GModule {
                         time: 60000,
                     });
 
-                    collectorInventory.on('collect', async (reaction) => {
+                    collectorInventory.on('collect', async (reaction, user) => {
                         let dataCollector;
                         let msgCollector = null;
                         switch (reaction.emoji.name) {
@@ -297,7 +304,7 @@ class InventoryModule extends GModule {
 
                     });
 
-                    collectorInventory.on('end', async (reactions) => {
+                    collectorInventory.on('end', async (reactions, reason) => {
                         if (!inventoryMessage.deleted) {
                             if (!isDM) {
                                 inventoryMessage.clearReactions()

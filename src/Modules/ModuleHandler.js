@@ -47,7 +47,7 @@ class ModuleHandler extends GModule {
             // If the bot is mention display prefix
             if (!message.author.bot && message.isMentioned(message.client.user)) {
                 this.sendMessage(message,
-                    new Discord.RichEmbed()
+                    new Discord.MessageEmbed()
                         .setColor([0, 128, 128])
                         .addField(Translator.getString("en", "other", "prefix_title"), prefix)
                 )
@@ -151,7 +151,7 @@ class ModuleHandler extends GModule {
                      }*/
                     break;
                 case "bot_info":
-                    let allCounts = await message.client.shard.broadcastEval("this.guilds.size");
+                    let allCounts = await message.client.shard.broadcastEval("this.guilds.cache.size");
                     let total = 0;
                     for (count in allCounts) {
                         total += allCounts[count];
@@ -176,7 +176,7 @@ class ModuleHandler extends GModule {
                     data = data.data;
 
 
-                    msg = new Discord.RichEmbed()
+                    msg = new Discord.MessageEmbed()
                         .setAuthor("FightRPG")
                         .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + allCounts.length + " ]", true)
                         .addField("Server Version: ", "[ " + data.server + " ]", true).addField("Bot Version: ", "[ " + version + " ]", true).addField("Shard Uptime: ", "[ " + uptime + " ]", true)
@@ -245,7 +245,7 @@ class ModuleHandler extends GModule {
                 if (args[0].length <= 10) {
                     let oldPrefix = this.getPrefix(message.guild.id);
                     this.prefixChange(message.guild.id, args[0]); // async
-                    return new Discord.RichEmbed()
+                    return new Discord.MessageEmbed()
                         .setColor([0, 128, 128])
                         .setAuthor(Translator.getString(lang, "other", "prefix_changed"))
                         .addField(Translator.getString(lang, "other", "old_prefix"), oldPrefix)
@@ -314,7 +314,7 @@ class ModuleHandler extends GModule {
                     if (!this.devMode) {
                         if (err.constructor != Discord.DiscordAPIError) {
                             let adminTell = "A module has crashed.\nCommand: " + command + "\nArgs: [" + args.toString() + "]\n" + "User that have crashed the command: " + message.author.username + "#" + message.author.discriminator;
-                            message.client.shard.broadcastEval(`let user = this.users.get("241564725870198785");
+                            message.client.shard.broadcastEval(`let user = this.users.cache.get("241564725870198785");
                             if(user != null) {
                                 user.send(\`${adminTell}\`).catch((e) => {null});
                             }`);
@@ -333,9 +333,13 @@ class ModuleHandler extends GModule {
         }
     }
 
+    /**
+     * 
+     * @param {Discord.Message} message
+     */
     async connectUser(message) {
         if (Globals.connectedUsers[message.author.id] == null) {
-            let user = new User(message.author.id, message.author.tag, message.author.avatarURL);
+            let user = new User(message.author.id, message.author.tag, message.author.avatarURL({ dynamic: true }));
             await user.load();
             if (user.token == null) {
                 await user.createUser();

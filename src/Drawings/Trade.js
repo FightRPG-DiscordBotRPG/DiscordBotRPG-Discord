@@ -6,7 +6,7 @@ const ItemShow = require("./ItemShow");
 
 class Trade {
     toString(data) {
-        let rembed = new Discord.RichEmbed()
+        let rembed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(Translator.getString(data.lang, "trade", "title", [data.trade.playerOneName, data.trade.playerTwoName]));
 

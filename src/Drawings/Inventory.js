@@ -68,7 +68,7 @@ class Inventory {
         } else {
             str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_all");
         }
-        return new Discord.RichEmbed()
+        return new Discord.MessageEmbed()
             .setColor([255, 215, 0])
             .setAuthor(Translator.getString(lang, "inventory_equipment", "sellall_title"))
             .addField(Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell"), str)

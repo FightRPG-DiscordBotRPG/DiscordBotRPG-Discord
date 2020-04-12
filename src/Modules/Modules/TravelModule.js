@@ -195,7 +195,7 @@ class TravelModule extends GModule {
     getTravelMessage(data) {
         let waitTimeMessage = data.realWaitTime != data.costs.timeToWait ? Translator.getString(data.lang, "travel", "wait_time_body_with_mount", [data.realWaitTime, data.costs.timeToWait - data.realWaitTime]) : Translator.getString(data.lang, "travel", "wait_time_body", [data.realWaitTime]);
 
-        return new Discord.RichEmbed()
+        return new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(Emojis.getString("scroll") + " " + Translator.getString(data.lang, "travel", "travel_planning", [data.from_name, data.to_name]))
             .addField(Emojis.getString("hourglass_not_done") + " " + Translator.getString(data.lang, "travel", "wait_time_title"), waitTimeMessage, true)

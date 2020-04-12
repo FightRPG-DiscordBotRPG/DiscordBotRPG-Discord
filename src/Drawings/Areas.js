@@ -33,7 +33,7 @@ class Areas {
         }
 
 
-        return new Discord.RichEmbed()
+        return new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by", [area.owner]), area.image)
             .addField(Translator.getString(lang, "general", "description"), area.desc)
@@ -46,7 +46,7 @@ class Areas {
         let area = data.area;
         let lang = data.lang;
 
-        return new Discord.RichEmbed()
+        return new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by", [area.owner]), area.image)
             .addField(Translator.getString(lang, "general", "description"), area.desc + "\n\n" + Translator.getString(lang, "area", "minimum_quality") + " **" + area.minimum_quality + "**")
@@ -158,7 +158,7 @@ class Areas {
         }
         strConnectedAreas += "`"
 
-        return new Discord.RichEmbed()
+        return new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(region.name)
             .addField(Translator.getString(lang, "area", "list"), strAreas)
@@ -179,7 +179,7 @@ class Areas {
     conquestToStr(data) {
         let lang = data.lang;
 
-        return new Discord.RichEmbed()
+        return new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(data.name + " | " + data.levels + " | " + Translator.getString(lang, "area", "owned_by", [data.owner]), data.image)
             .addField(Translator.getString(lang, "area", "conquest"), "```" + data.tournament_info + "```")

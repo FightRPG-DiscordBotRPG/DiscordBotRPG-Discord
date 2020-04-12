@@ -1,5 +1,6 @@
 const Globals = require("../Globals");
 const Translator = require("../Translator/Translator");
+const Discord = require("discord.js");
 
 class GModule {
     constructor() {
@@ -28,6 +29,11 @@ class GModule {
         this.isLoaded = true;
     }
 
+    /**
+     * 
+     * @param {Discord.Message} message
+     * @param {string} msg
+     */
     sendMessage(message, msg) {
         msg != null && msg != "" ? message.channel.send(msg).catch((error) => {
             message.author.send(error.message).catch((e) => {

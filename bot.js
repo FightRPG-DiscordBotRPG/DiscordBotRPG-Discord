@@ -19,7 +19,7 @@ console.log("Shard Starting ...");
 let timeStart = Date.now();
 
 async function getTotalNumberOfGuilds() {
-    let allCounts = await bot.shard.broadcastEval("this.guilds.size");
+    let allCounts = await bot.shard.broadcastEval("this.guilds.cache.size");
     let total = 0;
     for (count in allCounts) {
         total += allCounts[count];
@@ -101,12 +101,12 @@ bot.on("ready", async () => {
             name: "On " + await getTotalNumberOfGuilds() + " servers!"
         }
     });
-    //console.log(bot.guilds.size, bot.shard.id, bot.shard.count);
+    //console.log(`${bot.guilds.cache.size}\n${bot.shard.ids}\n${bot.shard.count}`);
     if (conf.env === "prod") {
         const dbl = new DBL(conf.topggkey, bot);
         setInterval(async () => {
             console.log("Shard: " + bot.shard.id + " => Sending stats to https://discordbots.org/ ...");
-            await dbl.postStats(bot.guilds.size, bot.shard.id, bot.shard.count);
+            await dbl.postStats(bot.guilds.cache.size, bot.shard.ids[0], bot.shard.count);
             console.log("Data sent");
         }, 1800000);
     }
@@ -162,7 +162,7 @@ bot.on('guildCreate', async (guild) => {
     DiscordServers.newGuild(guild);
 });
 
-bot.on('guildDelete', async () => {
+bot.on('guildDelete', async (guild) => {
     bot.user.setPresence({
         game: {
             name: "On " + await getTotalNumberOfGuilds() + " servers!",

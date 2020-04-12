@@ -115,7 +115,7 @@ class TextDrawings {
         maximumStunChance = Math.round(maximumStunChance * 10000) / 100;
 
 
-        let embed = new Discord.RichEmbed()
+        let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(authorTitle, data.avatar)
             .addField(statsTitle, this.characterStatsToString(data.stats, data.statsEquipment, data.lang))
@@ -161,7 +161,7 @@ class TextDrawings {
         let statsTitle = Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, data.resetValue]);
         
         //calls an embed with sum = true
-        let embed = new Discord.RichEmbed()
+        let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(authorTitle, data.avatar)
             .addField(statsTitle, this.characterStatsToBigString(data.stats, data.statsEquipment, data.lang, true))

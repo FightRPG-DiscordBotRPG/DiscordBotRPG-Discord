@@ -5,7 +5,7 @@ class Craft {
     craftToEmbed(data) {
         let craft = data.craft;
         let lang = data.lang;
-        let embed = new Discord.RichEmbed()
+        let embed = new Discord.MessageEmbed()
             .setAuthor(craft.name)
             .setColor(craft.rarityColor)
             .addField(craft.type + " (" + craft.subType + ")" + " | " + craft.rarity + " | " + Translator.getString(lang, "general", "lvl") + ": " + craft.minLevel + "-" + craft.maxLevel + " | ", craft.desc)

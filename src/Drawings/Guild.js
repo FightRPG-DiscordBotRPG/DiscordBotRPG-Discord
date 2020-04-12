@@ -43,7 +43,7 @@ class Guild {
             nextLevel = Translator.getString(lang, "character", "maximum_level");
         }
 
-        let embed = new Discord.RichEmbed()
+        let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(data.name + " (ID " + data.id + ")", data.image)
             .addField(Translator.getString(lang, "guild", "guild_announcement"), (data.message !== "" ? data.message : Translator.getString(lang, "guild", "no_guild_announcement")), true)
@@ -56,7 +56,7 @@ class Guild {
     }
 
     territoriesToString(data) {
-        let embed = new Discord.RichEmbed()
+        let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(Translator.getString(data.lang, "guild", "guild_territories", [data.totalNumberOfTerritories]));
 

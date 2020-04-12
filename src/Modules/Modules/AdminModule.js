@@ -13,6 +13,12 @@ class AdminModule extends GModule {
         this.endLoading("Admin");
     }
 
+    /**
+     * 
+     * @param {Discord.Message} message
+     * @param {any} command
+     * @param {any} args
+     */
     async run(message, command, args) {
         let isAdmin = Globals.admins.indexOf(message.author.id) > -1;
         let msg = "";
@@ -26,7 +32,7 @@ class AdminModule extends GModule {
                 try {
                     await message.client.user.setPresence({
                         game: {
-                            name: "On " + message.client.guilds.size + " guilds !",
+                            name: "On " + message.client.guilds.cache.size + " guilds !",
                         },
                     });
                     msg = "Présence mise à jour.";
@@ -176,7 +182,7 @@ class AdminModule extends GModule {
                 }
                 break;
             case "update_commands_channel":
-                let actualMessages = await message.channel.fetchMessages({
+                let actualMessages = await message.channel.messages.fetch({
                     limit: 20
                 });
 

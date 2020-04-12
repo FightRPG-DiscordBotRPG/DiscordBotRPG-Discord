@@ -46,7 +46,7 @@ class CharacterModule extends GModule {
                         msg = data.error;
                     } else {
                         let lang = data.lang;
-                        let embedMessage = new Discord.RichEmbed()
+                        let embedMessage = new Discord.MessageEmbed()
                             .setColor([0, 255, 0])
                             .setAuthor(Emojis.getString("scroll") + " " + Translator.getString(data.lang, "character", "reset_price_title"))
                             .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "travel", "gold_price_title"), Translator.getString(data.lang, "travel", "gold_price_body", [data.resetValue]), true)
