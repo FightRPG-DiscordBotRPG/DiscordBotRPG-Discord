@@ -18,8 +18,12 @@ class FightManager {
         return fight;
     }
 
-
-    fightPvE(data, message) {
+    /**
+     * 
+     * @param {any} data
+     * @param {Discord.Message} message
+     */
+    async fightPvE(data, message) {
         let lang = data.lang;
         let userid = message.author.id;
         /*console.log(data);
@@ -33,7 +37,8 @@ class FightManager {
             rightName: rightName,
             summaryIndex: 0,
             team1_number: data.team1_number,
-            team2_number: data.team2_number
+            team2_number: data.team2_number,
+            playersMovedTo: data.playersMovedTo
         };
 
         if (data.beingAttacked == true) {
@@ -45,8 +50,8 @@ class FightManager {
         //thisPvEfight.summary.rounds.length
         //console.log("Fight Initialized");
 
-        message.channel.send(this.embedPvE(thisPvEFight.text[0] + thisPvEFight.text[1] + thisPvEFight.text[2], thisPvEFight, null, lang))
-            .then(msg => this.discordFightPvE(msg, userid, thisPvEFight, lang)).catch(e => console.log(e));
+        let msg = await message.channel.send(this.embedPvE(thisPvEFight.text[0] + thisPvEFight.text[1] + thisPvEFight.text[2], thisPvEFight, null, lang));
+        this.discordFightPvE(msg, userid, thisPvEFight, lang);
     }
 
     discordFightPvE(message, userid, fight, lang) {
@@ -192,6 +197,11 @@ class FightManager {
                 if (usersToTag != "") {
                     message.channel.send(usersToTag);
                 }
+
+                if (fight.playersMovedTo != null) {
+                    message.channel.send(Translator.getString(lang, "travel", "travel_to_area", [fight.playersMovedTo]));
+                }
+
             }).catch((e) => {
                 console.log(e)
             });
