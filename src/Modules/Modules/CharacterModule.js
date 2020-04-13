@@ -97,25 +97,31 @@ class CharacterModule extends GModule {
                 break;
 
             case "leaderboard":
-                switch (args[0]) {
+                let leaderBoardName = args[0];
+                let page = args[1] != null ? args[1] : "";
+
+                if (args[0] && !args[1] && Number.isInteger(Number.parseInt(args[0]))) {
+                    page = args[0];
+                }
+                switch (leaderBoardName) {
                     case "level":
-                        data = await axios.get("/game/character/leaderboard/level");
+                        data = await axios.get("/game/character/leaderboard/level/" + page);
                         break;
                     case "gold":
-                        data = await axios.get("/game/character/leaderboard/gold");
+                        data = await axios.get("/game/character/leaderboard/gold/" + page);
                         break;
                     case "craftlevel":
-                        data = await axios.get("/game/character/leaderboard/craft/level");
+                        data = await axios.get("/game/character/leaderboard/craft/level/" + page);
                         break;
                     default:
                     case "arena":
-                        data = await axios.get("/game/character/leaderboard/arena");
+                        data = await axios.get("/game/character/leaderboard/arena/" + page);
                         break;
                 }
                 data = data.data;
                 let leaderboard;
                 if (data.error == null) {
-                    switch (args[0]) {
+                    switch (leaderBoardName) {
                         case "level":
                             leaderboard = new LeaderboardLevel(data);
                             break;
@@ -130,7 +136,7 @@ class CharacterModule extends GModule {
                             leaderboard = new LeaderboardPvP(data);
                             break;
                     }
-                    msg = leaderboard.draw();
+                    msg = leaderboard.drawWithPages();
                 } else {
                     msg = data.error;
                 }

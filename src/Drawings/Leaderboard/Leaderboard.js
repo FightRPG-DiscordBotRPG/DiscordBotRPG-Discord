@@ -1,3 +1,4 @@
+const Translator = require("../../Translator/Translator");
 class Leaderboard {
 
     constructor(data) {
@@ -5,6 +6,8 @@ class Leaderboard {
         this.offset = data.offset;
         this.maximumRank = data.maximumRank;
         this.sumOfAll = data.sumOfAll;
+        this.maxPage = data.maxPage;
+        this.page = data.page;
         this.lang = data.lang;
     }
 
@@ -15,6 +18,11 @@ class Leaderboard {
     getNumberLength(number) {
         let numberLength = number.toString();
         return numberLength.length;
+    }
+
+    drawWithPages() {
+        return `${this.draw()}${Translator.getString(this.lang, "general", "page_out_of_x", [this.page, this.maxPage])}
+        `
     }
 }
 
