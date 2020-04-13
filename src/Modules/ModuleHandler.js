@@ -38,14 +38,18 @@ class ModuleHandler extends GModule {
         });
     }
 
+    /**
+     * 
+     * @param {Discord.Message} message
+     */
     async run(message) {
         let msg = "";
         let authorIdentifier = message.author.id;
         let prefix = this.getPrefix(message.channel.guild ? message.channel.guild.id : null);
-        // If do'nt start by prefix 
+        // If don't start by prefix 
         if (!message.content.startsWith(prefix)) {
             // If the bot is mention display prefix
-            if (!message.author.bot && message.isMentioned(message.client.user)) {
+            if (!message.author.bot && message.mentions.has(message.client.user)) {
                 this.sendMessage(message,
                     new Discord.MessageEmbed()
                         .setColor([0, 128, 128])
