@@ -4,10 +4,6 @@ const Translator = require("../../Translator/Translator");
 const Emojis = require("../../Drawings/Emojis");
 const TextDrawing = require("../../Drawings/TextDrawings");
 const Achievements = require("../../Drawings/Achievements");
-const LeaderboardPvP = require("../../Drawings/Leaderboard/LeaderboardPvP");
-const LeaderboardLevel = require("../../Drawings/Leaderboard/LeaderboardLevel");
-const LeaderboardGold = require("../../Drawings/Leaderboard/LeaderboardGold");
-const LeaderboardCraftLevel = require("../../Drawings/Leaderboard/LeaderboardCraftLevel");
 const Discord = require("discord.js");
 
 class CharacterModule extends GModule {
@@ -21,6 +17,12 @@ class CharacterModule extends GModule {
         this.authorizedAttributes = ["str", "int", "con", "dex", "cha", "will", "luck", "wis", "per"];
     }
 
+    /**
+     * 
+     * @param {Discord.Message} message
+     * @param {string} command
+     * @param {Array} args
+     */
     async run(message, command, args) {
         let msg = "";
         let axios = Globals.connectedUsers[message.author.id].getAxios();
@@ -97,49 +99,7 @@ class CharacterModule extends GModule {
                 break;
 
             case "leaderboard":
-                let leaderBoardName = args[0];
-                let page = args[1] != null ? args[1] : "";
-
-                if (args[0] && !args[1] && Number.isInteger(Number.parseInt(args[0]))) {
-                    page = args[0];
-                }
-                switch (leaderBoardName) {
-                    case "level":
-                        data = await axios.get("/game/character/leaderboard/level/" + page);
-                        break;
-                    case "gold":
-                        data = await axios.get("/game/character/leaderboard/gold/" + page);
-                        break;
-                    case "craftlevel":
-                        data = await axios.get("/game/character/leaderboard/craft/level/" + page);
-                        break;
-                    default:
-                    case "arena":
-                        data = await axios.get("/game/character/leaderboard/arena/" + page);
-                        break;
-                }
-                data = data.data;
-                let leaderboard;
-                if (data.error == null) {
-                    switch (leaderBoardName) {
-                        case "level":
-                            leaderboard = new LeaderboardLevel(data);
-                            break;
-                        case "gold":
-                            leaderboard = new LeaderboardGold(data);
-                            break;
-                        case "craftlevel":
-                            leaderboard = new LeaderboardCraftLevel(data);
-                            break;
-                        default:
-                        case "arena":
-                            leaderboard = new LeaderboardPvP(data);
-                            break;
-                    }
-                    msg = leaderboard.drawWithPages();
-                } else {
-                    msg = data.error;
-                }
+                await this.drawLeaderboard(message, args);
                 break;
 
             case "info":

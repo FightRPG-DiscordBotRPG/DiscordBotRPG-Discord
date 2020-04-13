@@ -36,7 +36,7 @@ class LeaderboardWBAttacks extends Leaderboard {
             }
 
 
-            return "**" + Translator.getString(lang, "leaderboards", "wb_attacks") + " (" + this.maximumRank + ")" + "**\n\n" + rankings;
+            return "**" + Translator.getString(lang, "leaderboards", "wb_attacks") + " (" + this.maximumRank + ")"+ "**\n*" + this.getYourRankString() + "*\n\n" + rankings;
         } else {
             return Translator.getString(lang, "leaderboards", "wb_have_not_participate");
         }

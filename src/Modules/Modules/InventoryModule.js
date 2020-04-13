@@ -74,6 +74,7 @@ class InventoryModule extends GModule {
                     collector.on('collect', async (reaction) => {
                         let dataCollector;
                         let msgCollector = null;
+
                         switch (reaction.emoji.name) {
                             case equipUnequipEmoji:
                                 if (isEquipped) {
@@ -135,7 +136,7 @@ class InventoryModule extends GModule {
                                 break;
                         }
                         if (msgCollector != null) {
-                            this.sendMessage(message, msgCollector);
+                            await this.sendMessage(message, msgCollector);
                         }
 
                     });
@@ -436,10 +437,6 @@ class InventoryModule extends GModule {
         }
 
         this.sendMessage(message, msg);
-    }
-
-    displayInventoryMessage(message, args) {
-
     }
 }
 

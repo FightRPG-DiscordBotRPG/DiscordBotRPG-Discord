@@ -50,7 +50,7 @@ class ModuleHandler extends GModule {
         if (!message.content.startsWith(prefix)) {
             // If the bot is mention display prefix
             if (!message.author.bot && message.mentions.has(message.client.user)) {
-                this.sendMessage(message,
+                await this.sendMessage(message,
                     new Discord.MessageEmbed()
                         .setColor([0, 128, 128])
                         .addField(Translator.getString("en", "other", "prefix_title"), prefix)

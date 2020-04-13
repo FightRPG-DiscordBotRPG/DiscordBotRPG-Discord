@@ -31,7 +31,7 @@ class LeaderboardPvP extends Leaderboard {
 
             rankings += Emojis.getString("win") + "`" + (offsetStr) + ". `" + Emojis.getString("honor") + honorString + Emojis.getString("idFRPG") + "`" + user.idCharacter + "` - " + user.userName + " (" + user.actualLevel + ")" + "\n";
         }
-        return "**" + Translator.getString(lang, "leaderboards", "arena", [this.sumOfAll.totalHonor]) + " (" + this.maximumRank + ")" + "**\n\n" + rankings;
+        return "**" + Translator.getString(lang, "leaderboards", "arena", [this.sumOfAll.totalHonor]) + " (" + this.maximumRank + ")" + "**\n*" + this.getYourRankString() + "*\n\n" + rankings;
     }
 }
 

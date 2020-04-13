@@ -33,7 +33,7 @@ class LeaderboardWBDamage extends Leaderboard {
 
                 rankings += Emojis.getString("win") + "`" + (offsetStr) + ". `" + Emojis.getString("sword") + userDamageString + " - " + user.userName + "(" + user.actualLevel + ")" + "\n";
             }
-            return "**" + Translator.getString(lang, "leaderboards", "wb_damage") + " (" + this.maximumRank + ")" + "**\n\n" + rankings;
+            return "**" + Translator.getString(lang, "leaderboards", "wb_damage") + " (" + this.maximumRank + ")" + "**\n*" + this.getYourRankString() + "*\n\n" + rankings;
         }
         else {
             return Translator.getString(lang, "leaderboards", "wb_have_not_participate");

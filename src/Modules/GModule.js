@@ -1,6 +1,15 @@
 const Globals = require("../Globals");
 const Translator = require("../Translator/Translator");
 const Discord = require("discord.js");
+const Leaderboard = require("../Drawings/Leaderboard/Leaderboard");
+const LeaderboardWBAttacks = require("../Drawings/Leaderboard/LeaderboardWBAttacks");
+const LeaderboardWBDamage = require("../Drawings/Leaderboard/LeaderboardWBDamage");
+const LeaderboardPvP = require("../Drawings/Leaderboard/LeaderboardPvP");
+const LeaderboardLevel = require("../Drawings/Leaderboard/LeaderboardLevel");
+const LeaderboardGold = require("../Drawings/Leaderboard/LeaderboardGold");
+const LeaderboardCraftLevel = require("../Drawings/Leaderboard/LeaderboardCraftLevel");
+const Emojis = require("../Drawings/Emojis");
+const MessageReactionsWrapper = require("../MessageReactionsWrapper");
 
 class GModule {
     constructor() {
@@ -34,12 +43,17 @@ class GModule {
      * @param {Discord.Message} message
      * @param {string} msg
      */
-    sendMessage(message, msg) {
-        msg != null && msg != "" ? message.channel.send(msg).catch((error) => {
+    async sendMessage(message, msg) {
+        try {
+            if (msg != null && msg != "") {
+                return await message.channel.send(msg);
+            }
+        } catch (ex) {
             message.author.send(error.message).catch((e) => {
-                console.log(e)
+                console.log(e);
             });
-        }) : null;
+        }
+        return null;
     }
 
     getToStrShort(stat, lang) {
@@ -86,7 +100,7 @@ class GModule {
         }
         return rarity;
     }
-    
+
     tryParseType(type) {
         let typeIndex = decodeURI(type.toLowerCase())
         if (Globals.typesByLang[typeIndex]) {
@@ -111,6 +125,143 @@ class GModule {
     getEquipableIDType(string) {
         return Globals.equipableCorresponds[string] != null ? Globals.equipableCorresponds[string] : -1;
     }
+
+    /**
+     * 
+     * @param {stirng} leaderboardName
+     * @param {Number} page
+     */
+    async getLeaderBoard(leaderboardName, page, axios) {
+        let data;
+        switch (leaderboardName) {
+            case "level":
+                data = await axios.get("/game/character/leaderboard/level/" + page);
+                break;
+            case "gold":
+                data = await axios.get("/game/character/leaderboard/gold/" + page);
+                break;
+            case "craftlevel":
+                data = await axios.get("/game/character/leaderboard/craft/level/" + page);
+                break;
+            case "wbattacks":
+                data = await axios.get("/game/worldbosses/leaderboard/attacks");
+                break;
+            case "wbdamage":
+                data = await axios.get("/game/worldbosses/leaderboard/damage");
+                break;
+            default:
+            case "arena":
+                data = await axios.get("/game/character/leaderboard/arena/" + page);
+                break;
+        }
+
+        return data.data;
+    }
+
+    /**
+     * 
+     * @param {Discord.Message} message
+     * @param {Array<any>} args
+     * @param {boolean} defaultLeaderboard
+     */
+    async drawLeaderboard(message, args, defaultLeaderboard) {
+        let leaderboardName = args[0];
+        let page = args[1] != null ? args[1] : "";
+
+        if (args[0] && !args[1] && Number.isInteger(Number.parseInt(args[0]))) {
+            page = args[0];
+        } else if (!args[0]) {
+            leaderboardName = defaultLeaderboard;
+        }
+
+        let data = await this.getLeaderBoard(leaderboardName, page, Globals.connectedUsers[message.author.id].getAxios());
+        /**
+         *  @type {Leaderboard}
+         **/
+        let leaderboard;
+        if (data.error == null) {
+            switch (leaderboardName) {
+                case "level":
+                    leaderboard = new LeaderboardLevel(data);
+                    break;
+                case "gold":
+                    leaderboard = new LeaderboardGold(data);
+                    break;
+                case "craftlevel":
+                    leaderboard = new LeaderboardCraftLevel(data);
+                    break;
+                case "wbattacks":
+                    leaderboard = new LeaderboardWBAttacks(data);
+                    break;
+                case "wbdamage":
+                    leaderboard = new LeaderboardWBDamage(data);
+                    break;
+                default:
+                case "arena":
+                    leaderboard = new LeaderboardPvP(data);
+                    break;
+            }
+
+            var currentPage = data.page;
+            let currentMessageReactions = [];
+
+            let nextEmoji = Emojis.getString("right_arrow");
+            let backEmoji = Emojis.getString("left_arrow");
+
+            if (data.page > 1) {
+                currentMessageReactions.push(backEmoji);
+            }
+            if (data.page < data.maxPage) {
+                currentMessageReactions.push(nextEmoji);
+            }
+
+            let messageReactWrapper = new MessageReactionsWrapper();
+            await messageReactWrapper.load(message, leaderboard.drawWithPages(), { reactionsEmojis: currentMessageReactions, collectorOptions: { time: 60000 } });
+
+
+            if (messageReactWrapper.message == null) {
+                return;
+            }
+
+            messageReactWrapper.collector.on('collect', async (reaction, user) => {
+                let dataCollector;
+                let msgCollector = "";
+                switch (reaction.emoji.name) {
+                    case nextEmoji:
+                        currentPage++;
+                        break;
+                    case backEmoji:
+                        currentPage--;
+                        break;
+                }
+
+                dataCollector = await this.getLeaderBoard(leaderboardName, currentPage, Globals.connectedUsers[message.author.id].getAxios());
+
+                if (dataCollector.error == null) {
+                    leaderboard.load(dataCollector);
+                    msgCollector = leaderboard.drawWithPages();
+
+                    currentMessageReactions = [];
+                    if (dataCollector.page > 1) {
+                        currentMessageReactions.push(backEmoji);
+                    }
+                    if (dataCollector.page < dataCollector.maxPage) {
+                        currentMessageReactions.push(nextEmoji);
+                    }
+
+                } else {
+                    msgCollector = dataCollector.error;
+                }
+
+                await messageReactWrapper.edit(msgCollector, currentMessageReactions);
+            });
+
+        } else {
+            this.sendMessage(message, data.error);
+        }
+    }
+
+
 
 }
 

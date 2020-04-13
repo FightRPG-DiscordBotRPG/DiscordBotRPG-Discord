@@ -52,7 +52,7 @@ class LeaderboardLevel extends Leaderboard {
 
             rankings += Emojis.getString("win") + "`" + (offsetStr) + ". `" + Emojis.getString("levelup") + actualLevelString + Emojis.getString("exp") + actualExpString + Emojis.getString("idFRPG") + "`" + user.idCharacter + "` - " + user.userName + "\n";
         }
-        return "**" + Translator.getString(lang, "leaderboards", "level", [this.sumOfAll.totalLevels, this.sumOfAll.totalExp]) + " (" + this.maximumRank + ")" + "**\n\n" + rankings;
+        return "**" + Translator.getString(lang, "leaderboards", "level", [this.sumOfAll.totalLevels, this.sumOfAll.totalExp]) + " (" + this.maximumRank + ")" + "**\n*" + this.getYourRankString() + "*\n\n" + rankings;
     }
 }
 

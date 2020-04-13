@@ -68,35 +68,10 @@ class WorldBossModule extends GModule {
                 }
                 break;
             case "wbleaderboard":
-                switch (args[0]) {
-                    case "attacks":
-                        data = await axios.get("/game/worldbosses/leaderboard/attacks");
-                        break;
-                    case "damage":
-                    default:
-                        data = await axios.get("/game/worldbosses/leaderboard/damage");
-                        break;
+                if ((args[0] && !args[1] && !Number.isInteger(Number.parseInt(args[0]))) || (args[0] && args[1])) {
+                    args[0] = "wb" + args[0];
                 }
-
-                data = data.data;
-                if (data.error == null) {
-                    let leaderboardWB = null;
-
-                    switch (args[0]) {
-                        case "attacks":
-                            leaderboardWB = new LeaderboardWBAttacks(data);
-                            break;
-                        case "damage":
-                        default:
-                            leaderboardWB = new LeaderboardWBDamage(data);
-                            break;
-                    }
-
-                    msg = leaderboardWB.draw();
-                } else {
-                    msg = data.error;
-                }
-
+                this.drawLeaderboard(message, args, "damage")
                 break;
         }
 
