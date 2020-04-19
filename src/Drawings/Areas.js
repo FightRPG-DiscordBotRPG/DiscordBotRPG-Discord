@@ -86,59 +86,23 @@ class Areas {
     }
 
     getWeatherEmoji(weatherShorthand) {
-        let emoji = "";
-        switch (weatherShorthand) {
-            case "sunny":
-                emoji = Emojis.getString("sun");
-                break;
-            case "cloudy":
-                emoji = Emojis.getString("cloud");
-                break;
-            case "foggy":
-                emoji = Emojis.getString("fog");
-                break;
-            case "rainy":
-                emoji = Emojis.getString("rain");
-                break;
-            case "rainstorm":
-                emoji = Emojis.getString("rainstorm");
-                break;
-            case "snowy":
-                emoji = Emojis.getString("snow");
-                break;
-            case "firestorm":
-                emoji = Emojis.getString("fire");
-                break;
-            case "sandstorm":
-                emoji = Emojis.getString("tornado");
-                break;
-            case "snowstorm":
-                emoji = Emojis.getString("snowflake");
-                break;
-            default:
-                emoji = Emojis.getString("thermometer");
-                break;
+        let emojis = {
+            "sunny": "sun",
+            "cloudy": "cloud",
+            "foggy": "fog",
+            "rainy": "rain",
+            "rainstorm": "rainstorm",
+            "snowy": "snow",
+            "firestorm": "fire",
+            "sandstorm": "tornado",
+            "snowstorm": "snowflake"
         }
-        return emoji;
-    }
 
-    monstersToArray(monsters, lang = "en") {
-        //let idAndName = "";
-        //let levels = "";
-        //let types = "";
-
-        //for (let i in monsters) {
-        //    let id = parseInt(i) + 1;
-        //    //if (monsters[i].number > 1) {
-        //    //    str += Translator.getString(lang, "area", "monster_group", [id, monsters[i].name, monsters[i].number - 1, monsters[i].level, monsters[i].type + "" + Emojis.getString(monsters[i].type_shorthand)]) + "\n";
-        //    //} else {
-        //    //    str += Translator.getString(lang, "area", "monster", [id, monsters[i].name, monsters[i].level, monsters[i].type]) + "" + Emojis.getString(monsters[i].type_shorthand) + "\n";
-        //    //}
-        //    idAndName += `${id} - ${monsters[i].name}\n`;
-        //    levels += monsters[i].level + "\n";
-        //    types += `${monsters[i].type} ${Emojis.getString(monsters[i].type_shorthand)}\n`;
-        //}
-        //return [idAndName, levels, types];
+        if (emojis[weatherShorthand]) {
+            return Emojis.getString(emojis[weatherShorthand]);
+        } else {
+            return Emojis.getString("thermometer");
+        }
     }
 
     monstersToString(monsters, lang = "en") {
