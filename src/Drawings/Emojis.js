@@ -116,6 +116,46 @@ Emojis.emojisProd = {
     "bar_green_empty": {
         id: "691587318339076136",
         string: "<:bar_green_empty:691587318339076136>"
+    },
+    "treasure": {
+        id: "403457812535181313",
+        string: "<:treasure:403457812535181313>"
+    },
+    "loose": {
+        id: "403153660756099073",
+        string: "<:loose:403153660756099073>"
+    },
+    "elite": {
+        id: "406090076511141888",
+        string: "<:elite:406090076511141888>"
+    },
+    "boss": {
+        id: "456113364687388683",
+        string: "<:boss:456113364687388683>"
+    },
+    "rarity_common": {
+        id: "701429864661516288",
+        string: "<:rarity_common:701429864661516288>"
+    },
+    "rarity_rare": {
+        id: "701431169517879406",
+        string: "<:rarity_rare:701431169517879406>"
+    },
+    "rarity_superior": {
+        id: "701431169446838312",
+        string: "<:rarity_superior:701431169446838312>"
+    },
+    "rarity_epic": {
+        id: "701431169442512946",
+        string: "<:rarity_epic:701431169442512946>"
+    },
+    "rarity_legendary": {
+        id: "701431169622736907",
+        string: "<:rarity_legendary:701431169622736907>"
+    },
+    "rarity_mythic": {
+        id: "701431169111294044",
+        string: "<:rarity_mythic:701431169111294044>"
     }
 };
 
@@ -163,7 +203,31 @@ Emojis.general = {
     "waving_hand": "👋",
     "briefcase": "💼",
     "baggage_claim": "🛄",
-    "crossed_swords": "⚔️"
+    "crossed_swords": "⚔️",
+    "cloud": "☁️",
+    "tornado": "🌪️",
+    "sun": "☀️",
+    "rain": "🌧️",
+    "snow": "🌨️",
+    "fog": "🌫️",
+    "fire": "🔥",
+    "snowflake": "❄️",
+    "rainstorm": "⛈️",
+    "thermometer": "🌡️",
+    "orange_circle": "🟠",
+    "purple_circle": "🟣",
+    "white_circle": "⚪",
+    "green_circle": "🟢",
+    "gemstone": "💎",
+    "herb": "🌿",
+    "pinetree": "🌲",
 }
+
+
+function configureAliases() {
+    Emojis.emojisProd.normal = Emojis.emojisProd.monster;
+}
+
+configureAliases();
 
 module.exports = Emojis;
