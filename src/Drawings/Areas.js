@@ -1,7 +1,7 @@
 const Translator = require("../Translator/Translator");
 const Discord = require("discord.js");
 const Emojis = require("./Emojis");
-
+const Moment = require("moment");
 
 class Areas {
     toString(data) {
@@ -39,6 +39,8 @@ class Areas {
             .setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by", [area.owner]), area.image)
             .addField(Translator.getString(lang, "climates", "climate"), Translator.getString(lang, "climates", area.climate.climate.shorthand), true)
             .addField(Translator.getString(lang, "weather", "weather"), Translator.getString(lang, "weather", area.climate.currentWeather.shorthand) + " " + this.getWeatherEmoji(area.climate.currentWeather.shorthand), true)
+            .addField(Translator.getString(lang, "weather", "impact"), this.getWeatherBonusesPenalties(area.climate.currentWeather, lang))
+            .addField(Translator.getString(lang, "weather", "time_before_ends"), this.getWeatherTimeLeft(area.climate.dateNextWeatherChange), true)
             .addField(Translator.getString(lang, "general", "description"), area.desc)
             .addField("Services", "```" + marketplace + forge + shop + "```")
             .setImage(area.image);
@@ -54,9 +56,11 @@ class Areas {
             .setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by", [area.owner]), area.image)
             .addField(Translator.getString(lang, "climates", "climate"), Translator.getString(lang, "climates", area.climate.climate.shorthand), true)
             .addField(Translator.getString(lang, "weather", "weather"), Translator.getString(lang, "weather", area.climate.currentWeather.shorthand) + " " + this.getWeatherEmoji(area.climate.currentWeather.shorthand), true)
+            .addField(Translator.getString(lang, "weather", "impact"), this.getWeatherBonusesPenalties(area.climate.currentWeather, lang))
+            .addField(Translator.getString(lang, "weather", "time_before_ends"), this.getWeatherTimeLeft(area.climate.dateNextWeatherChange), true)
             .addField(Translator.getString(lang, "general", "description"), area.desc + "\n\n" +
                 Translator.getString(lang, "area", "minimum_quality") + " **" + area.minimum_quality + "** " + Emojis.getString("rarity_" + area.minimum_quality_shorthand) +
-                "\n"+ Translator.getString(lang, "area", "maximum_quality") + " ** " + area.maximum_quality + " ** " + Emojis.getString("rarity_" + area.maximum_quality_shorthand))
+                "\n" + Translator.getString(lang, "area", "maximum_quality") + " ** " + area.maximum_quality + " ** " + Emojis.getString("rarity_" + area.maximum_quality_shorthand))
             .addField(Translator.getString(lang, "general", "monsters"), this.monstersToString(area.monsters, lang))
             .addField(Translator.getString(lang, "general", "resources"), this.resourcesToString(area.resources, lang))
             .setImage(area.image);
@@ -64,6 +68,21 @@ class Areas {
 
     dungeonStr(data) {
         this.wildStr(data);
+    }
+
+    getWeatherTimeLeft(date) {
+        return (Moment(date).diff(Moment(Date.now()), "hours") % 24).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: false }) + ":" + (Moment(date).diff(Moment(Date.now()), "minutes") % 60).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: false }) + ":" + (Moment(date).diff(Moment(Date.now()), "seconds") % 60).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: false });
+    }
+
+    getWeatherBonusesPenalties(weather, lang = "en") {
+        let str = "";
+        let travelFatigue = 1 / weather.travelSpeed;
+        let collectFatigue = 1 / weather.collectSpeed;
+        let collectChances = weather.collectChances / 1;
+        str += Translator.getString(lang, "bonuses", "travel_tiredness") + ` -> ${Translator.getFormater(lang).format(Math.round(travelFatigue * 100))}% (x${Translator.getFormater(lang).format(travelFatigue)})\n`;
+        str += Translator.getString(lang, "bonuses", "harvest_tiredness") + ` -> ${Translator.getFormater(lang).format(Math.round(collectFatigue * 100))}% (x${Translator.getFormater(lang).format(collectFatigue)})\n`;
+        str += Translator.getString(lang, "bonuses", "collect_drop") + ` -> ${Translator.getFormater(lang).format(Math.round(collectChances * 100))}% (x${Translator.getFormater(lang).format(collectChances)})`;
+        return str;
     }
 
     getWeatherEmoji(weatherShorthand) {
@@ -140,7 +159,7 @@ class Areas {
     }
 
     resourcesToString(resources, lang) {
-        let strTreesHeader =  Emojis.getString("pinetree") +" " + Translator.getString(lang, "resources", "woods") + "\n";
+        let strTreesHeader = Emojis.getString("pinetree") + " " + Translator.getString(lang, "resources", "woods") + "\n";
         let strTrees = "";
 
         let strOresHeader = Emojis.getString("gemstone") + " " + Translator.getString(lang, "resources", "ores") + "\n";
