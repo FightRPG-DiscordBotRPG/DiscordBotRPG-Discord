@@ -162,7 +162,8 @@ Emojis.general = {
     "hammer": "🔨",
     "waving_hand": "👋",
     "briefcase": "💼",
-    "baggage_claim": "🛄"
+    "baggage_claim": "🛄",
+    "crossed_swords": "⚔️"
 }
 
 module.exports = Emojis;

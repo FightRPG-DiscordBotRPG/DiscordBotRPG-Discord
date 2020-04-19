@@ -50,7 +50,7 @@ class FightManager {
         //thisPvEfight.summary.rounds.length
         //console.log("Fight Initialized");
 
-        let msg = await message.channel.send(this.embedPvE(thisPvEFight.text[0] + thisPvEFight.text[1] + thisPvEFight.text[2], thisPvEFight, null, lang));
+        let msg = await message.channel.send(this.embedPvE(thisPvEFight.text[0] + thisPvEFight.text[1] + thisPvEFight.text[2], thisPvEFight, null, lang, true));
         this.discordFightPvE(msg, userid, thisPvEFight, lang);
     }
 
@@ -79,7 +79,7 @@ class FightManager {
             }
 
 
-            message.edit(this.embedPvE(fight.text[0] + fight.text[1] + fight.text[2], fight, null, lang))
+            message.edit(this.embedPvE(fight.text[0] + fight.text[1] + fight.text[2], fight, null, lang, true))
                 .then(() => {
                     fight.summaryIndex++;
                     setTimeout(() => {
@@ -187,7 +187,7 @@ class FightManager {
                 color = [255, 0, 0];
             }
 
-            message.edit(this.embedPvE(fight.text[0] + fight.text[1] + fight.text[2], fight, color, lang)).then(() => {
+            message.edit(this.embedPvE(fight.text[0] + fight.text[1] + fight.text[2], fight, color, lang, false)).then(() => {
                 // Tag users when fight is done
                 // to notify them 
                 let usersToTag = "";
@@ -232,7 +232,7 @@ class FightManager {
                     hitText +
                     "\n\n", fight);
 
-            message.edit(this.embedPvP(fight.text[0] + fight.text[1] + fight.text[2], fight, null, lang))
+            message.edit(this.embedPvP(fight.text[0] + fight.text[1] + fight.text[2], fight, null, lang, true))
                 .then(() => {
                     fight.summaryIndex++;
                     setTimeout(() => {
@@ -272,7 +272,7 @@ class FightManager {
                 color = [255, 0, 0];
             }
 
-            message.edit(this.embedPvP(fight.text[0] + fight.text[1] + fight.text[2], fight, color, lang)).catch((e) => {
+            message.edit(this.embedPvP(fight.text[0] + fight.text[1] + fight.text[2], fight, color, lang, false)).catch((e) => {
                 console.log(e)
             });
 
@@ -282,7 +282,7 @@ class FightManager {
 
     }
 
-    embedPvE(text, fight, color, lang) {
+    embedPvE(text, fight, color, lang, ongoing=true) {
         color = color || [128, 128, 128]
         lang = lang || "en"
         let healthBar = new ProgressBarHealth();
@@ -330,8 +330,18 @@ class FightManager {
             monsterTitle = this.getMonsterDifficultyEmoji(summary.rounds[ind].monsterDifficultyName) + " ";
         }
 
-
+        let battleStatus = "";
+        if (ongoing) {
+            battleStatus = Translator.getString(lang, "fight_general", "battle_ongoing");
+        } else {
+            if (summary.winner == 0) {
+                battleStatus = Translator.getString(lang, "fight_general", "win");
+            } else {
+                battleStatus = Translator.getString(lang, "fight_general", "loose");
+            }
+        }
         let embed = new Discord.MessageEmbed()
+            .setAuthor(Emojis.getString("crossed_swords") + "  " + Translator.getString(lang, "fight_general", "status_of_fight", [battleStatus]) + "  " + Emojis.getString("crossed_swords"))
             .setColor(color)
             .addField(Translator.getString(lang, "fight_general", "combat_log"), text)
             .addField(firstName + " | " + Translator.getString(lang, "general", "lvl") + " : " + firstLevel, Translator.getFormater(lang).format(firstActualHP) + "/" + Translator.getFormater(lang).format(firstMaxHP) + "\n" + first, true)
@@ -339,7 +349,7 @@ class FightManager {
         return embed;
     }
 
-    embedPvP(text, fight, color, lang) {
+    embedPvP(text, fight, color, lang, ongoing=true) {
         color = color || [128, 128, 128]
         lang = lang || "en"
         let healthBar = new ProgressBarHealth();
@@ -376,8 +386,19 @@ class FightManager {
             secondMaxHP = summary.rounds[ind].attackerMaxHP;
         }
 
+        let battleStatus = "";
+        if (ongoing) {
+            battleStatus = Translator.getString(lang, "fight_general", "battle_ongoing");
+        } else {
+            if (summary.winner == 0) {
+                battleStatus = Translator.getString(lang, "fight_general", "win");
+            } else {
+                battleStatus = Translator.getString(lang, "fight_general", "loose");
+            }
+        }
 
         let embed = new Discord.MessageEmbed()
+            .setAuthor(Emojis.getString("crossed_swords") + Translator.getString(lang, "fight_general", "status_of_fight", [battleStatus]) + Emojis.getString("crossed_swords"))
             .setColor(color)
             .addField(Translator.getString(lang, "fight_general", "combat_log"), text)
             .addField(firstName + " | " + Translator.getString(lang, "general", "lvl") + " : " + firstLevel, Translator.getFormater(lang).format(firstActualHP) + "/" + Translator.getFormater(lang).format(firstMaxHP) + "\n" + first, true)
@@ -405,7 +426,7 @@ class FightManager {
         }
 
 
-        message.channel.send(this.embedPvP(pvpFight.text[0] + pvpFight.text[1] + pvpFight.text[2], pvpFight, null, lang))
+        message.channel.send(this.embedPvP(pvpFight.text[0] + pvpFight.text[1] + pvpFight.text[2], pvpFight, null, lang, true))
             .then(msg => this.discordFightPvP(msg, userid, pvpFight, lang)).catch(e => console.log(e));
 
     }
