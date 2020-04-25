@@ -261,6 +261,46 @@ class GModule {
         }
     }
 
+    /**
+     * 
+     * @param {Array} args
+     */
+    getSearchFilters(args) {
+        let toReturn = { page: 1, params: {} };
+
+        if (args.length > 0) {
+            if (args.length % 2) {
+                // Impair
+                toReturn.page = args[args.length - 1];
+                args = args.slice(0, args.length - 1);
+            }
+
+            for (let i = 0; i < args.length; i += 2) {
+                let type = args[i];
+                let value = args[i + 1];
+
+                switch (type) {
+                    case "rarity":
+                        type = "idRarity";
+                        value = this.tryParseRarity(value);
+                        break;
+                    case "type":
+                        type = "idType";
+                        value = this.tryParseType(value)
+                        break;
+                }
+
+                toReturn.params[type] = value;
+
+            }
+
+
+        }
+
+        return toReturn;
+
+    }
+
 
 
 }

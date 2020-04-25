@@ -28,7 +28,7 @@ class InventoryModule extends GModule {
         let firstMention;
         let data;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
-        let idRarity, idType, level, power;
+        let searchFilters;
 
         switch (command) {
             case "item":
@@ -177,39 +177,10 @@ class InventoryModule extends GModule {
 
             case "inv":
             case "inventory":
-                var page = 1;
-                if (args.length > 0) {
-                    if (args.length > 1) {
-                        if (args[0] != null) {
-                            switch (args[0]) {
-                                case "rarity":
-                                    idRarity = this.tryParseRarity(args[1]);
-                                    break;
-                                case "type":
-                                    idType = this.tryParseType(args[1]);
-                                    break;
-                                case "level":
-                                    level = args[1];
-                                    break;
-                                case "power":
-                                    power = args[1];
-                                    break;
+                searchFilters = this.getSearchFilters(args);
 
-                            }
-                        }
-                        page = args[2] != null ? args[2] : 1;
-                    } else {
-                        page = args[0];
-                    }
-                }
-
-                data = await axios.get("/game/inventory/show/" + page, {
-                    params: {
-                        idRarity: idRarity,
-                        idType: idType,
-                        level: level,
-                        power: power
-                    }
+                data = await axios.get("/game/inventory/show/" + searchFilters.page, {
+                    params: searchFilters.params
                 });
                 data = data.data;
                 if (data.error == null) {
@@ -249,12 +220,7 @@ class InventoryModule extends GModule {
                         switch (reaction.emoji.name) {
                             case nextEmoji:
                                 dataCollector = await axios.get("/game/inventory/show/" + (invCurrentPage + 1), {
-                                    params: {
-                                        idRarity: idRarity,
-                                        idType: idType,
-                                        level: level,
-                                        power: power
-                                    }
+                                    params: searchFilters.params
                                 });
                                 dataCollector = dataCollector.data;
                                 if (dataCollector.error == null) {
@@ -266,12 +232,7 @@ class InventoryModule extends GModule {
                                 break;
                             case backEmoji:
                                 dataCollector = await axios.get("/game/inventory/show/" + (invCurrentPage - 1), {
-                                    params: {
-                                        idRarity: idRarity,
-                                        idType: idType,
-                                        level: level,
-                                        power: power
-                                    }
+                                    params: searchFilters.params
                                 });
                                 dataCollector = dataCollector.data;
                                 if (dataCollector.error == null) {
@@ -338,32 +299,9 @@ class InventoryModule extends GModule {
                 break;
 
             case "sellall":
-                if (args.length > 0) {
-                    if (args.length > 1) {
-                        if (args[0] != null) {
-                            switch (args[0]) {
-                                case "rarity":
-                                    idRarity = this.tryParseRarity(args[1]);
-                                    break;
-                                case "type":
-                                    idType = this.tryParseType(args[1]);
-                                    break;
-                                case "level":
-                                    level = args[1];
-                                    break;
-                                case "power":
-                                    power = args[1]
-                                    break;
-                            }
-                        }
-                    }
-                }
-                var paramsSellAll = {
-                    idRarity: idRarity,
-                    idType: idType,
-                    level: level,
-                    power: power
-                };
+                searchFilters = this.getSearchFilters(args);
+
+                var paramsSellAll = searchFilters.params;
                 var dataInventoryValue = await axios.post("/game/inventory/sellall/value", paramsSellAll);
                 dataInventoryValue = dataInventoryValue.data;
 
