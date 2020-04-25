@@ -53,7 +53,8 @@ class CraftingModule extends GModule {
                 break;
             case "collect":
                 data = await axios.post("/game/crafting/collect", {
-                    idResource: args[0]
+                    idResource: args[0],
+                    number: args[1]
                 });
                 data = data.data;
                 if (data.error == null) {
