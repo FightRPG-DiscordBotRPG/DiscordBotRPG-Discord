@@ -221,6 +221,9 @@ Emojis.general = {
     "gemstone": "💎",
     "herb": "🌿",
     "pinetree": "🌲",
+    "axe": "🪓",
+    "pickaxe": "⛏️",
+    "gloves": "🧤"
 }
 
 
