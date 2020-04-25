@@ -55,18 +55,32 @@ class Inventory {
     ciValueSellAllDisplay(data) {
         let lang = data.lang;
         let str = "";
+
         if (data.isFiltered) {
-            if (data.params.rarity !== 0) {
-                str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_rarity", [Translator.getString(lang, "rarities", Globals.getRarityName(data.params.rarity))]);
-            } else if (data.params.type !== 0) {
-                str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_type", [Translator.getString(lang, "item_types", Globals.getTypeName(data.params.type))]);
-            } else if (data.params.level !== 0) {
-                str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level", [data.params.level]);
-            } else if (data.params.power !== 0) {
-                str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_inf", [data.params.power]);
-            } else {
-                str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_all");
+
+            for (let key of Object.keys(data.params)) {
+                if (data.params[key] !== 0 && data.params[key] != "" && data.params[key] != null) {
+                    switch (key) {
+                        case "rarity":
+                            str += Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_rarity", [Translator.getString(lang, "rarities", Globals.getRarityName(data.params.rarity))]) + "\nAnd also ";
+                            break;
+                        case "type":
+                            str += Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_type", [Translator.getString(lang, "item_types", Globals.getTypeName(data.params.type))]) + "\nAnd also ";
+                            break;
+                        case "level":
+                            str += Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level", [data.params.level]) + "\nAnd also ";
+                            break;
+                        case "power":
+                            str += Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_inf", [data.params.power]) + "\nAnd also ";
+                            break;
+                        case "name":
+                            str += Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_name", [data.params.name.replace(/%/g, "")]) + "\nAnd also ";
+                            break;
+                    }
+                }
             }
+
+            str = str.length > 10 ? str.substring(0, str.length - 10) : str;
         } else {
             str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_all");
         }
