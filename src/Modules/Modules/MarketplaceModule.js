@@ -17,9 +17,10 @@ class MarketplaceModule extends GModule {
         let authorIdentifier = message.author.id;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
         let data;
+        let searchFilters = this.getSearchFilters(args);
         switch (command) {
             case "mkmylist":
-                data = await axios.get("/game/marketplace/mylist/" + args[0]);
+                data = await axios.get("/game/marketplace/mylist/" + args[0], { params: searchFilters.params });
                 data = data.data;
                 if (data.error == null) {
                     msg = Marketplace.toString(data);
@@ -70,23 +71,8 @@ class MarketplaceModule extends GModule {
 
 
             case "mksearch":
-                data = await axios.get("/game/marketplace/search", {
-                    params: {
-                        itemName: args[0],
-                        level: args[1],
-                        page: args[2],
-                    }
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = Marketplace.toString(data);
-                } else {
-                    msg = data.error;
-                }
-                break;
-
             case "mkshow":
-                data = await axios.get("/game/marketplace/show/" + args[0]);
+                data = await axios.get("/game/marketplace/show/" + searchFilters.page, { params: searchFilters.params });
                 data = data.data;
                 if (data.error == null) {
                     msg = Marketplace.toString(data);
