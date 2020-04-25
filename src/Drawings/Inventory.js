@@ -71,7 +71,7 @@ class Inventory {
                             str += Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level", [data.params.level]) + "\nAnd also ";
                             break;
                         case "power":
-                            str += Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_inf", [data.params.power]) + "\nAnd also ";
+                            str += Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_sup", [data.params.power]) + "\nAnd also ";
                             break;
                         case "name":
                             str += Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_name", [data.params.name.replace(/%/g, "")]) + "\nAnd also ";
