@@ -197,6 +197,13 @@ class Guild {
         str += "```";
         return str;
     }
+
+    disbandConfirm(lang="en") {
+        return new Discord.MessageEmbed()
+            .setColor([0, 255, 0])
+            .setAuthor(Emojis.getString("warning") + " " + Translator.getString(lang, "guild", "head_disband") + " " + Emojis.getString("warning"))
+            .addField(Translator.getString(lang, "general", "description"), Translator.getString(lang, "guild", "body_disband"), true);
+    }
 }
 
 module.exports = new Guild();

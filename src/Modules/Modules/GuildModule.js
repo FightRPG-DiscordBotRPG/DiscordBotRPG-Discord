@@ -2,6 +2,8 @@ const GModule = require("../GModule");
 const Globals = require("../../Globals");
 const Translator = require("../../Translator/Translator");
 const Guild = require("../../Drawings/Guild");
+const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
+const Emojis = require("../../Drawings/Emojis");
 
 class GuildModule extends GModule {
     constructor() {
@@ -16,7 +18,13 @@ class GuildModule extends GModule {
         let msg = "";
         let authorIdentifier = message.author.id;
         let data;
+        /**
+         * @type {MessageReactionsWrapper}
+         */
+        let messageReactWrapper;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
+        let lang = Globals.connectedUsers[message.author.id].lang;
+        let messageReactions = [];
 
         switch (command) {
             case "guild":
@@ -52,13 +60,36 @@ class GuildModule extends GModule {
                 break;
 
             case "gdisband":
-                data = await axios.post("/game/guild/disband");
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
+                messageReactWrapper = new MessageReactionsWrapper();
+                messageReactions = [Emojis.getID("vmark"), Emojis.getID("xmark")];
+
+
+                await messageReactWrapper.load(message, Guild.disbandConfirm(lang), { reactionsEmojis: messageReactions, collectorOptions: { time: 60000, max:1 } });
+
+                if (messageReactWrapper.message == null) {
+                    return;
                 }
+
+                messageReactWrapper.collector.on('collect', async (reaction, user) => {
+                    let dataCollector;
+                    switch (reaction.emoji.id) {
+                        case Emojis.getID("vmark"):
+                            dataCollector = await axios.post("/game/guild/disband");
+                            dataCollector = dataCollector.data;
+                            if (dataCollector.error == null) {
+                                msg = dataCollector.success;
+                            } else {
+                                msg = dataCollector.error;
+                            }
+                            break;
+                        case Emojis.getID("xmark"):
+                            msg = Translator.getString(lang, "guild", "disband_cancelled");
+                            break;
+                    }
+
+                    await this.sendMessage(message, msg);
+                    await messageReactWrapper.clearEmojis();
+                });
                 break;
 
 

@@ -33,6 +33,7 @@ class Translator {
             tempStr;
         let argsAlreadyPassed = 0;
         let lastPos = 0;
+        let num;
         for (let i = 0; i < s.length - 1; i++) {
             if (s.charCodeAt(i) === 37 && argsAlreadyPassed < s.length) {
                 let nc = s.charCodeAt(++i);
@@ -41,7 +42,7 @@ class Translator {
                         tempStr = String(args[argsAlreadyPassed]);
                         break;
                     case 100:
-                        let num = args[argsAlreadyPassed];
+                        num = args[argsAlreadyPassed];
                         if (!isNaN(num)) {
                             tempStr = this.getFormater(lang).format(num);
                         } else {

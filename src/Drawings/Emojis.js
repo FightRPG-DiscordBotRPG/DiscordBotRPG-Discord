@@ -227,7 +227,8 @@ Emojis.general = {
     "king": "🤴",
     "man_pilot": "👨‍✈️",
     "person": "🧑",
-    "loudspeaker": "📢"
+    "loudspeaker": "📢",
+    "warning": "⚠️",
 }
 
 

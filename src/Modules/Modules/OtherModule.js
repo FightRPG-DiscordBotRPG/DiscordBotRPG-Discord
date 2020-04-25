@@ -29,6 +29,7 @@ class OtherModule extends GModule {
                     data = data.data;
                     if (data.error == null) {
                         msg = data.success;
+                        Globals.connectedUsers[authorIdentifier].setLang(data.lang);
                     } else {
                         msg = data.error;
                     }
