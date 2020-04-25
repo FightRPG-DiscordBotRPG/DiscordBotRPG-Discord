@@ -1,42 +1,73 @@
 const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
+const Emojis = require("./Emojis");
 
 
 class Guild {
     toString(data) {
         let members = data.members;
         let lang = data.lang;
-        let rmStr = Translator.getString(lang, "guild", "member") + "\n`";
-        let roStr = Translator.getString(lang, "guild", "officer") + "\n`";
-        let rgmStr = Translator.getString(lang, "guild", "guild_master") + "\n`";
+        let rmStr = "`";
+        let rmStr2 = "`";
+        let roStr = "`";
+        let rgmStr = "`";
 
-        let officerCount = 0;
-        let membersCount = 0;
-        let nbMembers = 0
+        let membersArray = [];
+
         for (let i in members) {
-            nbMembers++;
-            switch (members[i].rank) {
+            members[i].id = i;
+            membersArray.push(members[i]);
+        }
+
+        membersArray.sort((a, b) => {
+            return b.level - a.level
+        });
+
+        let lastBeforelfMember = 0;
+        let lastBeforelfOfficer = 0;
+        let i = 0;
+        membersArray.forEach((value) => {
+            let valToAdd = value.id + "-" + value.name + " (" + value.level + ")";
+
+            switch (value.rank) {
                 case 1:
-                    rmStr += i + "-" + members[i].name + " (" + members[i].level + "),";
-                    membersCount++;
+                    if (lastBeforelfMember + valToAdd.length > 50) {
+                        valToAdd = valToAdd + "\n";
+                        lastBeforelfMember = 0;
+                    } else {
+                        valToAdd += " - ";
+                    }
+                    lastBeforelfMember += valToAdd.length;
+
+                    if ((rmStr + valToAdd).length < 1024) {
+                        rmStr += valToAdd;
+                    } else {
+                        rmStr2 += valToAdd;
+                    }
                     break;
                 case 2:
-                    roStr += i + "-" + members[i].name + " (" + members[i].level + "),";
-                    officerCount++;
+                    if (lastBeforelfOfficer + valToAdd.length > 50) {
+                        valToAdd = valToAdd + "\n";
+                        lastBeforelfOfficer = 0;
+                    } else {
+                        valToAdd += " - ";
+                    }
+                    lastBeforelfOfficer += valToAdd.length;
+                    roStr += valToAdd;
                     break;
                 case 3:
-                    rgmStr += i + "-" + members[i].name + " (" + members[i].level + "),";
+                    rgmStr += valToAdd;
                     break;
             }
-        }
-        rmStr = rmStr.slice(0, rmStr.length - 1) + "`\n";
-        roStr = roStr.slice(0, roStr.length - 1) + "`\n";
-        rgmStr = rgmStr.slice(0, rgmStr.length - 1) + "`\n";
 
-        let allMembersStr = rgmStr + (officerCount > 0 ? roStr : "") + (membersCount > 0 ? rmStr : "");
-        if (allMembersStr.length > 1024) {
-            allMembersStr = allMembersStr.substring(0, 1024);
-        }
+            i++;
+        });
+
+
+        rmStr = rmStr.slice(0, rmStr.length - 1) + "`\n";
+        rmStr2 = rmStr2.slice(0, rmStr.length - 1) + "`\n";
+        roStr = (roStr.slice(roStr.length - 3, roStr.length) == " - " ? roStr.slice(0, roStr.length - 3) : roStr) + "`\n";
+        rgmStr = rgmStr + "`";
 
         let nextLevel;
         if (data.level < data.maxLevel) {
@@ -48,12 +79,21 @@ class Guild {
 
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(data.name + " (ID " + data.id + ")", data.image)
-            .addField(Translator.getString(lang, "guild", "guild_announcement"), (data.message !== "" ? data.message : Translator.getString(lang, "guild", "no_guild_announcement")), true)
-            .addField(Translator.getString(lang, "guild", "guild_territory_enroll"), (data.currentTerritoryEnroll !== null ? data.currentTerritoryEnroll : Translator.getString(lang, "general", "none")), true)
-            .addField(Translator.getString(lang, "guild", "members_out_of", [nbMembers, data.maxMembers]), allMembersStr)
-            .addField(Translator.getString(lang, "guild", "level_out_of", [data.level, data.maxLevel]), nextLevel, true)
-            .addField(Translator.getString(lang, "guild", "money_available"), Translator.getString(lang, "guild", "money", [data.money]), true);
+            .setAuthor(data.name + " (ID " + data.id + ") - " + Translator.getString(lang, "guild", "members_out_of", [membersArray.length, data.maxMembers]), data.image)
+            .addField(Emojis.getString("loudspeaker") + " " + Translator.getString(lang, "guild", "guild_announcement"), (data.message !== "" ? data.message : Translator.getString(lang, "guild", "no_guild_announcement")))
+            
+            .addField(Emojis.getString("king") + " " + Translator.getString(lang, "guild", "guild_master"), rgmStr)
+            
+            .addField(Emojis.getString("man_pilot") + " " + Translator.getString(lang, "guild", "officer"), roStr, true)
+            .addField(Emojis.getString("person") + " " + Translator.getString(lang, "guild", "member"), rmStr);
+
+        if (rmStr2.length > 4) {
+            embed.addField(Emojis.getString("person") + " " + Translator.getString(lang, "guild", "member"), rmStr2);
+        }
+
+        embed.addField(Emojis.getString("honor") + " " + Translator.getString(lang, "guild", "guild_territory_enroll"), (data.currentTerritoryEnroll !== null ? data.currentTerritoryEnroll : Translator.getString(lang, "general", "none")), true)
+            .addField(Emojis.getString("money_bag") + " " + Translator.getString(lang, "guild", "money_available"), Translator.getString(lang, "guild", "money", [data.money]), true)
+            .addField(Emojis.getString("exp") + " " + Translator.getString(lang, "guild", "level_out_of", [data.level, data.maxLevel]), nextLevel, true);
 
         return embed;
     }

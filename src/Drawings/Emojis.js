@@ -223,7 +223,11 @@ Emojis.general = {
     "pinetree": "🌲",
     "axe": "🪓",
     "pickaxe": "⛏️",
-    "gloves": "🧤"
+    "gloves": "🧤",
+    "king": "🤴",
+    "man_pilot": "👨‍✈️",
+    "person": "🧑",
+    "loudspeaker": "📢"
 }
 
 
