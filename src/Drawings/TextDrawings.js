@@ -78,7 +78,7 @@ class TextDrawings {
 
     userInfoPanel(data) {
         let statPointsPlur = data.statPoints > 1 ? "_plur" : "";
-        let xpProgressBar = new ProgressBar(Color.Blue);
+        let xpProgressBar = new ProgressBar(Color.Yellow);
         let xpBar = "";
         let xpOn = "";
 
