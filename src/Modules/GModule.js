@@ -49,8 +49,8 @@ class GModule {
                 return await message.channel.send(msg);
             }
         } catch (ex) {
-            message.author.send(error.message).catch((e) => {
-                console.log(e);
+            message.author.send(ex.message).catch((e) => {
+                console.log(ex);
             });
         }
         return null;
