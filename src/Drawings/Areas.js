@@ -58,9 +58,9 @@ class Areas {
             .addField(Translator.getString(lang, "weather", "weather"), Translator.getString(lang, "weather", area.climate.currentWeather.shorthand) + " " + Emojis.getWeatherEmoji(area.climate.currentWeather.shorthand), true)
             .addField(Translator.getString(lang, "weather", "impact"), this.getWeatherBonusesPenalties(area.climate.currentWeather, lang))
             .addField(Translator.getString(lang, "weather", "time_before_ends"), this.getWeatherTimeLeft(area.climate.dateNextWeatherChange), true)
-            .addField(Translator.getString(lang, "general", "description"), area.desc + "\n\n" +
-                Translator.getString(lang, "area", "minimum_quality") + " **" + area.minimum_quality + "** " + Emojis.getString("rarity_" + area.minimum_quality_shorthand) +
-                "\n" + Translator.getString(lang, "area", "maximum_quality") + " ** " + area.maximum_quality + " ** " + Emojis.getString("rarity_" + area.maximum_quality_shorthand))
+            .addField(Translator.getString(lang, "general", "description"), area.desc)
+            .addField(Translator.getString(lang, "area", "minimum_quality"), Emojis.getString("rarity_" + area.minimum_quality_shorthand) + " **" + area.minimum_quality + "** ", true)
+            .addField(Translator.getString(lang, "area", "maximum_quality"), Emojis.getString("rarity_" + area.maximum_quality_shorthand) + " **" + area.maximum_quality + "** ", true)
             .addField(Translator.getString(lang, "general", "monsters"), this.monstersToString(area.monsters, lang))
             .addField(Translator.getString(lang, "general", "resources"), this.resourcesToString(area.resources, lang))
             .setImage(area.image);
