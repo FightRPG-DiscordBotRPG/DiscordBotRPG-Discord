@@ -4,13 +4,14 @@ const Globals = require("../../Globals");
 const Translator = require("../../Translator/Translator");
 const Emojis = require("../../Drawings/Emojis");
 const Areas = require("../../Drawings/Areas");
+const Axios = require("axios");
 
 
 
 class TravelModule extends GModule {
     constructor() {
         super();
-        this.commands = ["area", "areas", "travel", "travelregion", "areaplayers", "region"];
+        this.commands = ["area", "areas", "travel", "travelregion", "areaplayers", "region", "traveldirect"];
         this.startLoading("Travel");
         this.init();
         this.endLoading("Travel");
@@ -21,8 +22,6 @@ class TravelModule extends GModule {
         let data;
         let authorIdentifier = message.author.id;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
-        // travel related
-        let checkEmoji, xmarkEmoji, tempMsg;
 
         switch (command) {
             case "area":
@@ -47,129 +46,17 @@ class TravelModule extends GModule {
                 break;
 
             case "travel":
-                if (args[1] === "confirm") {
-                    data = await axios.post("/game/travel/toarea/", {
-                        idArea: args[0]
-                    });
-                    data = data.data;
-                    if (data.error == null) {
-                        msg = data.success;
-                    } else {
-                        msg = data.error;
-                    }
-                } else {
-                    data = await axios.get("/game/travel/info/" + args[0]);
-                    data = data.data;
-                    if (data.error == null) {
-
-                        checkEmoji = Emojis.getID("vmark");
-                        xmarkEmoji = Emojis.getID("xmark");
-                        tempMsg = await message.channel.send(this.getTravelMessage(data)).catch(() => null);
-
-                        await Promise.all([
-                            tempMsg.react(checkEmoji),
-                            tempMsg.react(xmarkEmoji)
-                        ]);
-
-                        const filter = (reaction, user) => {
-                            return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && user.id === message.author.id;
-                        };
-
-
-                        const collected = await tempMsg.awaitReactions(filter, {
-                            max: 1,
-                            time: 25000
-                        });
-                        const reaction = collected.first();
-                        if (reaction != null) {
-                            switch (reaction.emoji.id) {
-                                case checkEmoji:
-                                    data = await axios.post("/game/travel/toarea/", {
-                                        idArea: args[0]
-                                    });
-                                    data = data.data;
-                                    if (data.error == null) {
-                                        msg = data.success;
-                                    } else {
-                                        msg = data.error;
-                                    }
-
-                                    break;
-
-                                case xmarkEmoji:
-                                    msg = Translator.getString(data.lang, "travel", "travel_cancel");
-                                    break;
-                            }
-                        }
-                        tempMsg.delete().catch(() => null);
-                    } else {
-                        msg = data.error;
-                    }
-                }
+                msg = await this.travelSharedCommand(message, args, axios, "area");
                 break;
 
             case "travelregion":
-                if (args[1] === "confirm") {
-                    data = await axios.post("/game/travel/toregion/", {
-                        idArea: args[0]
-                    });
-                    data = data.data;
-                    if (data.error == null) {
-                        msg = data.success;
-                    } else {
-                        msg = data.error;
-                    }
-                } else {
-                    data = await axios.get("/game/travel/inforegion/" + args[0]);
-                    data = data.data;
-                    if (data.error == null) {
-
-                        checkEmoji = Emojis.getID("vmark");
-                        xmarkEmoji = Emojis.getID("xmark");
-                        tempMsg = await message.channel.send(this.getTravelMessage(data)).catch(() => null);
-
-                        Promise.all([
-                            tempMsg.react(checkEmoji),
-                            tempMsg.react(xmarkEmoji)
-                        ]).catch(() => null);
-
-                        const filter = (reaction, user) => {
-                            return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && user.id === message.author.id;
-                        };
-
-
-                        const collected = await tempMsg.awaitReactions(filter, {
-                            max: 1,
-                            time: 25000
-                        });
-                        const reaction = collected.first();
-                        if (reaction != null) {
-                            switch (reaction.emoji.id) {
-                                case checkEmoji:
-                                    data = await axios.post("/game/travel/toregion/", {
-                                        idArea: args[0]
-                                    });
-                                    data = data.data;
-                                    if (data.error == null) {
-                                        msg = data.success;
-                                    } else {
-                                        msg = data.error;
-                                    }
-
-                                    break;
-
-                                case xmarkEmoji:
-                                    msg = Translator.getString(data.lang, "travel", "travel_cancel");
-                                    break;
-                            }
-                        }
-                        tempMsg.delete().catch(() => null);
-                    } else {
-                        msg = data.error;
-                    }
-                }
-
+                msg = await this.travelSharedCommand(message, args, axios, "region");
                 break;
+
+            case "traveldirect":
+                msg = await this.travelSharedCommand(message, args, axios, "real");
+                break;
+
             case "areaplayers":
                 data = await axios.get("/game/travel/players/" + args[0]);
                 data = data.data;
@@ -201,6 +88,112 @@ class TravelModule extends GModule {
             .addField(Emojis.getString("hourglass_not_done") + " " + Translator.getString(data.lang, "travel", "wait_time_title"), waitTimeMessage, true)
             .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "travel", "gold_price_title"), Translator.getString(data.lang, "travel", "gold_price_body", [data.costs.goldPrice]), true)
             .addField(Emojis.getString("q_mark") + " " + Translator.getString(data.lang, "travel", "sure_to_travel_title"), Translator.getString(data.lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]));
+    }
+
+    /**
+     * 
+     * @param {Discord.Message} message
+     * @param {Array} args
+     * @param {string} type
+     */
+    async travelSharedCommand(message, args, axios, type="area") {
+        let msg = "";
+        if (args[1] === "confirm") {
+            msg = await this.travelPost(args, axios, type);
+        } else {
+            let data = await this.travelGet(args, axios, type);
+            data = data.data;
+            if (data.error == null) {
+
+                let checkEmoji = Emojis.getID("vmark");
+                let xmarkEmoji = Emojis.getID("xmark");
+                let tempMsg = await message.channel.send(this.getTravelMessage(data)).catch(() => null);
+
+                Promise.all([
+                    tempMsg.react(checkEmoji),
+                    tempMsg.react(xmarkEmoji)
+                ]).catch(() => null);
+
+                const filter = (reaction, user) => {
+                    return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && user.id === message.author.id;
+                };
+
+
+                const collected = await tempMsg.awaitReactions(filter, {
+                    max: 1,
+                    time: 25000
+                });
+                const reaction = collected.first();
+                if (reaction != null) {
+                    switch (reaction.emoji.id) {
+                        case checkEmoji:
+                            msg = await this.travelPost(args, axios, type);
+                            break;
+
+                        case xmarkEmoji:
+                            msg = Translator.getString(data.lang, "travel", "travel_cancel");
+                            break;
+                    }
+                }
+                tempMsg.delete().catch(() => null);
+            } else {
+                msg = data.error;
+            }
+        }
+        return msg;
+    }
+
+    /**
+     * 
+     * @param {Array} args
+     * @param {Axios.default} axios
+     * @param {any} type
+     */
+    async travelGet(args, axios, type = "area") {
+        switch (type) {
+            case "area":
+                return await axios.get("/game/travel/info/" + args[0]);
+            case "region":
+                return await axios.get("/game/travel/inforegion/" + args[0]);
+            case "real":
+                return await axios.get("/game/travel/info/" + args[0], {
+                    params: {
+                        isRealId: true
+                    }
+                });
+        }
+        return null;
+    }
+
+    async travelPost(args, axios, type="area") {
+        let data;
+
+        switch (type) {
+            case "area":
+                data = await axios.post("/game/travel/toarea/", {
+                    idArea: args[0]
+                });
+                break;
+            case "region":
+                data = await axios.post("/game/travel/toregion/", {
+                    idArea: args[0]
+                });
+                break;
+            case "real":
+                data = await axios.post("/game/travel/toarea/", {
+                    idArea: args[0],
+                    isRealId: true
+                });
+        }
+
+        let msg = "";
+        data = data.data;
+        if (data.error == null) {
+            msg = data.success;
+        } else {
+            msg = data.error;
+        }
+        return msg;
     }
 
 }
