@@ -149,8 +149,8 @@ class GModule {
             case "wbdamage":
                 data = await axios.get("/game/worldbosses/leaderboard/damage");
                 break;
-            default:
             case "arena":
+            default:
                 data = await axios.get("/game/character/leaderboard/arena/" + page);
                 break;
         }
@@ -196,8 +196,8 @@ class GModule {
                 case "wbdamage":
                     leaderboard = new LeaderboardWBDamage(data);
                     break;
-                default:
                 case "arena":
+                default:
                     leaderboard = new LeaderboardPvP(data);
                     break;
             }

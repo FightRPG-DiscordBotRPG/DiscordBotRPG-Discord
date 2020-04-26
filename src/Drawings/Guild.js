@@ -25,7 +25,7 @@ class Guild {
 
         let lastBeforelfMember = 0;
         let lastBeforelfOfficer = 0;
-        let i = 0;
+
         membersArray.forEach((value) => {
             let valToAdd = value.id + "-" + value.name + " (" + value.level + ")";
 

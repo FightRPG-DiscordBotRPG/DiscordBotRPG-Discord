@@ -355,7 +355,6 @@ class InventoryModule extends GModule {
             case "sendmoney":
                 firstMention = mentions.first();
                 var isMention = false;
-                var mId = 0;
                 if (firstMention) {
                     args[0] = firstMention.id;
                     isMention = true;
