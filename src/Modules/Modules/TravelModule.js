@@ -118,7 +118,7 @@ class TravelModule extends GModule {
      * @param {Array} args
      * @param {string} type
      */
-    async travelSharedCommand(message, args, axios, type="area") {
+    async travelSharedCommand(message, args, axios, type = "area") {
         let msg = "";
         if (args[1] === "confirm") {
             msg = await this.travelPost(args, axios, type);
@@ -178,16 +178,16 @@ class TravelModule extends GModule {
             case "region":
                 return await axios.get("/game/travel/inforegion/" + args[0]);
             case "real":
+            default:
                 return await axios.get("/game/travel/info/" + args[0], {
                     params: {
                         isRealId: true
                     }
                 });
         }
-        return null;
     }
 
-    async travelPost(args, axios, type="area") {
+    async travelPost(args, axios, type = "area") {
         let data;
 
         switch (type) {
@@ -202,6 +202,7 @@ class TravelModule extends GModule {
                 });
                 break;
             case "real":
+            default:
                 data = await axios.post("/game/travel/toarea/", {
                     idArea: args[0],
                     isRealId: true
