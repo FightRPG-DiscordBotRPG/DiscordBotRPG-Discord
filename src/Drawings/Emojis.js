@@ -100,44 +100,44 @@ Emojis.emojisProd = {
         string: "<:exp:554308999760052242>"
     },
     "bar_white": {
-        id: "691582742214869022",
-        string:"<:bar_white:691582742214869022>"
+        id: "704023285586722837",
+        string:"<:bar_white:704023285586722837>"
     },
     "bar_white_empty": {
-        id: "691582742261137418",
-        string: "<:bar_white_empty:691582742261137418>"
+        id: "704023285897363486",
+        string: "<:bar_white_empty:704023285897363486>"
     },
     "bar_red": {
-        id: "691578753931018240",
-        string: "<:bar_red:691578753931018240>"
+        id: "704023285574402138",
+        string: "<:bar_red:704023285574402138>"
     },
     "bar_red_empty": {
-        id: "691578753884749934",
-        string: "<:bar_red_empty:691578753884749934>"
+        id: "704023285339521177",
+        string: "<:bar_red_empty:704023285339521177>"
     },
     "bar_blue": {
-        id: "691582741912748063",
-        string: "<:bar_blue:691582741912748063>"
+        id: "704023285616345311",
+        string: "<:bar_blue:704023285616345311>"
     },
     "bar_blue_empty": {
-        id: "691582742206611546",
-        string: "<:bar_blue_empty:691582742206611546>"
+        id: "704023285771272212",
+        string: "<:bar_blue_empty:704023285771272212>"
     },
     "bar_yellow": {
-        id: "691581864825061397",
-        string: "<:bar_yellow:691581864825061397>"
+        id: "704023285574271136",
+        string: "<:bar_yellow:704023285574271136>"
     },
     "bar_yellow_empty": {
-        id: "691581865005547530",
-        string: "<:bar_yellow_empty:691581865005547530>"
+        id: "704023285607956591",
+        string: "<:bar_yellow_empty:704023285607956591>"
     },
     "bar_green": {
-        id: "691587318317842473",
-        string: "<:bar_green:691587318317842473>"
+        id: "704023285590917191",
+        string: "<:bar_green:704023285590917191>"
     },
     "bar_green_empty": {
-        id: "691587318339076136",
-        string: "<:bar_green_empty:691587318339076136>"
+        id: "704023285620539402",
+        string: "<:bar_green_empty:704023285620539402>"
     },
     "treasure": {
         id: "403457812535181313",
@@ -156,28 +156,28 @@ Emojis.emojisProd = {
         string: "<:boss:456113364687388683>"
     },
     "rarity_common": {
-        id: "701429864661516288",
-        string: "<:rarity_common:701429864661516288>"
+        id: "704020575705628762",
+        string: "<:rarity_common:704020575705628762>"
     },
     "rarity_rare": {
-        id: "701431169517879406",
-        string: "<:rarity_rare:701431169517879406>"
+        id: "704020574871093362",
+        string: "<:rarity_rare:704020574871093362>"
     },
     "rarity_superior": {
-        id: "701431169446838312",
-        string: "<:rarity_superior:701431169446838312>"
+        id: "704020574938333225",
+        string: "<:rarity_superior:704020574938333225>"
     },
     "rarity_epic": {
-        id: "701431169442512946",
-        string: "<:rarity_epic:701431169442512946>"
+        id: "704020575193923645",
+        string: "<:rarity_epic:704020575193923645>"
     },
     "rarity_legendary": {
-        id: "701431169622736907",
-        string: "<:rarity_legendary:701431169622736907>"
+        id: "704020575609159811",
+        string: "<:rarity_legendary:704020575609159811>"
     },
     "rarity_mythic": {
-        id: "701431169111294044",
-        string: "<:rarity_mythic:701431169111294044>"
+        id: "704020575462490222",
+        string: "<:rarity_mythic:704020575462490222>"
     },
     "wood_common": {
         id: "703958796351045632",
