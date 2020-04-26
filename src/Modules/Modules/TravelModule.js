@@ -81,7 +81,7 @@ class TravelModule extends GModule {
 
     getTravelMessage(data) {
         let waitTimeMessage = data.realWaitTime != data.costs.timeToWait ? Translator.getString(data.lang, "travel", "wait_time_body_with_mount", [data.realWaitTime, data.costs.timeToWait - data.realWaitTime]) : Translator.getString(data.lang, "travel", "wait_time_body", [data.realWaitTime]);
-        console.log(data.costs.timeChangeDueToWeather.climatesTotalTravelTime);
+
         let weatherImpacts = "";
 
         let weathersChanges = data.costs.timeChangeDueToWeather.weathersChanges;
@@ -89,9 +89,9 @@ class TravelModule extends GModule {
         let i = 1;
 
         for (let key of weathersChangesKeys) {
-            console.log(key);
+
             let addedTime = weathersChanges[key];
-            console.log(addedTime);
+
             if (addedTime > 0) {
                 weatherImpacts += Emojis.getWeatherEmoji(key) + Translator.getString(data.lang, "weather", key) + " " + Emojis.getString("simple_left_to_right_arrow") + " +" + Translator.getString(data.lang, "travel", "wait_time_body", [data.costs.timeChangeDueToWeather.totalTimeAddedDueToWeather]);
 

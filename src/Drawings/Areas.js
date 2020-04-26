@@ -103,13 +103,13 @@ class Areas {
     }
 
     resourcesToString(resources, lang) {
-        let strTreesHeader = Emojis.getString("pinetree") + " " + Translator.getString(lang, "resources", "woods") + "\n";
+        let strTreesHeader = Emojis.general.axe + " " + Translator.getString(lang, "resources", "woods") + "\n";
         let strTrees = "";
 
-        let strOresHeader = Emojis.getString("gemstone") + " " + Translator.getString(lang, "resources", "ores") + "\n";
+        let strOresHeader = Emojis.general.pickaxe + " " + Translator.getString(lang, "resources", "ores") + "\n";
         let strOres = "";
 
-        let strPlantsHeader = Emojis.getString("herb") + " " + Translator.getString(lang, "resources", "plants") + "\n";
+        let strPlantsHeader = Emojis.general.gloves + " " + Translator.getString(lang, "resources", "plants") + "\n";
         let strPlants = "";
 
         let str = "";
@@ -117,9 +117,15 @@ class Areas {
 
         let length = 0;
 
+        let resourcesTypesEquivalent = {
+            "trees": "wood",
+            "ores": "ore",
+            "plants": "herb"
+        }
+
         for (let rType in resources) {
             for (let resource of resources[rType]) {
-                tempString = Emojis.getString("rarity_" + resource.rarity_shorthand) + "`" + Translator.getString(lang, "area", "resource", [resource.id, resource.name, resource.rarity]) + "`\n";
+                tempString = Emojis.getString(resourcesTypesEquivalent[rType] + "_" + resource.rarity_shorthand) + "`" + Translator.getString(lang, "area", "resource", [resource.id, resource.name, resource.rarity]) + "`\n";
                 switch (rType) {
                     case "trees":
                         strTrees += tempString;

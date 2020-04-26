@@ -178,6 +178,78 @@ Emojis.emojisProd = {
     "rarity_mythic": {
         id: "701431169111294044",
         string: "<:rarity_mythic:701431169111294044>"
+    },
+    "wood_common": {
+        id: "703958796351045632",
+        string: "<:wood_common:703958796351045632>"
+    },
+    "wood_rare": {
+        id: "703958796065833130",
+        string: "<:wood_rare:703958796065833130>"
+    },
+    "wood_superior": {
+        id: "703958796531138580",
+        string: "<:wood_superior:703958796531138580>"
+    },
+    "wood_epic": {
+        id: "703964718171422820",
+        string: "<:wood_epic:703964718171422820>"
+    },
+    "wood_legendary": {
+        id: "703964718213365770",
+        string: "<:wood_legendary:703964718213365770>"
+    },
+    "wood_mythic": {
+        id: "703958796757762048",
+        string: "<:wood_mythic:703958796757762048>"
+    },
+    "ore_common": {
+        id: "703958795591614485",
+        string: "<:ore_common:703958795591614485>"
+    },
+    "ore_rare": {
+        id: "703960465398824970",
+        string: "<:ore_rare:703960465398824970>"
+    },
+    "ore_superior": {
+        id: "703958795608653885",
+        string: "<:ore_superior:703958795608653885>"
+    },
+    "ore_epic": {
+        id: "703958795352670239",
+        string: "<:ore_epic:703958795352670239>"
+    },
+    "ore_legendary": {
+        id: "703958795516248125",
+        string: "<:ore_legendary:703958795516248125>"
+    },
+    "ore_mythic": {
+        id: "703958795574837258",
+        string: "<:ore_mythic:703958795574837258>"
+    },
+    "herb_common": {
+        id: "703961463525736529",
+        string: "<:herb_common:703961463525736529>"
+    },
+    "herb_rare": {
+        id: "703958795965038662",
+        string: "<:herb_rare:703958795965038662>"
+    },
+    "herb_superior": {
+        id: "703961463575937024",
+        string: "<:herb_superior:703961463575937024>"
+    },
+    "herb_epic": {
+        id: "703961463890640946",
+        string: "<:herb_epic:703961463890640946>"
+    },
+    "herb_legendary": {
+        id: "703961463542251551",
+        string: "<:herb_legendary:703961463542251551>"
+    },
+    "herb_mythic": {
+        id: "703958796229148683",
+        string: "<:herb_mythic:703958796229148683>"
     }
 };
 
