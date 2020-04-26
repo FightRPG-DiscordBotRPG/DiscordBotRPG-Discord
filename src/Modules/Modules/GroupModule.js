@@ -125,7 +125,7 @@ class GroupModule extends GModule {
                 });
                 data = data.data;
                 if (data.error == null) {
-                    msg = FightManager.fightPvE(data, message);
+                    msg = FightManager.fight(data, message);
                 } else {
                     msg = data.error;
                 }

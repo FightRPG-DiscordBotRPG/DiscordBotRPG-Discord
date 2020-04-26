@@ -30,7 +30,7 @@ class FightModule extends GModule {
                 });
                 data = data.data;
                 if (data.error == null) {
-                    fightManager.fightPvE(data, message);
+                    fightManager.fight(data, message);
                 } else {
                     msg = data.error;
                 }
@@ -45,7 +45,7 @@ class FightModule extends GModule {
                 });
                 data = data.data;
                 if (data.error == null) {
-                    fightManager.fightPvP(data, message);
+                    fightManager.fight(data, message);
                 } else {
                     msg = data.error;
                 }
