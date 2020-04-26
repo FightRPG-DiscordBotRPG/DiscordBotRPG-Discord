@@ -81,13 +81,35 @@ class TravelModule extends GModule {
 
     getTravelMessage(data) {
         let waitTimeMessage = data.realWaitTime != data.costs.timeToWait ? Translator.getString(data.lang, "travel", "wait_time_body_with_mount", [data.realWaitTime, data.costs.timeToWait - data.realWaitTime]) : Translator.getString(data.lang, "travel", "wait_time_body", [data.realWaitTime]);
+        console.log(data.costs.timeChangeDueToWeather.climatesTotalTravelTime);
+        let weatherImpacts = "";
+
+        let weathersChanges = data.costs.timeChangeDueToWeather.weathersChanges;
+        let weathersChangesKeys = Object.keys(weathersChanges);
+        let i = 1;
+
+        for (let key of weathersChangesKeys) {
+            console.log(key);
+            let addedTime = weathersChanges[key];
+            console.log(addedTime);
+            if (addedTime > 0) {
+                weatherImpacts += Emojis.getWeatherEmoji(key) + Translator.getString(data.lang, "weather", key) + " " + Emojis.getString("simple_left_to_right_arrow") + " +" + Translator.getString(data.lang, "travel", "wait_time_body", [data.costs.timeChangeDueToWeather.totalTimeAddedDueToWeather]);
+
+                if (i < weathersChangesKeys.length) {
+                    weatherImpacts += "\n";
+                }
+            }
+        }
+
 
         return new Discord.MessageEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(Emojis.getString("scroll") + " " + Translator.getString(data.lang, "travel", "travel_planning", [data.from_name, data.to_name]))
-            .addField(Emojis.getString("hourglass_not_done") + " " + Translator.getString(data.lang, "travel", "wait_time_title"), waitTimeMessage, true)
-            .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "travel", "gold_price_title"), Translator.getString(data.lang, "travel", "gold_price_body", [data.costs.goldPrice]), true)
-            .addField(Emojis.getString("q_mark") + " " + Translator.getString(data.lang, "travel", "sure_to_travel_title"), Translator.getString(data.lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]));
+            .setAuthor(Emojis.general.scroll + " " + Translator.getString(data.lang, "travel", "travel_planning", [data.from_name, data.to_name]))
+            .addField(Emojis.general.hourglass_not_done + " " + Translator.getString(data.lang, "travel", "wait_time_title"), waitTimeMessage, true)
+            .addField(Emojis.general.money_bag + " " + Translator.getString(data.lang, "travel", "gold_price_title"), Translator.getString(data.lang, "travel", "gold_price_body", [data.costs.goldPrice]), true)
+            .addField(Emojis.general.sunrise_over_the_mountain + " " + Translator.getString(data.lang, "weather", "impact") + " (" + Translator.getString(data.lang, "travel", "wait_time_body", [data.costs.timeChangeDueToWeather.totalTimeAddedDueToWeather]) + ")", weatherImpacts != "" ? weatherImpacts : Translator.getString(data.lang, "general", "none"))
+            .addField(Emojis.general.stopwatch + " " + Translator.getString(data.lang, "travel", "total_without_weather"), Translator.getString(data.lang, "travel", "wait_time_body", [data.costs.timeToWait - data.costs.timeChangeDueToWeather.totalTimeAddedDueToWeather]))
+            .addField(Emojis.general.q_mark + " " + Translator.getString(data.lang, "travel", "sure_to_travel_title"), Translator.getString(data.lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]));
     }
 
     /**

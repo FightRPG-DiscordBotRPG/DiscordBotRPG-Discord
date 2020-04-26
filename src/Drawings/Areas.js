@@ -38,7 +38,7 @@ class Areas {
             .setColor([0, 255, 0])
             .setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by", [area.owner]), area.image)
             .addField(Translator.getString(lang, "climates", "climate"), Translator.getString(lang, "climates", area.climate.climate.shorthand), true)
-            .addField(Translator.getString(lang, "weather", "weather"), Translator.getString(lang, "weather", area.climate.currentWeather.shorthand) + " " + this.getWeatherEmoji(area.climate.currentWeather.shorthand), true)
+            .addField(Translator.getString(lang, "weather", "weather"), Translator.getString(lang, "weather", area.climate.currentWeather.shorthand) + " " + Emojis.getWeatherEmoji(area.climate.currentWeather.shorthand), true)
             .addField(Translator.getString(lang, "weather", "impact"), this.getWeatherBonusesPenalties(area.climate.currentWeather, lang))
             .addField(Translator.getString(lang, "weather", "time_before_ends"), this.getWeatherTimeLeft(area.climate.dateNextWeatherChange), true)
             .addField(Translator.getString(lang, "general", "description"), area.desc)
@@ -55,7 +55,7 @@ class Areas {
             .setColor([0, 255, 0])
             .setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by", [area.owner]), area.image)
             .addField(Translator.getString(lang, "climates", "climate"), Translator.getString(lang, "climates", area.climate.climate.shorthand), true)
-            .addField(Translator.getString(lang, "weather", "weather"), Translator.getString(lang, "weather", area.climate.currentWeather.shorthand) + " " + this.getWeatherEmoji(area.climate.currentWeather.shorthand), true)
+            .addField(Translator.getString(lang, "weather", "weather"), Translator.getString(lang, "weather", area.climate.currentWeather.shorthand) + " " + Emojis.getWeatherEmoji(area.climate.currentWeather.shorthand), true)
             .addField(Translator.getString(lang, "weather", "impact"), this.getWeatherBonusesPenalties(area.climate.currentWeather, lang))
             .addField(Translator.getString(lang, "weather", "time_before_ends"), this.getWeatherTimeLeft(area.climate.dateNextWeatherChange), true)
             .addField(Translator.getString(lang, "general", "description"), area.desc + "\n\n" +
@@ -83,26 +83,6 @@ class Areas {
         str += Translator.getString(lang, "bonuses", "harvest_tiredness") + ` -> ${Translator.getFormater(lang).format(Math.round(collectFatigue * 100))}% (x${Translator.getFormater(lang).format(collectFatigue)})\n`;
         str += Translator.getString(lang, "bonuses", "collect_drop") + ` -> ${Translator.getFormater(lang).format(Math.round(collectChances * 100))}% (x${Translator.getFormater(lang).format(collectChances)})`;
         return str;
-    }
-
-    getWeatherEmoji(weatherShorthand) {
-        let emojis = {
-            "sunny": "sun",
-            "cloudy": "cloud",
-            "foggy": "fog",
-            "rainy": "rain",
-            "rainstorm": "rainstorm",
-            "snowy": "snow",
-            "firestorm": "fire",
-            "sandstorm": "tornado",
-            "snowstorm": "snowflake"
-        }
-
-        if (emojis[weatherShorthand]) {
-            return Emojis.getString(emojis[weatherShorthand]);
-        } else {
-            return Emojis.getString("thermometer");
-        }
     }
 
     monstersToString(monsters, lang = "en") {

@@ -22,6 +22,28 @@ class Emojis {
         }
         return em != null ? em.string : Emojis.general[emojiName];
     }
+
+
+    static getWeatherEmoji(weatherShorthand) {
+        let emojis = {
+            "sunny": "sun",
+            "cloudy": "cloud",
+            "foggy": "fog",
+            "rainy": "rain",
+            "rainstorm": "rainstorm",
+            "snowy": "snow",
+            "firestorm": "fire",
+            "sandstorm": "tornado",
+            "snowstorm": "snowflake"
+        }
+
+        if (emojis[weatherShorthand]) {
+            return Emojis.getString(emojis[weatherShorthand]);
+        } else {
+            return Emojis.getString("thermometer");
+        }
+    }
+
 }
 
 Emojis.emojisProd = {
@@ -229,6 +251,9 @@ Emojis.general = {
     "person": "🧑",
     "loudspeaker": "📢",
     "warning": "⚠️",
+    "sunrise_over_the_mountain": "🌄",
+    "simple_left_to_right_arrow": "→",
+    "stopwatch": "⏱️"
 }
 
 
