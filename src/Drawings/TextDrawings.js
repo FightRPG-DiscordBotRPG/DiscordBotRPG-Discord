@@ -7,11 +7,12 @@ const Color = require("./Color");
 class TextDrawings {
 
     itemStatsToStrCompare(stats, compareStats, lang) {
-        let str = "`";
+        let str = "";
         let count = 1;
         let totalSpaces = 30;
         let noStats = true;
         compareStats = compareStats != undefined ? compareStats : {};
+
         for (let stat in stats) {
             if (stats[stat] > 0 || compareStats[stat]) {
                 let diff = compareStats[stat] >= 0 ? " -> " + (stats[stat] - compareStats[stat]) : " -> 0";
@@ -25,21 +26,21 @@ class TextDrawings {
                 let lessSpaces = totalSpaces - nbrChar - (2 + statStr.length);
                 beforeNumber += " ".repeat(lessSpaces);
                 if (count === 2) {
-                    end += "\n"
+                    end += "`\n"
                     count = 0;
                 } else {
-
+                    statLocalized = "`" + statLocalized;
                     end += " ".repeat(1) + "|" + " ".repeat(1);
                 }
                 count++;
-                str += "" + statLocalized + beforeNumber + "[" + stats[stat] + diff + "]" + end;
+                str += statLocalized + beforeNumber + "[" + stats[stat] + diff + "]" + end;
             }
 
         }
         if (noStats) {
-            str += Translator.getString(lang, "inventory_equipment", "item_no_stats");
+            str += "`" + Translator.getString(lang, "inventory_equipment", "item_no_stats");
         }
-        str += "`";
+        str += str[str.length - 1] != "`" && str[str.length-1] != "\n" ? "`" : "";
         return str;
     }
 
