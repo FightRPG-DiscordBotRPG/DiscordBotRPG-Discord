@@ -27,7 +27,8 @@ class InventoryModule extends GModule {
         let mentions = message.mentions.users;
         let firstMention;
         let data;
-        let axios = Globals.connectedUsers[message.author.id].getAxios();
+        let user = Globals.connectedUsers[message.author.id];
+        let axios = user.getAxios();
         let searchFilters;
 
         switch (command) {
@@ -37,9 +38,9 @@ class InventoryModule extends GModule {
                 if (data.error == null) {
                     let itemmsg;
                     if (data.equippedStats != null) {
-                        itemmsg = ItemShow.showItem(data);
+                        itemmsg = ItemShow.showItem(data, user);
                     } else {
-                        itemmsg = ItemShow.showItem(data, true);
+                        itemmsg = ItemShow.showItem(data, user, true);
                     }
 
                     let isEquipped = isNaN(parseInt(args[0]));

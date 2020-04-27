@@ -14,8 +14,8 @@ class MarketplaceModule extends GModule {
 
     async run(message, command, args) {
         let msg = "";
-        let authorIdentifier = message.author.id;
-        let axios = Globals.connectedUsers[message.author.id].getAxios();
+        let user = Globals.connectedUsers[message.author.id];
+        let axios = user.getAxios();
         let data;
         let searchFilters = this.getSearchFilters(args);
         switch (command) {
@@ -85,7 +85,7 @@ class MarketplaceModule extends GModule {
                 data = await axios.get("/game/marketplace/show/item/" + args[0]);
                 data = data.data;
                 if (data.error == null) {
-                    msg = ItemShow.showItem(data);
+                    msg = ItemShow.showItem(data, user);
                 } else {
                     msg = data.error;
                 }
