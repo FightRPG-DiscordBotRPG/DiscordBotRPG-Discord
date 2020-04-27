@@ -44,6 +44,45 @@ class Emojis {
         }
     }
 
+    static getItemTypeEmoji(typeShorthand) {
+        let emojis = {
+            "weapon": this.general.crossed_swords,
+            "chest": this.getString("item_type_chest"),
+            "legs": this.getString("item_type_legs"),
+            "head": this.getString("item_type_helmet"),
+            "resource": this.getString("item_type_resource"),
+            "lootbox": this.getString("item_type_lootbox"),
+            "potion": this.getString("potion_empty"),            
+            "mount": this.getString("saddle"),            
+        }
+
+        return emojis[typeShorthand] ? emojis[typeShorthand] : Emojis.general.q_mark;
+    }
+
+    static getRarityEmoji(rarityShorthand) {
+        return Emojis.getString("rarity_" + rarityShorthand);
+    }
+
+    static getItemSubTypeEmoji(subtypeShorthand) {
+        let emojis = {
+            "ore": this.emojisProd.ore_common.string,
+            "wood": this.emojisProd.wood_common.string,
+            "plant": this.emojisProd.herb_rare.string,
+            "sword": this.emojisProd.sword2.string,
+            "whip": this.emojisProd.sword2.string,
+            "armor": this.emojisProd.item_type_chest.string,
+            "loot_box_equipment": this.emojisProd.item_type_lootbox.string,
+            "random_loot_box_equipment": this.emojisProd.item_type_lootbox.string,
+            "founder_box": this.emojisProd.item_type_lootbox.string,
+            "reset_time_potion": this.emojisProd.reset_time_potion.string,
+            "energy_potion": this.emojisProd.reset_time_potion.string,
+            "horse": this.general.horse_face,
+            "crystal": this.general.gemstone,
+        }
+
+        return emojis[subtypeShorthand] ? emojis[subtypeShorthand] : Emojis.general.q_mark;
+    }
+
 }
 
 Emojis.emojisProd = {
@@ -250,6 +289,38 @@ Emojis.emojisProd = {
     "herb_mythic": {
         id: "703958796229148683",
         string: "<:herb_mythic:703958796229148683>"
+    },
+    "item_type_chest": {
+        id: "704264556620283934",
+        string: "<:chest:704264556620283934>"
+    },
+    "item_type_legs": {
+        id: "704266130826723398",
+        string: "<:legs:704266130826723398>"
+    },
+    "item_type_helmet": {
+        id: "704268453619433523",
+        string: "<:helmet:704268453619433523>"
+    },
+    "item_type_resource": {
+        id: "704270263126327316",
+        string: "<:resource:704270263126327316>"
+    },
+    "potion_empty": {
+        id: "704278511548104755",
+        string: "<:potion_empty:704278511548104755>"
+    },
+    "item_type_lootbox": {
+        id: "704281176189173800",
+        string: "<:lootbox:704281176189173800>"
+    },
+    "saddle": {
+        id: "704285522624774235",
+        string: "<:saddle:704285522624774235>"
+    },
+    "reset_time_potion": {
+        id: "704291826093522974",
+        string: "<:reset_time_potion:704291826093522974>"
     }
 };
 
@@ -325,7 +396,9 @@ Emojis.general = {
     "warning": "⚠️",
     "sunrise_over_the_mountain": "🌄",
     "simple_left_to_right_arrow": "→",
-    "stopwatch": "⏱️"
+    "stopwatch": "⏱️",
+    "horse_face": "🐴",
+    "collision": "💥"
 }
 
 
