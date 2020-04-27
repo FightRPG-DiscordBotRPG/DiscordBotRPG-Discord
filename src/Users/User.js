@@ -9,6 +9,7 @@ class User {
         this.avatar = avatar;
         this.lang = lang
         this.token = null;
+        this.isOnMobile = false;
         this.lastCommandUsed = Date.now();
         this.axios = null;
     }
@@ -50,6 +51,14 @@ class User {
                 'Authorization': "Bearer " + this.token
             }
         })
+    }
+
+    setMobile(status) {
+        if (status["desktop"]) {
+            this.isOnMobile = false;
+        } else {
+            this.isOnMobile = true;
+        }
     }
 
     getAxios() {

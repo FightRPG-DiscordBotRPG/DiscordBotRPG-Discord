@@ -78,6 +78,10 @@ class ModuleHandler extends GModule {
             for (let i in args) {
                 nonDiscordArgs[i] = encodeURIComponent(args[i]);
             }
+
+            Globals.connectedUsers[authorIdentifier].setMobile(message.author.presence.clientStatus);
+
+
             // exec module corresponding to command
             await this.executeCommand(message, command, nonDiscordArgs, prefix);
 
