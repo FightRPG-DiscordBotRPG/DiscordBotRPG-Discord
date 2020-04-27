@@ -37,9 +37,9 @@ class InventoryModule extends GModule {
                 if (data.error == null) {
                     let itemmsg;
                     if (data.equippedStats != null) {
-                        itemmsg = ItemShow.showInInventoryItem(data);
+                        itemmsg = ItemShow.showItem(data);
                     } else {
-                        itemmsg = ItemShow.showEquippedItem(data);
+                        itemmsg = ItemShow.showItem(data, true);
                     }
 
                     let isEquipped = isNaN(parseInt(args[0]));

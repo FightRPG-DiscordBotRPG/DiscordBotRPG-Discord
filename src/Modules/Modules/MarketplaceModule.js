@@ -85,7 +85,7 @@ class MarketplaceModule extends GModule {
                 data = await axios.get("/game/marketplace/show/item/" + args[0]);
                 data = data.data;
                 if (data.error == null) {
-                    msg = ItemShow.showMarketplaceItem(data);
+                    msg = ItemShow.showItem(data);
                 } else {
                     msg = data.error;
                 }

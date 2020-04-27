@@ -148,7 +148,7 @@ class TradeModule extends GModule {
                 data = await axios.get("/game/trade/item/show/" + args[0]);
                 data = data.data;
                 if (data.error == null) {
-                    msg = ItemShow.showInInventoryItem(data);
+                    msg = ItemShow.showItem(data);
                 } else {
                     msg = data.error;
                 }
