@@ -25,7 +25,8 @@ class CharacterModule extends GModule {
      */
     async run(message, command, args) {
         let msg = "";
-        let axios = Globals.connectedUsers[message.author.id].getAxios();
+        let user = Globals.connectedUsers[message.author.id];
+        let axios = user.getAxios();
         let data;
         let tempMsg;
 
@@ -108,7 +109,7 @@ class CharacterModule extends GModule {
                 if (data.error != null) {
                     msg = data.error;
                 } else {
-                    msg = TextDrawing.userInfoPanel(data);
+                    msg = TextDrawing.userInfoPanel(data, user);
                 }
                 break;
                 

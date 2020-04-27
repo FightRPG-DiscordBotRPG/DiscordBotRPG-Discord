@@ -3,6 +3,7 @@ const ProgressBar = require("./ProgressBars/ProgressBar");
 const Discord = require("discord.js");
 const Emojis = require("./Emojis");
 const Color = require("./Color");
+const User = require("../Users/User");
 
 class TextDrawings {
 
@@ -77,7 +78,12 @@ class TextDrawings {
         return str;
     }
 
-    userInfoPanel(data) {
+    /**
+     * 
+     * @param {any} data
+     * @param {User} user
+     */
+    userInfoPanel(data, user) {
         let statPointsPlur = data.statPoints > 1 ? "_plur" : "";
         let xpProgressBar = new ProgressBar(Color.Yellow);
         let xpBar = "";
@@ -119,7 +125,7 @@ class TextDrawings {
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(authorTitle, data.avatar)
-            .addField(statsTitle, this.characterStatsToString(data.stats, data.statsEquipment, data.lang))
+            .addField(statsTitle, user.isOnMobile ? this.characterStatsToBigString(data.stats, data.statsEquipment, data.lang, true) : this.characterStatsToString(data.stats, data.statsEquipment, data.lang))
             .addField(titleXPFight, xpBar, true)
             .addField(titleXPCraft, xpBarCraft, true)
             .addField(Emojis.getString("red_heart") + " " + Translator.getString(data.lang, "character", "health_points"), Translator.getFormater(data.lang).format((data.stats.constitution + data.statsEquipment.constitution + 1) * 10), true)
