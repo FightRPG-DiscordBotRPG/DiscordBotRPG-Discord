@@ -12,37 +12,68 @@ class Inventory {
      */
     displayAsList(data, isInventory) {
         let lang = data.lang;
-        let str = "```";
+
         let emptyTitle = "";
         let pageNumberBody = "";
+        let header = "";
+        let titleEmbed = "";
 
         if (isInventory) {
-            str += Translator.getString(lang, "inventory_equipment", "id") + " - ";
-            pageNumberBody = "\n\n" + Translator.getString(lang, "inventory_equipment", "page_x_out_of", [data.page, data.maxPage == 0 ? 1 : data.maxPage]);
+            header += Translator.getString(lang, "inventory_equipment", "id") + " - ";
+            pageNumberBody = Translator.getString(lang, "inventory_equipment", "page_x_out_of", [data.page, data.maxPage == 0 ? 1 : data.maxPage]);
             emptyTitle = Translator.getString(lang, "inventory_equipment", "empty_inventory");
+            titleEmbed = Translator.getString(lang, "help_panel", "inventory_title");
         } else {
             emptyTitle = Translator.getString(lang, "inventory_equipment", isInventory ? "empty_inventory" : "nothing_equipped");
+            titleEmbed = Translator.getString(lang, "help_panel", "equipment_title");
         }
 
-        str += Translator.getString(lang, "inventory_equipment", "name") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "type") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "level") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "rarity") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "power") + "\n\n";
+        header += Translator.getString(lang, "inventory_equipment", "name") + " - ";
+        header += Translator.getString(lang, "inventory_equipment", "type") + " - ";
+        header += Translator.getString(lang, "inventory_equipment", "level") + " - ";
+        header += Translator.getString(lang, "inventory_equipment", "rarity") + " - ";
+        header += Translator.getString(lang, "inventory_equipment", "power") + "\n\n";
         let empty = true;
 
         let items = data.items;
+        let str = "";
+        let fields = [];
+        let itemsKeys = Object.keys(items);
+        let lastIndex = itemsKeys[itemsKeys.length - 1];
+
         for (let i in items) {
-            str += (isInventory ? i + " - " : "") + ItemShow.itemToStr(items[i], lang) + "\n";
+            let itemStr = (isInventory ? i + " - " : "") + ItemShow.itemToStr(items[i], lang) + "\n\n";
+            if ((str + itemStr).length > 1024) {
+                fields.push(str);
+                str = "";
+            }
+            str += itemStr;
             empty = false;
+
+            if (i == lastIndex) {
+                fields.push(str);
+                str = "";
+            }
         }
 
         if (empty) {
-            str += emptyTitle;
+            str += fields.push(emptyTitle);
         }
 
-        str += pageNumberBody;
-        return str + "```";
+        //str += pageNumberBody;
+
+        let embed = new Discord.MessageEmbed()
+            .setColor([128, 128, 128])
+            .setAuthor(titleEmbed)
+            .setDescription(header)
+            .setFooter(pageNumberBody)
+            ;
+
+        for (let i in fields) {
+            embed.addField("\u200b", fields[i]);
+        }
+
+        return embed;
     }
 
     ciValueSellAllDisplay(data) {
