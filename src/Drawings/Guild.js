@@ -59,8 +59,6 @@ class Guild {
                     rgmStr += valToAdd;
                     break;
             }
-
-            i++;
         });
 
 
