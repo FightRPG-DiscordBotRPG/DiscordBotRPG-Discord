@@ -119,7 +119,7 @@ class CharacterModule extends GModule {
                 if (data.error != null) {
                     msg = data.error;
                 } else {
-                    msg = TextDrawing.userStatsPanel(data);
+                    msg = TextDrawing.userStatsPanel(data, user);
                 }
                 break;
 

@@ -4,6 +4,7 @@ const Discord = require("discord.js");
 const Emojis = require("./Emojis");
 const Color = require("./Color");
 const User = require("../Users/User");
+const ProgressBarHealth = require("./ProgressBars/ProgressBarHealth");
 
 class TextDrawings {
 
@@ -11,38 +12,62 @@ class TextDrawings {
      * 
      * @param {any} stats
      * @param {any} compareStats
+     * @param {Boolean} isItem
      * @param {User} user
      * @param {string} lang
      */
-    itemStatsToStrCompare(stats, compareStats, user, lang) {
+    statsToString(stats, compareStats, isItem, user, lang) {
         let str = "";
         let totalSpaces = 36;
         let noStats = true;
+        let maximumStatLength = 0;
         compareStats = compareStats != undefined ? compareStats : {};
+
+        if (!isItem) {
+            maximumStatLength = this.getBiggestStatLength(stats, compareStats);
+        }
 
 
         for (let stat in stats) {
-            if (stats[stat] > 0 || compareStats[stat]) {
+            if (!isItem || (isItem && stats[stat] > 0) || (isItem && compareStats[stat])) {
                 let compareEmoji = "";
                 let diff = "";
                 let end = "";
 
-                if (compareStats[stat] >= 0) {
-                    let diffNumber = (stats[stat] - compareStats[stat]);
-                    diff = " -> " + diffNumber;
+                //Used for character stats
+                let totalStat = "";
 
-                    if (diffNumber > 0) {
-                        compareEmoji = Emojis.emojisProd.levelup.string;
-                    }
-                    else if (diffNumber < 0) {
-                        compareEmoji = Emojis.emojisProd.leveldown.string;
+                if (isItem) {
+                    if (compareStats[stat] >= 0) {
+                        let diffNumber = (stats[stat] - compareStats[stat]);
+                        diff = " -> " + diffNumber;
+
+                        if (diffNumber > 0) {
+                            compareEmoji = Emojis.emojisProd.levelup.string;
+                        }
+                        else if (diffNumber < 0) {
+                            compareEmoji = Emojis.emojisProd.leveldown.string;
+                        } else {
+                            compareEmoji = Emojis.emojisProd.nochange.string;
+                        }
                     } else {
+                        diff = " -> 0";
                         compareEmoji = Emojis.emojisProd.nochange.string;
                     }
                 } else {
-                    diff = " -> 0";
-                    compareEmoji = Emojis.emojisProd.nochange.string;
+                    if (stat !== "armor") {
+                        diff = "+" + compareStats[stat].toString();
+                    } else {
+                        // Setting stats[armor] at total stat value 
+                        stats[stat] = compareStats[stat];   
+                        compareStats[stat] = 0;
+                    }
+
+                    totalStat = (stats[stat] + compareStats[stat]).toString();
+                    totalStat = " " + " ".repeat(1 + user.isOnMobile ? (maximumStatLength - totalStat.length) : 0) + totalStat;
+
                 }
+
 
 
                 noStats = false;
@@ -54,17 +79,23 @@ class TextDrawings {
                 let lessSpaces = 1;
 
                 let quote = "";
-                if (user.isOnMobile) {
+                if (user.isOnMobile && isItem) {
                     end = "\n\n";
                     quote = " ";
-
+                    statLocalized = "**" + statLocalized + "**";
                 } else {
+
+                    if (user.isOnMobile) {
+                        totalSpaces = 29
+                    }
+
                     lessSpaces = totalSpaces - nbrChar - (4 + statStr.length);
                     end = "\n";
                     quote = "`";
                 }
                 beforeNumber += " ".repeat(lessSpaces <= 0 ? 1 : lessSpaces);
-                str += Emojis.stats[stat] + quote + statLocalized + beforeNumber + "[" + stats[stat] + diff + "]" + quote + " " + compareEmoji + end;
+
+                str += Emojis.stats[stat] + quote + statLocalized + beforeNumber + "[" + stats[stat] + diff + "]" + totalStat + quote + " "  + compareEmoji + end;
             }
 
         }
@@ -76,37 +107,16 @@ class TextDrawings {
         return str;
     }
 
-    characterStatsToString(stats, otherStats, lang) {
-        let str = "```";
-        let count = 1;
-        let totalSpaces = 25;
-        for (let stat in stats) {
-            //let end = stat === "luck" ? "" : "   |   ";
-            let end = "";
-            let beforeNumber = "";
-            let statStr = "";
-            let statLocaleString = Translator.getString(lang, "stats", stat);
-            if (stat !== "armor") {
-                statStr = stats[stat].toString() + "+" + otherStats[stat].toString();
-            } else {
-                statStr = otherStats[stat].toString();
+    getBiggestStatLength(stats, compareStats) {
+        let length = 0;
+        for (let i in stats) {
+            let total = (stats[i] + (compareStats[i] != null ? compareStats[i] : 0)).toString();
+            if (total.length > length) {
+                length = total.length;
             }
-
-            let nbrChar = statLocaleString.length + 2;
-            let lessSpaces = totalSpaces - nbrChar - (2 + statStr.length);
-            beforeNumber += " ".repeat(lessSpaces);
-            if (count === 2) {
-                end += "\n"
-                count = 0;
-            } else {
-
-                end += " ".repeat(2) + "|" + " ".repeat(2);
-            }
-            count++;
-            str += "" + statLocaleString + beforeNumber + "[" + statStr + "]" + end;
         }
-        str += "```"
-        return str;
+
+        return length;
     }
 
     /**
@@ -117,6 +127,7 @@ class TextDrawings {
     userInfoPanel(data, user) {
         let statPointsPlur = data.statPoints > 1 ? "_plur" : "";
         let xpProgressBar = new ProgressBar(Color.Yellow);
+        let healthBar = new ProgressBarHealth().draw(data.currentHp, data.maxHp);
         let xpBar = "";
         let xpOn = "";
 
@@ -156,10 +167,10 @@ class TextDrawings {
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(authorTitle, data.avatar)
-            .addField(statsTitle, user.isOnMobile ? this.characterStatsToBigString(data.stats, data.statsEquipment, data.lang, true) : this.characterStatsToString(data.stats, data.statsEquipment, data.lang))
+            .addField(statsTitle, this.statsToString(data.stats, data.statsEquipment, false, user, data.lang))
             .addField(titleXPFight, xpBar, true)
             .addField(titleXPCraft, xpBarCraft, true)
-            .addField(Emojis.getString("red_heart") + " " + Translator.getString(data.lang, "character", "health_points"), Translator.getFormater(data.lang).format((data.stats.constitution + data.statsEquipment.constitution + 1) * 10), true)
+            .addField(Emojis.getString("red_heart") + " " + Translator.getString(data.lang, "character", "health_points") + "\n" + Translator.getFormater(data.lang).format(data.currentHp) + " / " + Translator.getFormater(data.lang).format(data.maxHp), healthBar)
             .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "character", "money"), Translator.getFormater(data.lang).format(data.money) + " G", true)
             .addField(Emojis.getString("honor") + " " + Translator.getString(data.lang, "character", "honor"), Translator.getFormater(data.lang).format(data.honor), true)
             .addField(Emojis.getString("shield") + " " + Translator.getString(data.lang, "character", "damage_reduction"), Translator.getFormater(data.lang).format(Math.round((data.stats.armor + data.statsEquipment.armor) / ((8 * (Math.pow(data.level, 2))) / 7 + 5) * .5 * 10000) / 100) + "%", true)
@@ -192,7 +203,7 @@ class TextDrawings {
         return str;
     }
 
-    userStatsPanel(data) {
+    userStatsPanel(data, user) {
         let statPointsPlur = data.statPoints > 1 ? "_plur" : "";
 
         let authorTitle = data.username + " | " + Translator.getString(data.lang, "inventory_equipment", "power") + ": " + Translator.getFormater(data.lang).format(data.power);
@@ -202,7 +213,7 @@ class TextDrawings {
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(authorTitle, data.avatar)
-            .addField(statsTitle, this.characterStatsToBigString(data.stats, data.statsEquipment, data.lang, true))
+            .addField(statsTitle, this.statsToString(data.stats, data.statsEquipment, false, user, data.lang))
         return embed;
     }
 
