@@ -23,40 +23,16 @@ class Emojis {
         return em != null ? em.string : Emojis.general[emojiName];
     }
 
-
     static getWeatherEmoji(weatherShorthand) {
-        let emojis = {
-            "sunny": "sun",
-            "cloudy": "cloud",
-            "foggy": "fog",
-            "rainy": "rain",
-            "rainstorm": "rainstorm",
-            "snowy": "snow",
-            "firestorm": "fire",
-            "sandstorm": "tornado",
-            "snowstorm": "snowflake"
-        }
-
-        if (emojis[weatherShorthand]) {
-            return Emojis.getString(emojis[weatherShorthand]);
+        if (Emojis.weather[weatherShorthand]) {
+            return Emojis.getString(Emojis.weather[weatherShorthand]);
         } else {
             return Emojis.getString("thermometer");
         }
     }
 
     static getItemTypeEmoji(typeShorthand) {
-        let emojis = {
-            "weapon": this.general.crossed_swords,
-            "chest": this.getString("item_type_chest"),
-            "legs": this.getString("item_type_legs"),
-            "head": this.getString("item_type_helmet"),
-            "resource": this.getString("item_type_resource"),
-            "lootbox": this.getString("item_type_lootbox"),
-            "potion": this.getString("potion_empty"),            
-            "mount": this.getString("saddle"),            
-        }
-
-        return emojis[typeShorthand] ? emojis[typeShorthand] : Emojis.general.q_mark;
+        return Emojis.typeItem[typeShorthand] ? Emojis.typeItem[typeShorthand] : Emojis.general.q_mark;
     }
 
     static getRarityEmoji(rarityShorthand) {
@@ -64,36 +40,26 @@ class Emojis {
     }
 
     static getItemSubTypeEmoji(subtypeShorthand) {
-        let emojis = {
-            "ore": this.emojisProd.ore_common.string,
-            "wood": this.emojisProd.wood_common.string,
-            "plant": this.emojisProd.herb_rare.string,
-            "sword": this.emojisProd.sword2.string,
-            "whip": this.emojisProd.sword2.string,
-            "armor": this.emojisProd.item_type_chest.string,
-            "loot_box_equipment": this.emojisProd.item_type_lootbox.string,
-            "random_loot_box_equipment": this.emojisProd.item_type_lootbox.string,
-            "founder_box": this.emojisProd.item_type_lootbox.string,
-            "reset_time_potion": this.emojisProd.reset_time_potion.string,
-            "energy_potion": this.emojisProd.reset_time_potion.string,
-            "horse": this.general.horse_face,
-            "crystal": this.general.gemstone,
-        }
-
-        return emojis[subtypeShorthand] ? emojis[subtypeShorthand] : Emojis.general.q_mark;
+        return Emojis.subtypeItem[subtypeShorthand] ? Emojis.subtypeItem[subtypeShorthand] : Emojis.general.q_mark;
     }
 
     static getAreaTypeEmoji(typeShorthand) {
-        let emojis = {
-            "wild": Emojis.general.national_park,
-            "city": Emojis.general.castle,
-            "dungeon": Emojis.emojisProd.dungeon_door.string
-        }
-
-        return emojis[typeShorthand] ? emojis[typeShorthand] : Emojis.general.q_mark;
+        return Emojis.areaType[typeShorthand] ? Emojis.areaType[typeShorthand] : Emojis.general.q_mark;
     }
 
 }
+
+Emojis.weather = {
+    "sunny": "sun",
+    "cloudy": "cloud",
+    "foggy": "fog",
+    "rainy": "rain",
+    "rainstorm": "rainstorm",
+    "snowy": "snow",
+    "firestorm": "fire",
+    "sandstorm": "tornado",
+    "snowstorm": "snowflake"
+};
 
 Emojis.emojisProd = {
     "vmark": {
@@ -423,7 +389,61 @@ Emojis.general = {
     "collision": "💥",
     "national_park": "🏞️",
     "castle": "🏰",
-}
+    "biceps": "💪🏻",
+    "boot": "🥾",
+    "books": "📚",
+    "eye": "👁️",
+    "sparkles": "✨",
+    "high_voltage": "⚡",
+    "game_die": "🎲",
+    "light_bulb": "💡",
+};
+
+Emojis.stats = {
+    "strength": Emojis.general.biceps,
+    "constitution": Emojis.general.red_heart,
+    "dexterity": Emojis.general.waving_hand,
+    "will": Emojis.general.high_voltage,
+    "charisma": Emojis.general.sparkles,
+    "intellect": Emojis.general.books,
+    "armor": Emojis.emojisProd.item_type_chest.string,
+    "wisdom": Emojis.general.light_bulb,
+    "perception": Emojis.general.eye,
+    "luck": Emojis.general.game_die,
+};
+
+Emojis.typeItem = {
+    "weapon": Emojis.general.crossed_swords,
+    "chest": Emojis.getString("item_type_chest"),
+    "legs": Emojis.getString("item_type_legs"),
+    "head": Emojis.getString("item_type_helmet"),
+    "resource": Emojis.getString("item_type_resource"),
+    "lootbox": Emojis.getString("item_type_lootbox"),
+    "potion": Emojis.getString("potion_empty"),
+    "mount": Emojis.getString("saddle"),
+};
+
+Emojis.subtypeItem = {
+    "ore": Emojis.emojisProd.ore_common.string,
+    "wood": Emojis.emojisProd.wood_common.string,
+    "plant": Emojis.emojisProd.herb_rare.string,
+    "sword": Emojis.emojisProd.sword2.string,
+    "whip": Emojis.emojisProd.sword2.string,
+    "armor": Emojis.emojisProd.item_type_chest.string,
+    "loot_box_equipment": Emojis.emojisProd.item_type_lootbox.string,
+    "random_loot_box_equipment": Emojis.emojisProd.item_type_lootbox.string,
+    "founder_box": Emojis.emojisProd.item_type_lootbox.string,
+    "reset_time_potion": Emojis.emojisProd.reset_time_potion.string,
+    "energy_potion": Emojis.emojisProd.reset_time_potion.string,
+    "horse": Emojis.general.horse_face,
+    "crystal": Emojis.general.gemstone,
+};
+
+Emojis.areaType = {
+    "wild": Emojis.general.national_park,
+    "city": Emojis.general.castle,
+    "dungeon": Emojis.emojisProd.dungeon_door.string
+};
 
 
 function configureAliases() {

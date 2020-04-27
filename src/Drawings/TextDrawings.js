@@ -56,7 +56,7 @@ class TextDrawings {
                 let quote = "";
                 if (user.isOnMobile) {
                     end = "\n\n";
-                   // quote = "`";
+                    quote = " ";
 
                 } else {
                     lessSpaces = totalSpaces - nbrChar - (4 + statStr.length);
@@ -64,7 +64,7 @@ class TextDrawings {
                     quote = "`";
                 }
                 beforeNumber += " ".repeat(lessSpaces <= 0 ? 1 : lessSpaces);
-                str += quote + statLocalized + beforeNumber + "[" + stats[stat] + diff + "]" + quote + " " + compareEmoji + end;
+                str += Emojis.stats[stat] + quote + statLocalized + beforeNumber + "[" + stats[stat] + diff + "]" + quote + " " + compareEmoji + end;
             }
 
         }
