@@ -83,6 +83,16 @@ class Emojis {
         return emojis[subtypeShorthand] ? emojis[subtypeShorthand] : Emojis.general.q_mark;
     }
 
+    static getAreaTypeEmoji(typeShorthand) {
+        let emojis = {
+            "wild": Emojis.general.national_park,
+            "city": Emojis.general.castle,
+            "dungeon": Emojis.emojisProd.dungeon_door.string
+        }
+
+        return emojis[typeShorthand] ? emojis[typeShorthand] : Emojis.general.q_mark;
+    }
+
 }
 
 Emojis.emojisProd = {
@@ -321,6 +331,10 @@ Emojis.emojisProd = {
     "reset_time_potion": {
         id: "704291826093522974",
         string: "<:reset_time_potion:704291826093522974>"
+    },
+    "dungeon_door": {
+        id: "704323073364590723",
+        string: "<:dungeon_door:704323073364590723>"
     }
 };
 
@@ -398,7 +412,9 @@ Emojis.general = {
     "simple_left_to_right_arrow": "→",
     "stopwatch": "⏱️",
     "horse_face": "🐴",
-    "collision": "💥"
+    "collision": "💥",
+    "national_park": "🏞️",
+    "castle": "🏰",
 }
 
 
