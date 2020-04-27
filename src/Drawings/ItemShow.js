@@ -37,7 +37,7 @@ class ItemShow {
         }
             
         return embed
-            .addField(Translator.getString(lang, "inventory_equipment", "attributes") + ": ", TextDrawings.itemStatsToStrCompare(item.stats, data.equippedStats, lang))
+            .addField(Translator.getString(lang, "inventory_equipment", "attributes"), TextDrawings.itemStatsToStrCompare(item.stats, data.equippedStats, lang))
             .addField(Translator.getString(lang, "general", "description"), item.desc);
     }
 
