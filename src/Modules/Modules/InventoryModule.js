@@ -63,8 +63,8 @@ class InventoryModule extends GModule {
                         isTrading == true ? itemmsgsent.react(addToTradeEmoji) : null
                     ]).catch(() => null);
 
-                    const filter = (reaction, user) => {
-                        return [sellEmoji, favoEmoji, equipUnequipEmoji, addToTradeEmoji].includes(reaction.emoji.name) && user.id === message.author.id;
+                    const filter = (reaction, u) => {
+                        return [sellEmoji, favoEmoji, equipUnequipEmoji, addToTradeEmoji].includes(reaction.emoji.name) && u.id === message.author.id;
                     };
 
                     const collector = itemmsgsent.createReactionCollector(filter, {
@@ -207,15 +207,15 @@ class InventoryModule extends GModule {
                     }
 
 
-                    const filter = (reaction, user) => {
-                        return [nextEmoji, backEmoji].includes(reaction.emoji.name) && user.id === message.author.id;
+                    const filter = (reaction, u) => {
+                        return [nextEmoji, backEmoji].includes(reaction.emoji.name) && u.id === message.author.id;
                     };
 
                     const collectorInventory = inventoryMessage.createReactionCollector(filter, {
                         time: 60000,
                     });
 
-                    collectorInventory.on('collect', async (reaction, user) => {
+                    collectorInventory.on('collect', async (reaction, u) => {
                         let dataCollector;
                         let msgCollector = null;
                         switch (reaction.emoji.name) {
@@ -317,8 +317,8 @@ class InventoryModule extends GModule {
                             sellAllConfirmation.react(xmarkEmoji)
                         ]).catch(() => null);
 
-                        const filter = (reaction, user) => {
-                            return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && user.id === message.author.id;
+                        const filter = (reaction, u) => {
+                            return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && u.id === message.author.id;
                         };
 
 
