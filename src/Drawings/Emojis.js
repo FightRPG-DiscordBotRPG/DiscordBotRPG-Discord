@@ -335,6 +335,14 @@ Emojis.emojisProd = {
     "dungeon_door": {
         id: "704323073364590723",
         string: "<:dungeon_door:704323073364590723>"
+    },
+    "leveldown": {
+        id: "704364488006041740",
+        string: "<:leveldown:704364488006041740>"
+    },
+    "nochange": {
+        id: "704363335948304394",
+        string: "<:nochange:704363335948304394>"
     }
 };
 

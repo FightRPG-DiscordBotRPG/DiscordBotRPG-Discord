@@ -54,7 +54,7 @@ class User {
     }
 
     setMobile(status) {
-        if (status["desktop"]) {
+        if (status != null && status["desktop"]) {
             this.isOnMobile = false;
         } else {
             this.isOnMobile = true;

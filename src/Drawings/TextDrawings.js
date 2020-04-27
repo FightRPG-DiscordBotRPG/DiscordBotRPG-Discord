@@ -7,41 +7,72 @@ const User = require("../Users/User");
 
 class TextDrawings {
 
-    itemStatsToStrCompare(stats, compareStats, lang) {
+    /**
+     * 
+     * @param {any} stats
+     * @param {any} compareStats
+     * @param {User} user
+     * @param {string} lang
+     */
+    itemStatsToStrCompare(stats, compareStats, user, lang) {
         let str = "";
-        let count = 1;
-        let totalSpaces = 30;
+        let totalSpaces = 36;
         let noStats = true;
         compareStats = compareStats != undefined ? compareStats : {};
 
+
         for (let stat in stats) {
             if (stats[stat] > 0 || compareStats[stat]) {
-                let diff = compareStats[stat] >= 0 ? " -> " + (stats[stat] - compareStats[stat]) : " -> 0";
+                let compareEmoji = "";
+                let diff = "";
+                let end = "";
+
+                if (compareStats[stat] >= 0) {
+                    let diffNumber = (stats[stat] - compareStats[stat]);
+                    diff = " -> " + diffNumber;
+
+                    if (diffNumber > 0) {
+                        compareEmoji = Emojis.emojisProd.levelup.string;
+                    }
+                    else if (diffNumber < 0) {
+                        compareEmoji = Emojis.emojisProd.leveldown.string;
+                    } else {
+                        compareEmoji = Emojis.emojisProd.nochange.string;
+                    }
+                } else {
+                    diff = " -> 0";
+                    compareEmoji = Emojis.emojisProd.nochange.string;
+                }
+
 
                 noStats = false;
-                let end = "";
+
                 let beforeNumber = "";
                 let statStr = stats[stat].toString();
                 let statLocalized = Translator.getString(lang, "stats", stat);
-                let nbrChar = statLocalized.length + 2 + diff.length;
-                let lessSpaces = totalSpaces - nbrChar - (2 + statStr.length);
-                beforeNumber += " ".repeat(lessSpaces);
-                if (count === 2) {
-                    end += "`\n"
-                    count = 0;
+                let nbrChar = statLocalized.length + 3 + diff.length;
+                let lessSpaces = 1;
+
+                let quote = "";
+                if (user.isOnMobile) {
+                    end = "\n\n";
+                   // quote = "`";
+
                 } else {
-                    statLocalized = "`" + statLocalized;
-                    end += " ".repeat(1) + "|" + " ".repeat(1);
+                    lessSpaces = totalSpaces - nbrChar - (4 + statStr.length);
+                    end = "\n";
+                    quote = "`";
                 }
-                count++;
-                str += statLocalized + beforeNumber + "[" + stats[stat] + diff + "]" + end;
+                beforeNumber += " ".repeat(lessSpaces <= 0 ? 1 : lessSpaces);
+                str += quote + statLocalized + beforeNumber + "[" + stats[stat] + diff + "]" + quote + " " + compareEmoji + end;
             }
 
         }
         if (noStats) {
-            str += "`" + Translator.getString(lang, "inventory_equipment", "item_no_stats");
+            str += "`" + Translator.getString(lang, "inventory_equipment", "item_no_stats") + "`";
         }
-        str += str[str.length - 1] != "`" && str[str.length-1] != "\n" ? "`" : "";
+
+
         return str;
     }
 
@@ -136,7 +167,7 @@ class TextDrawings {
             .addField(Emojis.getString("stun") + " " + Translator.getString(data.lang, "character", "maximum_stun_chance"), Translator.getFormater(data.lang).format(maximumStunChance) + "%", true)
         return embed;
     }
-    
+
     characterStatsToBigString(stats, otherStats, lang) {
         let str = "```";
         let totalSpaces = 30;
@@ -160,13 +191,13 @@ class TextDrawings {
         str += "```"
         return str;
     }
-    
+
     userStatsPanel(data) {
         let statPointsPlur = data.statPoints > 1 ? "_plur" : "";
 
         let authorTitle = data.username + " | " + Translator.getString(data.lang, "inventory_equipment", "power") + ": " + Translator.getFormater(data.lang).format(data.power);
         let statsTitle = Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, data.resetValue]);
-        
+
         //calls an embed with sum = true
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
