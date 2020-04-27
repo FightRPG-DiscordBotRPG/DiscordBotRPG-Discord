@@ -48,7 +48,7 @@ class EquipmentModule extends GModule {
                 data = await axios.get("/game/equipment/show");
                 data = data.data;
                 if (data.error == null) {
-                    msg = Inventory.ceDisplay(data);
+                    msg = Inventory.displayAsList(data, false);
                 } else {
                     msg = data.error;
                 }

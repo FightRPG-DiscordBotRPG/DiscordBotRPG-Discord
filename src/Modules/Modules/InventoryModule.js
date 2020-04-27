@@ -185,7 +185,7 @@ class InventoryModule extends GModule {
                 });
                 data = data.data;
                 if (data.error == null) {
-                    let inventoryMessage = await message.channel.send(Inventory.ciDisplay(data));
+                    let inventoryMessage = await message.channel.send(Inventory.displayAsList(data, true));
                     let isDM = message.channel.type == "dm";
                     var invCurrentPage = data.page;
                     let currentMessageReactions = [];
@@ -225,7 +225,7 @@ class InventoryModule extends GModule {
                                 });
                                 dataCollector = dataCollector.data;
                                 if (dataCollector.error == null) {
-                                    msgCollector = Inventory.ciDisplay(dataCollector);
+                                    msgCollector = Inventory.displayAsList(dataCollector, true);
                                     invCurrentPage++;
                                 } else {
                                     msgCollector = dataCollector.error;
@@ -237,7 +237,7 @@ class InventoryModule extends GModule {
                                 });
                                 dataCollector = dataCollector.data;
                                 if (dataCollector.error == null) {
-                                    msgCollector = Inventory.ciDisplay(dataCollector);
+                                    msgCollector = Inventory.displayAsList(dataCollector, true);
                                     invCurrentPage--;
                                 } else {
                                     msgCollector = dataCollector.error;

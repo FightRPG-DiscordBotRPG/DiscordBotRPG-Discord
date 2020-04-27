@@ -5,34 +5,25 @@ const Emojis = require("./Emojis");
 const Globals = require("../Globals");
 
 class Inventory {
-    ciDisplay(data) {
+    /**
+     * 
+     * @param {any} data
+     * @param {Boolean} isInventory
+     */
+    displayAsList(data, isInventory) {
         let lang = data.lang;
         let str = "```";
-        //str += "|   nb   |" + "                             Nom                               |" + "         Type         |" + " Niveau |" + "    Rareté    |\n";
-        str += Translator.getString(lang, "inventory_equipment", "id") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "name") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "type") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "level") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "rarity") + " - ";
-        str += Translator.getString(lang, "inventory_equipment", "power") + "\n\n";
+        let emptyTitle = "";
+        let pageNumberBody = "";
 
-        let empty = true;
-        for (let index in data.items) {
-            str += index + " - " + ItemShow.itemToStr(data.items[index], lang) + "\n";
-            empty = false;
-        }
-        if (empty) {
-            str += Translator.getString(lang, "inventory_equipment", "empty_inventory");
+        if (isInventory) {
+            str += Translator.getString(lang, "inventory_equipment", "id") + " - ";
+            pageNumberBody = "\n\n" + Translator.getString(lang, "inventory_equipment", "page_x_out_of", [data.page, data.maxPage == 0 ? 1 : data.maxPage]);
+            emptyTitle = Translator.getString(lang, "inventory_equipment", "empty_inventory");
+        } else {
+            emptyTitle = Translator.getString(lang, "inventory_equipment", isInventory ? "empty_inventory" : "nothing_equipped");
         }
 
-        str += "\n\n" + Translator.getString(lang, "inventory_equipment", "page_x_out_of", [data.page, data.maxPage == 0 ? 1 : data.maxPage])
-        str += "```"
-        return str;
-    }
-
-    ceDisplay(data) {
-        let lang = data.lang;
-        let str = "```";
         str += Translator.getString(lang, "inventory_equipment", "name") + " - ";
         str += Translator.getString(lang, "inventory_equipment", "type") + " - ";
         str += Translator.getString(lang, "inventory_equipment", "level") + " - ";
@@ -42,13 +33,15 @@ class Inventory {
 
         let items = data.items;
         for (let i in items) {
-            str += ItemShow.itemToStr(items[i], lang) + "\n";
+            str += (isInventory ? i + " - " : "") + ItemShow.itemToStr(items[i], lang) + "\n";
             empty = false;
         }
+
         if (empty) {
-            str += Translator.getString(lang, "inventory_equipment", "nothing_equipped");
+            str += emptyTitle;
         }
 
+        str += pageNumberBody;
         return str + "```";
     }
 
