@@ -401,7 +401,8 @@ Emojis.general = {
     "high_voltage": "⚡",
     "game_die": "🎲",
     "light_bulb": "💡",
-    "mage": "🧙"
+    "mage": "🧙",
+    "clipboard": "📋",
 };
 
 Emojis.stats = {
