@@ -1,26 +1,25 @@
 const Discord = require("discord.js");
-const Translator = require("../Translator/Translator")
+const Translator = require("../Translator/Translator");
+const Emojis = require("./Emojis");
+const ProgressBarHealth = require("./ProgressBars/ProgressBarHealth");
 
 class Group {
     toStr(data) {
         let lang = data.lang;
-        let membersOfGroup = "```diff\n";
-        membersOfGroup += "+ " + data.leader.name + " | " + data.leader.level + " | " + data.leader.power + "\n";
+        let membersOfGroup = "";
+        membersOfGroup += this.getOnePlayerDisplay(data.leader, lang);
         for (let member of data.members) {
-            membersOfGroup += "+ " + member.name + " | " + member.level + " | " + member.power + "\n";
+            membersOfGroup += this.getOnePlayerDisplay(member, lang);
         }
-        membersOfGroup += "```";
 
-        let invitedPlayers = "```diff\n";
+        let invitedPlayers = "";
         if (data.numberOfInvitedPlayers > 0) {
             for (let invited of data.invitedPlayers) {
-                invitedPlayers += "+ " + invited.name + " | " + invited.level + " | " + invited.power + "\n";
+                invitedPlayers += this.getOnePlayerDisplay(invited, lang);
             }
         } else {
-            invitedPlayers += "- " + Translator.getString(lang, "group", "nobody_was_invited");
+            invitedPlayers += Translator.getString(lang, "group", "nobody_was_invited");
         }
-
-        invitedPlayers += "```";
 
 
         let embed = new Discord.MessageEmbed()
@@ -30,6 +29,13 @@ class Group {
             .addField(Translator.getString(lang, "group", "invited_users") + " (" + data.numberOfInvitedPlayers + " / 5)", invitedPlayers);
 
         return embed;
+    }
+
+    getOnePlayerDisplay(player, lang = "en") {
+        let emojiClass = Emojis.emojisProd.user.string;//[Emojis.emojisProd.user.string, Emojis.general.mage][Math.floor(Math.random() * 2)];
+        let healthText = "\n" + Emojis.getString("red_heart") + " " + Translator.getString(lang, "character", "health_points") + " " + Translator.getFormater(lang).format(player.currentHp) + " / " + Translator.getFormater(lang).format(player.maxHp) + "\n" + new ProgressBarHealth().draw(player.currentHp, player.maxHp);
+
+        return `${emojiClass} **${player.name}**\n${Emojis.getString("levelup")} ${Translator.getString(lang, "inventory_equipment", "level")} ${Translator.getFormater(lang).format(player.level)}\n${Emojis.general.collision} ${Translator.getString(lang, "inventory_equipment", "power")} ${Translator.getFormater(lang).format(player.power)}${healthText}\n\n`
     }
 }
 

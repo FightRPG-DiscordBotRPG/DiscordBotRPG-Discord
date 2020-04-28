@@ -309,6 +309,10 @@ Emojis.emojisProd = {
     "nochange": {
         id: "704363335948304394",
         string: "<:nochange:704363335948304394>"
+    },
+    "user": {
+        id: "403148210295537664",
+        string: "<:user:403148210295537664>"
     }
 };
 
@@ -397,6 +401,7 @@ Emojis.general = {
     "high_voltage": "⚡",
     "game_die": "🎲",
     "light_bulb": "💡",
+    "mage": "🧙"
 };
 
 Emojis.stats = {
