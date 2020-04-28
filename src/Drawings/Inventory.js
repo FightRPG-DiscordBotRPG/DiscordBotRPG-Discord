@@ -40,10 +40,12 @@ class Inventory {
         let fields = [];
         let itemsKeys = Object.keys(items);
         let lastIndex = itemsKeys[itemsKeys.length - 1];
+        let index = 0;
 
         for (let i in items) {
-            let itemStr = (isInventory ? i + " - " : "") + ItemShow.itemToStr(items[i], lang) + "\n\n";
-            if ((str + itemStr).length > 1024) {
+            let itemStr = (isInventory ? i + " - " : "") + ItemShow.itemToStr(items[i], lang);
+            let shouldCreateEmbed = (str + itemStr).length > 1024 | index != 0;
+            if (shouldCreateEmbed) {
                 fields.push(str);
                 str = "";
             }
@@ -54,6 +56,8 @@ class Inventory {
                 fields.push(str);
                 str = "";
             }
+
+            index++;
         }
 
         if (empty) {
@@ -66,11 +70,12 @@ class Inventory {
             .setColor([128, 128, 128])
             .setAuthor(titleEmbed)
             .setDescription(header)
-            .setFooter(pageNumberBody)
             ;
 
+        fields.push(pageNumberBody);
+
         for (let i in fields) {
-            embed.addField("\u200b", fields[i]);
+            embed.addField("--------------------------------------", fields[i]);
         }
 
         return embed;
