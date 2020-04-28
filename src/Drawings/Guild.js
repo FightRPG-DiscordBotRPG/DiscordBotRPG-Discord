@@ -114,11 +114,10 @@ class Guild {
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(Translator.getString(data.lang, "guild", "guild_territories", [data.totalNumberOfTerritories]));
-
         for (let region in data.territories) {
             let areas = "";
             for (let area of data.territories[region]) {
-                areas += " - " + area + "\n";
+                areas += Emojis.getAreaTypeEmoji(area.type_shorthand) + " - " + area.name + (area.statPoints > 0 ? " (" + Emojis.emojisProd.levelup.string + " " + Translator.getString(data.lang, "area", "conquest_points_to_distribute", [area.statPoints]) + ")" : "")  + "\n";
             }
             embed.addField(region, areas);
         }
