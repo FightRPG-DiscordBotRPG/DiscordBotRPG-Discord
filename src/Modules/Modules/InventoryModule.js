@@ -317,8 +317,8 @@ class InventoryModule extends GModule {
                             sellAllConfirmation.react(xmarkEmoji)
                         ]).catch(() => null);
 
-                        const filter = (reaction, u) => {
-                            return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && u.id === message.author.id;
+                        const filter = (r, u) => {
+                            return [checkEmoji, xmarkEmoji].includes(r.emoji.id) && u.id === message.author.id;
                         };
 
 

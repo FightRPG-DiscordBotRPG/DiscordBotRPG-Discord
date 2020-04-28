@@ -57,7 +57,7 @@ class Inventory {
         }
 
         if (empty) {
-            str += fields.push(emptyTitle);
+            fields.push(emptyTitle);
         }
 
         //str += pageNumberBody;

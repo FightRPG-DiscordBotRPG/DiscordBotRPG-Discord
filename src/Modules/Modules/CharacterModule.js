@@ -65,8 +65,8 @@ class CharacterModule extends GModule {
                             tempMsg.react(xmarkEmoji)
                         ]).catch(() => null);
 
-                        const filter = (reaction, user) => {
-                            return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && user.id === message.author.id;
+                        const filter = (r, u) => {
+                            return [checkEmoji, xmarkEmoji].includes(r.emoji.id) && u.id === message.author.id;
                         };
 
 
