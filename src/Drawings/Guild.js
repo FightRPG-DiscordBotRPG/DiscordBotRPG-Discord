@@ -8,7 +8,12 @@ const Emojis = require("./Emojis");
 
 
 class Guild {
-    toString(data) {
+    /**
+     * 
+     * @param {any} data
+     * @param {User} user If we need to do mobile speicific things
+     */
+    toString(data, user) {
         let members = data.members;
         let lang = data.lang;
         let rmStr = "`";
@@ -95,7 +100,11 @@ class Guild {
 
         embed.addField(Emojis.getString("honor") + " " + Translator.getString(lang, "guild", "guild_territory_enroll"), (data.currentTerritoryEnroll !== null ? data.currentTerritoryEnroll : Translator.getString(lang, "general", "none")), true)
             .addField(Emojis.getString("money_bag") + " " + Translator.getString(lang, "guild", "money_available"), Translator.getString(lang, "guild", "money", [data.money]), true)
-            .addField(Emojis.getString("exp") + " " + Translator.getString(lang, "guild", "level_out_of", [data.level, data.maxLevel]), nextLevel, true);
+            .addField(Emojis.getString("exp") + " " + Translator.getString(lang, "guild", "level_out_of", [data.level, data.maxLevel]), nextLevel, true)
+            .addField(Emojis.general.collision + " " + Translator.getString(lang, "guild", "total_player_power").slice(0, -4), Translator.getFormater(lang).format(data.totalPower), true)
+            .addField(Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "guild", "total_player_level").slice(0, -4), Translator.getFormater(lang).format(data.totalLevel), true)
+            ;
+
 
         return embed;
     }

@@ -31,7 +31,7 @@ class GuildModule extends GModule {
                 data = await axios.get("/game/guild/show");
                 data = data.data;
                 if (data.error == null) {
-                    msg = Guild.toString(data);
+                    msg = Guild.toString(data, Globals.connectedUsers[authorIdentifier]);
                 } else {
                     msg = data.error;
                 }
