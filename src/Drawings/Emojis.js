@@ -313,6 +313,10 @@ Emojis.emojisProd = {
     "user": {
         id: "403148210295537664",
         string: "<:user:403148210295537664>"
+    },
+    "gold_coins": {
+        id: "704672468190887967",
+        string: "<:gold_coins:704672468190887967>"
     }
 };
 
@@ -403,6 +407,8 @@ Emojis.general = {
     "light_bulb": "💡",
     "mage": "🧙",
     "clipboard": "📋",
+    "seedling": "🌱",
+    "balance_scale": "⚖️",
 };
 
 Emojis.stats = {

@@ -24,25 +24,18 @@ class Areas {
         }
 
         if (area.craft.isActive == true) {
-            forge = "\n- " + Translator.getString(lang, "area", "service_forge", [area.craft.minLevel, area.craft.maxLevel]);
+            forge = "\n" + Emojis.general.hammer + " " + Translator.getString(lang, "area", "service_forge", [area.craft.minLevel, area.craft.maxLevel]);
         }
         if (area.shop.isActive == true) {
-            shop = "\n- " + Translator.getString(lang, "area", "service_shop", [area.shop.tax]);
+            shop = "\n" + Emojis.emojisProd.gold_coins.string + " " + Translator.getString(lang, "area", "service_shop", [area.shop.tax]);
         }
         if (area.marketplace.isActive == true) {
-            marketplace = "- " + Translator.getString(lang, "area", "service_marketplace", [area.marketplace.tax]);
+            marketplace = Emojis.general.balance_scale + " " + Translator.getString(lang, "area", "service_marketplace", [area.marketplace.tax]);
         }
 
 
-        return new Discord.MessageEmbed()
-            .setColor([0, 255, 0])
-            .setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by", [area.owner]), area.image)
-            .addField(Translator.getString(lang, "climates", "climate"), Translator.getString(lang, "climates", area.climate.climate.shorthand), true)
-            .addField(Translator.getString(lang, "weather", "weather"), Translator.getString(lang, "weather", area.climate.currentWeather.shorthand) + " " + Emojis.getWeatherEmoji(area.climate.currentWeather.shorthand), true)
-            .addField(Translator.getString(lang, "weather", "impact"), this.getWeatherBonusesPenalties(area.climate.currentWeather, lang))
-            .addField(Translator.getString(lang, "weather", "time_before_ends"), this.getWeatherTimeLeft(area.climate.dateNextWeatherChange), true)
-            .addField(Translator.getString(lang, "general", "description"), area.desc)
-            .addField("Services", "```" + marketplace + forge + shop + "```")
+        return this.sharedEmbed(data)
+            .addField(Translator.getString(lang, "area", "services"), marketplace + forge + shop)
             .setImage(area.image);
 
     }
@@ -51,14 +44,7 @@ class Areas {
         let area = data.area;
         let lang = data.lang;
 
-        return new Discord.MessageEmbed()
-            .setColor([0, 255, 0])
-            .setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by", [area.owner]), area.image)
-            .addField(Translator.getString(lang, "climates", "climate"), Translator.getString(lang, "climates", area.climate.climate.shorthand), true)
-            .addField(Translator.getString(lang, "weather", "weather"), Translator.getString(lang, "weather", area.climate.currentWeather.shorthand) + " " + Emojis.getWeatherEmoji(area.climate.currentWeather.shorthand), true)
-            .addField(Translator.getString(lang, "weather", "impact"), this.getWeatherBonusesPenalties(area.climate.currentWeather, lang))
-            .addField(Translator.getString(lang, "weather", "time_before_ends"), this.getWeatherTimeLeft(area.climate.dateNextWeatherChange), true)
-            .addField(Translator.getString(lang, "general", "description"), area.desc)
+        return this.sharedEmbed(data)
             .addField(Translator.getString(lang, "area", "minimum_quality"), Emojis.getRarityEmoji(area.minimum_quality_shorthand) + " **" + area.minimum_quality + "** ", true)
             .addField(Translator.getString(lang, "area", "maximum_quality"), Emojis.getRarityEmoji(area.maximum_quality_shorthand) + " **" + area.maximum_quality + "** ", true)
             .addField(Translator.getString(lang, "general", "monsters"), this.monstersToString(area.monsters, lang))
@@ -66,12 +52,30 @@ class Areas {
             .setImage(area.image);
     }
 
+    /**
+     * 
+     * @param {any} data
+     * @returns {Discord.MessageEmbed}
+     */
+    sharedEmbed(data) {
+        let area = data.area;
+        let lang = data.lang;
+        return new Discord.MessageEmbed()
+            .setColor([0, 255, 0])
+            .setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by", [area.owner]), area.image)
+            .addField(Translator.getString(lang, "climates", "climate"), Translator.getString(lang, "climates", area.climate.climate.shorthand), true)
+            .addField(Translator.getString(lang, "weather", "weather"), Emojis.getWeatherEmoji(area.climate.currentWeather.shorthand) + " " + Translator.getString(lang, "weather", area.climate.currentWeather.shorthand), true)
+            .addField(Translator.getString(lang, "weather", "impact"), this.getWeatherBonusesPenalties(area.climate.currentWeather, lang))
+            .addField(Translator.getString(lang, "weather", "time_before_ends"), this.getWeatherTimeLeft(area.climate.dateNextWeatherChange), true)
+            .addField(Translator.getString(lang, "general", "description"), area.desc)
+    }
+
     dungeonStr(data) {
         this.wildStr(data);
     }
 
     getWeatherTimeLeft(date) {
-        return (Moment(date).diff(Moment(Date.now()), "hours") % 24).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: false }) + ":" + (Moment(date).diff(Moment(Date.now()), "minutes") % 60).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: false }) + ":" + (Moment(date).diff(Moment(Date.now()), "seconds") % 60).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: false });
+        return Emojis.general.stopwatch + " " + (Moment(date).diff(Moment(Date.now()), "hours") % 24).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: false }) + ":" + (Moment(date).diff(Moment(Date.now()), "minutes") % 60).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: false }) + ":" + (Moment(date).diff(Moment(Date.now()), "seconds") % 60).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: false });
     }
 
     getWeatherBonusesPenalties(weather, lang = "en") {
@@ -79,9 +83,9 @@ class Areas {
         let travelFatigue = 1 / weather.travelSpeed;
         let collectFatigue = 1 / weather.collectSpeed;
         let collectChances = weather.collectChances / 1;
-        str += Translator.getString(lang, "bonuses", "travel_tiredness") + ` -> ${Translator.getFormater(lang).format(Math.round(travelFatigue * 100))}% (x${Translator.getFormater(lang).format(travelFatigue)})\n`;
-        str += Translator.getString(lang, "bonuses", "harvest_tiredness") + ` -> ${Translator.getFormater(lang).format(Math.round(collectFatigue * 100))}% (x${Translator.getFormater(lang).format(collectFatigue)})\n`;
-        str += Translator.getString(lang, "bonuses", "collect_drop") + ` -> ${Translator.getFormater(lang).format(Math.round(collectChances * 100))}% (x${Translator.getFormater(lang).format(collectChances)})`;
+        str += Emojis.general.horse_face + " " + Translator.getString(lang, "bonuses", "travel_tiredness") + ` ${Emojis.general.simple_left_to_right_arrow} ${Translator.getFormater(lang).format(Math.round(travelFatigue * 100))}% (x${Translator.getFormater(lang).format(travelFatigue.toFixed(2))})\n`;
+        str += Emojis.general.gloves + " " + Translator.getString(lang, "bonuses", "harvest_tiredness") + ` ${Emojis.general.simple_left_to_right_arrow} ${Translator.getFormater(lang).format(Math.round(collectFatigue * 100))}% (x${Translator.getFormater(lang).format(collectFatigue.toFixed(2))})\n`;
+        str += Emojis.general.seedling + " " + Translator.getString(lang, "bonuses", "collect_drop") + ` ${Emojis.general.simple_left_to_right_arrow} ${Translator.getFormater(lang).format(Math.round(collectChances * 100))}% (x${Translator.getFormater(lang).format(collectChances.toFixed(2))})`;
         return str;
     }
 
