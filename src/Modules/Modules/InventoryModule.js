@@ -185,100 +185,13 @@ class InventoryModule extends GModule {
                 });
                 data = data.data;
                 if (data.error == null) {
-                    let inventoryMessage = await message.channel.send(Inventory.displayAsList(data, true));
-                    let isDM = message.channel.type == "dm";
-                    var invCurrentPage = data.page;
-                    let currentMessageReactions = [];
-
-                    let nextEmoji = Emojis.getString("right_arrow");
-                    let backEmoji = Emojis.getString("left_arrow");
-
-                    if (inventoryMessage == null) {
-                        break;
-                    }
-
-                    if (!inventoryMessage.deleted) {
-                        if (data.page > 1) {
-                            currentMessageReactions.push(await inventoryMessage.react(backEmoji));
-                        }
-                        if (data.page < data.maxPage) {
-                            currentMessageReactions.push(await inventoryMessage.react(nextEmoji));
-                        }
-                    }
-
-
-                    const filter = (reaction, u) => {
-                        return [nextEmoji, backEmoji].includes(reaction.emoji.name) && u.id === message.author.id;
-                    };
-
-                    const collectorInventory = inventoryMessage.createReactionCollector(filter, {
-                        time: 60000,
-                    });
-
-                    collectorInventory.on('collect', async (reaction, u) => {
-                        let dataCollector;
-                        let msgCollector = null;
-                        switch (reaction.emoji.name) {
-                            case nextEmoji:
-                                dataCollector = await axios.get("/game/inventory/show/" + (invCurrentPage + 1), {
-                                    params: searchFilters.params
-                                });
-                                dataCollector = dataCollector.data;
-                                if (dataCollector.error == null) {
-                                    msgCollector = Inventory.displayAsList(dataCollector, true);
-                                    invCurrentPage++;
-                                } else {
-                                    msgCollector = dataCollector.error;
-                                }
-                                break;
-                            case backEmoji:
-                                dataCollector = await axios.get("/game/inventory/show/" + (invCurrentPage - 1), {
-                                    params: searchFilters.params
-                                });
-                                dataCollector = dataCollector.data;
-                                if (dataCollector.error == null) {
-                                    msgCollector = Inventory.displayAsList(dataCollector, true);
-                                    invCurrentPage--;
-                                } else {
-                                    msgCollector = dataCollector.error;
-                                }
-                                break;
-                        }
-                        if (msgCollector != null && !inventoryMessage.deleted) {
-                            if (isDM) {
-                                for (let i in currentMessageReactions) {
-                                    currentMessageReactions[i] = currentMessageReactions[i].remove();
-                                }
-                                await Promise.all(currentMessageReactions);
-                                currentMessageReactions = [];
-                            } else {
-                                await inventoryMessage.reactions.removeAll();
-                            }
-                            await inventoryMessage.edit(msgCollector);
-                            if (dataCollector.error == null) {
-                                if (dataCollector.page > 1) {
-                                    currentMessageReactions.push(await inventoryMessage.react(backEmoji));
-                                }
-                                if (dataCollector.page < dataCollector.maxPage) {
-                                    currentMessageReactions.push(await inventoryMessage.react(nextEmoji));
-                                }
-                            }
-                        }
-
-                    });
-
-                    collectorInventory.on('end', async (reactions, reason) => {
-                        if (!inventoryMessage.deleted) {
-                            if (!isDM) {
-                                inventoryMessage.reactions.removeAll();
-                            } else {
-                                for (let i in currentMessageReactions) {
-                                    if (typeof currentMessageReactions[i].remove === "function") {
-                                        currentMessageReactions[i] = currentMessageReactions[i].remove();
-                                    }
-                                }
-                            }
-                        }
+                    await this.pageListener(data, message, Inventory.displayAsList(data, true), async (currPage) => {
+                        let d = await axios.get("/game/inventory/show/" + currPage, {
+                            params: searchFilters.params
+                        });
+                        return d.data;
+                    }, async (newData) => {
+                        return Inventory.displayAsList(newData, true)
                     });
 
                 } else {
