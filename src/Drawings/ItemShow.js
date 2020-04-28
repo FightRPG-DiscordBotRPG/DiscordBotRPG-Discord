@@ -42,8 +42,21 @@ class ItemShow {
     }
 
     itemToStr(item, lang = "en") {
+
         let numberStr = item.number > 1 ? " [x" + Translator.getFormater(lang).format(item.number) + "]" : "";
-        return "**" + item.name + "**" + (item.isFavorite == true ? " ★" : "") + numberStr + " - " + Emojis.getItemTypeEmoji(item.type_shorthand) + " " + item.type + " (" + Emojis.getItemSubTypeEmoji(item.subtype_shorthand) + " " + item.subType + ")" + " - " + Emojis.emojisProd.levelup.string + " " + item.level + " - " + Emojis.getRarityEmoji(item.rarity_shorthand) + " " + item.rarity + " - " + Emojis.general.collision + " " + item.power;
+
+        let fields = ["**" + item.name + "**" + (item.isFavorite == true ? " ★" : "") + numberStr,
+            Emojis.getItemTypeEmoji(item.type_shorthand) + " " + item.type + " (" + Emojis.getItemSubTypeEmoji(item.subtype_shorthand) + " " + item.subType + ")",
+            Emojis.emojisProd.levelup.string + " " + item.level,
+            Emojis.getRarityEmoji(item.rarity_shorthand) + " " + item.rarity,
+        ];
+
+        if (item.power) {
+            fields.push(Emojis.general.collision + " " + item.power);
+        }
+
+
+        return fields.join(" - ");
     }
 }
 
