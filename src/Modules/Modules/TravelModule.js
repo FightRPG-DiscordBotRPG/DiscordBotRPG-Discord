@@ -93,7 +93,7 @@ class TravelModule extends GModule {
             let addedTime = weathersChanges[key];
 
             if (addedTime > 0) {
-                weatherImpacts += Emojis.getWeatherEmoji(key) + Translator.getString(data.lang, "weather", key) + " " + Emojis.getString("simple_left_to_right_arrow") + " +" + Translator.getString(data.lang, "travel", "wait_time_body", [data.costs.timeChangeDueToWeather.totalTimeAddedDueToWeather]);
+                weatherImpacts += Emojis.getWeatherEmoji(key) + Translator.getString(data.lang, "weather", key) + " " + Emojis.getString("simple_left_to_right_arrow") + " +" + Translator.getString(data.lang, "travel", "wait_time_body", [data.costs.timeChangeDueToWeather.weathersChanges[key]]);
 
                 if (i < weathersChangesKeys.length) {
                     weatherImpacts += "\n";
