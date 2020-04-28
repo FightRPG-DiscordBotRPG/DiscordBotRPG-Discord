@@ -13,6 +13,7 @@ class MessageReactionsWrapper {
         this.collector = null;
         this.isDM = true;
         this.currentMessageReactions = [];
+        this.currentEmojiReactList = [];
     }
 
 
@@ -42,7 +43,7 @@ class MessageReactionsWrapper {
          * @param {Discord.User} user
          */
         const filter = (reaction, user) => {
-            return (settings.reactionsEmojis.includes(reaction.emoji.name) || settings.reactionsEmojis.includes(reaction.emoji.id) ) && user.id === messageDiscord.author.id;
+            return (this.currentEmojiReactList.includes(reaction.emoji.name) || this.currentEmojiReactList.includes(reaction.emoji.id) ) && user.id === messageDiscord.author.id;
         };
 
         this.collector = this.message.createReactionCollector(filter, settings.collectorOptions);
@@ -87,6 +88,7 @@ class MessageReactionsWrapper {
         }
         for (let emojiName of arrOfEmojis) {
             this.currentMessageReactions.push(await this.message.react(emojiName));
+            this.currentEmojiReactList.push(emojiName);
         }
     }
 
@@ -101,6 +103,7 @@ class MessageReactionsWrapper {
         }
 
         this.currentMessageReactions = [];
+        this.currentEmojiReactList = [];
     }
 }
 
