@@ -18,6 +18,17 @@ class LeaderboardPvP extends Leaderboard {
         maxOffset = maxOffset.length;
         let rankings = "";
         let maximumHonorLength = this.getNumberLength(this.rankings[0].Honor);
+
+        let idMaximumLength = 0;
+
+        for (let rank of this.rankings) {
+            if (rank.idCharacter > idMaximumLength) {
+                idMaximumLength = rank.idCharacter;
+            }
+        }
+
+        idMaximumLength = Translator.getFormater(this.lang).format(idMaximumLength).length;
+
         for (let i in this.rankings) {
             let offset = this.offset + Number.parseInt(i) + 1;
             let offsetStr = offset.toString();
@@ -29,7 +40,11 @@ class LeaderboardPvP extends Leaderboard {
             honorString = "`" + "•".repeat(maximumHonorLength - honorString.length) + honorString + "`";
 
 
-            rankings += Emojis.getString("win") + "`" + (offsetStr) + ". `" + Emojis.getString("honor") + honorString + Emojis.getString("idFRPG") + "`" + user.idCharacter + "` - " + user.userName + " (" + user.actualLevel + ")" + "\n";
+            let actualIdString = Translator.getFormater(this.lang).format(user.idCharacter);
+            actualIdString = "`" + "•".repeat(idMaximumLength - actualIdString.length) + actualIdString + "`";
+
+
+            rankings += Emojis.getString("win") + "`" + (offsetStr) + ". `" + Emojis.getString("honor") + honorString + Emojis.getString("idFRPG") + "`" + actualIdString + "` - " + user.userName + " (" + user.actualLevel + ")" + "\n";
         }
         return "**" + Translator.getString(lang, "leaderboards", "arena", [this.sumOfAll.totalHonor]) + " (" + this.maximumRank + ")" + "**\n*" + this.getYourRankString() + "*\n\n" + rankings;
     }

@@ -18,6 +18,17 @@ class LeaderboardGold extends Leaderboard {
         maxOffset = maxOffset.length;
         let rankings = "";
 
+        let idMaximumLength = 0;
+
+        for (let rank of this.rankings) {
+            if (rank.idCharacter > idMaximumLength) {
+                idMaximumLength = rank.idCharacter;
+            }
+        }
+
+        idMaximumLength = Translator.getFormater(this.lang).format(idMaximumLength).length;
+
+
         let maximumGoldLength = Translator.getFormater(this.lang).format(this.rankings[0].money).length;
 
         for (let i in this.rankings) {
@@ -30,8 +41,11 @@ class LeaderboardGold extends Leaderboard {
             let goldString = Translator.getFormater(this.lang).format(user.money);
             let userMoneyStringBefore = "`" + "•".repeat(maximumGoldLength - goldString.length) + goldString + "`";
 
+            let actualIdString = Translator.getFormater(this.lang).format(user.idCharacter);
+            actualIdString = "`" + "•".repeat(idMaximumLength - actualIdString.length) + actualIdString + "`";
 
-            rankings += Emojis.getString("win") + "`" + (offsetStr) + ". `" + Emojis.getString("money_bag") + userMoneyStringBefore + Emojis.getString("idFRPG") + "`" + user.idCharacter + "` - " + user.userName + "\n";
+
+            rankings += Emojis.getString("win") + "`" + (offsetStr) + ". `" + Emojis.getString("money_bag") + userMoneyStringBefore + Emojis.getString("idFRPG") + "`" + actualIdString + "` - " + user.userName + "\n";
         }
         return "**" + Translator.getString(lang, "leaderboards", "gold", [this.sumOfAll.totalGold]) + " (" + this.maximumRank + ")"+ "**\n*" + this.getYourRankString() + "*\n\n" + rankings;
     }
