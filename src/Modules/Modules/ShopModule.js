@@ -23,7 +23,12 @@ class ShopModule extends GModule {
                 data = await axios.get("/game/shop/items/" + args[0]);
                 data = data.data;
                 if (data.error == null) {
-                    msg = Shop.displayItems(data);
+                    await this.pageListener(data, message, Shop.displayItems(data), async (currPage) => {
+                        let d = await axios.get("/game/shop/items/" + currPage);
+                        return d.data;
+                    }, async (newData) => {
+                            return Shop.displayItems(newData);
+                    });
                 } else {
                     msg = data.error;
                 }
