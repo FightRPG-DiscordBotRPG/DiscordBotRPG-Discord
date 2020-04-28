@@ -1,25 +1,23 @@
 const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
-const TextDrawings = require("./TextDrawings");
+const ItemShow = require("./ItemShow");
+const GenericMultipleEmbedList = require("./GenericMultipleEmbedList");
+const Emojis = require("./Emojis");
 
 
 class Marketplace {
     toString(data) {
         let lang = data.lang;
-        let str = "```\n";
-        str += Translator.getString(lang, "marketplace", "header_str") + "\n\n";
-        let orders = data.orders;
-        if (orders.length > 0) {
-            for (let order of orders) {
-                str += order.seller_name + " - " + order.idItem + " - " + order.item.name + " - " + order.item.type + " (" + order.item.subType + ")" + " - " + order.item.level + " - " + order.item.rarity + " - " + order.item.power + " - " + "x" + order.item.number + " - " + Translator.getFormater(lang).format(order.price) + "G" + "\n";
-            }
-            str += "\n";
-        } else {
-            str += Translator.getString(lang, "general", "nothing_at_this_page") + "\n\n";
-        }
-        str += Translator.getString(lang, "general", "page_out_of_x", [data.page, data.maxPage])
-        str += "```";
-        return str;
+
+        let OrdersList = new GenericMultipleEmbedList();
+        OrdersList.load({ collection: data.orders, displayIfEmpty: Translator.getString(lang, "general", "nothing_at_this_page"), listType: 0, pageRelated: { page: data.page, maxPage: data.maxPage } }, lang, (index, order) => {
+            return  Emojis.emojisProd.user.string + " " +order.seller_name + " - " + Emojis.emojisProd.idFRPG.string + " " + order.idItem + " - " + ItemShow.itemToStr(order.item, lang) + " - " + Emojis.general.money_bag + " " + Translator.getFormater(lang).format(order.price) + "G";
+        });
+
+        let embed = new Discord.MessageEmbed()
+            .setAuthor(Translator.getString(lang, "help_panel", "market_title"));
+
+        return OrdersList.getEmbed(embed);
     }
 }
 

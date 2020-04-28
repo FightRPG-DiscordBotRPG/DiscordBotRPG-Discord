@@ -23,7 +23,12 @@ class MarketplaceModule extends GModule {
                 data = await axios.get("/game/marketplace/mylist/" + args[0], { params: searchFilters.params });
                 data = data.data;
                 if (data.error == null) {
-                    msg = Marketplace.toString(data);
+                    await this.pageListener(data, message, Marketplace.toString(data), async (currPage) => {
+                        let d = await axios.get("/game/marketplace/mylist/" + currPage, { params: searchFilters.params });
+                        return d.data;
+                    }, async (newData) => {
+                            return Marketplace.toString(newData)
+                    });
                 } else {
                     msg = data.error;
                 }
@@ -75,7 +80,12 @@ class MarketplaceModule extends GModule {
                 data = await axios.get("/game/marketplace/show/" + searchFilters.page, { params: searchFilters.params });
                 data = data.data;
                 if (data.error == null) {
-                    msg = Marketplace.toString(data);
+                    await this.pageListener(data, message, Marketplace.toString(data), async (currPage) => {
+                        let d = await axios.get("/game/marketplace/show/" + currPage, { params: searchFilters.params });
+                        return d.data;
+                    }, async (newData) => {
+                        return Marketplace.toString(newData)
+                    });
                 } else {
                     msg = data.error;
                 }
