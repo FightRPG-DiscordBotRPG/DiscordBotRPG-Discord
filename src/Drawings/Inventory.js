@@ -3,6 +3,7 @@ const ItemShow = require("./ItemShow");
 const Discord = require("discord.js");
 const Emojis = require("./Emojis");
 const Globals = require("../Globals");
+const GenericMultipleEmbedList = require("./GenericMultipleEmbedList");
 
 class Inventory {
     /**
@@ -14,13 +15,13 @@ class Inventory {
         let lang = data.lang;
 
         let emptyTitle = "";
-        let pageNumberBody = "";
+        let pageObject = null;
         let header = "";
         let titleEmbed = "";
 
         if (isInventory) {
             header += Translator.getString(lang, "inventory_equipment", "id") + " - ";
-            pageNumberBody = Translator.getString(lang, "inventory_equipment", "page_x_out_of", [data.page, data.maxPage == 0 ? 1 : data.maxPage]);
+            pageObject = { page: data.page, maxPage: data.maxPage == 0 ? 1 : data.maxPage };
             emptyTitle = Translator.getString(lang, "inventory_equipment", "empty_inventory");
             titleEmbed = Translator.getString(lang, "help_panel", "inventory_title");
         } else {
@@ -33,38 +34,12 @@ class Inventory {
         header += Translator.getString(lang, "inventory_equipment", "level") + " - ";
         header += Translator.getString(lang, "inventory_equipment", "rarity") + " - ";
         header += Translator.getString(lang, "inventory_equipment", "power") + "\n\n";
-        let empty = true;
 
-        let items = data.items;
-        let str = "";
-        let fields = [];
-        let itemsKeys = Object.keys(items);
-        let lastIndex = itemsKeys[itemsKeys.length - 1];
-        let index = 0;
 
-        for (let i in items) {
-            let itemStr = (isInventory ? i + " - " : "") + ItemShow.itemToStr(items[i], lang);
-            let shouldCreateEmbed = (str + itemStr).length > 1024 | index != 0;
-            if (shouldCreateEmbed) {
-                fields.push(str);
-                str = "";
-            }
-            str += itemStr;
-            empty = false;
-
-            if (i == lastIndex) {
-                fields.push(str);
-                str = "";
-            }
-
-            index++;
-        }
-
-        if (empty) {
-            fields.push(emptyTitle);
-        }
-
-        //str += pageNumberBody;
+        let inventoryList = new GenericMultipleEmbedList();
+        inventoryList.load({ collection: data.items, displayIfEmpty: emptyTitle, listType: 0, pageRelated: pageObject }, lang, (i, item) => {
+            return (isInventory ? i + " - " : "") + ItemShow.itemToStr(item, lang);
+        });
 
         let embed = new Discord.MessageEmbed()
             .setColor([128, 128, 128])
@@ -72,13 +47,7 @@ class Inventory {
             .setDescription(header)
             ;
 
-        fields.push(pageNumberBody);
-
-        for (let i in fields) {
-            embed.addField("--------------------------------------", fields[i]);
-        }
-
-        return embed;
+        return inventoryList.getEmbed(embed);
     }
 
     ciValueSellAllDisplay(data) {

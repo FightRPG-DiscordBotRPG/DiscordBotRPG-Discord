@@ -216,7 +216,6 @@ class TextDrawings {
             .addField(statsTitle, this.statsToString(data.stats, data.statsEquipment, false, user, data.lang))
         return embed;
     }
-
 }
 
 module.exports = new TextDrawings();

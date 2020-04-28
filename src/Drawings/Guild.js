@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
 const Emojis = require("./Emojis");
+const GenericMultipleEmbedList = require("./GenericMultipleEmbedList");
 
 /**
  * @typedef {import("../Users/User")} User
@@ -180,47 +181,23 @@ class Guild {
             desktopTrait = "";
         }
 
-        if (data.guilds.length > 0) {
-            let contentString = "";
-            for (let i in data.guilds) {
-                let guild = data.guilds[i];
+        let ListedGuilds = new GenericMultipleEmbedList();
+        ListedGuilds.load({ collection: data.guilds, displayIfEmpty: Translator.getString(lang, "guild", "nothing_to_print"), listType: 0, pageRelated: { page: data.page, maxPage: data.maxPage } }, lang, (index, guild) => {
+            let levelSpaces = guild.level.toString().length < 2 ? "0" : "";
 
-                let levelSpaces = guild.level.toString().length < 2 ? "0" : "";
-
-                let guildStr = `${Emojis.emojisProd.idFRPG.string} ${guild.id} - ${Emojis.general.clipboard} ${guild.name} ${desktopTrait} ` +
-                    `${mobileLineBreaks}${Emojis.emojisProd.levelup.string} ${Translator.getString(lang, "inventory_equipment", "level")} ${levelSpaces}${guild.level} - ${Emojis.emojisProd.user.string} ${guild.nbMembers} / ${guild.maxMembers}` +
-                    `\n${Emojis.general.collision} ${Translator.getString(lang, "guild", "total_player_power", [guild.totalPower])} ${desktopTrait} ${mobileLineBreaks}${Emojis.emojisProd.levelup.string} ${Translator.getString(lang, "guild", "total_player_level", [guild.totalLevel])}`;
-
-                let shouldCreateEmbed = i != 0;
-
-                if (shouldCreateEmbed ) {
-                    fields.push(contentString);
-                    contentString = "";
-                }
-
-                contentString += guildStr;
-
-                if (i == data.guilds.length-1) {
-                    fields.push(contentString);
-                    contentString = "";
-                }
-            }
-        } else {
-            fields.push(Translator.getString(lang, "guild", "nothing_to_print"));
-        }
-
+            return `${Emojis.emojisProd.idFRPG.string} ${guild.id} - ${Emojis.general.clipboard} ${guild.name} ${desktopTrait} ` +
+                `${mobileLineBreaks}${Emojis.emojisProd.levelup.string} ${Translator.getString(lang, "inventory_equipment", "level")} ${levelSpaces}${guild.level} - ${Emojis.emojisProd.user.string} ${guild.nbMembers} / ${guild.maxMembers}` +
+                `\n${Emojis.general.collision} ${Translator.getString(lang, "guild", "total_player_power", [guild.totalPower])} ${desktopTrait} ${mobileLineBreaks}${Emojis.emojisProd.levelup.string} ${Translator.getString(lang, "guild", "total_player_level", [guild.totalLevel])}`;
+        });
 
 
         let embed = new Discord.MessageEmbed()
             .setAuthor(Translator.getString(lang, "help_panel", "guilds_title"));
 
-        fields.push(Translator.getString(lang, "general", "page_out_of_x", [data.page, data.maxPage]));
 
-        for (let i in fields) {
-            embed.addField("--------------------------------------", fields[i]);
-        }
+        
 
-        return embed;
+        return ListedGuilds.getEmbed(embed);
     }
 
     disbandConfirm(lang="en") {
