@@ -111,34 +111,37 @@ class TradeModule extends GModule {
                 if (data.error == null) {
                     let checkEmoji = Emojis.getID("vmark");
                     let xmarkEmoji = Emojis.getID("xmark");
-                    let tempMsg = await message.channel.send(Trade.toString(data)).catch(() => null);
+                    let tempMsg = await message.channel.send(Trade.toString(data, Globals.connectedUsers[authorIdentifier]));
 
-                    Promise.all([
-                        tempMsg.react(checkEmoji),
-                        tempMsg.react(xmarkEmoji)
-                    ]).catch(() => null);
+                    if (tempMsg) {
+                        Promise.all([
+                            tempMsg.react(checkEmoji),
+                            tempMsg.react(xmarkEmoji)
+                        ]).catch(() => null);
 
-                    const filter = (reaction, user) => {
-                        return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && user.id === message.author.id;
-                    };
+                        const filter = (reaction, user) => {
+                            return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && user.id === message.author.id;
+                        };
 
 
-                    const collected = await tempMsg.awaitReactions(filter, {
-                        max: 1,
-                        time: 25000
-                    });
-                    const reaction = collected.first();
-                    if (reaction != null) {
-                        switch (reaction.emoji.id) {
-                            case checkEmoji:
-                                this.run(message, "tvalidate", args);
-                                break;
+                        const collected = await tempMsg.awaitReactions(filter, {
+                            max: 1,
+                            time: 25000
+                        });
+                        const reaction = collected.first();
+                        if (reaction != null) {
+                            switch (reaction.emoji.id) {
+                                case checkEmoji:
+                                    this.run(message, "tvalidate", args);
+                                    break;
 
-                            case xmarkEmoji:
-                                this.run(message, "tcancel", args);
-                                break;
+                                case xmarkEmoji:
+                                    this.run(message, "tcancel", args);
+                                    break;
+                            }
                         }
                     }
+
                 } else {
                     msg = data.error;
                 }
