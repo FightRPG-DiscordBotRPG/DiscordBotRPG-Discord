@@ -2,6 +2,10 @@ const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
 const Emojis = require("./Emojis");
 
+/**
+ * @typedef {import("../Users/User")} User
+ **/
+
 
 class Guild {
     toString(data) {
@@ -149,51 +153,65 @@ class Guild {
         return str;
     }
 
-    guildsToString(data) {
-        let str = "```";
-        let idMaxLength = 10;
-        let nameMaxLength = 35;
-        let levelMaxLength = 11;
-        let guildmembersMaxLenght = 15;
-
-        let idLength;
-        let nameLength;
-        let levelLength;
-        let guildmembersLength;
-
+    /**
+     * 
+     * @param {any} data
+     * @param {User} user
+     */
+    guildsToString(data, user) {
         let lang = data.lang;
 
-        if (data.guilds.length > 0) {
-            str += "|" + "    id    " + "|" + "                name               " + "|" + "   level   " + "|" + "    members    " + "|" + "\n";
-            for (let i of data.guilds) {
+        let fields = [];
 
-                idLength = i.id.toString().length;
-                idLength = (idMaxLength - idLength) / 2;
+        let mobileLineBreaks = "";
+        let desktopTrait = "-";
 
-                nameLength = i.name.length;
-                nameLength = (nameMaxLength - nameLength) / 2;
-
-                levelLength = i.level.toString().length;
-                levelLength = (levelMaxLength - levelLength) / 2;
-
-                guildmembersLength = i.nbMembers.toString().length + 1 + i.maxMembers.toString().length;
-                guildmembersLength = (guildmembersMaxLenght - guildmembersLength) / 2;
-
-
-
-                str += "|" + " ".repeat(Math.floor(idLength)) + i.id + " ".repeat(Math.ceil(idLength)) + "|" +
-                    " ".repeat(Math.floor(nameLength)) + i.name + " ".repeat(Math.ceil(nameLength)) + "|" +
-                    " ".repeat(Math.floor(levelLength)) + i.level + " ".repeat(Math.ceil(levelLength)) + "|" +
-                    " ".repeat(Math.floor(guildmembersLength)) + i.nbMembers + "/" + i.maxMembers + " ".repeat(Math.ceil(guildmembersLength)) + "|\n"
-            }
-        } else {
-            str += Translator.getString(lang, "guild", "nothing_to_print");
+        if (user.isOnMobile) {
+            mobileLineBreaks = "\n";
+            desktopTrait = "";
         }
 
-        str += Translator.getString(lang, "general", "page_out_of_x", [data.page, data.maxPage]);
+        if (data.guilds.length > 0) {
+            let contentString = "";
+            for (let i in data.guilds) {
+                let guild = data.guilds[i];
 
-        str += "```";
-        return str;
+                let levelSpaces = guild.level.toString().length < 2 ? "0" : "";
+
+                let guildStr = `${Emojis.emojisProd.idFRPG.string} ${guild.id} - ${Emojis.general.clipboard} ${guild.name} ${desktopTrait} ` +
+                    `${mobileLineBreaks}${Emojis.emojisProd.levelup.string} ${Translator.getString(lang, "inventory_equipment", "level")} ${levelSpaces}${guild.level} - ${Emojis.emojisProd.user.string} ${guild.nbMembers} / ${guild.maxMembers}` +
+                    `\n${Emojis.general.collision} ${Translator.getString(lang, "guild", "total_player_power", [guild.totalPower])} ${desktopTrait} ${mobileLineBreaks}${Emojis.emojisProd.levelup.string} ${Translator.getString(lang, "guild", "total_player_level", [guild.totalLevel])}`;
+
+                let shouldCreateEmbed = i != 0;
+
+                if (shouldCreateEmbed ) {
+                    fields.push(contentString);
+                    contentString = "";
+                }
+
+                contentString += guildStr;
+
+                if (i == data.guilds.length-1) {
+                    fields.push(contentString);
+                    contentString = "";
+                }
+            }
+        } else {
+            fields.push(Translator.getString(lang, "guild", "nothing_to_print"));
+        }
+
+
+
+        let embed = new Discord.MessageEmbed()
+            .setAuthor(Translator.getString(lang, "help_panel", "guilds_title"));
+
+        fields.push(Translator.getString(lang, "general", "page_out_of_x", [data.page, data.maxPage]));
+
+        for (let i in fields) {
+            embed.addField("--------------------------------------", fields[i]);
+        }
+
+        return embed;
     }
 
     disbandConfirm(lang="en") {

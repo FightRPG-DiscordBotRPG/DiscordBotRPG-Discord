@@ -153,7 +153,12 @@ class GuildModule extends GModule {
                 data = await axios.get("/game/guild/list/" + args[0]);
                 data = data.data;
                 if (data.error == null) {
-                    msg = Guild.guildsToString(data);
+                    await this.pageListener(data, message, Guild.guildsToString(data, Globals.connectedUsers[authorIdentifier]), async (currPage) => {
+                        let inData = await axios.get("/game/guild/list/" + currPage);
+                        return inData.data;
+                    }, async (newData) => {
+                            return Guild.guildsToString(newData, Globals.connectedUsers[authorIdentifier]);
+                    });
                 } else {
                     msg = data.error;
                 }
