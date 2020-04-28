@@ -202,58 +202,11 @@ class GModule {
                     break;
             }
 
-            var currentPage = data.page;
-            let currentMessageReactions = [];
-
-            let nextEmoji = Emojis.getString("right_arrow");
-            let backEmoji = Emojis.getString("left_arrow");
-
-            if (data.page > 1) {
-                currentMessageReactions.push(backEmoji);
-            }
-            if (data.page < data.maxPage) {
-                currentMessageReactions.push(nextEmoji);
-            }
-
-            let messageReactWrapper = new MessageReactionsWrapper();
-            await messageReactWrapper.load(message, leaderboard.drawWithPages(), { reactionsEmojis: currentMessageReactions, collectorOptions: { time: 60000 } });
-
-
-            if (messageReactWrapper.message == null) {
-                return;
-            }
-
-            messageReactWrapper.collector.on('collect', async (reaction, user) => {
-                let dataCollector;
-                let msgCollector = "";
-                switch (reaction.emoji.name) {
-                    case nextEmoji:
-                        currentPage++;
-                        break;
-                    case backEmoji:
-                        currentPage--;
-                        break;
-                }
-
-                dataCollector = await this.getLeaderBoard(leaderboardName, currentPage, Globals.connectedUsers[message.author.id].getAxios());
-
-                if (dataCollector.error == null) {
-                    leaderboard.load(dataCollector);
-                    msgCollector = leaderboard.drawWithPages();
-
-                    currentMessageReactions = [];
-                    if (dataCollector.page > 1) {
-                        currentMessageReactions.push(backEmoji);
-                    }
-                    if (dataCollector.page < dataCollector.maxPage) {
-                        currentMessageReactions.push(nextEmoji);
-                    }
-
-                } else {
-                    msgCollector = dataCollector.error;
-                }
-
-                await messageReactWrapper.edit(msgCollector, currentMessageReactions);
+            await this.pageListener(data, message, leaderboard.drawWithPages(), async (currPage) => {
+                return await this.getLeaderBoard(leaderboardName, currPage, Globals.connectedUsers[message.author.id].getAxios())
+            }, async (newData) => {
+                    leaderboard.load(newData);
+                    return leaderboard.drawWithPages();
             });
 
         } else {
@@ -299,6 +252,76 @@ class GModule {
 
         return toReturn;
 
+    }
+
+    /**
+     * Callback for getting data from api
+     * 
+     * @callback dataCollectorCallback
+     * @param {Number} currPage
+     */
+
+    /**
+     * 
+     * @param {any} initialData
+     * @param {Discord.Message} messageDiscord
+     * @param {string | Discord.MessageEmbed} initialMessage
+     * @param {dataCollectorCallback} dataCollectorCallback
+     * @param {Function} afterCollectorCallback
+     */
+    async pageListener(initialData, messageDiscord, initialMessage, dataCollectorCallback, afterCollectorCallback) {
+        var currentPage = initialData.page;
+        let currentMessageReactions = [];
+
+        let nextEmoji = Emojis.getString("right_arrow");
+        let backEmoji = Emojis.getString("left_arrow");
+
+        if (initialData.page > 1) {
+            currentMessageReactions.push(backEmoji);
+        }
+        if (initialData.page < initialData.maxPage) {
+            currentMessageReactions.push(nextEmoji);
+        }
+
+        let messageReactWrapper = new MessageReactionsWrapper();
+        await messageReactWrapper.load(messageDiscord, initialMessage, { reactionsEmojis: currentMessageReactions, collectorOptions: { time: 60000 } });
+
+
+        if (messageReactWrapper.message == null) {
+            return;
+        }
+
+        messageReactWrapper.collector.on('collect', async (reaction, user) => {
+            let dataCollector;
+            let msgCollector = "";
+            switch (reaction.emoji.name) {
+                case nextEmoji:
+                    currentPage++;
+                    break;
+                case backEmoji:
+                    currentPage--;
+                    break;
+            }
+
+            dataCollector = await dataCollectorCallback(currentPage);
+
+            if (dataCollector.error == null) {
+                msgCollector = await afterCollectorCallback(dataCollector)
+
+                currentMessageReactions = [];
+                if (dataCollector.page > 1) {
+                    currentMessageReactions.push(backEmoji);
+                }
+                if (dataCollector.page < dataCollector.maxPage) {
+                    currentMessageReactions.push(nextEmoji);
+                }
+
+            } else {
+                msgCollector = dataCollector.error;
+            }
+
+            await messageReactWrapper.edit(msgCollector, currentMessageReactions);
+        });
     }
 
 
