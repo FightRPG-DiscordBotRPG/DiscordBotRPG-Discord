@@ -126,41 +126,38 @@ class Guild {
         return embed;
     }
 
-    appliancesToString(data) {
+    /**
+     * 
+     * @param {any} data
+     * @param {User} user
+     */
+    appliancesToString(data, user) {
         let lang = data.lang;
-        let idMaxLength = 10;
-        let nameMaxLength = 39;
-        let levelMaxLength = 11;
 
-        let id;
-        let name;
-        let level;
+        let mobileLineBreaks = "";
+        let desktopTrait = "-";
 
-        let str = "```";
-
-        if (data.appliances.length > 0) {
-            str += "|" + "    id    " + "|" + "                  name                  " + "|" + "   level   " + "|" + "\n";
-            for (let appliance of data.appliances) {
-                id = appliance.id.toString().length;
-                id = (idMaxLength - id) / 2;
-
-                name = appliance.name.length;
-                name = (nameMaxLength - name) / 2;
-
-                level = appliance.level.toString().length;
-                level = (levelMaxLength - level) / 2;
-
-
-                str += "|" + " ".repeat(Math.floor(id)) + appliance.id + " ".repeat(Math.ceil(id)) + "|" +
-                    " ".repeat(Math.floor(name)) + appliance.name + " ".repeat(Math.ceil(name)) + "|" +
-                    " ".repeat(Math.floor(level)) + appliance.level + " ".repeat(Math.ceil(level)) + "|\n"
-            }
-        } else {
-            str += Translator.getString(lang, "guild", "nobody_ask_to_join_your_guild");
+        if (user.isOnMobile) {
+            mobileLineBreaks = "\n";
+            desktopTrait = "";
         }
-        str += "\n" + Translator.getString(lang, "general", "page_out_of_x", [data.page, data.maxPage]);
-        str += "```";
-        return str;
+
+        let ListedAppliances = new GenericMultipleEmbedList();
+        ListedAppliances.load({ collection: data.appliances, displayIfEmpty: Translator.getString(lang, "general", "none"), listType: 0, pageRelated: { page: data.page, maxPage: data.maxPage } }, lang, (index, userOrGuild) => {
+            let powerStr = "";
+            if (userOrGuild.power != null) {
+                powerStr = ` - ${Emojis.general.collision} ${Translator.getString(lang, "inventory_equipment", "power")} ${Translator.getFormater(lang).format(userOrGuild.power)}`;
+            }
+
+            return `${Emojis.emojisProd.idFRPG.string} ${userOrGuild.id} - ${Emojis.general.clipboard} ${userOrGuild.name} ${mobileLineBreaks}${desktopTrait}${Emojis.emojisProd.levelup.string} ${Translator.getString(lang, "inventory_equipment", "level")} ${userOrGuild.level}${powerStr}`
+        });
+
+
+        let embed = new Discord.MessageEmbed()
+            .setAuthor(Translator.getString(lang, "guild", "current_applications"));
+
+
+        return ListedAppliances.getEmbed(embed);
     }
 
     /**
@@ -170,8 +167,6 @@ class Guild {
      */
     guildsToString(data, user) {
         let lang = data.lang;
-
-        let fields = [];
 
         let mobileLineBreaks = "";
         let desktopTrait = "-";
