@@ -24,7 +24,12 @@ class CraftingModule extends GModule {
                 data = await axios.get("/game/crafting/craftlist/" + args[0]);
                 data = data.data;
                 if (data.error == null) {
-                    msg = Craft.getCraftList(data);
+                    await this.pageListener(data, message, Craft.getCraftList(data), async (currPage) => {
+                        let d = await axios.get("/game/crafting/craftlist/" + currPage);
+                        return d.data;
+                    }, async (newData) => {
+                            return Craft.getCraftList(newData);
+                    });
                 } else {
                     msg = data.error;
                 }
