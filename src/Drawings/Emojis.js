@@ -47,6 +47,18 @@ class Emojis {
         return Emojis.areaType[typeShorthand] ? Emojis.areaType[typeShorthand] : Emojis.general.q_mark;
     }
 
+    static getResourceSubtype(subtypeShorthand, rarityShorthand) {
+        let resourcesTypesEquivalent = {
+            "plant": "herb"
+        }
+
+        subtypeShorthand = resourcesTypesEquivalent[subtypeShorthand] ? resourcesTypesEquivalent[subtypeShorthand] : subtypeShorthand;
+
+        let emoji = this.getString(subtypeShorthand + "_" + rarityShorthand);
+
+        return emoji != null ? emoji : this.getItemSubTypeEmoji(subtypeShorthand);
+    }
+
 }
 
 Emojis.weather = {
