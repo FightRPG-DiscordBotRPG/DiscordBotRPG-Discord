@@ -26,7 +26,7 @@ class WorldBossModule extends GModule {
                 data = await axios.get("/game/worldbosses/display/all");
                 data = data.data;
                 if (data.error == null) {
-                    msg = WorldBosses.listToDiscord(data);
+                    msg = WorldBosses.listToDiscord(data, Globals.connectedUsers[authorIdentifier], true);
                 } else {
                     msg = data.error;
                 }
@@ -46,7 +46,7 @@ class WorldBossModule extends GModule {
                         data = data.data;
                         if (data.error == null) {
                             let d3 = data;
-                            msg = WorldBosses.attackToDiscord(d1, d2, d3);
+                            msg = WorldBosses.attackToDiscord(d1, d2, d3, Globals.connectedUsers[authorIdentifier]);
                         } else {
                             msg = data.error;
                         }
