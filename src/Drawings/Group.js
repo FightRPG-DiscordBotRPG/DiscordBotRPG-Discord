@@ -2,31 +2,38 @@ const Discord = require("discord.js");
 const Translator = require("../Translator/Translator");
 const Emojis = require("./Emojis");
 const ProgressBarHealth = require("./ProgressBars/ProgressBarHealth");
+const GenericMultipleEmbedList = require("./GenericMultipleEmbedList");
+
 
 class Group {
     toStr(data) {
         let lang = data.lang;
-        let membersOfGroup = "";
-        membersOfGroup += this.getOnePlayerDisplay(data.leader, lang);
-        for (let member of data.members) {
-            membersOfGroup += this.getOnePlayerDisplay(member, lang);
-        }
 
-        let invitedPlayers = "";
-        if (data.numberOfInvitedPlayers > 0) {
-            for (let invited of data.invitedPlayers) {
-                invitedPlayers += this.getOnePlayerDisplay(invited, lang);
-            }
-        } else {
-            invitedPlayers += Translator.getString(lang, "group", "nobody_was_invited");
-        }
+        let membersList = new GenericMultipleEmbedList();
+        data.members.unshift(data.leader);
+        membersList.load({ collection: data.members, displayIfEmpty: "", listType: 0 }, lang, (index, member) => {
+            return this.getOnePlayerDisplay(member, lang)
+        });
+
+
+
+        let invitedList = new GenericMultipleEmbedList();
+        invitedList.load({ collection: data.invitedPlayers, displayIfEmpty: Translator.getString(lang, "group", "nobody_was_invited"), listType: 0 }, lang, (index, invited) => {
+            return this.getOnePlayerDisplay(invited, lang)
+        });
 
 
         let embed = new Discord.MessageEmbed()
             .setColor([0, 127, 255])
             .setAuthor(Translator.getString(lang, "group", "group") + " | " + Translator.getString(lang, "group", "avg_level", [data.avgLevel]) + " | " + Translator.getString(lang, "group", "avg_power", [data.avgPower]), "http://www.cdhh.fr/wp-content/uploads/2012/04/icon_groupe2.jpg")
-            .addField(Translator.getString(lang, "group", "members_of_the_group") + " (" + data.numberOfPlayers + " / 5)", membersOfGroup)
-            .addField(Translator.getString(lang, "group", "invited_users") + " (" + data.numberOfInvitedPlayers + " / 5)", invitedPlayers);
+            .addField("--------------------------------------", Translator.getString(lang, "group", "members_of_the_group") + " (" + data.numberOfPlayers + " / 5)");
+
+        embed = membersList.getEmbed(embed);
+
+        embed.addField("--------------------------------------", Translator.getString(lang, "group", "invited_users") + " (" + data.numberOfInvitedPlayers + " / 5)")
+        embed = invitedList.getEmbed(embed);
+
+        //    ;
 
         return embed;
     }
