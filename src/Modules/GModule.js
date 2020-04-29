@@ -6,6 +6,7 @@ const LeaderboardWBAttacks = require("../Drawings/Leaderboard/LeaderboardWBAttac
 const LeaderboardWBDamage = require("../Drawings/Leaderboard/LeaderboardWBDamage");
 const LeaderboardPvP = require("../Drawings/Leaderboard/LeaderboardPvP");
 const LeaderboardLevel = require("../Drawings/Leaderboard/LeaderboardLevel");
+const LeaderboardPower = require("../Drawings/Leaderboard/LeaderboardPower");
 const LeaderboardGold = require("../Drawings/Leaderboard/LeaderboardGold");
 const LeaderboardCraftLevel = require("../Drawings/Leaderboard/LeaderboardCraftLevel");
 const Emojis = require("../Drawings/Emojis");
@@ -144,10 +145,13 @@ class GModule {
                 data = await axios.get("/game/character/leaderboard/craft/level/" + page);
                 break;
             case "wbattacks":
-                data = await axios.get("/game/worldbosses/leaderboard/attacks");
+                data = await axios.get("/game/worldbosses/leaderboard/attacks/" + page);
                 break;
             case "wbdamage":
-                data = await axios.get("/game/worldbosses/leaderboard/damage");
+                data = await axios.get("/game/worldbosses/leaderboard/damage/" + page);
+                break;
+            case "power":
+                data = await axios.get("/game/character/leaderboard/power/" + page);
                 break;
             case "arena":
             default:
@@ -196,17 +200,20 @@ class GModule {
                 case "wbdamage":
                     leaderboard = new LeaderboardWBDamage(data);
                     break;
+                case "power":
+                    leaderboard = new LeaderboardPower(data);
+                    break;
                 case "arena":
                 default:
                     leaderboard = new LeaderboardPvP(data);
                     break;
             }
 
-            await this.pageListener(data, message, leaderboard.drawWithPages(), async (currPage) => {
+            await this.pageListener(data, message, leaderboard.draw(), async (currPage) => {
                 return await this.getLeaderBoard(leaderboardName, currPage, Globals.connectedUsers[message.author.id].getAxios())
             }, async (newData) => {
-                    leaderboard.load(newData);
-                    return leaderboard.drawWithPages();
+                leaderboard.load(newData);
+                return leaderboard.draw();
             });
 
         } else {
