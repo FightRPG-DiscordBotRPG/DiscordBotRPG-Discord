@@ -169,7 +169,12 @@ class AdminModule extends GModule {
                 }
                 break;
             case "debug":
-                data = await axios.get("/game/admin/debug");
+                data = await axios.get("/game/admin/debug", {
+                    params: {
+                        p1: args[0],
+                        p2: args[1]
+                    }
+                });
                 msg = "Success"
                 break;
             case "last_command":
