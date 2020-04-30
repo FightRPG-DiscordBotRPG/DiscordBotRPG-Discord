@@ -57,7 +57,7 @@ class GenericMultipleEmbedList {
 
 
         if (empty) {
-            this.fields.push(data.displayIfEmpty);
+            this.fields.push(data.displayIfEmpty != null && data.displayIfEmpty != "" ? data.displayIfEmpty : Translator.getString(lang, "general", "nothing_at_this_page"));
         }
 
         if (data.pageRelated) {

@@ -25,7 +25,7 @@ class Leaderboard {
         let listEmbed = new GenericMultipleEmbedList();
 
         listEmbed.load({
-            collection: this.rankings, displayIfEmpty: "", listType: 0, pageRelated: {
+            collection: this.rankings, listType: 0, pageRelated: {
                 page: this.page,
                 maxPage: this.maxPage,
             }
