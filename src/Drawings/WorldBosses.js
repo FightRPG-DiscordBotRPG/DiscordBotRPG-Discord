@@ -40,7 +40,7 @@ class WorldBosses {
             return ListOfWorldBosses.getEmbed(new Discord.MessageEmbed().setAuthor(Translator.getString(lang, "help_panel", "world_boss_title")));
         } else {
             if (data.bosses.length > 0) {
-
+                let str = "";
                 for (let info of data.bosses) {
                     str += Emojis.general.national_park + " " + info.regionName + " - " + info.areaName + "\n";
                     if (info.worldBoss != null) {
@@ -51,9 +51,8 @@ class WorldBosses {
                         str += Translator.getString(lang, "world_bosses", "spawn_date", [date.toLocaleString(lang.length > 2 ? lang : lang + "-" + lang.toUpperCase()) + " UTC"]);
                     }
                     str += "\n\n";
-                    return str;
                 }
-
+                return str;
             } else {
                 return Translator.getString(lang, "world_bosses", "no_world_boss");
             }
