@@ -43,6 +43,16 @@ class ConquestModule extends GModule {
                     msg = data.error;
                 }
                 break;
+                
+            case "arearesetbonuses":
+                data = await axios.post("/game/conquest/area/resetbonuses/");
+                data = data.data;
+                if (data.error == null) {
+                    msg = data.success;
+                } else {
+                    msg = data.error;
+                }
+                break;
 
             case "areabonuseslist":
                 data = await axios.get("/game/conquest/area/bonuses");
