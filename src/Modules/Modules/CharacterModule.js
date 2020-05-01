@@ -112,7 +112,7 @@ class CharacterModule extends GModule {
                     msg = TextDrawing.userInfoPanel(data, user);
                 }
                 break;
-                
+
             case "attributes":
                 data = await axios.get("/game/character/info");
                 data = data.data;
@@ -143,7 +143,12 @@ class CharacterModule extends GModule {
                 data = data.data;
 
                 if (data.error == null) {
-                    msg = Achievements.toString(data);
+                    await this.pageListener(data, message, Achievements.toString(data), async (currPage) => {
+                        let d = await axios.get("/game/character/achievements/" + currPage);
+                        return d.data;
+                    }, async (newData) => {
+                        return Achievements.toString(newData);
+                    });
                 } else {
                     msg = data.error;
                 }
