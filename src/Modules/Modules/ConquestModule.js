@@ -7,7 +7,7 @@ const Areas = require("../../Drawings/Areas");
 class ConquestModule extends GModule {
     constructor() {
         super();
-        this.commands = ["arealevelup", "areaupbonus", "areabonuseslist", "areaconquest"];
+        this.commands = ["arealevelup", "areaupbonus", "areabonuseslist", "areaconquest", "arearesetbonuses"];
         this.startLoading("Conquest");
         this.init();
         this.endLoading("Conquest");
@@ -18,7 +18,6 @@ class ConquestModule extends GModule {
         let authorIdentifier = message.author.id;
         let data;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
-
         //PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_areas", 1);
         switch (command) {
             case "arealevelup":
@@ -45,7 +44,7 @@ class ConquestModule extends GModule {
                 break;
                 
             case "arearesetbonuses":
-                data = await axios.post("/game/conquest/area/resetbonuses/");
+                data = await axios.post("/game/conquest/area/bonus/resetbonuses");
                 data = data.data;
                 if (data.error == null) {
                     msg = data.success;
