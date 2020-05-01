@@ -7,7 +7,7 @@ const Discord = require("discord.js");
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info", "warn"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -25,6 +25,7 @@ class AdminModule extends GModule {
         let authorIdentifier = message.author.id;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
         let data;
+        let evalDyn;
         if (!isAdmin) return;
 
         switch (command) {
@@ -185,6 +186,18 @@ class AdminModule extends GModule {
                 } else {
                     msg = data.error;
                 }
+                break;
+            case "warn":
+                args[0] = decodeURIComponent(args[0]);
+                for (let idUser of args[0].split(",")) {
+                    evalDyn = `let user = this.users.cache.get("${idUser}");
+                    if(user != null) {
+                        user.send("Due to using macros, you got warned. Your FightRPG account got it's money set to zero. This is the last warning you'll get. Next punishment will result in a full reset instead.").catch((e) => {null});
+                    }
+                    `;
+                    message.client.shard.broadcastEval(evalDyn);
+                }
+                msg = "Done";
                 break;
             case "update_commands_channel":
                 let actualMessages = await message.channel.messages.fetch({
