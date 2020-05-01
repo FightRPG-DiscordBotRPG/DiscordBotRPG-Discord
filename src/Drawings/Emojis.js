@@ -421,6 +421,7 @@ Emojis.general = {
     "clipboard": "📋",
     "seedling": "🌱",
     "balance_scale": "⚖️",
+    "trophy": "🏆"
 };
 
 Emojis.stats = {

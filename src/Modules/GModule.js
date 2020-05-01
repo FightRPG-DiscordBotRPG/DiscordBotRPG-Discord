@@ -9,6 +9,7 @@ const LeaderboardLevel = require("../Drawings/Leaderboard/LeaderboardLevel");
 const LeaderboardPower = require("../Drawings/Leaderboard/LeaderboardPower");
 const LeaderboardGold = require("../Drawings/Leaderboard/LeaderboardGold");
 const LeaderboardCraftLevel = require("../Drawings/Leaderboard/LeaderboardCraftLevel");
+const LeaderboardAchievements = require("../Drawings/Leaderboard/LeaderboardAchievements");
 const Emojis = require("../Drawings/Emojis");
 const MessageReactionsWrapper = require("../MessageReactionsWrapper");
 
@@ -153,6 +154,9 @@ class GModule {
             case "power":
                 data = await axios.get("/game/character/leaderboard/power/" + page);
                 break;
+            case "achievements":
+                data = await axios.get("/game/character/leaderboard/achievements/" + page);
+                break;
             case "arena":
             default:
                 data = await axios.get("/game/character/leaderboard/arena/" + page);
@@ -202,6 +206,9 @@ class GModule {
                     break;
                 case "power":
                     leaderboard = new LeaderboardPower(data);
+                    break;
+                case "achievements":
+                    leaderboard = new LeaderboardAchievements(data);
                     break;
                 case "arena":
                 default:
