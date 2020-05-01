@@ -53,11 +53,12 @@ class MessageReactionsWrapper {
                 if (!this.isDM) {
                     this.message.reactions.removeAll();
                 } else {
-                    for (let i in this.currentMessageReactions) {
-                        if (typeof this.currentMessageReactions[i].remove === "function") {
-                            this.currentMessageReactions[i] = this.currentMessageReactions[i].remove();
-                        }
-                    }
+                    // Do nothing for now due to bug in dm
+                    //for (let i in this.currentMessageReactions) {
+                    //    if (typeof this.currentMessageReactions[i].remove === "function" && this.currentMessageReactions[i].me) {
+                    //        this.currentMessageReactions[i] = this.currentMessageReactions[i].remove();
+                    //    }
+                    //}
                 }
             }
         });
@@ -94,10 +95,14 @@ class MessageReactionsWrapper {
 
     async clearEmojis() {
         if (this.isDM) {
-            for (let i in this.currentMessageReactions) {
-                currentMessageReactions[i] = currentMessageReactions[i].remove();
-            }
-            await Promise.all(currentMessageReactions);
+            // Can't remove in dm for now
+            //for (let i in this.currentMessageReactions) {
+            //    if (this.currentMessageReactions[i].me) {
+            //        this.currentMessageReactions[i] = this.currentMessageReactions[i].remove();
+            //    }
+
+            //}
+            //await Promise.all(this.currentMessageReactions);
         } else {
             await this.message.reactions.removeAll();
         }
