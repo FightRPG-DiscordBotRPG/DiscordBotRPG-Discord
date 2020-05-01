@@ -89,11 +89,16 @@ class Guild {
             .setColor([0, 255, 0])
             .setAuthor(data.name + " (ID " + data.id + ") - " + Translator.getString(lang, "guild", "members_out_of", [membersArray.length, data.maxMembers]), data.image)
             .addField(Emojis.getString("loudspeaker") + " " + Translator.getString(lang, "guild", "guild_announcement"), (data.message !== "" ? data.message : Translator.getString(lang, "guild", "no_guild_announcement")))
-            
-            .addField(Emojis.getString("king") + " " + Translator.getString(lang, "guild", "guild_master"), rgmStr)
-            
-            .addField(Emojis.getString("man_pilot") + " " + Translator.getString(lang, "guild", "officer"), roStr, true)
-            .addField(Emojis.getString("person") + " " + Translator.getString(lang, "guild", "member"), rmStr);
+
+            .addField(Emojis.getString("king") + " " + Translator.getString(lang, "guild", "guild_master"), rgmStr);
+
+        if (roStr.length > 4) {
+            embed.addField(Emojis.getString("man_pilot") + " " + Translator.getString(lang, "guild", "officer"), roStr, true)
+        }
+
+        if (rmStr.length > 4) {
+            embed.addField(Emojis.getString("person") + " " + Translator.getString(lang, "guild", "member"), rmStr);
+        }
 
         if (rmStr2.length > 4) {
             embed.addField(Emojis.getString("person") + " " + Translator.getString(lang, "guild", "member"), rmStr2);
@@ -117,7 +122,7 @@ class Guild {
         for (let region in data.territories) {
             let areas = "";
             for (let area of data.territories[region]) {
-                areas += Emojis.getAreaTypeEmoji(area.type_shorthand) + " - " + area.name + (area.statPoints > 0 ? " (" + Emojis.emojisProd.levelup.string + " " + Translator.getString(data.lang, "area", "conquest_points_to_distribute", [area.statPoints]) + ")" : "")  + "\n";
+                areas += Emojis.getAreaTypeEmoji(area.type_shorthand) + " - " + area.name + (area.statPoints > 0 ? " (" + Emojis.emojisProd.levelup.string + " " + Translator.getString(data.lang, "area", "conquest_points_to_distribute", [area.statPoints]) + ")" : "") + "\n";
             }
             embed.addField(region, areas);
         }
@@ -178,7 +183,6 @@ class Guild {
         let ListedGuilds = new GenericMultipleEmbedList();
         ListedGuilds.load({ collection: data.guilds, displayIfEmpty: Translator.getString(lang, "guild", "nothing_to_print"), listType: 0, pageRelated: { page: data.page, maxPage: data.maxPage } }, lang, (index, guild) => {
             let levelSpaces = guild.level.toString().length < 2 ? "0" : "";
-
             return `${Emojis.emojisProd.idFRPG.string} ${guild.id} - ${Emojis.general.clipboard} ${guild.name} ${desktopTrait} ` +
                 `${mobileLineBreaks}${Emojis.emojisProd.levelup.string} ${Translator.getString(lang, "inventory_equipment", "level")} ${levelSpaces}${guild.level} - ${Emojis.emojisProd.user.string} ${guild.nbMembers} / ${guild.maxMembers}` +
                 `\n${Emojis.general.collision} ${Translator.getString(lang, "guild", "total_player_power", [guild.totalPower])} ${desktopTrait} ${mobileLineBreaks}${Emojis.emojisProd.levelup.string} ${Translator.getString(lang, "guild", "total_player_level", [guild.totalLevel])}`;
@@ -189,12 +193,12 @@ class Guild {
             .setAuthor(Translator.getString(lang, "help_panel", "guilds_title"));
 
 
-        
+
 
         return ListedGuilds.getEmbed(embed);
     }
 
-    disbandConfirm(lang="en") {
+    disbandConfirm(lang = "en") {
         return new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(Emojis.getString("warning") + " " + Translator.getString(lang, "guild", "head_disband") + " " + Emojis.getString("warning"))
