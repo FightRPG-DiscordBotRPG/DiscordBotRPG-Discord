@@ -98,6 +98,7 @@ class AdminModule extends GModule {
             case "active":
                 data = await axios.post("/game/admin/bot/activate", {
                     active: args[0],
+                    reason: args[1],
                 });
                 data = data.data;
                 if (data.error == null) {
