@@ -16,7 +16,6 @@ class WorldBosses {
      */
     listToDiscord(data, user, asEmbed = false) {
         let lang = data.lang;
-        let str = "";
         let pb = new ProgressBarHealth();
 
         if (!user.isOnMobile) {

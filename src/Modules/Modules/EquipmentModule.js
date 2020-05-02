@@ -14,57 +14,33 @@ class EquipmentModule extends GModule {
 
     async run(message, command, args) {
         let msg = "";
-        let authorIdentifier = message.author.id;
-        let data;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
 
         switch (command) {
             case "equip":
-                data = await axios.post("/game/equipment/equip", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/equipment/equip", {
                     idItem: args[0]
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
 
             case "unequip":
-                data = await axios.post("/game/equipment/unequip", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/equipment/unequip", {
                     idItem: args[0]
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
 
             case "equiplist":
             case "equipment":
-                data = await axios.get("/game/equipment/show");
-                data = data.data;
-                if (data.error == null) {
-                    msg = Inventory.displayAsList(data, false);
-                } else {
-                    msg = data.error;
-                }
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/equipment/show"), (data) => {
+                    return Inventory.displayAsList(data, false);
+                });
                 break;
 
             case "use":
-                data = await axios.post("/game/equipment/use", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/equipment/use", {
                     idItem: args[0],
                     amount: args[1],
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
         }
 

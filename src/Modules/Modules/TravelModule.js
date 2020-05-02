@@ -127,37 +127,13 @@ class TravelModule extends GModule {
             data = data.data;
             if (data.error == null) {
 
-                let checkEmoji = Emojis.getID("vmark");
-                let xmarkEmoji = Emojis.getID("xmark");
-                let tempMsg = await message.channel.send(this.getTravelMessage(data)).catch(() => null);
-
-                Promise.all([
-                    tempMsg.react(checkEmoji),
-                    tempMsg.react(xmarkEmoji)
-                ]).catch(() => null);
-
-                const filter = (reaction, user) => {
-                    return [checkEmoji, xmarkEmoji].includes(reaction.emoji.id) && user.id === message.author.id;
-                };
-
-
-                const collected = await tempMsg.awaitReactions(filter, {
-                    max: 1,
-                    time: 25000
-                });
-                const reaction = collected.first();
-                if (reaction != null) {
-                    switch (reaction.emoji.id) {
-                        case checkEmoji:
-                            msg = await this.travelPost(args, axios, type);
-                            break;
-
-                        case xmarkEmoji:
-                            msg = Translator.getString(data.lang, "travel", "travel_cancel");
-                            break;
+                await this.confirmListener(message, this.getTravelMessage(data), async (validate) => {
+                    if (validate == true) {
+                        return await this.travelPost(args, axios, type);
+                    } else {
+                        return Translator.getString(data.lang, "travel", "travel_cancel");
                     }
-                }
-                tempMsg.delete().catch(() => null);
+                });
             } else {
                 msg = data.error;
             }

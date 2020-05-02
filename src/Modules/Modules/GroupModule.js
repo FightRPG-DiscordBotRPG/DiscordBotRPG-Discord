@@ -16,119 +16,61 @@ class GroupModule extends GModule {
 
     async run(message, command, args) {
         let msg = "";
-        let authorIdentifier = message.author.id;
         let mentions = message.mentions.users;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
-        let data;
         let firstMention;
         let usernameToDoSomething = mentions.first() != null ? mentions.first().tag : args[0];
 
         switch (command) {
             case "grpmute":
-                data = await axios.post("/game/group/notifications/mute");
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/group/notifications/mute"));
                 break;
 
             case "grpunmute":
-                data = await axios.post("/game/group/notifications/unmute");
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/group/notifications/unmute"));
                 break;
 
             case "grpkick":
-                data = await axios.post("/game/group/kick", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/group/kick", {
                     username: usernameToDoSomething
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
             case "grpswap":
-                data = await axios.post("/game/group/swap", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/group/swap", {
                     username: usernameToDoSomething
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
             case "grpleave":
-                data = await axios.post("/game/group/leave");
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/group/leave"));
                 break;
 
             case "grpinvite":
                 firstMention = mentions.first();
-                data = await axios.post("/game/group/invite", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/group/invite", {
                     mention: firstMention != null ? firstMention.id : null
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
 
             case "grpaccept":
-                data = await axios.post("/game/group/accept");
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/group/accept"));
                 break;
 
             case "grpdecline":
-                data = await axios.post("/game/group/decline");
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/group/decline"));
                 break;
 
             case "grp":
-                data = await axios.get("/game/group/show");
-                data = data.data;
-                if (data.error == null) {
-                    msg = Group.toStr(data);
-                } else {
-                    msg = data.error;
-                }
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/group/show"), (data) => {
+                    return Group.toStr(data);
+                });
                 break;
 
             case "grpfight":
-                data = await axios.post("/game/group/fight/monster", {
+                msg = await this.getDisplayIfSuccess(await axios.post("/game/group/fight/monster", {
                     idMonster: args[0]
-                });
-                data = data.data;
-                if (data.error == null) {
+                }), async (data) => {
                     await FightManager.fight(data, message);
-                } else {
-                    msg = data.error;
-                }
+                });
                 break;
         }
 

@@ -15,72 +15,43 @@ class CraftingModule extends GModule {
 
     async run(message, command, args) {
         let msg = "";
-        let authorIdentifier = message.author.id;
-        let data;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
 
         switch (command) {
             case "craftlist":
-                data = await axios.get("/game/crafting/craftlist/" + args[0]);
-                data = data.data;
-                if (data.error == null) {
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/crafting/craftlist/" + args[0]), async (data) => {
                     await this.pageListener(data, message, Craft.getCraftList(data), async (currPage) => {
                         let d = await axios.get("/game/crafting/craftlist/" + currPage);
                         return d.data;
                     }, async (newData) => {
-                            return Craft.getCraftList(newData);
+                        return Craft.getCraftList(newData);
                     });
-                } else {
-                    msg = data.error;
-                }
+                });
                 break;
 
             case "craftshow":
-                data = await axios.get("/game/crafting/craftshow/" + args[0]);
-                data = data.data;
-                if (data.error == null) {
-                    msg = Craft.craftToEmbed(data);
-                } else {
-                    msg = data.error;
-                }
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/crafting/craftshow/" + args[0]), (data) => {
+                    return Craft.craftToEmbed(data);
+                });
                 break;
 
             case "craft":
-                data = await axios.post("/game/crafting/craft", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/crafting/craft", {
                     idCraft: args[0],
                     level: args[1],
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
             case "collect":
-                data = await axios.post("/game/crafting/collect", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/crafting/collect", {
                     idResource: args[0],
                     number: args[1]
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
 
             case "resources":
-                data = await axios.get("/game/crafting/resources");
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                msg = this.getBasicSuccessErrorMessage(await axios.get("/game/crafting/resources"));
                 break;
         }
-
         this.sendMessage(message, msg);
     }
 }

@@ -7,7 +7,7 @@ const Discord = require("discord.js");
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info", "warn"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -199,7 +199,7 @@ class AdminModule extends GModule {
                 }
                 msg = "Done";
                 break;
-            case "update_commands_channel":
+            case "update_commands_channel": {
                 let actualMessages = await message.channel.messages.fetch({
                     limit: 20
                 });
@@ -223,6 +223,7 @@ class AdminModule extends GModule {
                     }
                 }
                 break;
+            }
         }
 
         this.sendMessage(message, msg);

@@ -78,6 +78,17 @@ class MessageReactionsWrapper {
         }
     }
 
+    async removeEmbed() {
+        if (!this.isDM) {
+            await this.message.suppressEmbeds(true);
+        }
+    }
+
+    async deleteAndSend(content) {
+        await this.message.delete();
+        this.message.channel.send(content);
+    }
+
     /**
      * 
      * @param {Array<string>} arrOfEmojis

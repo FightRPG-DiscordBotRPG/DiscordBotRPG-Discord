@@ -134,36 +134,20 @@ class GModule {
      * @param {Number} page
      */
     async getLeaderBoard(leaderboardName, page, axios) {
-        let data;
-        switch (leaderboardName) {
-            case "level":
-                data = await axios.get("/game/character/leaderboard/level/" + page);
-                break;
-            case "gold":
-                data = await axios.get("/game/character/leaderboard/gold/" + page);
-                break;
-            case "craftlevel":
-                data = await axios.get("/game/character/leaderboard/craft/level/" + page);
-                break;
-            case "wbattacks":
-                data = await axios.get("/game/worldbosses/leaderboard/attacks/" + page);
-                break;
-            case "wbdamage":
-                data = await axios.get("/game/worldbosses/leaderboard/damage/" + page);
-                break;
-            case "power":
-                data = await axios.get("/game/character/leaderboard/power/" + page);
-                break;
-            case "achievements":
-                data = await axios.get("/game/character/leaderboard/achievements/" + page);
-                break;
-            case "arena":
-            default:
-                data = await axios.get("/game/character/leaderboard/arena/" + page);
-                break;
-        }
+        let routes = {
+            "level": "/game/character/leaderboard/level/",
+            "gold": "/game/character/leaderboard/gold/",
+            "craftlevel": "/game/character/leaderboard/craft/level/",
+            "wbattacks": "/game/worldbosses/leaderboard/attacks/",
+            "wbdamage": "/game/worldbosses/leaderboard/damage/",
+            "power": "/game/character/leaderboard/power/",
+            "achievements": "/game/character/leaderboard/achievements/",
+            "arena": "/game/character/leaderboard/arena/",
+        };
 
-        return data.data;
+        let route = routes[leaderboardName] != null ? routes[leaderboardName] : routes["arena"];
+
+        return (await axios.get(route + page)).data;
     }
 
     /**
@@ -336,6 +320,53 @@ class GModule {
 
             await messageReactWrapper.edit(msgCollector, currentMessageReactions);
         });
+    }
+
+
+    /**
+     * 
+     * @param {Discord.Message} messageDiscord
+     * @param {string | Discord.MessageEmbed} initialMessage
+     * @param {dataCollectorCallback} dataCollectorCallback
+     * @param {Function} afterCollectorCallback
+     */
+    async confirmListener(messageDiscord, initialMessage, dataCollectorCallback) {
+        let vmark = Emojis.getID("vmark"), xmark = Emojis.getID("xmark");
+
+        let currentMessageReactions = [vmark,xmark];
+
+        let messageReactWrapper = new MessageReactionsWrapper();
+        await messageReactWrapper.load(messageDiscord, initialMessage, { reactionsEmojis: currentMessageReactions, collectorOptions: { time: 30000, max: 1 } });
+
+        if (messageReactWrapper.message == null) {
+            return;
+        }
+
+        messageReactWrapper.collector.on('collect', async (reaction) => {
+            await messageReactWrapper.deleteAndSend(await dataCollectorCallback(reaction.emoji.id == vmark ? true : false));
+        });
+    }
+
+    getBasicSuccessErrorMessage(axiosQueryResult) {
+        let data = axiosQueryResult.data;
+        let msg = "";
+        if (data.error == null) {
+            msg = data.success;
+        } else {
+            msg = data.error;
+        }
+        return msg;
+    }
+
+    async getDisplayIfSuccess(axiosQueryResult, callbackData) {
+        let data = axiosQueryResult.data;
+        let msg = "";
+        if (data.error == null) {
+            msg = await callbackData(data);
+        } else {
+            msg = data.error;
+        }
+        return msg;
     }
 
 
