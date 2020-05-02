@@ -51,8 +51,8 @@ class OtherModule extends GModule {
                     });
                 });
                 break;
-            case "settings":
-                msg = await this.getDisplayIfSuccess(axios.get("/game/other/settings"), async (data) => {
+            case "settings": 
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/other/settings"), async (data) => {
 
                     let one = Emojis.getString("one");
                     let two = Emojis.getString("two");
