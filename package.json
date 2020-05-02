@@ -1,6 +1,6 @@
 {
   "name": "discordbotrpg-discord",
-  "version": "1.0.0",
+  "version": "1.9.0",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -12,10 +12,11 @@
   "dependencies": {
     "axios": "^0.18.1",
     "dblapi.js": "^2.4.0",
-    "discord.js": "^11.6.2",
+    "discord.js": "^12.1.1",
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
     "intl": "^1.2.5",
+    "moment": "^2.24.0",
     "mysql": "^2.18.1"
   }
 }

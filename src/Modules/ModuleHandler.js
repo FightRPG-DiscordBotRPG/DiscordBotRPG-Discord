@@ -38,16 +38,20 @@ class ModuleHandler extends GModule {
         });
     }
 
+    /**
+     * 
+     * @param {Discord.Message} message
+     */
     async run(message) {
         let msg = "";
         let authorIdentifier = message.author.id;
         let prefix = this.getPrefix(message.channel.guild ? message.channel.guild.id : null);
-        // If do'nt start by prefix 
+        // If don't start by prefix 
         if (!message.content.startsWith(prefix)) {
             // If the bot is mention display prefix
-            if (!message.author.bot && message.isMentioned(message.client.user)) {
-                this.sendMessage(message,
-                    new Discord.RichEmbed()
+            if (!message.author.bot && message.mentions.has(message.client.user)) {
+                await this.sendMessage(message,
+                    new Discord.MessageEmbed()
                         .setColor([0, 128, 128])
                         .addField(Translator.getString("en", "other", "prefix_title"), prefix)
                 )
@@ -74,6 +78,10 @@ class ModuleHandler extends GModule {
             for (let i in args) {
                 nonDiscordArgs[i] = encodeURIComponent(args[i]);
             }
+
+            Globals.connectedUsers[authorIdentifier].setMobile(message.author.presence.clientStatus);
+
+
             // exec module corresponding to command
             await this.executeCommand(message, command, nonDiscordArgs, prefix);
 
@@ -151,7 +159,7 @@ class ModuleHandler extends GModule {
                      }*/
                     break;
                 case "bot_info":
-                    let allCounts = await message.client.shard.broadcastEval("this.guilds.size");
+                    let allCounts = await message.client.shard.broadcastEval("this.guilds.cache.size");
                     let total = 0;
                     for (count in allCounts) {
                         total += allCounts[count];
@@ -176,7 +184,7 @@ class ModuleHandler extends GModule {
                     data = data.data;
 
 
-                    msg = new Discord.RichEmbed()
+                    msg = new Discord.MessageEmbed()
                         .setAuthor("FightRPG")
                         .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + allCounts.length + " ]", true)
                         .addField("Server Version: ", "[ " + data.server + " ]", true).addField("Bot Version: ", "[ " + version + " ]", true).addField("Shard Uptime: ", "[ " + uptime + " ]", true)
@@ -186,7 +194,7 @@ class ModuleHandler extends GModule {
             }
 
             this.sendMessage(message, msg);
-            //console.log("Performing command, took : " + ((Date.now() - dt) / 1000) + " seconds");
+            //console.log("Performing command, took: " + ((Date.now() - dt) / 1000) + " seconds");
         }
     }
 
@@ -245,7 +253,7 @@ class ModuleHandler extends GModule {
                 if (args[0].length <= 10) {
                     let oldPrefix = this.getPrefix(message.guild.id);
                     this.prefixChange(message.guild.id, args[0]); // async
-                    return new Discord.RichEmbed()
+                    return new Discord.MessageEmbed()
                         .setColor([0, 128, 128])
                         .setAuthor(Translator.getString(lang, "other", "prefix_changed"))
                         .addField(Translator.getString(lang, "other", "old_prefix"), oldPrefix)
@@ -308,12 +316,13 @@ class ModuleHandler extends GModule {
         if (mod != null) {
             if (mod.isActive) {
                 try {
+                    Globals.connectedUsers[message.author.id].lastCommandUsed = Date.now();
                     await mod.run(message, command, args, prefix);
                 } catch (err) {
                     if (!this.devMode) {
                         if (err.constructor != Discord.DiscordAPIError) {
-                            let adminTell = "A module has crashed.\nCommand : " + command + "\nArgs : [" + args.toString() + "]\n" + "User that have crashed the command : " + message.author.username + "#" + message.author.discriminator;
-                            message.client.shard.broadcastEval(`let user = this.users.get("241564725870198785");
+                            let adminTell = "A module has crashed.\nCommand: " + command + "\nArgs: [" + args.toString() + "]\n" + "User that have crashed the command: " + message.author.username + "#" + message.author.discriminator;
+                            message.client.shard.broadcastEval(`let user = this.users.cache.get("241564725870198785");
                             if(user != null) {
                                 user.send(\`${adminTell}\`).catch((e) => {null});
                             }`);
@@ -327,14 +336,18 @@ class ModuleHandler extends GModule {
                     throw err;
                 }
             } else {
-                message.channel.send("Due to an error, this module is currently deactivated. The following commands will be disabled : " + mod.commands.toString() + "\nSorry for the inconvenience.").catch((e) => null);
+                message.channel.send("Due to an error, this module is currently deactivated. The following commands will be disabled: " + mod.commands.toString() + "\nSorry for the inconvenience.").catch((e) => null);
             }
         }
     }
 
+    /**
+     * 
+     * @param {Discord.Message} message
+     */
     async connectUser(message) {
         if (Globals.connectedUsers[message.author.id] == null) {
-            let user = new User(message.author.id, message.author.tag, message.author.avatarURL);
+            let user = new User(message.author.id, message.author.tag, message.author.avatarURL({ dynamic: true }));
             await user.load();
             if (user.token == null) {
                 await user.createUser();

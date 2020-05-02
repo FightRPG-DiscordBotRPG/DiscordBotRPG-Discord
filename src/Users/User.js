@@ -1,24 +1,35 @@
 const conn = require("../../conf/mysql");
 const axios = require("axios").default;
 const conf = require("../../conf/conf");
+const Globals = require("../Globals");
 class User {
-    constructor(id, username, avatar) {
+    constructor(id, username, avatar, lang="en") {
         this.id = id;
         this.username = username;
         this.avatar = avatar;
+        this.lang = lang
         this.token = null;
-        this.axios;
+        this.isOnMobile = false;
+        this.lastCommandUsed = Date.now();
+        this.axios = null;
     }
 
     async load() {
         let res = await conn.query("SELECT token FROM users WHERE idUser = ?;", [this.id]);
         if (res[0]) {
             this.token = res[0].token;
-            axios.post("/game/character/update", {
+            this.initAxios();
+
+            await this.axios.post("/game/character/update", {
                 username: this.username
             });
-            this.initAxios();
+
+            this.lang = (await this.axios.post("/game/other/lang")).data.lang;
         }
+    }
+
+    setLang(lang = "en") {
+        this.lang = lang;
     }
 
     async createUser() {
@@ -40,6 +51,14 @@ class User {
                 'Authorization': "Bearer " + this.token
             }
         })
+    }
+
+    setMobile(status) {
+        if (status != null && (status["desktop"] || status["web"])) {
+            this.isOnMobile = false;
+        } else {
+            this.isOnMobile = true;
+        }
     }
 
     getAxios() {

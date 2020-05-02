@@ -19,7 +19,7 @@ console.log("Shard Starting ...");
 let timeStart = Date.now();
 
 async function getTotalNumberOfGuilds() {
-    let allCounts = await bot.shard.broadcastEval("this.guilds.size");
+    let allCounts = await bot.shard.broadcastEval("this.guilds.cache.size");
     let total = 0;
     for (count in allCounts) {
         total += allCounts[count];
@@ -30,6 +30,7 @@ async function getTotalNumberOfGuilds() {
 async function startBot() {
     try {
         await bot.login(conf.discordbotkey);
+        removedInactiveUsers();
     } catch (error) {
         let errorDate = new Date();
         console.log("Error when connecting Shard. Restarting shard in 30 seconds...");
@@ -39,6 +40,58 @@ async function startBot() {
     }
 }
 
+async function removedInactiveUsers() {
+    let now = Date.now();
+    let inactiveUsers = 0;
+    for (let idUser in Globals.connectedUsers) {
+        let user = Globals.connectedUsers[idUser];
+        let diff = now - user.lastCommandUsed;
+
+        // 30 minutes inactive before removing some data from globals
+        if (diff / 60000 > Globals.inactiveTimeBeforeDisconnect) {
+            delete Globals.connectedUsers[user.id];
+            inactiveUsers++;
+        }
+    }
+
+    console.log(`Removed: ${inactiveUsers} inactive users. Memory consumption: ${await getMemory()} MB`);
+    //createDummyUsers();
+    setTimeout(removedInactiveUsers, Globals.inactiveTimeBeforeDisconnect * 60000);
+}
+
+async function createDummyUsers() {
+    let nbUsersToCreate = Math.round(Math.random() * 10000);
+    console.log(`Creating ${nbUsersToCreate} fake users...\nMemory before: ${await getMemory()} MB`);
+    let totalRequests = [];
+    const User = require("./src/Users/User");
+
+    const t = Date.now();
+
+    for (let i = 0; i < nbUsersToCreate; i++) {
+        let zerofilled = ('0000000' + Math.floor(Math.random() * 10000000)).slice(-7);
+        let u = new User(zerofilled, "Test User#1111", "");
+        u.token = ""; //When testing use your token don't forget to remove it
+        u.initAxios();
+        totalRequests.push(u.getAxios().get("/game/character/info"));
+        Globals.connectedUsers[zerofilled] = u;
+    }
+    console.log(`Memory after creation: ${await getMemory()} MB`);
+
+    console.time("Requesting");
+    await Promise.all(totalRequests);
+    console.log(`Avg time per requests: ${Math.round((Date.now() - t) / totalRequests.length)}ms; Number of requests per minute: ${1000/Math.round((Date.now() - t) / totalRequests.length)}`);
+    console.log(`Memory after requests: ${await getMemory()} MB`);
+    console.timeEnd("Requesting");
+}
+
+async function getMemory() {
+    let totalMemory = await bot.shard.broadcastEval("process.memoryUsage().heapUsed");
+    let totalMemoryMB = 0;
+    for (let c of totalMemory) {
+        totalMemoryMB += Math.round(c / 1048576);
+    }
+    return totalMemoryMB;
+}
 
 
 bot.on("ready", async () => {
@@ -48,12 +101,12 @@ bot.on("ready", async () => {
             name: "On " + await getTotalNumberOfGuilds() + " servers!"
         }
     });
-    //console.log(bot.guilds.size, bot.shard.id, bot.shard.count);
+    //console.log(`${bot.guilds.cache.size}\n${bot.shard.ids}\n${bot.shard.count}`);
     if (conf.env === "prod") {
         const dbl = new DBL(conf.topggkey, bot);
         setInterval(async () => {
             console.log("Shard: " + bot.shard.id + " => Sending stats to https://discordbots.org/ ...");
-            await dbl.postStats(bot.guilds.size, bot.shard.id, bot.shard.count);
+            await dbl.postStats(bot.guilds.cache.size, bot.shard.ids[0], bot.shard.count);
             console.log("Data sent");
         }, 1800000);
     }
@@ -109,7 +162,7 @@ bot.on('guildCreate', async (guild) => {
     DiscordServers.newGuild(guild);
 });
 
-bot.on('guildDelete', async () => {
+bot.on('guildDelete', async (guild) => {
     bot.user.setPresence({
         game: {
             name: "On " + await getTotalNumberOfGuilds() + " servers!",

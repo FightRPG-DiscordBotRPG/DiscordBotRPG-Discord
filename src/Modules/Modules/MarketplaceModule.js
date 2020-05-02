@@ -14,95 +14,59 @@ class MarketplaceModule extends GModule {
 
     async run(message, command, args) {
         let msg = "";
-        let authorIdentifier = message.author.id;
-        let axios = Globals.connectedUsers[message.author.id].getAxios();
-        let data;
+        let user = Globals.connectedUsers[message.author.id];
+        let axios = user.getAxios();
+        let searchFilters = this.getSearchFilters(args);
         switch (command) {
             case "mkmylist":
-                data = await axios.get("/game/marketplace/mylist/" + args[0]);
-                data = data.data;
-                if (data.error == null) {
-                    msg = Marketplace.toString(data);
-                } else {
-                    msg = data.error;
-                }
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/marketplace/mylist/" + args[0], { params: searchFilters.params }), async (data) => {
+                    await this.pageListener(data, message, Marketplace.toString(data), async (currPage) => {
+                        let d = await axios.get("/game/marketplace/mylist/" + currPage, { params: searchFilters.params });
+                        return d.data;
+                    }, async (newData) => {
+                        return Marketplace.toString(newData)
+                    });
+                });
                 break;
 
             case "mkplace":
-                data = await axios.post("/game/marketplace/place", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/marketplace/place", {
                     idItem: args[0],
                     number: args[1],
                     price: args[2],
                     forced: args[3],
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
 
             case "mkcancel":
-                data = await axios.post("/game/marketplace/cancel", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/marketplace/cancel", {
                     idItem: args[0]
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
 
             case "mkbuy":
-                data = await axios.post("/game/marketplace/buy", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/marketplace/buy", {
                     idItem: args[0],
                     number: args[1],
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
-
 
             case "mksearch":
-                data = await axios.get("/game/marketplace/search", {
-                    params: {
-                        itemName: args[0],
-                        level: args[1],
-                        page: args[2],
-                    }
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = Marketplace.toString(data);
-                } else {
-                    msg = data.error;
-                }
-                break;
-
             case "mkshow":
-                data = await axios.get("/game/marketplace/show/" + args[0]);
-                data = data.data;
-                if (data.error == null) {
-                    msg = Marketplace.toString(data);
-                } else {
-                    msg = data.error;
-                }
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/marketplace/show/" + searchFilters.page, { params: searchFilters.params }), async (data) => {
+                    await this.pageListener(data, message, Marketplace.toString(data), async (currPage) => {
+                        let d = await axios.get("/game/marketplace/show/" + currPage, { params: searchFilters.params });
+                        return d.data;
+                    }, async (newData) => {
+                        return Marketplace.toString(newData)
+                    });
+                });
                 break;
 
             case "mksee":
-                data = await axios.get("/game/marketplace/show/item/" + args[0]);
-                data = data.data;
-                if (data.error == null) {
-                    msg = ItemShow.showMarketplaceItem(data);
-                } else {
-                    msg = data.error;
-                }
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/marketplace/show/item/" + args[0]), (data) => {
+                    return ItemShow.showItem(data, user);
+                });
                 break;
         }
 

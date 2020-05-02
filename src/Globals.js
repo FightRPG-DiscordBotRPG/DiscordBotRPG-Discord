@@ -7,8 +7,11 @@ axios.defaults.validateStatus = function (status) {
 
 
 var Globals = {
+    /**
+     * @type {Array<User>}
+     */
     connectedUsers: {},
-    "admins": ["241564725870198785", "285789367954440194", "228787710607753216", "403229406585421834"],
+    "admins": ["241564725870198785", "285789367954440194", "228787710607753216", "403229406585421834", "245858206021058560"],
     "tutorialLink": "https://wiki.fight-rpg.com/doku.php?id=en:starter_guide",
     getRarityName: (idRarity) => {
         idRarity = parseInt(idRarity);
@@ -29,12 +32,15 @@ var Globals = {
             case 5:
                 rarityName = "legendary";
                 break;
+            case 6:
+                rarityName = "mythic";
+                break;
         }
         return rarityName;
     },
     getTypeName: (idType) => {
         idType = parseInt(idType);
-        let typeName = "Unknown";
+        let typeName = "";
         switch (idType) {
             case 1:
                 typeName = "weapon"
@@ -62,7 +68,15 @@ var Globals = {
                 break;
         }
         return typeName;
-    }
+    },
+    raritiesByLang: {},
+    typesByLang: {},
+    /**
+     * Minutes before disconnecting
+     */
+    inactiveTimeBeforeDisconnect: 30
 }
 
 module.exports = Globals;
+
+const User = require("./Users/User");

@@ -1,16 +1,21 @@
 const conn = require("../../conf/mysql");
 const mysql = require("mysql");
+const Discord = require("discord.js");
 
 class DiscordServers {
+    /**
+     * 
+     * @param {Discord.GuildManager} guilds
+     */
     static async serversStats(guilds) {
         let guildsAddString = "";
         let i = 0;
 
-        guilds.forEach((guild, snowflake, map) => {
+        guilds.cache.forEach((guild, snowflake, map) => {
             i++;
             let temp = "(?, '::', ?, ?, ?)";
             temp = mysql.format(temp, [guild.id, guild.name, guild.memberCount, guild.region]);
-            if (i < guilds.size) {
+            if (i < guilds.cache.size) {
                 temp += ",";
             } else {
                 temp += ";";

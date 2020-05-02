@@ -2,6 +2,7 @@ const GModule = require("../GModule");
 const Globals = require("../../Globals");
 const Translator = require("../../Translator/Translator");
 const Emojis = require("../../Drawings/Emojis");
+const MessageReactionsWrapper = require("../../MessageReactionsWrapper")
 
 
 class OtherModule extends GModule {
@@ -16,51 +17,43 @@ class OtherModule extends GModule {
     async run(message, command, args, prefix) {
         let msg = "";
         let authorIdentifier = message.author.id;
-        let data;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
 
 
         switch (command) {
             case "lang":
                 if (args[0]) {
-                    data = await axios.post("/game/other/lang", {
+                    msg = await this.getDisplayIfSuccess(await axios.post("/game/other/lang", {
                         lang: args[0],
+                    }), (data) => {
+                        Globals.connectedUsers[authorIdentifier].setLang(data.lang);
+                        return data.success;
                     });
-                    data = data.data;
-                    if (data.error == null) {
-                        msg = data.success;
-                    } else {
-                        msg = data.error;
-                    }
                 } else {
-                    data = await axios.get("/game/other/lang");
-                    data = data.data;
-                    if (data.error == null) {
-                        msg = Translator.getString(data.lang, "languages", "list_of_languages") + "\n";
+                    msg = await this.getDisplayIfSuccess(await axios.get("/game/other/lang"), (data) => {
+                        let str = Translator.getString(data.lang, "languages", "list_of_languages") + "\n";
                         let count = 0;
                         for (let i in data.languages) {
                             count++;
-                            msg += data.languages[i] + " (" + i + ")" + (count == Object.keys(data.languages).length ? "" : ", ");
+                            str += data.languages[i] + " (" + i + ")" + (count == Object.keys(data.languages).length ? "" : ", ");
                         }
-                    } else {
-                        msg = data.error;
-                    }
+                        return str;
+                    });
                 }
                 break;
             case "help":
-                data = await axios.get("/game/other/help/" + args[0]);
-                data = data.data;
-                if (data.error == null) {
-                    msg = this.cmdToString(data, prefix);
-                } else {
-                    msg = data.error;
-                }
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/other/help/" + args[0]), (data) => {
+                    this.pageListener(data, message, this.cmdToString(data, prefix), async (currPage) => {
+                        let d = await axios.get("/game/other/help/" + currPage);
+                        return d.data;
+                    }, async (newData) => {
+                        return this.cmdToString(newData, prefix)
+                    });
+                });
                 break;
             case "settings":
-                data = await axios.get("/game/other/settings");
-                data = data.data;
+                msg = await this.getDisplayIfSuccess(axios.get("/game/other/settings"), async (data) => {
 
-                if (data.error == null) {
                     let one = Emojis.getString("one");
                     let two = Emojis.getString("two");
                     let three = Emojis.getString("three");
@@ -72,99 +65,67 @@ class OtherModule extends GModule {
                         + "`\n\n" +
                         three + " : " + "`" + Translator.getString(data.lang, "fight_general", "settings_menu_mute", [(data.isFightMuted ? Translator.getString(data.lang, "general", "enable") : Translator.getString(data.lang, "general", "disable"))])
                         + "`\n\n";
-                    let tempMsg = await message.channel.send(tempMsgContent).catch(() => null);
 
-                    await Promise.all([
-                        tempMsg.react(one),
-                        tempMsg.react(two),
-                        tempMsg.react(three),
-                    ]).catch(() => null);
 
-                    const filter = (reaction, user) => {
-                        return [one, two, three].includes(reaction.emoji.id || reaction.emoji.name) && user.id === message.author.id;
-                    };
-
-                    const collected = await tempMsg.awaitReactions(filter, {
-                        max: 1,
-                        time: 20000
+                    let reactWrapper = new MessageReactionsWrapper();
+                    await reactWrapper.load(message, tempMsgContent, {
+                        reactionsEmojis: [one, two, three],
+                        collectorOptions: {
+                            max: 1,
+                            time: 20000
+                        }
                     });
-                    const reaction = collected.first();
-                    if (reaction != null) {
+
+                    reactWrapper.collector.on("collect", async (reaction) => {
                         switch (reaction.emoji.id || reaction.emoji.name) {
                             case one:
                                 data = await axios.post("/game/other/settings", {
                                     mGroup: true,
                                 });
-                                data = data.data;
-                                if (data.error == null) {
-                                    msg = data.success;
-                                } else {
-                                    msg = data.error;
-                                }
                                 break;
                             case two:
                                 data = await axios.post("/game/other/settings", {
                                     mMarket: true,
                                 });
-                                data = data.data;
-                                if (data.error == null) {
-                                    msg = data.success;
-                                } else {
-                                    msg = data.error;
-                                }
+                                break;
                             case three:
                                 data = await axios.post("/game/other/settings", {
                                     mFight: true,
                                 });
-                                data = data.data;
-                                if (data.error == null) {
-                                    msg = data.success;
-                                } else {
-                                    msg = data.error;
-                                }
                                 break;
                             case four:
                                 data = await axios.post("/game/other/settings", {
                                     mTrade: true,
                                 });
-                                data = data.data;
-                                if (data.error == null) {
-                                    msg = data.success;
-                                } else {
-                                    msg = data.error;
-                                }
                                 break;
                         }
-                    }
-                    tempMsg.delete().catch(() => null);
-                } else {
-                    msg = data.error;
-                }
 
+                        if (data != null) {
+                            await this.sendMessage(message, this.getBasicSuccessErrorMessage(data));
+                        }
+                    });
+
+                });
 
                 break;
             case "rarities":
-                data = await axios.get("/game/other/rarities");
-                data = data.data;
-                if (data.error == null) {
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/other/rarities"), (data) => {
+                    let str = "";
                     for (let i of data.rarities) {
-                        msg += i.idRarity + " => " + i.rarityName + "\n";
+                        str += i.idRarity + " => " + i.rarityName + "\n";
                     }
-                } else {
-                    msg = data.error;
-                }
+                    return str;
+                });
                 break;
 
             case "types":
-                data = await axios.get("/game/other/types");
-                data = data.data;
-                if (data.error == null) {
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/other/types"), (data) => {
+                    let str = "";
                     for (let i of data.types) {
-                        msg += i.idType + " => " + i.typeName + "\n";
+                        str += i.idType + " => " + i.typeName + "\n";
                     }
-                } else {
-                    msg = data.error;
-                }
+                    return str;
+                });
                 break;
 
             case "vote":

@@ -1,30 +1,62 @@
 const Translator = require("../Translator/Translator");
-const ProgressBar = require("./ProgressBar");
+const ProgressBarHealth = require("./ProgressBars/ProgressBarHealth");
 const Discord = require("discord.js");
 const Emojis = require("./Emojis");
+const GenericMultipleEmbedList = require("./GenericMultipleEmbedList");
+
+/**
+ * @typedef {import("../Users/User")} User
+ **/
 
 class WorldBosses {
-    listToDiscord(data) {
+    /**
+     * 
+     * @param {any} data
+     * @param {User} user
+     */
+    listToDiscord(data, user, asEmbed = false) {
         let lang = data.lang;
-        let str = "";
-        let pb = new ProgressBar();
-        if (data.bosses.length > 0) {
-            for (let info of data.bosses) {
-                str += info.regionName + " - " + info.areaName + "\n";
-                str += ""
+        let pb = new ProgressBarHealth();
+
+        if (!user.isOnMobile) {
+            pb.setSize(20);
+        }
+
+        if (asEmbed) {
+
+            let ListOfWorldBosses = new GenericMultipleEmbedList();
+            ListOfWorldBosses.load({ collection: data.bosses, displayIfEmpty: Translator.getString(lang, "world_bosses", "no_world_boss"), listType: 0 }, lang, (index, info) => {
                 if (info.worldBoss != null) {
-                    str += info.worldBoss.name + " (" + Translator.getFormater(data.lang).format(info.worldBoss.actualHP) + "/" + Translator.getFormater(data.lang).format(info.worldBoss.maxHP) + ") " + pb.draw(info.worldBoss.actualHP, info.worldBoss.maxHP);
+                    let str = Emojis.general.national_park + " " + info.regionName + " - " + info.areaName + "\n\n";
+                    return str + Emojis.emojisProd.boss.string + " " + info.worldBoss.name + " (" + Translator.getFormater(data.lang).format(info.worldBoss.actualHP) + "/" + Translator.getFormater(data.lang).format(info.worldBoss.maxHP) + "\n" + pb.draw(info.worldBoss.actualHP, info.worldBoss.maxHP);
                 } else {
                     let date = new Date();
                     date.setTime(info.spawnDate);
-                    str += Translator.getString(lang, "world_bosses", "spawn_date", [date.toLocaleString(lang.length > 2 ? lang : lang + "-" + lang.toUpperCase()) + " UTC"]);
+                    return Emojis.general.q_mark + " " + Translator.getString(lang, "world_bosses", "spawn_date", [date.toLocaleString(lang.length > 2 ? lang : lang + "-" + lang.toUpperCase()) + " UTC"]);
                 }
-                str += "\n";
-            }
-            return str;
+            });
+
+            return ListOfWorldBosses.getEmbed(new Discord.MessageEmbed().setAuthor(Translator.getString(lang, "help_panel", "world_boss_title")));
         } else {
-            return Translator.getString(lang, "world_bosses", "no_world_boss");
+            if (data.bosses.length > 0) {
+                let str = "";
+                for (let info of data.bosses) {
+                    str += Emojis.general.national_park + " " + info.regionName + " - " + info.areaName + "\n";
+                    if (info.worldBoss != null) {
+                        str += Emojis.emojisProd.boss.string + " " + info.worldBoss.name + " (" + Translator.getFormater(data.lang).format(info.worldBoss.actualHP) + "/" + Translator.getFormater(data.lang).format(info.worldBoss.maxHP) + ")\n" + pb.draw(info.worldBoss.actualHP, info.worldBoss.maxHP);
+                    } else {
+                        let date = new Date();
+                        date.setTime(info.spawnDate);
+                        str += Translator.getString(lang, "world_bosses", "spawn_date", [date.toLocaleString(lang.length > 2 ? lang : lang + "-" + lang.toUpperCase()) + " UTC"]);
+                    }
+                    str += "\n\n";
+                }
+                return str;
+            } else {
+                return Translator.getString(lang, "world_bosses", "no_world_boss");
+            }
         }
+
 
     }
 
@@ -39,15 +71,15 @@ class WorldBosses {
         }
     }
 
-    attackToDiscord(data_fight, data_ranks, data_boss) {
+    attackToDiscord(data_fight, data_ranks, data_boss, user) {
         let lang = data_fight.lang;
         let damageString = data_fight.isCriticalHit ? Translator.getString(lang, "world_bosses", "boss_fight_damage_inflicted_critical", [data_fight.damage]) : Translator.getString(lang, "world_bosses", "boss_fight_damage_inflicted", [data_fight.damage]);
-        return new Discord.RichEmbed()
+        return new Discord.MessageEmbed()
             .setAuthor(data_ranks.worldBoss.bossName)
             .addField(Emojis.getString("sword") + Translator.getString(lang, "fight_general", "combat_log"), damageString)
             .addField(Emojis.getString("win") + Translator.getString(lang, "leaderboards", "wb_damage"), Translator.getString(lang, "world_bosses", "boss_fight_recap_damage_dealt", [data_ranks.worldBoss.damage, data_ranks.worldBoss.damageRank]), true)
             .addField(Emojis.getString("win") + Translator.getString(lang, "leaderboards", "wb_attacks"), Translator.getString(lang, "world_bosses", "boss_fight_recap_attack_count", [data_ranks.worldBoss.attackCount, data_ranks.worldBoss.attackCountRank]), true)
-            .addField(Emojis.getString("monster") + Translator.getString(lang, "help_panel", "world_boss_title"), this.listToDiscord(data_boss));
+            .addField(Emojis.getString("monster") + Translator.getString(lang, "help_panel", "world_boss_title"), this.listToDiscord(data_boss, user, false));
     }
 }
 

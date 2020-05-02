@@ -22,7 +22,56 @@ class Emojis {
         }
         return em != null ? em.string : Emojis.general[emojiName];
     }
+
+    static getWeatherEmoji(weatherShorthand) {
+        if (Emojis.weather[weatherShorthand]) {
+            return Emojis.getString(Emojis.weather[weatherShorthand]);
+        } else {
+            return Emojis.getString("thermometer");
+        }
+    }
+
+    static getItemTypeEmoji(typeShorthand) {
+        return Emojis.typeItem[typeShorthand] ? Emojis.typeItem[typeShorthand] : Emojis.general.q_mark;
+    }
+
+    static getRarityEmoji(rarityShorthand) {
+        return Emojis.getString("rarity_" + rarityShorthand);
+    }
+
+    static getItemSubTypeEmoji(subtypeShorthand) {
+        return Emojis.subtypeItem[subtypeShorthand] ? Emojis.subtypeItem[subtypeShorthand] : Emojis.general.q_mark;
+    }
+
+    static getAreaTypeEmoji(typeShorthand) {
+        return Emojis.areaType[typeShorthand] ? Emojis.areaType[typeShorthand] : Emojis.general.q_mark;
+    }
+
+    static getResourceSubtype(subtypeShorthand, rarityShorthand) {
+        let resourcesTypesEquivalent = {
+            "plant": "herb"
+        }
+
+        subtypeShorthand = resourcesTypesEquivalent[subtypeShorthand] ? resourcesTypesEquivalent[subtypeShorthand] : subtypeShorthand;
+
+        let emoji = this.getString(subtypeShorthand + "_" + rarityShorthand);
+
+        return emoji != null ? emoji : this.getItemSubTypeEmoji(subtypeShorthand);
+    }
+
 }
+
+Emojis.weather = {
+    "sunny": "sun",
+    "cloudy": "cloud",
+    "foggy": "fog",
+    "rainy": "rain",
+    "rainstorm": "rainstorm",
+    "snowy": "snow",
+    "firestorm": "fire",
+    "sandstorm": "tornado",
+    "snowstorm": "snowflake"
+};
 
 Emojis.emojisProd = {
     "vmark": {
@@ -76,6 +125,210 @@ Emojis.emojisProd = {
     "exp": {
         id: "554308999760052242",
         string: "<:exp:554308999760052242>"
+    },
+    "bar_white": {
+        id: "704023285586722837",
+        string:"<:bar_white:704023285586722837>"
+    },
+    "bar_white_empty": {
+        id: "704023285897363486",
+        string: "<:bar_white_empty:704023285897363486>"
+    },
+    "bar_red": {
+        id: "704023285574402138",
+        string: "<:bar_red:704023285574402138>"
+    },
+    "bar_red_empty": {
+        id: "704023285339521177",
+        string: "<:bar_red_empty:704023285339521177>"
+    },
+    "bar_blue": {
+        id: "704023285616345311",
+        string: "<:bar_blue:704023285616345311>"
+    },
+    "bar_blue_empty": {
+        id: "704023285771272212",
+        string: "<:bar_blue_empty:704023285771272212>"
+    },
+    "bar_yellow": {
+        id: "704023285574271136",
+        string: "<:bar_yellow:704023285574271136>"
+    },
+    "bar_yellow_empty": {
+        id: "704023285607956591",
+        string: "<:bar_yellow_empty:704023285607956591>"
+    },
+    "bar_green": {
+        id: "704023285590917191",
+        string: "<:bar_green:704023285590917191>"
+    },
+    "bar_green_empty": {
+        id: "704023285620539402",
+        string: "<:bar_green_empty:704023285620539402>"
+    },
+    "treasure": {
+        id: "403457812535181313",
+        string: "<:treasure:403457812535181313>"
+    },
+    "loose": {
+        id: "403153660756099073",
+        string: "<:loose:403153660756099073>"
+    },
+    "elite": {
+        id: "406090076511141888",
+        string: "<:elite:406090076511141888>"
+    },
+    "boss": {
+        id: "456113364687388683",
+        string: "<:boss:456113364687388683>"
+    },
+    "rarity_common": {
+        id: "704020575705628762",
+        string: "<:rarity_common:704020575705628762>"
+    },
+    "rarity_rare": {
+        id: "704020574871093362",
+        string: "<:rarity_rare:704020574871093362>"
+    },
+    "rarity_superior": {
+        id: "704020574938333225",
+        string: "<:rarity_superior:704020574938333225>"
+    },
+    "rarity_epic": {
+        id: "704020575193923645",
+        string: "<:rarity_epic:704020575193923645>"
+    },
+    "rarity_legendary": {
+        id: "704020575609159811",
+        string: "<:rarity_legendary:704020575609159811>"
+    },
+    "rarity_mythic": {
+        id: "704020575462490222",
+        string: "<:rarity_mythic:704020575462490222>"
+    },
+    "wood_common": {
+        id: "703958796351045632",
+        string: "<:wood_common:703958796351045632>"
+    },
+    "wood_rare": {
+        id: "703958796065833130",
+        string: "<:wood_rare:703958796065833130>"
+    },
+    "wood_superior": {
+        id: "703958796531138580",
+        string: "<:wood_superior:703958796531138580>"
+    },
+    "wood_epic": {
+        id: "703964718171422820",
+        string: "<:wood_epic:703964718171422820>"
+    },
+    "wood_legendary": {
+        id: "703964718213365770",
+        string: "<:wood_legendary:703964718213365770>"
+    },
+    "wood_mythic": {
+        id: "703958796757762048",
+        string: "<:wood_mythic:703958796757762048>"
+    },
+    "ore_common": {
+        id: "703958795591614485",
+        string: "<:ore_common:703958795591614485>"
+    },
+    "ore_rare": {
+        id: "703960465398824970",
+        string: "<:ore_rare:703960465398824970>"
+    },
+    "ore_superior": {
+        id: "703958795608653885",
+        string: "<:ore_superior:703958795608653885>"
+    },
+    "ore_epic": {
+        id: "703958795352670239",
+        string: "<:ore_epic:703958795352670239>"
+    },
+    "ore_legendary": {
+        id: "703958795516248125",
+        string: "<:ore_legendary:703958795516248125>"
+    },
+    "ore_mythic": {
+        id: "703958795574837258",
+        string: "<:ore_mythic:703958795574837258>"
+    },
+    "herb_common": {
+        id: "703961463525736529",
+        string: "<:herb_common:703961463525736529>"
+    },
+    "herb_rare": {
+        id: "703958795965038662",
+        string: "<:herb_rare:703958795965038662>"
+    },
+    "herb_superior": {
+        id: "703961463575937024",
+        string: "<:herb_superior:703961463575937024>"
+    },
+    "herb_epic": {
+        id: "703961463890640946",
+        string: "<:herb_epic:703961463890640946>"
+    },
+    "herb_legendary": {
+        id: "703961463542251551",
+        string: "<:herb_legendary:703961463542251551>"
+    },
+    "herb_mythic": {
+        id: "703958796229148683",
+        string: "<:herb_mythic:703958796229148683>"
+    },
+    "item_type_chest": {
+        id: "704264556620283934",
+        string: "<:chest:704264556620283934>"
+    },
+    "item_type_legs": {
+        id: "704266130826723398",
+        string: "<:legs:704266130826723398>"
+    },
+    "item_type_helmet": {
+        id: "704268453619433523",
+        string: "<:helmet:704268453619433523>"
+    },
+    "item_type_resource": {
+        id: "704270263126327316",
+        string: "<:resource:704270263126327316>"
+    },
+    "potion_empty": {
+        id: "704278511548104755",
+        string: "<:potion_empty:704278511548104755>"
+    },
+    "item_type_lootbox": {
+        id: "704281176189173800",
+        string: "<:lootbox:704281176189173800>"
+    },
+    "saddle": {
+        id: "704285522624774235",
+        string: "<:saddle:704285522624774235>"
+    },
+    "reset_time_potion": {
+        id: "704291826093522974",
+        string: "<:reset_time_potion:704291826093522974>"
+    },
+    "dungeon_door": {
+        id: "704323073364590723",
+        string: "<:dungeon_door:704323073364590723>"
+    },
+    "leveldown": {
+        id: "704364488006041740",
+        string: "<:leveldown:704364488006041740>"
+    },
+    "nochange": {
+        id: "704363335948304394",
+        string: "<:nochange:704363335948304394>"
+    },
+    "user": {
+        id: "403148210295537664",
+        string: "<:user:403148210295537664>"
+    },
+    "gold_coins": {
+        id: "704672468190887967",
+        string: "<:gold_coins:704672468190887967>"
     }
 };
 
@@ -122,7 +375,106 @@ Emojis.general = {
     "hammer": "🔨",
     "waving_hand": "👋",
     "briefcase": "💼",
-    "baggage_claim": "🛄"
+    "baggage_claim": "🛄",
+    "crossed_swords": "⚔️",
+    "cloud": "☁️",
+    "tornado": "🌪️",
+    "sun": "☀️",
+    "rain": "🌧️",
+    "snow": "🌨️",
+    "fog": "🌫️",
+    "fire": "🔥",
+    "snowflake": "❄️",
+    "rainstorm": "⛈️",
+    "thermometer": "🌡️",
+    "orange_circle": "🟠",
+    "purple_circle": "🟣",
+    "white_circle": "⚪",
+    "green_circle": "🟢",
+    "gemstone": "💎",
+    "herb": "🌿",
+    "pinetree": "🌲",
+    "axe": "🪓",
+    "pickaxe": "⛏️",
+    "gloves": "🧤",
+    "king": "🤴",
+    "man_pilot": "👨‍✈️",
+    "person": "🧑",
+    "loudspeaker": "📢",
+    "warning": "⚠️",
+    "sunrise_over_the_mountain": "🌄",
+    "simple_left_to_right_arrow": "→",
+    "stopwatch": "⏱️",
+    "horse_face": "🐴",
+    "collision": "💥",
+    "national_park": "🏞️",
+    "castle": "🏰",
+    "biceps": "💪🏻",
+    "boot": "🥾",
+    "books": "📚",
+    "eye": "👁️",
+    "sparkles": "✨",
+    "high_voltage": "⚡",
+    "game_die": "🎲",
+    "light_bulb": "💡",
+    "mage": "🧙",
+    "clipboard": "📋",
+    "seedling": "🌱",
+    "balance_scale": "⚖️",
+    "trophy": "🏆"
+};
+
+Emojis.stats = {
+    "strength": Emojis.general.biceps,
+    "constitution": Emojis.general.red_heart,
+    "dexterity": Emojis.general.waving_hand,
+    "will": Emojis.general.high_voltage,
+    "charisma": Emojis.general.sparkles,
+    "intellect": Emojis.general.books,
+    "armor": Emojis.emojisProd.item_type_chest.string,
+    "wisdom": Emojis.general.light_bulb,
+    "perception": Emojis.general.eye,
+    "luck": Emojis.general.game_die,
+};
+
+Emojis.typeItem = {
+    "weapon": Emojis.general.crossed_swords,
+    "chest": Emojis.getString("item_type_chest"),
+    "legs": Emojis.getString("item_type_legs"),
+    "head": Emojis.getString("item_type_helmet"),
+    "resource": Emojis.getString("item_type_resource"),
+    "lootbox": Emojis.getString("item_type_lootbox"),
+    "potion": Emojis.getString("potion_empty"),
+    "mount": Emojis.getString("saddle"),
+};
+
+Emojis.subtypeItem = {
+    "ore": Emojis.emojisProd.ore_common.string,
+    "wood": Emojis.emojisProd.wood_common.string,
+    "plant": Emojis.emojisProd.herb_rare.string,
+    "sword": Emojis.emojisProd.sword2.string,
+    "whip": Emojis.emojisProd.sword2.string,
+    "armor": Emojis.emojisProd.item_type_chest.string,
+    "loot_box_equipment": Emojis.emojisProd.item_type_lootbox.string,
+    "random_loot_box_equipment": Emojis.emojisProd.item_type_lootbox.string,
+    "founder_box": Emojis.emojisProd.item_type_lootbox.string,
+    "reset_time_potion": Emojis.emojisProd.reset_time_potion.string,
+    "energy_potion": Emojis.emojisProd.reset_time_potion.string,
+    "horse": Emojis.general.horse_face,
+    "crystal": Emojis.general.gemstone,
+};
+
+Emojis.areaType = {
+    "wild": Emojis.general.national_park,
+    "city": Emojis.general.castle,
+    "dungeon": Emojis.emojisProd.dungeon_door.string
+};
+
+
+function configureAliases() {
+    Emojis.emojisProd.normal = Emojis.emojisProd.monster;
 }
+
+configureAliases();
 
 module.exports = Emojis;

@@ -11,7 +11,7 @@ manager.spawn();
 manager.on('launch', shard => console.log(`Launched shard ${shard.id}`));
 
 async function sendDMToSpecificUser(idUser, message) {
-    let evalDyn = `let user = this.users.get("${idUser}");
+    let evalDyn = `let user = this.users.cache.get("${idUser}");
     if(user != null) {
         user.send(\`${message}\`).catch((e) => {null});
     }
@@ -28,13 +28,13 @@ async function sendWorldBossMessage(message) {
     let evalDyn;
 
     if (conf.env == "dev") {
-        evalDyn = `let channel = this.channels.get("456119917943717888");
+        evalDyn = `let channel = this.channels.cache.get("456119917943717888");
     if(channel != null) {
         channel.send(\`${message}\`).catch((e) => {null});
     }
     `;
     } else {
-        evalDyn = `let channel = this.channels.get("520585589612085258");
+        evalDyn = `let channel = this.channels.cache.get("520585589612085258");
     if(channel != null) {
         channel.send(\`${message}\`).catch((e) => {null});
     }

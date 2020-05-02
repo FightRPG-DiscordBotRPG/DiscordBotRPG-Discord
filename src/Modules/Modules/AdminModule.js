@@ -13,12 +13,19 @@ class AdminModule extends GModule {
         this.endLoading("Admin");
     }
 
+    /**
+     * 
+     * @param {Discord.Message} message
+     * @param {any} command
+     * @param {any} args
+     */
     async run(message, command, args) {
         let isAdmin = Globals.admins.indexOf(message.author.id) > -1;
         let msg = "";
         let authorIdentifier = message.author.id;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
         let data;
+        let evalDyn;
         if (!isAdmin) return;
 
         switch (command) {
@@ -26,7 +33,7 @@ class AdminModule extends GModule {
                 try {
                     await message.client.user.setPresence({
                         game: {
-                            name: "On " + message.client.guilds.size + " guilds !",
+                            name: "On " + message.client.guilds.cache.size + " guilds !",
                         },
                     });
                     msg = "Présence mise à jour.";
@@ -91,6 +98,7 @@ class AdminModule extends GModule {
             case "active":
                 data = await axios.post("/game/admin/bot/activate", {
                     active: args[0],
+                    reason: args[1],
                 });
                 data = data.data;
                 if (data.error == null) {
@@ -163,7 +171,12 @@ class AdminModule extends GModule {
                 }
                 break;
             case "debug":
-                data = await axios.get("/game/admin/debug");
+                await axios.get("/game/admin/debug", {
+                    params: {
+                        p1: args[0],
+                        p2: args[1]
+                    }
+                });
                 msg = "Success"
                 break;
             case "last_command":
@@ -175,8 +188,20 @@ class AdminModule extends GModule {
                     msg = data.error;
                 }
                 break;
-            case "update_commands_channel":
-                let actualMessages = await message.channel.fetchMessages({
+            case "warn":
+                args[0] = decodeURIComponent(args[0]);
+                for (let idUser of args[0].split(",")) {
+                    evalDyn = `let user = this.users.cache.get("${idUser}");
+                    if(user != null) {
+                        user.send("Due to using macros, you got warned. Your FightRPG account got it's money set to zero. This is the last warning you'll get. Next punishment will result in a full reset instead.").catch((e) => {null});
+                    }
+                    `;
+                    message.client.shard.broadcastEval(evalDyn);
+                }
+                msg = "Done";
+                break;
+            case "update_commands_channel": {
+                let actualMessages = await message.channel.messages.fetch({
                     limit: 20
                 });
 
@@ -199,6 +224,7 @@ class AdminModule extends GModule {
                     }
                 }
                 break;
+            }
         }
 
         this.sendMessage(message, msg);

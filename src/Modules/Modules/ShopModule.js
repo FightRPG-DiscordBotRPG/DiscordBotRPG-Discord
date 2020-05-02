@@ -14,33 +14,26 @@ class ShopModule extends GModule {
 
     async run(message, command, args) {
         let msg = "";
-        let authorIdentifier = message.author.id;
-        let data;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
 
         switch (command) {
             case "sitems":
-                data = await axios.get("/game/shop/items/" + args[0]);
-                data = data.data;
-                if (data.error == null) {
-                    msg = Shop.displayItems(data);
-                } else {
-                    msg = data.error;
-                }
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/shop/items/" + args[0]), async (data) => {
+                    await this.pageListener(data, message, Shop.displayItems(data), async (currPage) => {
+                        let d = await axios.get("/game/shop/items/" + currPage);
+                        return d.data;
+                    }, async (newData) => {
+                        return Shop.displayItems(newData);
+                    });
+                });
                 break;
 
 
             case "sbuy":
-                data = await axios.post("/game/shop/buy", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/shop/buy", {
                     idItem: args[0],
                     amount: args[1],
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
         }
 
