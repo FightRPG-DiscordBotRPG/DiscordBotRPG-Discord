@@ -158,7 +158,7 @@ class ModuleHandler extends GModule {
                          msg = this.getDisabledModules();
                      }*/
                     break;
-                case "bot_info":
+                case "bot_info": {
                     let allCounts = await message.client.shard.broadcastEval("this.guilds.cache.size");
                     let total = 0;
                     for (count in allCounts) {
@@ -183,14 +183,15 @@ class ModuleHandler extends GModule {
                     data = await axios.get("/helpers/versions");
                     data = data.data;
 
-
                     msg = new Discord.MessageEmbed()
                         .setAuthor("FightRPG")
                         .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + allCounts.length + " ]", true)
                         .addField("Server Version: ", "[ " + data.server + " ]", true).addField("Bot Version: ", "[ " + version + " ]", true).addField("Shard Uptime: ", "[ " + uptime + " ]", true)
-                        .addField("Memory Used: ", "[ " + `${totalMemoryMB} MB` + " ]", true).addField("Ping: ", "[ " + Math.round(message.client.ping) + " ms ]", true)
+                        .addField("Memory Used: ", "[ " + `${totalMemoryMB} MB` + " ]", true).addField("Ping: ", "[ " + Math.round(message.client.ws.ping) + " ms ]", true)
                         .addField("Processor: ", "[ " + os.cpus()[0].model + " [x" + os.cpus().length + "] ]", true)
                     break;
+                }
+
             }
 
             this.sendMessage(message, msg);

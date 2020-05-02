@@ -97,7 +97,7 @@ async function getMemory() {
 bot.on("ready", async () => {
     console.log("Shard Connected");
     bot.user.setPresence({
-        game: {
+        activity: {
             name: "On " + await getTotalNumberOfGuilds() + " servers!"
         }
     });
