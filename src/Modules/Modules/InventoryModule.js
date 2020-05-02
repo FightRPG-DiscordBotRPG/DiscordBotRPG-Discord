@@ -27,7 +27,6 @@ class InventoryModule extends GModule {
         let msg = "";
         let mentions = message.mentions.users;
         let firstMention;
-        let data;
         let user = Globals.connectedUsers[message.author.id];
         let axios = user.getAxios();
         let searchFilters;
