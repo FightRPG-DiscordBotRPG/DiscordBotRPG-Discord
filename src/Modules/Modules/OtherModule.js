@@ -43,7 +43,12 @@ class OtherModule extends GModule {
                 break;
             case "help":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/other/help/" + args[0]), (data) => {
-                    return this.cmdToString(data, prefix);
+                    this.pageListener(data, message, this.cmdToString(data, prefix), async (currPage) => {
+                        let d = await axios.get("/game/other/help/" + currPage);
+                        return d.data;
+                    }, async (newData) => {
+                        return this.cmdToString(newData, prefix)
+                    });
                 });
                 break;
             case "settings":
