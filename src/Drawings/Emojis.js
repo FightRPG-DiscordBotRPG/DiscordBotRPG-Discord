@@ -329,6 +329,10 @@ Emojis.emojisProd = {
     "gold_coins": {
         id: "704672468190887967",
         string: "<:gold_coins:704672468190887967>"
+    },
+    "polar_bear": {
+        id: "706186485338079263",
+        string: "<:polar_bear:706186485338079263>"
     }
 };
 
@@ -421,7 +425,10 @@ Emojis.general = {
     "clipboard": "📋",
     "seedling": "🌱",
     "balance_scale": "⚖️",
-    "trophy": "🏆"
+    "trophy": "🏆",
+    "camel": "🐪",
+    "salamander": "🦎"
+
 };
 
 Emojis.stats = {
@@ -462,6 +469,9 @@ Emojis.subtypeItem = {
     "energy_potion": Emojis.emojisProd.reset_time_potion.string,
     "horse": Emojis.general.horse_face,
     "crystal": Emojis.general.gemstone,
+    "salamander": Emojis.general.salamander,
+    "camel": Emojis.general.camel,
+    "polar_bear": Emojis.emojisProd.polar_bear.string,
 };
 
 Emojis.areaType = {
