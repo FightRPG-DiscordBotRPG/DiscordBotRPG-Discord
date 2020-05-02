@@ -48,19 +48,9 @@ class MessageReactionsWrapper {
 
         this.collector = this.message.createReactionCollector(filter, settings.collectorOptions);
 
-        this.collector.on('end', async (reactions, reason) => {
-            if (!this.message.deleted) {
-                if (!this.isDM) {
-                    this.message.reactions.removeAll();
-                } else {
-                    // Do nothing for now due to bug in dm
-                    //for (let i in this.currentMessageReactions) {
-                    //    if (typeof this.currentMessageReactions[i].remove === "function" && this.currentMessageReactions[i].me) {
-                    //        this.currentMessageReactions[i] = this.currentMessageReactions[i].remove();
-                    //    }
-                    //}
-                }
-            }
+        this.collector.on('end', async () => {
+            await new Promise(res => setTimeout(res, 1000));
+            await this.clearEmojis();
         });
     }
 
@@ -99,8 +89,10 @@ class MessageReactionsWrapper {
             await this.clearEmojis();
         }
         for (let emojiName of arrOfEmojis) {
-            this.currentMessageReactions.push(await this.message.react(emojiName));
-            this.currentEmojiReactList.push(emojiName);
+            if (emojiName != null) {
+                this.currentMessageReactions.push(await this.message.react(emojiName));
+                this.currentEmojiReactList.push(emojiName);
+            }
         }
     }
 
@@ -115,7 +107,9 @@ class MessageReactionsWrapper {
             //}
             //await Promise.all(this.currentMessageReactions);
         } else {
-            await this.message.reactions.removeAll();
+            if (!this.message.deleted) {
+                await this.message.reactions.removeAll();
+            }
         }
 
         this.currentMessageReactions = [];

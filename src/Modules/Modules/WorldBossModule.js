@@ -18,54 +18,30 @@ class WorldBossModule extends GModule {
     async run(message, command, args) {
         let msg = "";
         let authorIdentifier = message.author.id;
-        let data;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
 
         switch (command) {
             case "wbshowall":
-                data = await axios.get("/game/worldbosses/display/all");
-                data = data.data;
-                if (data.error == null) {
-                    msg = WorldBosses.listToDiscord(data, Globals.connectedUsers[authorIdentifier], true);
-                } else {
-                    msg = data.error;
-                }
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/worldbosses/display/all"), (data) => {
+                    return WorldBosses.listToDiscord(data, Globals.connectedUsers[authorIdentifier], true);
+                });
                 break;
 
             case "wbfight":
             case "wbattack":
-                data = await axios.post("/game/worldbosses/fight");
-                data = data.data;
-                if (data.error == null) {
-                    let d1 = data;
-                    data = await axios.get("/game/worldbosses/display/lastboss");
-                    data = data.data;
-                    if (data.error == null) {
-                        let d2 = data;
-                        data = await axios.get("/game/worldbosses/display/all");
-                        data = data.data;
-                        if (data.error == null) {
-                            let d3 = data;
-                            msg = WorldBosses.attackToDiscord(d1, d2, d3, Globals.connectedUsers[authorIdentifier]);
-                        } else {
-                            msg = data.error;
-                        }
-                    } else {
-                        msg = data.error;
-                    }
-                } else {
-                    msg = data.error;
-                }
+                msg = await this.getDisplayIfSuccess(await axios.post("/game/worldbosses/fight"), async (d1) => {
+                    return await this.getDisplayIfSuccess(await axios.get("/game/worldbosses/display/lastboss"), async (d2) => {
+                        return await this.getDisplayIfSuccess(await axios.get("/game/worldbosses/display/all"), async (d3) => {
+                            return WorldBosses.attackToDiscord(d1, d2, d3, Globals.connectedUsers[authorIdentifier]);
+                        });
+                    });
+                });
                 break;
 
             case "wblastinfo":
-                data = await axios.get("/game/worldbosses/display/lastboss");
-                data = data.data;
-                if (data.error == null) {
-                    msg = WorldBosses.lastBossStats(data);
-                } else {
-                    msg = data.error;
-                }
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/worldbosses/display/lastboss"), (data) => {
+                    return WorldBosses.lastBossStats(data);
+                });
                 break;
             case "wbleaderboard":
                 if ((args[0] && !args[1] && !Number.isInteger(Number.parseInt(args[0]))) || (args[0] && args[1])) {

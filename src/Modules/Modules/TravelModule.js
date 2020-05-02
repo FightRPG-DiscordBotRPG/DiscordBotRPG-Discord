@@ -19,30 +19,20 @@ class TravelModule extends GModule {
 
     async run(message, command, args) {
         let msg = "";
-        let data;
-        let authorIdentifier = message.author.id;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
 
         switch (command) {
             case "area":
-                data = await axios.get("/game/travel/area");
-                data = data.data;
-                if (data.error == null) {
-                    msg = Areas.toString(data);
-                } else {
-                    msg = data.error;
-                }
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/travel/area"), (data) => {
+                    return Areas.toString(data);
+                });
                 break;
 
             case "areas":
             case "region":
-                data = await axios.get("/game/travel/region");
-                data = data.data;
-                if (data.error == null) {
-                    msg = Areas.regionToString(data);
-                } else {
-                    msg = data.error;
-                }
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/travel/region"), (data) => {
+                    return Areas.regionToString(data);
+                });
                 break;
 
             case "travel":
@@ -58,21 +48,18 @@ class TravelModule extends GModule {
                 break;
 
             case "areaplayers":
-                data = await axios.get("/game/travel/players/" + args[0]);
-                data = data.data;
-                if (data.error == null) {
-                    msg = "```";
-                    msg += Translator.getString(data.lang, "area", "list_of_players_in_area", [data.area_name]) + "\n\n";
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/travel/players/" + args[0]), (data) => {
+                    let str = "```";
+                    str += Translator.getString(data.lang, "area", "list_of_players_in_area", [data.area_name]) + "\n\n";
 
                     for (let player of data.players) {
-                        msg += Translator.getString(data.lang, "area", "player", [player.idCharacter, player.userName, player.actualLevel]) + "\n\n";
+                        str += Translator.getString(data.lang, "area", "player", [player.idCharacter, player.userName, player.actualLevel]) + "\n\n";
                     }
 
-                    msg += "\n" + Translator.getString(data.lang, "general", "page") + " : " + data.page + " / " + data.maxPage;
-                    msg += "```";
-                } else {
-                    msg = data.error;
-                }
+                    str += "\n" + Translator.getString(data.lang, "general", "page") + " : " + data.page + " / " + data.maxPage;
+                    str += "```";
+                    return str;
+                });
                 break;
         }
 
@@ -123,10 +110,7 @@ class TravelModule extends GModule {
         if (args[1] === "confirm") {
             msg = await this.travelPost(args, axios, type);
         } else {
-            let data = await this.travelGet(args, axios, type);
-            data = data.data;
-            if (data.error == null) {
-
+            msg = await this.getDisplayIfSuccess(await this.travelGet(args, axios, type), async (data) => {
                 await this.confirmListener(message, this.getTravelMessage(data), async (validate) => {
                     if (validate == true) {
                         return await this.travelPost(args, axios, type);
@@ -134,9 +118,7 @@ class TravelModule extends GModule {
                         return Translator.getString(data.lang, "travel", "travel_cancel");
                     }
                 });
-            } else {
-                msg = data.error;
-            }
+            });
         }
         return msg;
     }
@@ -165,7 +147,6 @@ class TravelModule extends GModule {
 
     async travelPost(args, axios, type = "area") {
         let data;
-
         switch (type) {
             case "area":
                 data = await axios.post("/game/travel/toarea/", {
@@ -184,15 +165,7 @@ class TravelModule extends GModule {
                     isRealId: true
                 });
         }
-
-        let msg = "";
-        data = data.data;
-        if (data.error == null) {
-            msg = data.success;
-        } else {
-            msg = data.error;
-        }
-        return msg;
+        return this.getBasicSuccessErrorMessage(data);
     }
 
 }

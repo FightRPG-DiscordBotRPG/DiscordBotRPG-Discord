@@ -5,6 +5,7 @@ const ItemShow = require("../../Drawings/ItemShow");
 const Inventory = require("../../Drawings/Inventory");
 const Emojis = require("../../Drawings/Emojis");
 const Discord = require("discord.js");
+const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
 
 
 class InventoryModule extends GModule {
@@ -33,9 +34,7 @@ class InventoryModule extends GModule {
 
         switch (command) {
             case "item":
-                data = await axios.get("/game/inventory/item/" + args[0]);
-                data = data.data;
-                if (data.error == null) {
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/inventory/item/" + args[0]), async (data) => {
                     let itemmsg;
                     if (data.equippedStats != null) {
                         itemmsg = ItemShow.showItem(data, user);
@@ -54,26 +53,23 @@ class InventoryModule extends GModule {
                     isTrading = isTrading.data;
                     isTrading = isTrading.error == null ? isTrading.isTrading : false;
 
-                    let itemmsgsent = await message.channel.send(itemmsg);
+                    let reactWrapper = new MessageReactionsWrapper();
 
-                    Promise.all([
-                        data.item.isFavorite == true ? null : (isEquipped ? null : itemmsgsent.react(sellEmoji)),
-                        itemmsgsent.react(favoEmoji),
-                        data.item.equipable == true ? itemmsgsent.react(equipUnequipEmoji) : null,
-                        isTrading == true ? itemmsgsent.react(addToTradeEmoji) : null
-                    ]).catch(() => null);
-
-                    const filter = (reaction, u) => {
-                        return [sellEmoji, favoEmoji, equipUnequipEmoji, addToTradeEmoji].includes(reaction.emoji.name) && u.id === message.author.id;
-                    };
-
-                    const collector = itemmsgsent.createReactionCollector(filter, {
-                        time: 22000,
-                        max: 3,
+                    await reactWrapper.load(message, itemmsg, {
+                        reactionsEmojis: [
+                            data.item.isFavorite == true ? null : (isEquipped ? null : sellEmoji),
+                            favoEmoji,
+                            data.item.equipable == true ? equipUnequipEmoji : null,
+                            isTrading == true ? addToTradeEmoji : null
+                        ],
+                        collectorOptions: {
+                            time: 22000,
+                            max: 3,
+                        }
                     });
 
-                    collector.on('collect', async (reaction) => {
-                        let dataCollector;
+                    reactWrapper.collector.on('collect', async (reaction) => {
+                        let dataCollector = null;
                         let msgCollector = null;
 
                         switch (reaction.emoji.name) {
@@ -89,12 +85,6 @@ class InventoryModule extends GModule {
                                         isRealID: true,
                                     });
                                 }
-                                dataCollector = dataCollector.data;
-                                if (dataCollector.error == null) {
-                                    msgCollector = dataCollector.success;
-                                } else {
-                                    msgCollector = dataCollector.error;
-                                }
                                 break;
                             case sellEmoji:
                                 dataCollector = await axios.post("/game/inventory/sell", {
@@ -102,13 +92,6 @@ class InventoryModule extends GModule {
                                     number: 1,
                                     isRealID: true,
                                 });
-                                dataCollector = dataCollector.data;
-                                if (dataCollector.error == null) {
-                                    msgCollector = dataCollector.success;
-                                } else {
-                                    msgCollector = dataCollector.error;
-                                }
-
                                 break;
 
                             case favoEmoji:
@@ -123,12 +106,6 @@ class InventoryModule extends GModule {
                                         isRealID: true,
                                     });
                                 }
-                                dataCollector = dataCollector.data;
-                                if (dataCollector.error == null) {
-                                    msgCollector = dataCollector.success;
-                                } else {
-                                    msgCollector = dataCollector.error;
-                                }
                                 break;
                             case addToTradeEmoji:
                                 if (this.allModulesReference["TradeModule"] != null) {
@@ -136,55 +113,33 @@ class InventoryModule extends GModule {
                                 }
                                 break;
                         }
-                        if (msgCollector != null) {
+
+                        if (dataCollector != null) {
+                            msgCollector = this.getBasicSuccessErrorMessage(dataCollector);
                             await this.sendMessage(message, msgCollector);
                         }
-
                     });
-
-                    collector.on('end', async (reactions, reason) => {
-                        if (!itemmsgsent.deleted && message.channel.type != "dm") {
-                            itemmsgsent.reactions.removeAll();
-                        }
-                    });
-                } else {
-                    msg = data.error;
-                }
+                });
                 break;
 
             case "itemfav":
-                data = await axios.post("/game/inventory/itemfav", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/itemfav", {
                     idItem: args[0]
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
 
             case "itemunfav":
-                data = await axios.post("/game/inventory/itemunfav", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/itemunfav", {
                     idItem: args[0]
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
 
             case "inv":
             case "inventory":
                 searchFilters = this.getSearchFilters(args);
-
-                data = await axios.get("/game/inventory/show/" + searchFilters.page, {
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/inventory/show/" + searchFilters.page, {
                     params: searchFilters.params
-                });
-                data = data.data;
-                if (data.error == null) {
+                }), async (data) => {
                     await this.pageListener(data, message, Inventory.displayAsList(data, true), async (currPage) => {
                         let d = await axios.get("/game/inventory/show/" + currPage, {
                             params: searchFilters.params
@@ -193,77 +148,32 @@ class InventoryModule extends GModule {
                     }, async (newData) => {
                         return Inventory.displayAsList(newData, true)
                     });
-
-                } else {
-                    msg = data.error;
-                }
+                });
                 break;
 
             case "sell":
-                data = await axios.post("/game/inventory/sell", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/sell", {
                     idItem: args[0],
                     number: args[1],
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
 
             case "sellall":
                 searchFilters = this.getSearchFilters(args);
 
-                var paramsSellAll = searchFilters.params;
-                var dataInventoryValue = await axios.post("/game/inventory/sellall/value", paramsSellAll);
-                dataInventoryValue = dataInventoryValue.data;
-
-                if (dataInventoryValue.error == null) {
-                    if (dataInventoryValue.value > 0) {
-                        let sellAllConfirmation = await message.channel.send(Inventory.ciValueSellAllDisplay(dataInventoryValue, paramsSellAll)).catch(e => null);
-                        let checkEmoji = Emojis.getID("vmark");
-                        let xmarkEmoji = Emojis.getID("xmark");
-
-                        Promise.all([
-                            sellAllConfirmation.react(checkEmoji),
-                            sellAllConfirmation.react(xmarkEmoji)
-                        ]).catch(() => null);
-
-                        const filter = (r, u) => {
-                            return [checkEmoji, xmarkEmoji].includes(r.emoji.id) && u.id === message.author.id;
-                        };
-
-
-                        const collected = await sellAllConfirmation.awaitReactions(filter, {
-                            max: 1,
-                            time: 25000
-                        });
-                        const reaction = collected.first();
-                        if (reaction != null) {
-                            switch (reaction.emoji.id) {
-                                case checkEmoji:
-                                    data = await axios.post("/game/inventory/sellall", paramsSellAll);
-                                    data = data.data;
-                                    if (data.error == null) {
-                                        msg = data.success;
-                                    } else {
-                                        msg = data.error;
-                                    }
-                                    break;
-
-                                case xmarkEmoji:
-                                    msg = Translator.getString(dataInventoryValue.lang, "inventory_equipment", "sellall_cancel");
-                                    break;
+                msg = await this.getDisplayIfSuccess(await axios.post("/game/inventory/sellall/value", searchFilters.params), async (data) => {
+                    if (data.value > 0) {
+                        this.confirmListener(message, Inventory.ciValueSellAllDisplay(data, searchFilters.params), async (validate) => {
+                            if (validate) {
+                                return this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/sellall", searchFilters.params));
+                            } else {
+                                return Translator.getString(data.lang, "inventory_equipment", "sellall_cancel");
                             }
-                        }
-                        sellAllConfirmation.delete().catch(() => null);
+                        });
                     } else {
-                        msg = Translator.getString(dataInventoryValue.lang, "errors", "economic_cant_sell_nothing");
+                        return Translator.getString(data.lang, "errors", "economic_cant_sell_nothing");
                     }
-                } else {
-                    msg = dataInventoryValue.error;
-                }
+                });
                 break;
 
             case "sendmoney":
@@ -273,17 +183,11 @@ class InventoryModule extends GModule {
                     args[0] = firstMention.id;
                     isMention = true;
                 }
-                data = await axios.post("/game/inventory/sendmoney", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/sendmoney", {
                     id: args[0],
                     isMention: isMention,
                     amount: args[1]
-                });
-                data = data.data;
-                if (data.error == null) {
-                    msg = data.success;
-                } else {
-                    msg = data.error;
-                }
+                }));
                 break;
         }
 
