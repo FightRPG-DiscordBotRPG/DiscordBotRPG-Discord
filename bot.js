@@ -20,6 +20,7 @@ let timeStart = Date.now();
 
 async function getTotalNumberOfGuilds() {
     let allCounts = await bot.shard.broadcastEval("this.guilds.cache.size");
+    console.log("All Counts: " + allCounts);
     let total = 0;
     for (count in allCounts) {
         total += allCounts[count];
@@ -105,7 +106,8 @@ bot.on("ready", async () => {
     if (conf.env === "prod") {
         const dbl = new DBL(conf.topggkey, bot);
         setInterval(async () => {
-            console.log("Shard: " + bot.shard.id + " => Sending stats to https://discordbots.org/ ...");
+            console.log("Shards: " + bot.shard.ids);
+            console.log("Shard: " + bot.shard.ids[0] + " => Sending stats to https://discordbots.org/ ...");
             await dbl.postStats(bot.guilds.cache.size, bot.shard.ids[0], bot.shard.count);
             console.log("Data sent");
         }, 1800000);
