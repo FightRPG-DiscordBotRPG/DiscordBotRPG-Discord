@@ -69,7 +69,6 @@ class GenericMultipleEmbedList {
     }
 
     getEmbed(embed, separator = "--------------------------------------") {
-        console.log(this.fields)
 
         for (let i in this.fields) {
             if (this.fields[i] != null && this.fields[i] != "" && this.fields[i].length > 0) {
