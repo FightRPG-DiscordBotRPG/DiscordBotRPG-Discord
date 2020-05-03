@@ -36,10 +36,17 @@ class CraftingModule extends GModule {
                 break;
 
             case "craft":
-                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/crafting/craft", {
-                    idCraft: args[0],
-                    level: args[1],
-                }));
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/crafting/craftshow/" + args[0]), async (data) => {
+                    let craftMissing = Craft.craftToMissing(data);
+                    if (craftMissing != null) {
+                        return craftMissing;
+                    } else {
+                        return this.getBasicSuccessErrorMessage(await axios.post("/game/crafting/craft", {
+                            idCraft: args[0],
+                            level: args[1],
+                        }));
+                    }
+                });
                 break;
             case "collect":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/crafting/collect", {

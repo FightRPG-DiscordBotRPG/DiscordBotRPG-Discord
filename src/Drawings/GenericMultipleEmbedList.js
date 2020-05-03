@@ -29,35 +29,37 @@ class GenericMultipleEmbedList {
 
             let str = lineDisplayCallback(i, item);
 
-            let shouldCreateEmbed = false;
+            if (str != null) {
+                let shouldCreateEmbed = false;
 
-            if (data.listType == 0) {
-                shouldCreateEmbed = index != 0;
-            } else if (data.listType == 1) {
-                shouldCreateEmbed = (contentString.length + str.length) > 1024;
-            } else {
-                shouldCreateEmbed = (contentString.length + str.length > 1024) || (index % 5 == 4);
-            }
+                if (data.listType == 0) {
+                    shouldCreateEmbed = index != 0;
+                } else if (data.listType == 1) {
+                    shouldCreateEmbed = (contentString.length + str.length) > 1024;
+                } else {
+                    shouldCreateEmbed = (contentString.length + str.length > 1024) || (index % 5 == 4);
+                }
 
-            if (shouldCreateEmbed) {
-                this.fields.push(contentString);
-                contentString = "";
-            }
+                if (shouldCreateEmbed) {
+                    this.fields.push(contentString);
+                    contentString = "";
+                }
 
-            contentString += str;
+                contentString += str;
 
-            if (i == lastIndex) {
-                this.fields.push(contentString);
-                contentString = "";
+                if (i == lastIndex) {
+                    this.fields.push(contentString);
+                    contentString = "";
+                }
+                empty = false;
             }
 
             index++;
-            empty = false;
         }
 
 
-        if (empty) {
-            this.fields.push(data.displayIfEmpty != null && data.displayIfEmpty != "" ? data.displayIfEmpty : Translator.getString(lang, "general", "nothing_at_this_page"));
+        if (empty && data.displayIfEmpty != null) {
+            this.fields.push(data.displayIfEmpty != "" ? data.displayIfEmpty : Translator.getString(lang, "general", "nothing_at_this_page"));
         }
 
         if (data.pageRelated) {
@@ -66,9 +68,12 @@ class GenericMultipleEmbedList {
 
     }
 
-    getEmbed(embed, separator ="--------------------------------------") {
+    getEmbed(embed, separator = "--------------------------------------") {
+
         for (let i in this.fields) {
-            embed.addField(separator, this.fields[i]);
+            if (this.fields[i] != null && this.fields[i] != "" && this.fields[i].length > 0) {
+                embed.addField(separator, this.fields[i]);
+            }
         }
 
         return embed;

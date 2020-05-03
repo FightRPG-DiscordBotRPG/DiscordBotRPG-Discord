@@ -35,6 +35,13 @@ class WorldBossModule extends GModule {
                             return WorldBosses.attackToDiscord(d1, d2, d3, Globals.connectedUsers[authorIdentifier]);
                         });
                     });
+                }, async (d1) => {
+                        if (d1.error == Translator.getString(d1.lang, "world_bosses", "no_world_boss")) {
+                            this.run(message, "wbshowall", []);
+                            return d1.error;
+                        } else {
+                            return d1.error;
+                        }
                 });
                 break;
 
@@ -44,8 +51,10 @@ class WorldBossModule extends GModule {
                 });
                 break;
             case "wbleaderboard":
-                if ((args[0] && !args[1] && !Number.isInteger(Number.parseInt(args[0]))) || (args[0] && args[1])) {
+                if ((args[0] && !Number.isInteger(Number.parseInt(args[0]))) || (args[0] && args[1])) {
                     args[0] = "wb" + args[0];
+                } else {
+                    args[0] = "wbdamage";
                 }
                 this.drawLeaderboard(message, args, "damage")
                 break;

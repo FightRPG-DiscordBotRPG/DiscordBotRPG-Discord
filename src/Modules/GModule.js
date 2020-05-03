@@ -111,6 +111,13 @@ class GModule {
         return type;
     }
 
+    tryParseSubType(subtype) {
+        let subtypeIndex = decodeURI(subtype.toLowerCase())
+        if (Globals.subtypesByLang[subtypeIndex]) {
+            return Globals.subtypesByLang[subtypeIndex];
+        }
+        return subtype;
+    }
 
     cmdToString(data, prefix = "::") {
         let str = "```apache\n" + "::" + Translator.getString(data.lang, "help_panel", "help") + "::\n";
@@ -237,7 +244,11 @@ class GModule {
                         break;
                     case "type":
                         type = "idType";
-                        value = this.tryParseType(value)
+                        value = this.tryParseType(value);
+                        break;
+                    case "subtype":
+                        type = "idSousType";
+                        value = this.tryParseSubType(value)
                         break;
                 }
 
@@ -358,13 +369,17 @@ class GModule {
         return msg;
     }
 
-    async getDisplayIfSuccess(axiosQueryResult, callbackData) {
+    async getDisplayIfSuccess(axiosQueryResult, callbackData, callbackError=null) {
         let data = axiosQueryResult.data;
         let msg = "";
         if (data.error == null) {
             msg = await callbackData(data);
         } else {
-            msg = data.error;
+            if (callbackError != null) {
+                msg = await callbackError(data);
+            } else {
+                msg = data.error;
+            }
         }
         return msg;
     }

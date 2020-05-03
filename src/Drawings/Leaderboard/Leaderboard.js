@@ -21,6 +21,12 @@ class Leaderboard {
         return `${this.draw()}\n${Translator.getString(this.lang, "general", "page_out_of_x", [this.page, this.maxPage])}`
     }
 
+    /**
+     * 
+     * @param {string} title
+     * @param {function} drawCallback
+     * @returns {Discord.MessageEmbed}
+     */
     getDisplay(title, drawCallback) {
         let listEmbed = new GenericMultipleEmbedList();
 

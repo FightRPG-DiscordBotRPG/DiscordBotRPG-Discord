@@ -20,7 +20,6 @@ let timeStart = Date.now();
 
 async function getTotalNumberOfGuilds() {
     let allCounts = await bot.shard.broadcastEval("this.guilds.cache.size");
-    console.log("All Counts: " + allCounts);
     let total = 0;
     for (count in allCounts) {
         total += allCounts[count];
