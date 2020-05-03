@@ -47,6 +47,10 @@ class Emojis {
         return Emojis.areaType[typeShorthand] ? Emojis.areaType[typeShorthand] : Emojis.general.q_mark;
     }
 
+    static getAreaBonusEmoji(bonusIdentifier) {
+        return Emojis.areaBonus[bonusIdentifier] ? Emojis.areaBonus[bonusIdentifier] : Emojis.general.books;
+    }
+
     static getResourceSubtype(subtypeShorthand, rarityShorthand) {
         let resourcesTypesEquivalent = {
             "plant": "herb"
@@ -480,6 +484,14 @@ Emojis.areaType = {
     "dungeon": Emojis.emojisProd.dungeon_door.string
 };
 
+Emojis.areaBonus = {
+    "xp_fight": Emojis.emojisProd.exp.string,
+    "xp_collect": Emojis.emojisProd.exp.string,
+    "gold_drop": Emojis.emojisProd.gold_coins.string,
+    "item_drop": Emojis.emojisProd.sword.string,
+    "collect_drop": Emojis.general.gloves,
+    "xp_craft": Emojis.general.hammer
+}
 
 function configureAliases() {
     Emojis.emojisProd.normal = Emojis.emojisProd.monster;

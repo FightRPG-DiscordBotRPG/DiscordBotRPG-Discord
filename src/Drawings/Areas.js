@@ -215,24 +215,60 @@ class Areas {
         return str;
     }
 
-    conquestToStr(data) {
+    /**
+     * 
+     * @param {any} data
+     * @param {User} user
+     */
+    conquestToStr(data, user) {
         let lang = data.lang;
 
         return new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(data.name + " | " + data.levels + " | " + Translator.getString(lang, "area", "owned_by", [data.owner]), data.image)
-            .addField(Translator.getString(lang, "area", "conquest"), "```" + data.tournament_info + "```")
-            .addField(Translator.getString(lang, "bonuses", "bonuses"), this.bonusesToStr(data))
-            .addField(Translator.getString(lang, "area", "area_progression"), this.statsAndLevelToStr(data));
+            .addField(Translator.getString(lang, "area", "conquest"), this.tournamentInfoToStr(data, user))
+            .addField(Translator.getString(lang, "bonuses", "bonuses"), this.bonusesToStr(data, user))
+            .addField(Translator.getString(lang, "area", "area_progression"), this.statsAndLevelToStr(data, user));
     }
 
-    bonusesToStr(data) {
+    /**
+     * 
+     * @param {any} data
+     * @param {User} user
+     */
+    tournamentInfoToStr(data, user) {
+        let tournamentInfo = data.tournament_info;
+        let lang = data.lang;
+
+        let lineBreaks = "\n";
+
+        if (tournamentInfo.isStarted) {
+            return Emojis.general.collision + " "+  Translator.getString(lang, "area", "conquest_ongoing");
+        }
+
+        let langStr = lang.length > 2 ? lang : lang + "-" + lang.toUpperCase();
+
+        let str = Translator.getString(lang, "area", "conquest_next", [new Date(tournamentInfo.startDate).toLocaleString(langStr) + " UTC", tournamentInfo.numberOfGuildEnrolled]);
+
+        let splitted = str.split("\n");
+
+        return "**" + splitted[0] + "**\n" + Emojis.general.stopwatch + " " + splitted[1] + lineBreaks + Emojis.emojisProd.user.string + " " + splitted[2];
+
+    }
+
+    /**
+     * 
+     * @param {any} data
+     * @param {User} user
+     */
+    bonusesToStr(data, user) {
         let bonuses = data.bonuses;
-        let str = "```\n";
+        let str = "";
         let empty = true;
+        console.log(data);
         for (let bonus of bonuses) {
             if (bonus.percentage > 0) {
-                str += bonus.name + " : " + bonus.percentage + "%" + "\n";
+                str += Emojis.getAreaBonusEmoji(bonus.bonus_identifier) + " " + bonus.name + " : " + bonus.percentage + "%" + "\n";
                 empty = false;
             }
         }
@@ -240,17 +276,20 @@ class Areas {
         if (empty) {
             str += Translator.getString(data.lang, "bonuses", "no_bonuses");
         }
-        str += "```";
         return str;
     }
 
-    statsAndLevelToStr(data) {
+    /**
+     * 
+     * @param {any} data
+     * @param {User} user
+     */
+    statsAndLevelToStr(data, user) {
         let lang = data.lang;
-        let str = "```\n";
-        str += "- " + Translator.getString(lang, "area", "conquest_actual_level", [data.level]) + "\n";
-        str += "- " + Translator.getString(lang, "area", "conquest_points_to_distribute", [data.statPoints]) + "\n";
-        str += "- " + Translator.getString(lang, "area", "conquest_price_to_next_level", [data.price]) + "\n";
-        str += "```";
+        let str = "";
+        str += Emojis.emojisProd.exp.string + " " + Translator.getString(lang, "area", "conquest_actual_level", [data.level]) + "\n";
+        str += Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "area", "conquest_points_to_distribute", [data.statPoints]) + "\n";
+        str += Emojis.emojisProd.gold_coins.string + " " + Translator.getString(lang, "area", "conquest_price_to_next_level", [data.price]) + "\n";
         return str;
     }
 
@@ -258,3 +297,5 @@ class Areas {
 }
 
 module.exports = new Areas();
+
+const User = require("../Users/User");

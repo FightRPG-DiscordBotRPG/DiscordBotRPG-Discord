@@ -16,6 +16,7 @@ class ConquestModule extends GModule {
     async run(message, command, args) {
         let msg = "";
         let axios = Globals.connectedUsers[message.author.id].getAxios();
+        let user = Globals.connectedUsers[message.author.id];
         switch (command) {
             case "arealevelup":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/conquest/area/levelup/"))
@@ -37,7 +38,7 @@ class ConquestModule extends GModule {
                 break;
 
             case "areaconquest":
-                msg = await this.getDisplayIfSuccess(await axios.get("/game/conquest/area"), (newData) => Areas.conquestToStr(newData))
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/conquest/area"), (newData) => Areas.conquestToStr(newData, user))
                 break;
         }
 
