@@ -57,6 +57,9 @@ class OtherModule extends GModule {
                     let one = Emojis.getString("one");
                     let two = Emojis.getString("two");
                     let three = Emojis.getString("three");
+                    let four = Emojis.general.four;
+                    //let five = Emojis.general.five;
+
                     let tempMsgContent = "**" + Translator.getString(data.lang, "settings_menu", "title") + "**\n\n" +
                         one + " : " + "`"
                         + Translator.getString(data.lang, "group", "settings_menu_mute", [(data.isGroupMuted ? Translator.getString(data.lang, "general", "enable") : Translator.getString(data.lang, "general", "disable"))]) + "`\n\n" +
@@ -64,12 +67,14 @@ class OtherModule extends GModule {
                         + "`" + Translator.getString(data.lang, "marketplace", "settings_menu_mute", [(data.isMarketplaceMuted ? Translator.getString(data.lang, "general", "enable") : Translator.getString(data.lang, "general", "disable"))])
                         + "`\n\n" +
                         three + " : " + "`" + Translator.getString(data.lang, "fight_general", "settings_menu_mute", [(data.isFightMuted ? Translator.getString(data.lang, "general", "enable") : Translator.getString(data.lang, "general", "disable"))])
+                        + "`\n\n" +
+                        four + " : " + "`" + Translator.getString(data.lang, "world_bosses", "settings_menu_mute", [(data.isWorldBossesMuted ? Translator.getString(data.lang, "general", "enable") : Translator.getString(data.lang, "general", "disable"))])
                         + "`\n\n";
 
 
                     let reactWrapper = new MessageReactionsWrapper();
                     await reactWrapper.load(message, tempMsgContent, {
-                        reactionsEmojis: [one, two, three],
+                        reactionsEmojis: [one, two, three, four],
                         collectorOptions: {
                             max: 1,
                             time: 20000
@@ -94,6 +99,11 @@ class OtherModule extends GModule {
                                 });
                                 break;
                             case four:
+                                data = await axios.post("/game/other/settings", {
+                                    mWorldBoss: true,
+                                });
+                                break;
+                            case five:
                                 data = await axios.post("/game/other/settings", {
                                     mTrade: true,
                                 });
