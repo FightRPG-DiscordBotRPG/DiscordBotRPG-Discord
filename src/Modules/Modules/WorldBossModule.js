@@ -44,8 +44,10 @@ class WorldBossModule extends GModule {
                 });
                 break;
             case "wbleaderboard":
-                if ((args[0] && !args[1] && !Number.isInteger(Number.parseInt(args[0]))) || (args[0] && args[1])) {
+                if ((args[0] && !Number.isInteger(Number.parseInt(args[0]))) || (args[0] && args[1])) {
                     args[0] = "wb" + args[0];
+                } else {
+                    args[0] = "wbdamage";
                 }
                 this.drawLeaderboard(message, args, "damage")
                 break;
