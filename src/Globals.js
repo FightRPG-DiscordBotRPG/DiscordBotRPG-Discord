@@ -71,6 +71,7 @@ var Globals = {
     },
     raritiesByLang: {},
     typesByLang: {},
+    subtypesByLang: {},
     /**
      * Minutes before disconnecting
      */

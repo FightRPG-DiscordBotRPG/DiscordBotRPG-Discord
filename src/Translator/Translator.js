@@ -181,6 +181,26 @@ class Translator {
             Globals.typesByLang[Translator.getString(lang, "item_types", "mount").toLowerCase()] = 8;
         }
     }
+
+    static loadGlobalsSubTypes() {
+        for (let lang in this.translations) {
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "ore").toLowerCase()] = 1;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "plant").toLowerCase()] = 2;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "wood").toLowerCase()] = 3;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "sword").toLowerCase()] = 4;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "whip").toLowerCase()] = 5;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "armor").toLowerCase()] = 6;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "reset_time_potion").toLowerCase()] = 9;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "founder_box").toLowerCase()] = 10;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "horse").toLowerCase()] = 11;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "random_loot_box_equipment").toLowerCase()] = 12;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "crystal").toLowerCase()] = 13;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "energy_potion").toLowerCase()] = 14;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "salamander").toLowerCase()] = 15;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "camel").toLowerCase()] = 16;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "polar_bear").toLowerCase()] = 17;
+        }
+    }
 }
 
 
@@ -193,6 +213,7 @@ async function loadTranslator() {
     Translator.loadFormaters();
     Translator.loadGlobalsRarities();
     Translator.loadGlobalsTypes();
+    Translator.loadGlobalsSubTypes();
 }
 
 loadTranslator();

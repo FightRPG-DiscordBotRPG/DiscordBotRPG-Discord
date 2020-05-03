@@ -111,6 +111,13 @@ class GModule {
         return type;
     }
 
+    tryParseSubType(subtype) {
+        let subtypeIndex = decodeURI(subtype.toLowerCase())
+        if (Globals.subtypesByLang[subtypeIndex]) {
+            return Globals.subtypesByLang[subtypeIndex];
+        }
+        return subtype;
+    }
 
     cmdToString(data, prefix = "::") {
         let str = "```apache\n" + "::" + Translator.getString(data.lang, "help_panel", "help") + "::\n";
@@ -237,7 +244,11 @@ class GModule {
                         break;
                     case "type":
                         type = "idType";
-                        value = this.tryParseType(value)
+                        value = this.tryParseType(value);
+                        break;
+                    case "subtype":
+                        type = "idSousType";
+                        value = this.tryParseSubType(value)
                         break;
                 }
 
