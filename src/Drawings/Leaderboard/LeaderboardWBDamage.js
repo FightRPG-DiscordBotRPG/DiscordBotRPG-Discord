@@ -1,10 +1,10 @@
 const Emojis = require("../Emojis");
 const Discord = require("discord.js");
 const Translator = require("../../Translator/Translator");
-const Leaderboard = require("./Leaderboard");
+const LeaderboardWB = require("./LeaderboardWB");
 
 
-class LeaderboardWBDamage extends Leaderboard {
+class LeaderboardWBDamage extends LeaderboardWB {
 
     constructor(data) {
         super(data);

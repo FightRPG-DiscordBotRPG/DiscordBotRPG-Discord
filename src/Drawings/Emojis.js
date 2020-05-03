@@ -345,7 +345,7 @@ Emojis.emojisProd = {
     "tild": {
         id: "706481565613686857",
         string: "<:tild:706481565613686857>"
-    }
+    },
 };
 
 Emojis.emojisDev = {
@@ -439,7 +439,8 @@ Emojis.general = {
     "balance_scale": "⚖️",
     "trophy": "🏆",
     "camel": "🐪",
-    "salamander": "🦎"
+    "salamander": "🦎",
+    "skull_and_bones": "☠️",
 
 };
 
