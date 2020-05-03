@@ -337,6 +337,10 @@ Emojis.emojisProd = {
     "polar_bear": {
         id: "706186485338079263",
         string: "<:polar_bear:706186485338079263>"
+    },
+    "shield": {
+        id: "403574099143819276",
+        string: "<:shieldd:403574099143819276>"
     }
 };
 
