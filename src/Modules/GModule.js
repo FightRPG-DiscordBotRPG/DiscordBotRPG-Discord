@@ -369,13 +369,17 @@ class GModule {
         return msg;
     }
 
-    async getDisplayIfSuccess(axiosQueryResult, callbackData) {
+    async getDisplayIfSuccess(axiosQueryResult, callbackData, callbackError=null) {
         let data = axiosQueryResult.data;
         let msg = "";
         if (data.error == null) {
             msg = await callbackData(data);
         } else {
-            msg = data.error;
+            if (callbackError != null) {
+                msg = await callbackError(data);
+            } else {
+                msg = data.error;
+            }
         }
         return msg;
     }

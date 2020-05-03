@@ -35,6 +35,13 @@ class WorldBossModule extends GModule {
                             return WorldBosses.attackToDiscord(d1, d2, d3, Globals.connectedUsers[authorIdentifier]);
                         });
                     });
+                }, async (d1) => {
+                        if (d1.error == Translator.getString(d1.lang, "world_bosses", "no_world_boss")) {
+                            this.run(message, "wbshowall", []);
+                            return d1.error;
+                        } else {
+                            return d1.error;
+                        }
                 });
                 break;
 
