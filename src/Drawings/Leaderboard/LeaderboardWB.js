@@ -13,7 +13,6 @@ class LeaderboardWB extends Leaderboard {
 
     getDisplay(title, drawCallback) {
         let embed = super.getDisplay(title, drawCallback);
-        console.log(this.worldBoss);
         if (this.worldBoss.actualHp <= 0) {
             embed = embed.addField("--------------------------------------", Emojis.general.skull_and_bones + " " + Translator.getString(this.lang, "world_bosses", "boss_already_dead"));
         }
