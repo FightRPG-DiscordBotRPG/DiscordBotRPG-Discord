@@ -29,7 +29,7 @@ class Craft {
 
         let neededItems = new GenericMultipleEmbedList();
         let missing = false;
-        console.log(craft);
+
         neededItems.load({ collection: craft.requiredItems, listType: 0 }, lang, (index, itemNeeded) => {
             let missingNumber = itemNeeded.missing;
             console.log(missingNumber);
