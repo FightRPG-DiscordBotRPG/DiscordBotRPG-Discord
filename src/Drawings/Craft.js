@@ -29,12 +29,13 @@ class Craft {
 
         let neededItems = new GenericMultipleEmbedList();
         let missing = false;
-
+        console.log(craft);
         neededItems.load({ collection: craft.requiredItems, listType: 0 }, lang, (index, itemNeeded) => {
-            let missingNumber = itemNeeded.number - itemNeeded.missing;
+            let missingNumber = itemNeeded.missing;
+            console.log(missingNumber);
             if (missingNumber > 0) {
                 missing = true;
-                let emojiMissing = missingNumber == itemNeeded.number ? Emojis.general.g_xmark :Emojis.emojisProd.tild.string ;
+                let emojiMissing = missingNumber == itemNeeded.number ? Emojis.general.g_xmark : Emojis.emojisProd.tild.string ;
                 return `${emojiMissing} **${itemNeeded.name}** - x${Translator.getFormater(lang).format(missingNumber)}`;
             }
             return null;
