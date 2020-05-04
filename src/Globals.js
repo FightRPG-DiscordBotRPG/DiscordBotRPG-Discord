@@ -1,5 +1,6 @@
 var axios = require("axios").default;
 axios.defaults.baseURL = "http://localhost:8880";
+//axios.defaults.baseURL = "https://api.fight-rpg.com";
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 axios.defaults.validateStatus = function (status) {
     return status >= 200 && status < 300 || status >= 400 && status < 500; // default
