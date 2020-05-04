@@ -156,7 +156,7 @@ bot.on('message', async (message) => {
 
 bot.on('guildCreate', async (guild) => {
     bot.user.setPresence({
-        game: {
+        activity: {
             name: "On " + await getTotalNumberOfGuilds() + " servers!",
         },
     });
@@ -165,7 +165,7 @@ bot.on('guildCreate', async (guild) => {
 
 bot.on('guildDelete', async (guild) => {
     bot.user.setPresence({
-        game: {
+        activity: {
             name: "On " + await getTotalNumberOfGuilds() + " servers!",
         },
     });
