@@ -43,7 +43,7 @@ class InventoryModule extends GModule {
 
                     let isEquipped = isNaN(parseInt(args[0]));
                     let sellEmoji = Emojis.getID("money_bag");
-                    let equipUnequipEmoji = isEquipped ? Emojis.getID("backpack") : Emojis.getID("shield");
+                    let equipUnequipEmoji = isEquipped ? Emojis.getID("backpack") : Emojis.general.shield;
                     let favoEmoji = data.item.isFavorite == false ? Emojis.getID("star") : Emojis.getID("eight_pointed_black_star");
                     let addToTradeEmoji = Emojis.getID("baggage_claim");
 
