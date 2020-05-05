@@ -20,6 +20,7 @@ class TradeModule extends GModule {
         let authorIdentifier = message.author.id;
         let mentions = message.mentions.users;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
+        let user = Globals.connectedUsers[message.author.id];
         let firstMention = mentions.first();
 
         switch (command) {
