@@ -49,7 +49,7 @@ class ModuleHandler extends GModule {
         // If don't start by prefix 
         if (!message.content.startsWith(prefix)) {
             // If the bot is mention display prefix
-            if (!message.author.bot && message.mentions.has(message.client.user)) {
+            if (!message.author.bot && message.mentions.members.first() && message.mentions.members.first().id == message.client.user.id) {
                 await this.sendMessage(message,
                     new Discord.MessageEmbed()
                         .setColor([0, 128, 128])

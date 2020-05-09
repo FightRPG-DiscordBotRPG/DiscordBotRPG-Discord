@@ -26,7 +26,7 @@ class FightModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.post("/game/fight/monster", {
                     idMonster: args[0],
                 }), async (data) => {
-                    await fightManager.fight(data, message);
+                        await fightManager.fight(data, message);
                 });
                 break;
 
