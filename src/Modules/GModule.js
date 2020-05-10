@@ -96,7 +96,7 @@ class GModule {
     }
 
     tryParseRarity(rarity) {
-        let rarityIndex = decodeURI(rarity.toLowerCase())
+        let rarityIndex = decodeURI(rarity.toLowerCase());
         if (Globals.raritiesByLang[rarityIndex]) {
             return Globals.raritiesByLang[rarityIndex];
         }
@@ -104,7 +104,7 @@ class GModule {
     }
 
     tryParseType(type) {
-        let typeIndex = decodeURI(type.toLowerCase())
+        let typeIndex = decodeURI(type.toLowerCase());
         if (Globals.typesByLang[typeIndex]) {
             return Globals.typesByLang[typeIndex];
         }
@@ -112,7 +112,7 @@ class GModule {
     }
 
     tryParseSubType(subtype) {
-        let subtypeIndex = decodeURI(subtype.toLowerCase())
+        let subtypeIndex = decodeURI(subtype.toLowerCase());
         if (Globals.subtypesByLang[subtypeIndex]) {
             return Globals.subtypesByLang[subtypeIndex];
         }
