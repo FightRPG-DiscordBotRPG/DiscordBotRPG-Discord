@@ -23,6 +23,11 @@ class DiscordServers {
             guildsAddString += temp;
         });
 
+        if (guildsAddString.length === 0) {
+            return;
+        }
+
+
         await conn.query("INSERT IGNORE INTO serversstats (idServer, serverPrefix, serverName, memberCount, region) VALUES " + guildsAddString);
 
         // affectedRows => number of rows that was added

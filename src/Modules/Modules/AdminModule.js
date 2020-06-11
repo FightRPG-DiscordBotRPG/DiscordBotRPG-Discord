@@ -3,11 +3,12 @@ const conn = require("../../../conf/mysql");
 const Globals = require("../../Globals");
 const Translator = require("../../Translator/Translator");
 const Discord = require("discord.js");
+const Utils = require("../../Utils");
 
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info", "eval"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -31,9 +32,10 @@ class AdminModule extends GModule {
         switch (command) {
             case "updatepresence":
                 try {
+
                     await message.client.user.setPresence({
                         game: {
-                            name: "On " + message.client.guilds.cache.size + " guilds !",
+                            name: "On " + Utils.getTotalNumberOfGuilds(message.client.shard) + " guilds !",
                         },
                     });
                     msg = "Présence mise à jour.";
@@ -199,6 +201,22 @@ class AdminModule extends GModule {
                     message.client.shard.broadcastEval(evalDyn);
                 }
                 msg = "Done";
+                break;
+            case "eval":
+                if (message.author.id !== Globals.ownerID) break;
+                try {
+                    const code = args.join(" ");
+                    let evaled = eval(code);
+
+                    if (typeof evaled !== "string")
+                        evaled = require("util").inspect(evaled);
+
+                    msg = Utils.clean(evaled);
+                } catch (err) {
+                    msg = `\`ERROR\` \`\`\`xl\n${Utils.clean(err)}\n\`\`\``;
+                }
+
+                msg = msg.length > 2000 ? msg.substring(0, 2000) : msg;
                 break;
             case "update_commands_channel": {
                 let actualMessages = await message.channel.messages.fetch({

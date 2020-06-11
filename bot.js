@@ -6,6 +6,7 @@ const DiscordServers = require("./src/Database/DiscordServers");
 const Globals = require("./src/Globals");
 const conn = require("./conf/mysql");
 const Axios = require("axios").default;
+const Utils = require("./src/Utils");
 
 var bot = new Discord.Client();
 
@@ -17,15 +18,6 @@ process.on('unhandledRejection', err => {
 
 console.log("Shard Starting ...");
 let timeStart = Date.now();
-
-async function getTotalNumberOfGuilds() {
-    let allCounts = await bot.shard.broadcastEval("this.guilds.cache.size");
-    let total = 0;
-    for (count in allCounts) {
-        total += allCounts[count];
-    }
-    return total;
-}
 
 async function startBot() {
     try {
@@ -98,7 +90,7 @@ bot.on("ready", async () => {
     console.log("Shard Connected");
     bot.user.setPresence({
         activity: {
-            name: "On " + await getTotalNumberOfGuilds() + " servers!"
+            name: "On " + await Utils.getTotalNumberOfGuilds(bot.shard) + " servers!"
         }
     });
     //console.log(`${bot.guilds.cache.size}\n${bot.shard.ids}\n${bot.shard.count}`);
@@ -157,7 +149,7 @@ bot.on('message', async (message) => {
 bot.on('guildCreate', async (guild) => {
     bot.user.setPresence({
         activity: {
-            name: "On " + await getTotalNumberOfGuilds() + " servers!",
+            name: "On " + await Utils.getTotalNumberOfGuilds(bot.shard) + " servers!",
         },
     });
     DiscordServers.newGuild(guild);
@@ -166,7 +158,7 @@ bot.on('guildCreate', async (guild) => {
 bot.on('guildDelete', async (guild) => {
     bot.user.setPresence({
         activity: {
-            name: "On " + await getTotalNumberOfGuilds() + " servers!",
+            name: "On " + await Utils.getTotalNumberOfGuilds(bot.shard) + " servers!",
         },
     });
 });

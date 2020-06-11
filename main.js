@@ -4,7 +4,8 @@ const {
     ShardingManager
 } = require('discord.js');
 const manager = new ShardingManager(__dirname + '/bot.js', {
-    token: conf.discordbotkey
+    token: conf.discordbotkey,
+    totalShards: conf.env === "dev" ? 2 : "auto"
 });
 
 manager.spawn();

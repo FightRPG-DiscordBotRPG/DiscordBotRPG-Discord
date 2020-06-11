@@ -6,6 +6,7 @@ const Discord = require("discord.js");
 const User = require("../Users/User");
 const Translator = require("../Translator/Translator");
 const version = require("../../conf/version");
+const Utils = require("../Utils");
 
 class ModuleHandler extends GModule {
     constructor() {
@@ -159,11 +160,8 @@ class ModuleHandler extends GModule {
                      }*/
                     break;
                 case "bot_info": {
-                    let allCounts = await message.client.shard.broadcastEval("this.guilds.cache.size");
-                    let total = 0;
-                    for (count in allCounts) {
-                        total += allCounts[count];
-                    }
+
+                    let total = await Utils.getTotalNumberOfGuilds(message.client.shard);
 
                     let totalSeconds = (message.client.uptime / 1000);
                     let hours = Math.floor(totalSeconds / 3600);
@@ -179,14 +177,14 @@ class ModuleHandler extends GModule {
                         totalMemoryMB += Math.round(c / 1024 / 1024 * 100) / 100;
                     }
 
-
                     data = await axios.get("/helpers/versions");
                     data = data.data;
 
                     msg = new Discord.MessageEmbed()
                         .setAuthor("FightRPG")
-                        .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + allCounts.length + " ]", true)
-                        .addField("Server Version: ", "[ " + data.server + " ]", true).addField("Bot Version: ", "[ " + version + " ]", true).addField("Shard Uptime: ", "[ " + uptime + " ]", true)
+                        .addField("Shard Uptime: ", "[ " + uptime + " ]", true).addField("Shard ID: ", `[ ${message.client.shard.ids} ]`)
+                        .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + message.client.shard.count + " ]", true)
+                        .addField("Server Version: ", "[ " + data.server + " ]", true).addField("Bot Version: ", "[ " + version + " ]", true)
                         .addField("Memory Used: ", "[ " + `${totalMemoryMB} MB` + " ]", true).addField("Ping: ", "[ " + Math.round(message.client.ws.ping) + " ms ]", true)
                         .addField("Processor: ", "[ " + os.cpus()[0].model + " [x" + os.cpus().length + "] ]", true)
                     break;

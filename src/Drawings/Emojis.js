@@ -78,14 +78,6 @@ Emojis.weather = {
 };
 
 Emojis.emojisProd = {
-    "vmark": {
-        id: "314349398811475968",
-        string: "<:check:314349398811475968>"
-    },
-    "xmark": {
-        id: "314349398824058880",
-        string: "<:xmark:314349398824058880>"
-    },
     "honor": {
         id: "403824433837637632",
         string: "<:honor:403824433837637632>"
@@ -349,14 +341,7 @@ Emojis.emojisProd = {
 };
 
 Emojis.emojisDev = {
-    "vmark": {
-        id: "403148210295537664",
-        string: ":vmark:"
-    },
-    "xmark": {
-        id: "403149357387350016",
-        string: ":xmark:"
-    }
+
 };
 
 Emojis.general = {
@@ -441,6 +426,8 @@ Emojis.general = {
     "camel": "🐪",
     "salamander": "🦎",
     "skull_and_bones": "☠️",
+    "vmark": "✅",
+    "xmark": "❌"
 
 };
 
