@@ -342,7 +342,7 @@ class GModule {
      * @param {Function} afterCollectorCallback
      */
     async confirmListener(messageDiscord, initialMessage, dataCollectorCallback) {
-        let vmark = Emojis.getID("vmark"), xmark = Emojis.getID("xmark");
+        let vmark = Emojis.general.vmark, xmark = Emojis.general.xmark;
 
         let currentMessageReactions = [vmark,xmark];
 
@@ -354,7 +354,7 @@ class GModule {
         }
 
         messageReactWrapper.collector.on('collect', async (reaction) => {
-            await messageReactWrapper.deleteAndSend(await dataCollectorCallback(reaction.emoji.id == vmark ? true : false));
+            await messageReactWrapper.deleteAndSend(await dataCollectorCallback(reaction.emoji.name == vmark ? true : false));
         });
     }
 
