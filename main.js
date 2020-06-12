@@ -1,7 +1,8 @@
 const conf = require("./conf/conf");
 
 const {
-    ShardingManager
+    ShardingManager,
+    User
 } = require('discord.js');
 const manager = new ShardingManager(__dirname + '/bot.js', {
     token: conf.discordbotkey,
@@ -9,16 +10,25 @@ const manager = new ShardingManager(__dirname + '/bot.js', {
 });
 
 manager.spawn();
-manager.on('launch', shard => console.log(`Launched shard ${shard.id}`));
+manager.on('launch', shard => {
+    console.log(`Launched shard ${shard.id}`);
+});
 
 async function sendDMToSpecificUser(idUser, message) {
-    let evalDyn = `let user = this.users.cache.get("${idUser}");
-    if(user != null) {
-        user.send(\`${message}\`).catch((e) => {null});
-    }
-    `;
+    let evalDyn = `this.users.cache.get("${idUser}");`;
     try {
-        await manager.broadcastEval(evalDyn);
+        /**
+         * @type {Array<User>}
+         **/
+        let users = await manager.broadcastEval(evalDyn);
+
+        for (let i in users) {
+            if (users[i]) {
+                //u.send(message).catch((e) => null);
+                manager.shards.array()[i].eval(`this.users.cache.get("${idUser}").send("${message}")`);
+                return;
+            }
+        }
     } catch (e) {
         console.log(e);
     }
