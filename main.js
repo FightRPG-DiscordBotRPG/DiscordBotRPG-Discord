@@ -25,7 +25,7 @@ async function sendDMToSpecificUser(idUser, message) {
         for (let i in users) {
             if (users[i]) {
                 //u.send(message).catch((e) => null);
-                manager.shards.array()[i].eval(`this.users.cache.get("${idUser}").send(\`${message}\`)`);
+                manager.shards.array()[i].eval(`this.users.cache.get("${idUser}").send(\`${message}\`).catch(e => null)`);
                 return;
             }
         }
