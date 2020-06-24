@@ -21,8 +21,8 @@ class FightManager {
     async fight(data, message) {
         let lang = data.lang;
         let userid = message.author.id;
-        let leftName = data.summary.rounds[0].roundEntitiesIndex == 0 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
-        let rightName = data.summary.rounds[0].roundEntitiesIndex == 1 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
+        let leftName = data.summary.rounds[0].roundEntitiesIndex == 0 ? data.summary.rounds[0].attacker.entity.name : data.summary.rounds[0].defenders[0].entity.name;
+        let rightName = data.summary.rounds[0].roundEntitiesIndex == 1 ? data.summary.rounds[0].attacker.entity.name : data.summary.rounds[0].defenders[0].entity.name;
         let theFight = {
             text: ["", "", ""],
             summary: data.summary,
@@ -33,7 +33,7 @@ class FightManager {
             team2_number: data.team2_number,
             playersMovedTo: data.playersMovedTo
         };
-
+        console.log(theFight.summary);
         if (theFight.summary.type == "pve") {
             if (data.beingAttacked == true) {
                 message.channel.send(Translator.getString(lang, "fight_pve", "ganked_by_monster")).catch((e) => console.log(e));
@@ -56,28 +56,28 @@ class FightManager {
         let ind = fight.summaryIndex;
         let summary = fight.summary;
         if (ind < summary.rounds.length) {
-
+            let stunned = this.isStun(summary.rounds[ind]);
             let hitText = "";
-            if (summary.rounds[ind].critical == true && summary.rounds[ind].stun == true) {
+            if (summary.rounds[ind].attacker.battle.isCritical == true && stunned) {
                 hitText = " (" + Translator.getString(lang, "fight_general", "critstun_hit") + "!) ";
-            } else if (summary.rounds[ind].critical == true) {
+            } else if (summary.rounds[ind].attacker.battle.isCritical == true) {
                 hitText = " (" + Translator.getString(lang, "fight_general", "critical_hit") + "!) ";
-            } else if (summary.rounds[ind].stun == true) {
+            } else if (stunned) {
                 hitText = " (" + Translator.getString(lang, "fight_general", "stun_hit") + "!) ";
             }
 
             if (summary.type == "pve") {
                 if (summary.rounds[ind].roundType == "Character") {
-                    fight = this.swapArrayIndexes(Emojis.emojisProd.user.string + " " + Translator.getString(lang, "fight_pve", "onfight_user_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
+                    fight = this.swapArrayIndexes(Emojis.emojisProd.user.string + " " + Translator.getString(lang, "fight_pve", "onfight_user_attack", [summary.rounds[ind].attacker.entity.name, summary.rounds[ind].defenders[0].entity.name, summary.rounds[ind].defenders[0].battle.hpDamage]) +
                         hitText +
                         "\n\n", fight);
                 } else if (summary.rounds[ind].roundType == "Monster") {
-                    fight = this.swapArrayIndexes(Emojis.emojisProd.monster.string + " " + Translator.getString(lang, "fight_pve", "onfight_monster_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
+                    fight = this.swapArrayIndexes(Emojis.emojisProd.monster.string + " " + Translator.getString(lang, "fight_pve", "onfight_monster_attack", [summary.rounds[ind].attacker.entity.name, summary.rounds[ind].defenders[0].entity.name, summary.rounds[ind].defenders[0].battle.hpDamage]) +
                         hitText +
                         "\n\n", fight);
                 }
             } else {
-                fight = this.swapArrayIndexes((summary.rounds[ind].roundEntitiesIndex == "0" ? Emojis.emojisProd.sword.string : Emojis.emojisProd.shield.string) + " " + Translator.getString(lang, "fight_pvp", "onfight_user_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
+                fight = this.swapArrayIndexes((summary.rounds[ind].roundEntitiesIndex == "0" ? Emojis.emojisProd.sword.string : Emojis.emojisProd.shield.string) + " " + Translator.getString(lang, "fight_pvp", "onfight_user_attack", [summary.rounds[ind].attacker.entity.name, summary.rounds[ind].defenders[0].entity.name, summary.rounds[ind].defenders[0].battle.hpDamage]) +
                     hitText +
                     "\n\n", fight);
             }
@@ -238,6 +238,17 @@ class FightManager {
 
     }
 
+
+    isStun(round) {
+        for (let item of round.defenders) {
+            for (let state of item.battle.addedStates) {
+                if (state?.id === 1) {
+                    return true;
+                }
+            }
+        }
+    }
+
     embedFight(text, fight, color, lang, ongoing = true) {
         color = color || [128, 128, 128]
         lang = lang || "en"
@@ -252,30 +263,30 @@ class FightManager {
         ind = fight.summaryIndex < summary.rounds.length ? ind : ind - 1;
 
         if (summary.rounds[ind].roundEntitiesIndex == 0) {
-            first = healthBar.draw(summary.rounds[ind].attackerHP, summary.rounds[ind].attackerMaxHP);
-            firstName = summary.rounds[ind].attackerName;
-            firstLevel = summary.rounds[ind].attackerLevel;
-            firstActualHP = summary.rounds[ind].attackerHP;
-            firstMaxHP = summary.rounds[ind].attackerMaxHP;
+            first = healthBar.draw(summary.rounds[ind].attacker.entity.actualHP, summary.rounds[ind].attacker.entity.maxHP);
+            firstName = summary.rounds[ind].attacker.entity.name;
+            firstLevel = summary.rounds[ind].attacker.entity.level;
+            firstActualHP = summary.rounds[ind].attacker.entity.actualHP;
+            firstMaxHP = summary.rounds[ind].attacker.entity.maxHP;
 
-            second = healthBar.draw(summary.rounds[ind].defenderHP, summary.rounds[ind].defenderMaxHP);
-            secondName = summary.rounds[ind].defenderName;
-            secondLevel = summary.rounds[ind].defenderLevel;
-            secondActualHP = summary.rounds[ind].defenderHP;
-            secondMaxHP = summary.rounds[ind].defenderMaxHP;
+            second = healthBar.draw(summary.rounds[ind].defenders[0].entity.actualHP, summary.rounds[ind].defenders[0].entity.maxHP);
+            secondName = summary.rounds[ind].defenders[0].entity.name;
+            secondLevel = summary.rounds[ind].defenders[0].entity.level;
+            secondActualHP = summary.rounds[ind].defenders[0].entity.actualHP;
+            secondMaxHP = summary.rounds[ind].defenders[0].entity.maxHP;
 
         } else {
-            first = healthBar.draw(summary.rounds[ind].defenderHP, summary.rounds[ind].defenderMaxHP);
-            firstName = summary.rounds[ind].defenderName;
-            firstLevel = summary.rounds[ind].defenderLevel;
-            firstActualHP = summary.rounds[ind].defenderHP;
-            firstMaxHP = summary.rounds[ind].defenderMaxHP;
+            first = healthBar.draw(summary.rounds[ind].defenders[0].entity.actualHP, summary.rounds[ind].defenders[0].entity.maxHP);
+            firstName = summary.rounds[ind].defenders[0].entity.name;
+            firstLevel = summary.rounds[ind].defenders[0].entity.level;
+            firstActualHP = summary.rounds[ind].defenders[0].entity.actualHP;
+            firstMaxHP = summary.rounds[ind].defenders[0].entity.maxHP
 
-            second = healthBar.draw(summary.rounds[ind].attackerHP, summary.rounds[ind].attackerMaxHP);
-            secondName = summary.rounds[ind].attackerName;
-            secondLevel = summary.rounds[ind].attackerLevel;
-            secondActualHP = summary.rounds[ind].attackerHP;
-            secondMaxHP = summary.rounds[ind].attackerMaxHP;
+            second = healthBar.draw(summary.rounds[ind].attacker.entity.actualHP, summary.rounds[ind].attacker.entity.maxHP);
+            secondName = summary.rounds[ind].attacker.entity.name;
+            secondLevel = summary.rounds[ind].attacker.entity.level;
+            secondActualHP = summary.rounds[ind].attacker.entity.actualHP;
+            secondMaxHP = summary.rounds[ind].attacker.entity.maxHP;
         }
 
         if (type == "pve") {
