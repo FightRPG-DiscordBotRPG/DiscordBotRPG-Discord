@@ -6,7 +6,7 @@ const Globals = require("../../Globals");
 class EquipmentModule extends GModule {
     constructor() {
         super();
-        this.commands = ["equip", "unequip", "equiplist", "equipment", "use"];
+        this.commands = ["equip", "unequip", "equiplist", "equipment", "equips", "use"];
         this.startLoading("Equipment");
         this.init();
         this.endLoading("Equipment");
@@ -31,6 +31,7 @@ class EquipmentModule extends GModule {
 
             case "equiplist":
             case "equipment":
+            case "equips":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/equipment/show"), (data) => {
                     return Inventory.displayAsList(data, false);
                 });

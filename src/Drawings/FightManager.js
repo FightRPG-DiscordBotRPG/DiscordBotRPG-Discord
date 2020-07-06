@@ -33,7 +33,7 @@ class FightManager {
             team2_number: data.team2_number,
             playersMovedTo: data.playersMovedTo
         };
-        console.log(theFight.summary);
+
         if (theFight.summary.type == "pve") {
             if (data.beingAttacked == true) {
                 message.channel.send(Translator.getString(lang, "fight_pve", "ganked_by_monster")).catch((e) => console.log(e));
@@ -55,45 +55,60 @@ class FightManager {
     async discordFight(message, userid, fight, lang) {
         let ind = fight.summaryIndex;
         let summary = fight.summary;
-        if (ind < summary.rounds.length) {
-            let stunned = this.isStun(summary.rounds[ind]);
-            let hitText = "";
-            if (summary.rounds[ind].attacker.battle.isCritical == true && stunned) {
-                hitText = " (" + Translator.getString(lang, "fight_general", "critstun_hit") + "!) ";
-            } else if (summary.rounds[ind].attacker.battle.isCritical == true) {
-                hitText = " (" + Translator.getString(lang, "fight_general", "critical_hit") + "!) ";
-            } else if (stunned) {
-                hitText = " (" + Translator.getString(lang, "fight_general", "stun_hit") + "!) ";
-            }
 
-            if (summary.type == "pve") {
-                if (summary.rounds[ind].roundType == "Character") {
-                    fight = this.swapArrayIndexes(Emojis.emojisProd.user.string + " " + Translator.getString(lang, "fight_pve", "onfight_user_attack", [summary.rounds[ind].attacker.entity.name, summary.rounds[ind].defenders[0].entity.name, summary.rounds[ind].defenders[0].battle.hpDamage]) +
-                        hitText +
-                        "\n\n", fight);
-                } else if (summary.rounds[ind].roundType == "Monster") {
-                    fight = this.swapArrayIndexes(Emojis.emojisProd.monster.string + " " + Translator.getString(lang, "fight_pve", "onfight_monster_attack", [summary.rounds[ind].attacker.entity.name, summary.rounds[ind].defenders[0].entity.name, summary.rounds[ind].defenders[0].battle.hpDamage]) +
+
+
+        if (ind < summary.rounds.length) {
+            if (summary.rounds[ind].restrictions.targetEnemy === false && summary.rounds[ind].restrictions.targetAlly === false && summary.rounds[ind].restrictions.targetSelf === false) {
+                // Can't do anything due to restrictions
+                // Then ignore turn for now
+                // Maybe adding some display to summary
+                fight.summaryIndex++;
+                await this.discordFight(message, userid, fight, lang);
+
+            } else {
+                let stunned = this.isStun(summary.rounds[ind]);
+                let hitText = "";
+                if (summary.rounds[ind].attacker.battle.isCritical == true && stunned) {
+                    hitText = " (" + Translator.getString(lang, "fight_general", "critstun_hit") + "!) ";
+                } else if (summary.rounds[ind].attacker.battle.isCritical == true) {
+                    hitText = " (" + Translator.getString(lang, "fight_general", "critical_hit") + "!) ";
+                } else if (stunned) {
+                    hitText = " (" + Translator.getString(lang, "fight_general", "stun_hit") + "!) ";
+                }
+
+                if (summary.type == "pve") {
+                    if (summary.rounds[ind].roundType == "Character") {
+                        fight = this.swapArrayIndexes(Emojis.emojisProd.user.string + " " + Translator.getString(lang, "fight_pve", "onfight_user_attack", [summary.rounds[ind].attacker.entity.name, summary.rounds[ind].defenders[0].entity.name, summary.rounds[ind].defenders[0].battle.hpDamage]) +
+                            hitText +
+                            "\n\n", fight);
+                    } else if (summary.rounds[ind].roundType == "Monster") {
+                        fight = this.swapArrayIndexes(Emojis.emojisProd.monster.string + " " + Translator.getString(lang, "fight_pve", "onfight_monster_attack", [summary.rounds[ind].attacker.entity.name, summary.rounds[ind].defenders[0].entity.name, summary.rounds[ind].defenders[0].battle.hpDamage]) +
+                            hitText +
+                            "\n\n", fight);
+                    }
+                } else {
+                    fight = this.swapArrayIndexes((summary.rounds[ind].roundEntitiesIndex == "0" ? Emojis.emojisProd.sword.string : Emojis.emojisProd.shield.string) + " " + Translator.getString(lang, "fight_pvp", "onfight_user_attack", [summary.rounds[ind].attacker.entity.name, summary.rounds[ind].defenders[0].entity.name, summary.rounds[ind].defenders[0].battle.hpDamage]) +
                         hitText +
                         "\n\n", fight);
                 }
-            } else {
-                fight = this.swapArrayIndexes((summary.rounds[ind].roundEntitiesIndex == "0" ? Emojis.emojisProd.sword.string : Emojis.emojisProd.shield.string) + " " + Translator.getString(lang, "fight_pvp", "onfight_user_attack", [summary.rounds[ind].attacker.entity.name, summary.rounds[ind].defenders[0].entity.name, summary.rounds[ind].defenders[0].battle.hpDamage]) +
-                    hitText +
-                    "\n\n", fight);
+
+
+
+                message.edit(this.embedFight(fight.text[0] + fight.text[1] + fight.text[2], fight, null, lang, true))
+                    .then(() => {
+                        fight.summaryIndex++;
+                        setTimeout(async () => {
+                            await this.discordFight(message, userid, fight, lang);
+                        }, 4000);
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                    });
             }
 
 
 
-            message.edit(this.embedFight(fight.text[0] + fight.text[1] + fight.text[2], fight, null, lang, true))
-                .then(() => {
-                    fight.summaryIndex++;
-                    setTimeout(async () => {
-                        await this.discordFight(message, userid, fight, lang);
-                    }, 4000);
-                })
-                .catch((e) => {
-                    console.log(e);
-                });
 
 
         } else {
