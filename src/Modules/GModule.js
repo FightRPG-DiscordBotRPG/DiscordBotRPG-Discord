@@ -250,6 +250,12 @@ class GModule {
                         type = "idSousType";
                         value = this.tryParseSubType(value)
                         break;
+                    case "level_up":
+                        type = "level";
+                        break;
+                    case "power_up":
+                        type = "power";
+                        break;
                 }
 
                 toReturn.params[type] = value;
