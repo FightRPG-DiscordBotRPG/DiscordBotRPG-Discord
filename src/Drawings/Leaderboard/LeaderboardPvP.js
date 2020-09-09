@@ -13,7 +13,7 @@ class LeaderboardPvP extends Leaderboard {
     draw() {
         let maximumHonorLength = this.getNumberLength(this.rankings[0].Honor);
         return this.getDisplay(Translator.getString(this.lang, "leaderboards", "arena", [this.sumOfAll.totalHonor]), (i, user) => {
-            return this.getFullLine(user, i, Emojis.getString("honor") + this.getFieldDisplay(user.Honor, maximumHonorLength), false);
+            return this.getFullLine(user, i, Emojis.getString("honor") + this.getFieldDisplay(user.Honor, maximumHonorLength));
         });
     }
 }
