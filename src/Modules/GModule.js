@@ -278,7 +278,7 @@ class GModule {
 
     /**
      * 
-     * @param {any} initialData
+     * @param {{page: number, maxPage: number}} initialData
      * @param {Discord.Message} messageDiscord
      * @param {string | Discord.MessageEmbed} initialMessage
      * @param {dataCollectorCallback} dataCollectorCallback
