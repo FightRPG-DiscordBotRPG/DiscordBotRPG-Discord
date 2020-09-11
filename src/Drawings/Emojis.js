@@ -427,7 +427,8 @@ Emojis.general = {
     "salamander": "🦎",
     "skull_and_bones": "☠️",
     "vmark": "✅",
-    "xmark": "❌"
+    "xmark": "❌",
+    "water_droplet": "💧"
 
 };
 
