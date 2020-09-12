@@ -35,9 +35,9 @@ class ItemShow {
         if (!user.isOnMobile) {
             embed.addField("\u200b", "\u200b", true);
         }
-            
         return embed
             .addField(Translator.getString(lang, "inventory_equipment", "attributes"), TextDrawings.statsToString(item.stats, data.equippedStats, true, user, lang))
+            .addField(Translator.getString(lang, "inventory_equipment", "secondaryAttributes"), TextDrawings.statsToString(item.secondaryStats, data.equippedSecondaryStats, true, user, lang))
             .addField(Translator.getString(lang, "general", "description"), item.desc);
     }
 

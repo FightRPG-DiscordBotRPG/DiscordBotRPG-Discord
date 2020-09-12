@@ -428,8 +428,15 @@ Emojis.general = {
     "skull_and_bones": "☠️",
     "vmark": "✅",
     "xmark": "❌",
-    "water_droplet": "💧"
-
+    "water_droplet": "💧",
+    "person_running": "🏃",
+    "syringe": "💉",
+    "battery": "🔋",
+    "target": "🎯",
+    "deciduous_tree": "🌳",
+    "dashing_away": "💨",
+    "vampire": "🧛",
+    "ogre": "👹"
 };
 
 Emojis.stats = {
@@ -443,6 +450,24 @@ Emojis.stats = {
     "wisdom": Emojis.general.light_bulb,
     "perception": Emojis.general.eye,
     "luck": Emojis.general.game_die,
+    "hitRate": Emojis.general.waving_hand,
+    "evadeRate": Emojis.general.person_running,
+    "criticalRate": Emojis.general.critical,
+    "regenHp": Emojis.general.syringe,
+    "regenMp": Emojis.general.water_droplet,
+    "regenEnergy": Emojis.general.high_voltage,
+    "skillManaCost": Emojis.general.mage,
+    "skillEnergyCost": Emojis.general.battery,
+    "physicalCriticalEvadeRate": Emojis.general.person_running,
+    "magicalCriticalEvadeRate": Emojis.general.person_running,
+    "threat": Emojis.general.target,
+    "physicalResist": Emojis.general.shield,
+    "fireResist": Emojis.general.fire,
+    "waterResist": Emojis.general.water_droplet,
+    "earthResist": Emojis.general.deciduous_tree,
+    "airResist": Emojis.general.tornado,
+    "darkResist": Emojis.general.ogre,
+    "lightResist": Emojis.general.sun
 };
 
 Emojis.typeItem = {
