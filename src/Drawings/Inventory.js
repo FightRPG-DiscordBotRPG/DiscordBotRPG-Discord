@@ -74,14 +74,21 @@ class Inventory {
                             str += Emojis.general.clipboard + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_name", [data.params.name.replace(/%/g, "")]);
                             break;
                     }
-                    str += "\n";
+
+                    // Fix use of fav filter
+                    if (str.length > 0) {
+                        str += "\n";
+                    }
                 }
             }
 
             //str = str.length > 3 ? str.substring(0, str.length - 3) : str;
-        } else {
+        }
+
+        if (str.length === 0) {
             str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_all");
         }
+
         return new Discord.MessageEmbed()
             .setColor([255, 215, 0])
             .setAuthor(Translator.getString(lang, "inventory_equipment", "sellall_title"))
