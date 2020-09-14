@@ -63,7 +63,12 @@ class Emojis {
         return emoji != null ? emoji : this.getItemSubTypeEmoji(subtypeShorthand);
     }
 
+    static getEntityTypeEmoji(type) {
+        return Emojis.entitiesTypes[type] ? Emojis.entitiesTypes[type] : Emojis.general.person;
+    }
+
 }
+
 
 Emojis.weather = {
     "sunny": "sun",
@@ -439,6 +444,12 @@ Emojis.general = {
     "ogre": "👹"
 };
 
+Emojis.entitiesTypes = {
+    "Character": Emojis.emojisProd.user.string,
+    "Monster": Emojis.emojisProd.monster.string,
+}
+
+
 Emojis.stats = {
     "strength": Emojis.general.biceps,
     "constitution": Emojis.general.red_heart,
@@ -458,8 +469,8 @@ Emojis.stats = {
     "regenEnergy": Emojis.general.high_voltage,
     "skillManaCost": Emojis.general.mage,
     "skillEnergyCost": Emojis.general.battery,
-    "physicalCriticalEvadeRate": Emojis.general.person_running,
-    "magicalCriticalEvadeRate": Emojis.general.person_running,
+    "criticalEvadeRate": Emojis.general.person_running,
+    "magicalEvadeRate": Emojis.general.person_running,
     "threat": Emojis.general.target,
     "physicalResist": Emojis.general.shield,
     "fireResist": Emojis.general.fire,
