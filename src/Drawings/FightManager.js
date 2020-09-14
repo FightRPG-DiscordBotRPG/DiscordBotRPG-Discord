@@ -10,6 +10,11 @@ const Color = require("./Color");
 class FightManager {
     constructor() {
         this.fights = {};
+        this.healthBar = new ProgressBarHealth();
+        this.manaBar = new ProgressBar(Color.Blue);
+        this.energyBar = new ProgressBar(Color.White);
+
+        this.healthBar.setSize(8);
     }
 
     // Helper
@@ -315,18 +320,12 @@ class FightManager {
 
     getBarsDisplay(entity, lang = "en") {
 
-        let healthBar = new ProgressBarHealth();
-        let manaBar = new ProgressBar(Color.Blue);
-        let energyBar = new ProgressBar(Color.White);
-
-        healthBar.setSize(8);
-
         return `${Emojis.general.red_heart} ${Translator.getFormater(lang).format(entity.actualHP)}/${Translator.getFormater(lang).format(entity.maxHP)}\n` +
-            `${healthBar.draw(entity.actualHP, entity.maxHP)}\n` +
+            `${this.healthBar.draw(entity.actualHP, entity.maxHP)}\n` +
             `${Emojis.general.water_droplet} ${Translator.getFormater(lang).format(entity.actualMP)}/${Translator.getFormater(lang).format(entity.maxMP)}\n` +
-            `${manaBar.draw(entity.actualMP, entity.maxMP)}\n` +
+            `${this.manaBar.draw(entity.actualMP, entity.maxMP)}\n` +
             `${Emojis.general.high_voltage} ${Translator.getFormater(lang).format(entity.actualEnergy)}/${Translator.getFormater(lang).format(entity.maxEnergy)}\n` +
-            `${energyBar.draw(entity.actualEnergy, entity.maxEnergy)}`;
+            `${this.energyBar.draw(entity.actualEnergy, entity.maxEnergy)}`;
     }
 
     getMonsterDifficultyEmoji(name) {
