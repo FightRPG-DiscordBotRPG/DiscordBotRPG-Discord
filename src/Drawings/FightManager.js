@@ -257,25 +257,20 @@ class FightManager {
      * @param {RoundLogger} round
      */
     getSummaryText(round) {
-
+        console.log(round);
+        let lang = round.attacker.lang;
         let hitText = "";
 
         if (!round.success) {
-            hitText += " (Missed!) ";
+            hitText += ` (${Translator.getString(lang, "fight_general", "missed")}) `;
         } else if (round.attacker.battle.isCritical === true) {
-            hitText = " (" + Translator.getString(lang, "fight_general", "critical_hit") + "!) ";
+            hitText = ` (${Translator.getString(lang, "fight_general", "critical_hit")}) `;
         }
 
         let str = round.skillInfo.message + hitText + "\n";
-        console.log(round);
 
         let attackerStr = "";
         let targetsStr = "";
-
-        if (round.skillInfo.id == 172) {
-            console.log(round.defenders);
-            console.log(round.defenders[0]);
-        }
 
         for (let item of round.defenders) {
             if (item.entity.identity.uuid === round.attacker.entity.identity.uuid) {
@@ -294,10 +289,13 @@ class FightManager {
 
         attackerStr = this.getSummaryEntity(round.attacker);
 
+        if (attackerStr.length > 0 || targetsStr.length > 0) {
+            str += "\n";
+        }
+
         str += attackerStr + targetsStr;
 
-        console.log(str);
-        console.log("______________________");
+
 
         return str;
     }
@@ -308,21 +306,21 @@ class FightManager {
      */
     getSummaryEntity(entityLogger, withName = true) {        
 
-        let name = Emojis.getEntityTypeEmoji(entityLogger.entity.identity.type) + " " + entityLogger.entity.identity.name + "\n";
+        let name = Emojis.getEntityTypeEmoji(entityLogger.entity.identity.type) + " **" + entityLogger.entity.identity.name + "**\n";
 
         let str = withName ? name : "";
         if (entityLogger.battle.removedStates.length > 0) {
-            str += `States removed: ${entityLogger.battle.removedStates.reduce((acc, state) => acc + "," + state.name, "")}\n`;
+            str += `${Emojis.emojisProd.minussign.string} ${Translator.getString(entityLogger.lang, "fight_general", "status_removed", [entityLogger.battle.removedStates.map(e => e.name).join(",")])}\n`;
         }
 
         if (entityLogger.battle.addedStates.length > 0) {
-            str += `States added: ${entityLogger.battle.addedStates.reduce((acc, state) => acc + "," + state.name, "")}\n`;
+            str += `${Emojis.emojisProd.plussign.string} ${Translator.getString(entityLogger.lang, "fight_general", "status_added", [entityLogger.battle.addedStates.map(e => e.name).join(",")])}\n`;
         }
 
         let results = entityLogger.battle.skillResults;
         DamageAndHealLogger.add(results, entityLogger.battle.statesResults);
 
-        str += this.getStatsResultsText(results);
+        str += this.getStatsResultsText(results, entityLogger.lang);
 
         if (withName) {
             return str.length > name.length ? str : "";
@@ -335,26 +333,27 @@ class FightManager {
     /**
      * 
      * @param {DamageAndHealLogger} results
+     * @param {string} lang
      */
-    getStatsResultsText(results) {
+    getStatsResultsText(results, lang="en") {
         let str = "";
 
-        if (results.hpDamage > 0 || results.mpDamage > 0 || results.energyDamage > 0) {
-            str += "Lost: ";
+        if (results.hpRegen > 0 || results.mpRegen > 0 || results.energyRegen > 0) {
+            str += Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "fight_general", "results_gain") + " ";
 
-            results.hpDamage > 0 ? str += results.hpDamage + " hp. " : null;
-            results.mpDamage > 0 ? str += results.mpDamage + " mp. " : null;
-            results.energyDamage > 0 ? str += results.energyDamage + " energy. " : null;
+            results.hpRegen > 0 ? str += Emojis.general.red_heart + " " + Translator.getString(lang, "fight_general", "results_health_points", [results.hpRegen]) + " " : null;
+            results.mpRegen > 0 ? str += Emojis.general.water_droplet + " " + Translator.getString(lang, "fight_general", "results_mana_points", [results.mpRegen]) + " " : null;
+            results.energyRegen > 0 ? str += Emojis.general.high_voltage + " " + Translator.getString(lang, "fight_general", "results_energy_points", [results.energyRegen]) + " " : null;
 
             str += "\n";
         }
 
-        if (results.hpRegen > 0 || results.mpRegen > 0 || results.energyRegen > 0) {
-            str += "Gain: ";
+        if (results.hpDamage > 0 || results.mpDamage > 0 || results.energyDamage > 0) {
+            str += Emojis.emojisProd.leveldown.string + " " + Translator.getString(lang, "fight_general", "results_lost") + " ";
 
-            results.hpRegen > 0 ? str += results.hpRegen + " hp. " : null;
-            results.mpRegen > 0 ? str += results.mpRegen + " mp. " : null;
-            results.energyRegen > 0 ? str += results.energyRegen + " energy. " : null;
+            results.hpDamage > 0 ? str += Emojis.general.red_heart + " " + Translator.getString(lang, "fight_general", "results_health_points", [results.hpDamage]) + " " : null;
+            results.mpDamage > 0 ? str += Emojis.general.water_droplet + " " + Translator.getString(lang, "fight_general", "results_mana_points", [results.mpDamage]) + " " : null;
+            results.energyDamage > 0 ? str += Emojis.general.high_voltage + " " + Translator.getString(lang, "fight_general", "results_energy_points", [results.energyDamage]) + " " : null;
 
             str += "\n";
         }

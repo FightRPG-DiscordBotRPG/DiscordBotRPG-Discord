@@ -343,6 +343,14 @@ Emojis.emojisProd = {
         id: "706481565613686857",
         string: "<:tild:706481565613686857>"
     },
+    "plussign": {
+        id: "755419306124247091",
+        string: "<:plussign:755419306124247091>"
+    },
+    "minussign": {
+        id: "755419306254139392",
+        string: "<:minussign:755419306254139392>"
+    },
 };
 
 Emojis.emojisDev = {

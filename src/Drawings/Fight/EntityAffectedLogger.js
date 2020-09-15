@@ -4,6 +4,8 @@ const State = require("./State");
 class EntityAffectedLogger {
     constructor() {
 
+        this.lang = "";
+
         this.entity = {
             identity: {
                 name: "",
