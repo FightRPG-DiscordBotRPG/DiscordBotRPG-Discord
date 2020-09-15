@@ -42,7 +42,7 @@ class Group {
         let emojiClass = Emojis.emojisProd.user.string;//[Emojis.emojisProd.user.string, Emojis.general.mage][Math.floor(Math.random() * 2)];
         let healthText = "\n" + Emojis.getString("red_heart") + " " + Translator.getString(lang, "character", "health_points") + " " + Translator.getFormater(lang).format(player.currentHp) + " / " + Translator.getFormater(lang).format(player.maxHp) + "\n" + new ProgressBarHealth().draw(player.currentHp, player.maxHp);
 
-        return `${emojiClass} **${player.name}**\n${Emojis.getString("levelup")} ${Translator.getString(lang, "inventory_equipment", "level")} ${Translator.getFormater(lang).format(player.level)}\n${Emojis.general.collision} ${Translator.getString(lang, "inventory_equipment", "power")} ${Translator.getFormater(lang).format(player.power)}${healthText}\n\n`
+        return `${emojiClass} **${player.name}** (${player.areaName})\n${Emojis.getString("levelup")} ${Translator.getString(lang, "inventory_equipment", "level")} ${Translator.getFormater(lang).format(player.level)}\n${Emojis.general.collision} ${Translator.getString(lang, "inventory_equipment", "power")} ${Translator.getFormater(lang).format(player.power)}${healthText}\n\n`
     }
 }
 
