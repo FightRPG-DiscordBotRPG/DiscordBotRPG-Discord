@@ -21,6 +21,8 @@ class Translator {
         if (this.translations[lang][type] && this.translations[lang][type][name]) {
             return this.formatString(this.translations[lang][type][name], args, lang);
         }
+
+        
         if (lang != "en") {
             return this.getString("en", type, name, args, returnNull);
         }
@@ -125,6 +127,9 @@ class Translator {
             try {
                 let res = await axios.get(TranslatorConf.cdn_translator_url + lang + '.json', { timeout: 2000 });
                 if (res.status == 200) {
+                    if (typeof res.data === "string") {
+                        res.data = JSON.parse(res.data.trimLeft());
+                    }
                     this.translations[lang] = res.data;
                     this.nbOfTranslations++;
                     try {
