@@ -32,7 +32,7 @@ class Craft {
 
         neededItems.load({ collection: craft.requiredItems, listType: 0 }, lang, (index, itemNeeded) => {
             let missingNumber = itemNeeded.missing;
-            console.log(missingNumber);
+
             if (missingNumber > 0) {
                 missing = true;
                 let emojiMissing = missingNumber == itemNeeded.number ? Emojis.general.g_xmark : Emojis.emojisProd.tild.string ;
