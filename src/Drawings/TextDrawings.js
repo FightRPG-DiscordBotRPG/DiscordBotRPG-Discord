@@ -27,9 +27,8 @@ class TextDrawings {
             maximumStatLength = this.getBiggestStatLength(stats, compareStats);
         }
 
-
         for (let stat in stats) {
-            if (!isItem || (isItem && stats[stat] > 0) || (isItem && compareStats[stat])) {
+            if (!isItem || (isItem && stats[stat] !== 0) || (isItem && compareStats[stat])) {
                 let compareEmoji = "";
                 let diff = "";
                 let end = "";
@@ -38,7 +37,8 @@ class TextDrawings {
                 let totalStat = "";
 
                 if (isItem) {
-                    if (compareStats[stat] >= 0) {
+                    
+                    if (!isNaN(compareStats[stat])) {
                         let diffNumber = (stats[stat] - compareStats[stat]);
                         diff = " -> " + diffNumber;
 
