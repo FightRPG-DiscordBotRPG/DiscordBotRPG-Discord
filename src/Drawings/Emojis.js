@@ -351,6 +351,18 @@ Emojis.emojisProd = {
         id: "755419306254139392",
         string: "<:minussign:755419306254139392>"
     },
+    "leather": {
+        id: "755771984826335273",
+        string: "<:leather:755771984826335273>"
+    },
+    "wand": {
+        id: "755773260850790471",
+        string: "<:wand:755773260850790471>"
+    },
+    "staff": {
+        id: "755780336688037899",
+        string: "<:staff:755780336688037899>"
+    }
 };
 
 Emojis.emojisDev = {
@@ -449,7 +461,10 @@ Emojis.general = {
     "deciduous_tree": "🌳",
     "dashing_away": "💨",
     "vampire": "🧛",
-    "ogre": "👹"
+    "ogre": "👹",
+    "thread": "🧵",
+    "bow_and_arrow": "🏹",
+    "dagger": "🗡️",
 };
 
 Emojis.entitiesTypes = {
@@ -506,7 +521,7 @@ Emojis.subtypeItem = {
     "plant": Emojis.emojisProd.herb_rare.string,
     "sword": Emojis.emojisProd.sword2.string,
     "whip": Emojis.emojisProd.sword2.string,
-    "armor": Emojis.emojisProd.item_type_chest.string,
+    "metal": Emojis.emojisProd.item_type_chest.string,
     "loot_box_equipment": Emojis.emojisProd.item_type_lootbox.string,
     "random_loot_box_equipment": Emojis.emojisProd.item_type_lootbox.string,
     "founder_box": Emojis.emojisProd.item_type_lootbox.string,
@@ -517,6 +532,12 @@ Emojis.subtypeItem = {
     "salamander": Emojis.general.salamander,
     "camel": Emojis.general.camel,
     "polar_bear": Emojis.emojisProd.polar_bear.string,
+    "cloth": Emojis.general.thread,
+    "leather": Emojis.emojisProd.leather.string,
+    "bow": Emojis.general.bow_and_arrow,
+    "dagger": Emojis.general.dagger,
+    "wand": Emojis.emojisProd.wand.string,
+    "staff": Emojis.emojisProd.staff.string
 };
 
 Emojis.areaType = {
