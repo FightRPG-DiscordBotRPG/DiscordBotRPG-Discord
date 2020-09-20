@@ -80,6 +80,10 @@ class ModuleHandler extends GModule {
                 nonDiscordArgs[i] = encodeURIComponent(args[i]);
             }
 
+            if (Globals.connectedUsers[authorIdentifier] == null) {
+                return;
+            }
+
             Globals.connectedUsers[authorIdentifier].setMobile(message.author.presence.clientStatus);
 
 
@@ -363,11 +367,17 @@ class ModuleHandler extends GModule {
         }
     }
 
+    /**
+    *
+    * @param {string} userid
+    * @param {string} command
+    * @param {string} timestamp
+    */
     async logCommand(userid, command, timestamp) {
         if (timestamp == null) {
             timestamp = Date.now();
         }
-        await conn.query("INSERT INTO commandslogs VALUES(NULL, ?, ?, ?);", [userid, command == null || command == "" ? "unknown" : command, timestamp]);
+        await conn.query("INSERT INTO commandslogs VALUES(NULL, ?, ?, ?);", [userid, command == null || command == "" ? "unknown" : command.substring(0, 64), timestamp]);
     }
 
 
