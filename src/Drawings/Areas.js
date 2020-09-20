@@ -265,7 +265,7 @@ class Areas {
         let bonuses = data.bonuses;
         let str = "";
         let empty = true;
-        console.log(data);
+        
         for (let bonus of bonuses) {
             if (bonus.percentage > 0) {
                 str += Emojis.getAreaBonusEmoji(bonus.bonus_identifier) + " " + bonus.name + " : " + bonus.percentage + "%" + "\n";
