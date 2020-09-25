@@ -26,13 +26,14 @@ class WorldBosses {
 
             let ListOfWorldBosses = new GenericMultipleEmbedList();
             ListOfWorldBosses.load({ collection: data.bosses, displayIfEmpty: Translator.getString(lang, "world_bosses", "no_world_boss"), listType: 0 }, lang, (index, info) => {
+                let nextWorkBossInfo = Emojis.general.national_park + " " + info.regionName + " - " + info.areaName + "\n\n";
                 if (info.worldBoss != null) {
-                    let str = Emojis.general.national_park + " " + info.regionName + " - " + info.areaName + "\n\n";
+                    let str = nextWorkBossInfo
                     return str + Emojis.emojisProd.boss.string + " " + info.worldBoss.name + " (" + Translator.getFormater(data.lang).format(info.worldBoss.actualHP) + "/" + Translator.getFormater(data.lang).format(info.worldBoss.maxHP) + "\n" + pb.draw(info.worldBoss.actualHP, info.worldBoss.maxHP);
                 } else {
                     let date = new Date();
                     date.setTime(info.spawnDate);
-                    return Emojis.general.q_mark + " " + Translator.getString(lang, "world_bosses", "spawn_date", [date.toLocaleString(lang.length > 2 ? lang : lang + "-" + lang.toUpperCase()) + " UTC"]);
+                    return nextWorkBossInfo + Emojis.emojisProd.boss.string + " " + Translator.getString(lang, "world_bosses", "spawn_date", [date.toLocaleString(lang.length > 2 ? lang : lang + "-" + lang.toUpperCase()) + " UTC"]);
                 }
             });
 
@@ -47,7 +48,7 @@ class WorldBosses {
                     } else {
                         let date = new Date();
                         date.setTime(info.spawnDate);
-                        str += Translator.getString(lang, "world_bosses", "spawn_date", [date.toLocaleString(lang.length > 2 ? lang : lang + "-" + lang.toUpperCase()) + " UTC"]);
+                        str += Emojis.emojisProd.boss.string + " " + Translator.getString(lang, "world_bosses", "spawn_date", [date.toLocaleString(lang.length > 2 ? lang : lang + "-" + lang.toUpperCase()) + " UTC"]);
                     }
                     str += "\n\n";
                 }
