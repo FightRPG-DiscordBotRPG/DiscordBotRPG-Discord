@@ -5,11 +5,12 @@ const Emojis = require("../../Drawings/Emojis");
 const TextDrawing = require("../../Drawings/TextDrawings");
 const Achievements = require("../../Drawings/Achievements");
 const Discord = require("discord.js");
+const Talents = require("../../Drawings/Character/Talents");
 
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements"];
+        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -92,7 +93,13 @@ class CharacterModule extends GModule {
                     }, async (newData) => {
                         return Achievements.toString(newData);
                     });
-                })
+                });
+                break;
+            case "talents": {
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents"), (data) => {
+                    return Talents.toString(data, user);
+                });
+            }
         }
 
         this.sendMessage(message, msg);
