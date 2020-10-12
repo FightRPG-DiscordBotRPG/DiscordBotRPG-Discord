@@ -77,8 +77,6 @@ class TextDrawings {
 
 
 
-                noStats = false;
-
                 let beforeNumber = "";
                 let statStr = stats[stat].toString();
                 let statLocalized = Translator.getString(lang, "stats", stat);
@@ -107,16 +105,27 @@ class TextDrawings {
                 if (type === this.statCompareTypes.talents) {
                     if (stats[stat] !== 0) {
                         str += strToAdd;
+                        noStats = false;
                     }
                 } else {
                     str += strToAdd;
+                    noStats = false;
                 }
 
             }
 
         }
         if (noStats) {
-            str += "`" + Translator.getString(lang, "inventory_equipment", "item_no_stats") + "`";
+            let noStatText = "";
+
+            if (type === this.statCompareTypes.item) {
+                noStatText = Translator.getString(lang, "inventory_equipment", "item_no_stats");
+            } else {
+                noStatText = Translator.getString(lang, "general", "none");  
+            }
+
+          
+            str += "`" + noStatText + "`";
         }
 
 

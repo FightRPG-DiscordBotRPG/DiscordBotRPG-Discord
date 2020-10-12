@@ -465,6 +465,9 @@ Emojis.general = {
     "thread": "🧵",
     "bow_and_arrow": "🏹",
     "dagger": "🗡️",
+    "link": "🔗",
+    "chains": "⛓️",
+    "open_book": "📖"
 };
 
 Emojis.entitiesTypes = {

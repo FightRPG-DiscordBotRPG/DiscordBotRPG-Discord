@@ -10,7 +10,7 @@ const Talents = require("../../Drawings/Character/Talents");
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents"];
+        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -55,7 +55,7 @@ class CharacterModule extends GModule {
                             });
                         }
                     });
-                    
+
                 }
 
 
@@ -82,7 +82,7 @@ class CharacterModule extends GModule {
                     attr: args[0],
                     number: args[1],
                 }), (data) => {
-                    return Translator.getString(data.lang, "character", "attribute_up_to", [this.getToStrShort(args[0]), data.value]) + ". " + (data.pointsLeft > 1 ? Translator.getString(data.lang, "character", "attribute_x_points_available_plural", [data.pointsLeft]) :         Translator.getString(data.lang, "character", "attribute_x_points_available", [data.pointsLeft]));
+                    return Translator.getString(data.lang, "character", "attribute_up_to", [this.getToStrShort(args[0]), data.value]) + ". " + (data.pointsLeft > 1 ? Translator.getString(data.lang, "character", "attribute_x_points_available_plural", [data.pointsLeft]) : Translator.getString(data.lang, "character", "attribute_x_points_available", [data.pointsLeft]));
                 });
                 break;
             case "achievements":
@@ -95,11 +95,17 @@ class CharacterModule extends GModule {
                     });
                 });
                 break;
-            case "talents": {
+            case "talents":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents"), (data) => {
                     return Talents.toString(data, user);
+
                 });
-            }
+                break;
+            case "talentshow":
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents/show/" + args[0]), async (data) => {
+                    return Talents.showOne(data, user);
+                });
+
         }
 
         this.sendMessage(message, msg);
