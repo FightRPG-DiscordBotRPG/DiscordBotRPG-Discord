@@ -6,11 +6,12 @@ const TextDrawing = require("../../Drawings/TextDrawings");
 const Achievements = require("../../Drawings/Achievements");
 const Discord = require("discord.js");
 const Talents = require("../../Drawings/Character/Talents");
+const User = require("../../Users/User");
 
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow"];
+        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -26,6 +27,9 @@ class CharacterModule extends GModule {
      */
     async run(message, command, args) {
         let msg = "";
+        /**
+         * @type {User}
+         **/
         let user = Globals.connectedUsers[message.author.id];
         let axios = user.getAxios();
 
@@ -105,6 +109,18 @@ class CharacterModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents/show/" + args[0]), async (data) => {
                     return Talents.showOne(data, user);
                 });
+                break;
+            case "talentup":
+                msg = await this.getDisplayIfSuccess(await axios.post("/game/character/talents/up/", {
+                    idNode: args[0],
+                }), (data) => {
+                    return Translator.getString(user.lang, "talents", "up_success_unlock", [`${data.node.visuals.name} (${data.node.id})`])
+                        + "\n"
+                        + Translator.getString(user.lang, "talents", "up_success_unlock_skills", [data.node.skillsUnlockedNames.join(", ")])
+                        + "\n"
+                        + Translator.getString(user.lang, "character", "attribute_x_points_available" + (data.pointsLeft > 1 ? "_plural" : ""), [data.pointsLeft]);
+                });
+                break;
 
         }
 
