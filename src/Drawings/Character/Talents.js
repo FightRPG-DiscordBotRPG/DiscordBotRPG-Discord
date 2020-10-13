@@ -24,6 +24,13 @@ class Talents {
             }
         }
 
+        // Used when empty (mostly)
+        for (let link of data.initialTalents) {
+            if (!reachableNodes.includes(link) && !data.talents.find(e => e.id == link)) {
+                reachableNodes.push(link);
+            }
+        }
+
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(Translator.getString(lang, "talents", "header_talents"))
