@@ -206,10 +206,10 @@ class AdminModule extends GModule {
                 if (message.author.id !== Globals.ownerID) break;
                 try {
                     const code = args.join(" ");
-                    let evaled = eval(`(async () => {${code}})()`);
-
-                    if (typeof evaled !== "string")
-                        evaled = require("util").inspect(evaled);
+                    let evaled = eval(`(async () => {${decodeURIComponent(code)}})()`);
+                    if (typeof evaled !== "string") {
+                        evaled = require("util").inspect(await evaled);
+                    }
 
                     msg = Utils.clean(evaled);
                 } catch (err) {
