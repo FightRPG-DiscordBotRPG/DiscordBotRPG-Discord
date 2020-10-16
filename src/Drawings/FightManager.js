@@ -9,6 +9,7 @@ const Color = require("./Color");
 const RoundLogger = require("./Fight/RoundLogger");
 const EntityAffectedLogger = require("./Fight/EntityAffectedLogger");
 const DamageAndHealLogger = require("./Fight/DamageAndHealLogger");
+const TextDrawings = require("./TextDrawings");
 
 class FightManager {
     constructor() {
@@ -257,7 +258,6 @@ class FightManager {
      * @param {RoundLogger} round
      */
     getSummaryText(round) {
-        console.log(round);
         let lang = round.attacker.lang;
         let hitText = "";
 
@@ -416,13 +416,9 @@ class FightManager {
     }
 
     getBarsDisplay(entity, lang = "en") {
-
-        return `${Emojis.general.red_heart} ${Translator.getFormater(lang).format(entity.actualHP)}/${Translator.getFormater(lang).format(entity.maxHP)}\n` +
-            `${this.healthBar.draw(entity.actualHP, entity.maxHP)}\n` +
-            `${Emojis.general.water_droplet} ${Translator.getFormater(lang).format(entity.actualMP)}/${Translator.getFormater(lang).format(entity.maxMP)}\n` +
-            `${this.manaBar.draw(entity.actualMP, entity.maxMP)}\n` +
-            `${Emojis.general.high_voltage} ${Translator.getFormater(lang).format(entity.actualEnergy)}/${Translator.getFormater(lang).format(entity.maxEnergy)}\n` +
-            `${this.energyBar.draw(entity.actualEnergy, entity.maxEnergy)}`;
+        return `${TextDrawings.formatHealth(entity.actualHP, entity.maxHP, lang)}\n` +
+            `${TextDrawings.formatMana(entity.actualMP, entity.maxMP, lang)}\n` +
+            `${TextDrawings.formatEnergy(entity.actualEnergy, entity.maxEnergy, lang)}`;
     }
 
     getMonsterDifficultyEmoji(name) {

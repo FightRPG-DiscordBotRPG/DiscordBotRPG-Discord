@@ -43,7 +43,7 @@ class Talents {
         }
 
         if (this.isThereStats(data.secondaryStats)) {
-            embed = embed.addField(Translator.getString(lang, "inventory_equipment", "secondaryAttributes"), TextDrawings.statsToString(data.secondaryStats, {}, TextDrawings.statCompareTypes.talents, user, lang));
+            embed = embed.addField(Translator.getString(lang, "inventory_equipment", "secondary_attributes"), TextDrawings.statsToString(data.secondaryStats, {}, TextDrawings.statCompareTypes.talents, user, lang));
         }
 
 
