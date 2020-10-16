@@ -8,7 +8,10 @@ const conn = require("./conf/mysql");
 const Axios = require("axios").default;
 const Utils = require("./src/Utils");
 
-var bot = new Discord.Client();
+var bot = new Discord.Client({
+    messageCacheLifetime: 3600,
+    messageSweepInterval: 3600,
+});
 
 process.on('unhandledRejection', err => {
     let errorDate = new Date();
