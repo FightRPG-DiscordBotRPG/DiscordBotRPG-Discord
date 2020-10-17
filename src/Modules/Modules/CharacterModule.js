@@ -13,7 +13,7 @@ const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup"];
+        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -144,23 +144,52 @@ class CharacterModule extends GModule {
             case "talents":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents"), (data) => {
                     return Talents.toString(data, user);
-
                 });
                 break;
             case "talentshow":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents/show/" + args[0]), async (data) => {
-                    return Talents.showOne(data, user);
+
+                    let talentTakeEmoji = Emojis.general.raised_hand;
+
+                    let emojisList = [
+                        data.unlockable ? talentTakeEmoji : null
+                    ];
+
+                    let reactWrapper = new MessageReactionsWrapper();
+
+                    await reactWrapper.load(message, Talents.showOne(data, user), {
+                        reactionsEmojis: emojisList,
+                        collectorOptions: {
+                            time: 22000,
+                            max: 1,
+                        }
+                    });
+
+                    reactWrapper.collector.on('collect', async (reaction) => {
+                        switch (reaction.emoji.name) {
+                            case talentTakeEmoji:
+                                this.run(message, "talentup", [data.node.id]);
+                                break;
+                        }
+                    });
                 });
                 break;
             case "talentup":
                 msg = await this.getDisplayIfSuccess(await axios.post("/game/character/talents/up/", {
                     idNode: args[0],
                 }), (data) => {
+
+                    let skillsUnlockText = data.node.skillsUnlockedNames.length > 0 ? ("\n" + Translator.getString(user.lang, "talents", "up_success_unlock_skills", [data.node.skillsUnlockedNames.join(", ")])) : "";
                     return Translator.getString(user.lang, "talents", "up_success_unlock", [`${data.node.visuals.name} (${data.node.id})`])
-                        + "\n"
-                        + Translator.getString(user.lang, "talents", "up_success_unlock_skills", [data.node.skillsUnlockedNames.join(", ")])
+                        + skillsUnlockText
                         + "\n"
                         + Translator.getString(user.lang, "character", "attribute_x_points_available" + (data.pointsLeft > 1 ? "_plural" : ""), [data.pointsLeft]);
+                });
+                break;
+            case "skillshow":
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/character/skills/show/" + args[0]), async (data) => {
+                    //return Talents.showOne(data, user);
+                    //TODO display skill
                 });
                 break;
 

@@ -468,7 +468,8 @@ Emojis.general = {
     "link": "🔗",
     "chains": "⛓️",
     "open_book": "📖",
-    "yellow_book": "📒"
+    "yellow_book": "📒",
+    "raised_hand": "✋"
 };
 
 Emojis.entitiesTypes = {
