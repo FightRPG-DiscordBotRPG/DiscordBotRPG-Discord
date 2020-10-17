@@ -2,6 +2,7 @@ const conn = require("../../conf/mysql");
 const axios = require("axios").default;
 const conf = require("../../conf/conf");
 const Globals = require("../Globals");
+const InfoPanel = require("../Drawings/Character/InfoPanel");
 class User {
     constructor(id, username, avatar, lang="en") {
         this.id = id;
@@ -12,6 +13,7 @@ class User {
         this.isOnMobile = false;
         this.lastCommandUsed = Date.now();
         this.axios = null;
+        this.infoPanel = new InfoPanel();
     }
 
     async load() {

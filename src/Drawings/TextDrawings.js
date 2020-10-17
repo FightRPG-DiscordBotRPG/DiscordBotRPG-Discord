@@ -5,8 +5,6 @@ const Emojis = require("./Emojis");
 const Color = require("./Color");
 const User = require("../Users/User");
 const ProgressBarHealth = require("./ProgressBars/ProgressBarHealth");
-const GenericMultipleEmbedList = require("./GenericMultipleEmbedList");
-const Utils = require("../Utils");
 
 class TextDrawings {
 
@@ -78,7 +76,6 @@ class TextDrawings {
                         totalStat = this.getStatString(stat, totalStat);
 
                         totalStat = " " + " ".repeat(1 + user.isOnMobile ? (maximumStatLength - totalStat.length) : 0) + totalStat;
-
                         break;
 
                 }
@@ -109,19 +106,20 @@ class TextDrawings {
                     statLocalized = "**" + statLocalized + "**";
                 } else {
 
-                    if (user.isOnMobile) {
-                        totalSpaces = 29
+                    if (this.statCompareTypes.character === type || this.statCompareTypes.only_total === type) {
+                        totalSpaces = 30;
                     }
 
-                    lessSpaces = totalSpaces - nbrChar - (4 + statStr.length);
+
+                    lessSpaces = totalSpaces - nbrChar - (2 + statStr.length);
                     end = "\n";
                     quote = "`";
                 }
                 beforeNumber += " ".repeat(lessSpaces <= 0 ? 1 : lessSpaces);
 
-                
 
-                let strToAdd = Emojis.stats[stat] + quote + statLocalized + beforeNumber + strStatWithDiff  + totalStat + quote + " " + compareEmoji + end;
+
+                let strToAdd = Emojis.stats[stat] + quote + statLocalized + beforeNumber + strStatWithDiff + totalStat + quote + " " + compareEmoji + end;
 
                 if (type === this.statCompareTypes.talents) {
                     if (stats[stat] !== 0) {
@@ -168,7 +166,6 @@ class TextDrawings {
 
 
     getStatString(statName, statValue) {
-        console.log(statName + " => " + statValue);
         if (statName.includes("Resist")) {
             return (statValue > 50 ? 50 : statValue) + "%";
         } else if (statName.includes("Rate")) {
@@ -180,47 +177,16 @@ class TextDrawings {
         }
     }
 
-    /**
-     * 
-     * @param {any} data
-     * @param {User} user
-     */
-    userInfoPanel(data, user) {
-        let statPointsPlur = data.statPoints > 1 ? "_plur" : "";
-        let healthBar = new ProgressBarHealth().draw(data.currentHp, data.maxHp);
+    userInfoPanel() {
 
-        // Player level title
-        let playerLevelDisplay = this.formatLevelProgressBar(data.actualXp, data.xpNextLevel, data.level, data.maxLevel, data.lang);
-        let titleXPFight = Translator.getString(data.lang, "character", "level") + ": " + data.level + "\n" + playerLevelDisplay.title + " ";
-        // Craft level title
-        let playerCraftLevelDisplay = this.formatLevelProgressBar(data.craft.xp, data.craft.xpNextLevel, data.craft.level, data.craft.maxLevel, data.lang);
-        let titleXPCraft = Translator.getString(data.lang, "character", "craft_level") + ": " + data.craft.level + "\n" + playerCraftLevelDisplay.title + " ";
-
-        let authorTitle = data.username + " | " + Translator.getString(data.lang, "inventory_equipment", "power") + ": " + Translator.getFormater(data.lang).format(data.power);
-        let statsTitle = Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, data.resetValue]);
-
-
-        let embed = new Discord.MessageEmbed()
-            .setColor([0, 255, 0])
-            .setAuthor(authorTitle, data.avatar)
-            .addField(statsTitle, this.statsToString(Utils.add(data.stats, data.talents.stats) , data.statsEquipment, this.statCompareTypes.character, user, data.lang))
-            .addField(Translator.getString(data.lang, "inventory_equipment", "secondary_attributes"), this.statsToString(Utils.add(data.secondaryStats, data.talents.secondaryStats), data.secondaryStatsEquipment, this.statCompareTypes.only_total, user, data.lang))
-            .addField(titleXPFight, playerLevelDisplay.bar, true)
-            .addField(titleXPCraft, playerCraftLevelDisplay.bar, true)
-            .addField(Translator.getString(data.lang, "character", "health_points"), this.formatHealth(data.currentHp, data.maxHp, data.lang ), !user.isOnMobile)
-            .addField(Translator.getString(data.lang, "character", "mana_points"), this.formatMana(data.currentMp, data.maxMp, data.lang), !user.isOnMobile)
-            .addField(Translator.getString(data.lang, "character", "energy_points"), this.formatEnergy(data.currentEnergy, data.maxEnergy, data.lang), !user.isOnMobile)
-            .addField("Other Informations", GenericMultipleEmbedList.getSeparator())
-            //.addField(Emojis.general. + " " + Translator.getString(data.lang, "character", "health_points") + "\n" + this.formatMinMax(data.currentHp, data.maxHp, data.lang), healthBar)
-            //.addField(Emojis.getString("red_heart") + " " + Translator.getString(data.lang, "character", "health_points") + "\n" + this.formatMinMax(data.currentHp, data.maxHp, data.lang), healthBar)
-            .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "character", "money"), Translator.getFormater(data.lang).format(data.money) + " G", true)
-            .addField(Emojis.getString("honor") + " " + Translator.getString(data.lang, "character", "honor"), Translator.getFormater(data.lang).format(data.honor), true)
-        //.addField(Emojis.getString("shield") + " " + Translator.getString(data.lang, "character", "damage_reduction"), Translator.getFormater(data.lang).format(Math.round((data.stats.armor + data.statsEquipment.armor) / ((8 * (Math.pow(data.level, 2))) / 7 + 5) * .5 * 10000) / 100) + "%", true)
-        //.addField(Emojis.getString("critical") + " " + Translator.getString(data.lang, "character", "critical_chance"), Translator.getFormater(data.lang).format(criticalChance) + "%", true)
-        //.addField(Emojis.getString("stun") + " " + Translator.getString(data.lang, "character", "maximum_stun_chance"), Translator.getFormater(data.lang).format(maximumStunChance) + "%", true)
-        return embed;
     }
 
+    /**
+     * DEPRECATED
+     * @param {any} stats
+     * @param {any} otherStats
+     * @param {any} lang
+     */
     characterStatsToBigString(stats, otherStats, lang) {
         let str = "```";
         let totalSpaces = 30;

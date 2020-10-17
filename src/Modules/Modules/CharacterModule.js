@@ -7,6 +7,7 @@ const Achievements = require("../../Drawings/Achievements");
 const Discord = require("discord.js");
 const Talents = require("../../Drawings/Character/Talents");
 const User = require("../../Users/User");
+const InfoPanel = require("../../Drawings/Character/InfoPanel");
 
 class CharacterModule extends GModule {
     constructor() {
@@ -71,13 +72,16 @@ class CharacterModule extends GModule {
 
             case "info":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/info"), (data) => {
-                    return TextDrawing.userInfoPanel(data, user);
+                    return user.infoPanel.toString(data, user);
                 });
                 break;
 
             case "attributes":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/info"), (data) => {
-                    return TextDrawing.userStatsPanel(data, user);
+                    let panel = new InfoPanel();
+                    panel.disableAll();
+                    panel.displayAttributes = true;
+                    return panel.toString(data, user);
                 });
                 break;
 
