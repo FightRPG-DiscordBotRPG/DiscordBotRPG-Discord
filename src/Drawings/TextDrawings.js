@@ -64,11 +64,17 @@ class TextDrawings {
                         break;
                     case this.statCompareTypes.character:
                     case this.statCompareTypes.only_total:
+                    case this.statCompareTypes.talents:
+
+                        if (compareStats[stat] == null) {
+                            compareStats[stat] = 0;
+                        }
+
                         if (stat !== "armor") {
                             diff = "+" + compareStats[stat].toString();
                         } else {
                             // Setting stats[armor] at total stat value 
-                            stats[stat] = compareStats[stat];
+                            stats[stat] += compareStats[stat]
                             compareStats[stat] = 0;
                         }
 
@@ -80,8 +86,6 @@ class TextDrawings {
 
                 }
 
-
-
                 let beforeNumber = "";
                 let statStr = "";
                 let statLocalized = Translator.getString(lang, "stats", stat);
@@ -89,7 +93,7 @@ class TextDrawings {
 
 
                 // No more [x+x] xxx with the else
-                if (type !== this.statCompareTypes.only_total) {
+                if (type !== this.statCompareTypes.only_total && type !== this.statCompareTypes.talents) {
                     statStr = stats[stat].toString();
                     strStatWithDiff = "[" + stats[stat] + diff + "]";
                 } else {
@@ -106,7 +110,7 @@ class TextDrawings {
                     statLocalized = "**" + statLocalized + "**";
                 } else {
 
-                    if (this.statCompareTypes.character === type || this.statCompareTypes.only_total === type) {
+                    if (this.statCompareTypes.character === type || this.statCompareTypes.only_total === type || this.statCompareTypes.talents === type) {
                         totalSpaces = 30;
                     }
 
