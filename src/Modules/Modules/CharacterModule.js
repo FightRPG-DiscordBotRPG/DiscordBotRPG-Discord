@@ -8,6 +8,7 @@ const Discord = require("discord.js");
 const Talents = require("../../Drawings/Character/Talents");
 const User = require("../../Users/User");
 const InfoPanel = require("../../Drawings/Character/InfoPanel");
+const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
 
 class CharacterModule extends GModule {
     constructor() {
@@ -71,8 +72,45 @@ class CharacterModule extends GModule {
                 break;
 
             case "info":
-                msg = await this.getDisplayIfSuccess(await axios.get("/game/character/info"), (data) => {
-                    return user.infoPanel.toString(data, user);
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/character/info"), async (data) => {
+                    let displayAttributesEmoji = Emojis.general.yellow_book;
+                    let displayAdvancementsEmoji = Emojis.emojisProd.exp.id;
+                    let displayResourcesEmoji = Emojis.general.red_heart;
+                    let displayOtherEmoji = Emojis.general.clipboard;
+
+                    let emojisList = [
+                        displayAttributesEmoji,
+                        displayAdvancementsEmoji,
+                        displayResourcesEmoji,
+                        displayOtherEmoji
+                    ];
+
+                    let reactWrapper = new MessageReactionsWrapper();
+
+                    await reactWrapper.load(message, user.infoPanel.toString(data, user), {
+                        reactionsEmojis: emojisList,
+                        collectorOptions: {
+                            time: 22000,
+                        }
+                    });
+
+                    reactWrapper.collector.on('collect', async (reaction) => {
+                        switch (reaction.emoji.name) {
+                            case displayAttributesEmoji:
+                                user.infoPanel.displayAttributes = !user.infoPanel.displayAttributes;
+                                break;
+                            case displayAdvancementsEmoji:
+                                user.infoPanel.displayAdvancement = !user.infoPanel.displayAdvancement;
+                                break;
+                            case displayResourcesEmoji:
+                                user.infoPanel.displayResources = !user.infoPanel.displayResources;
+                                break;
+                            case displayOtherEmoji:
+                                user.infoPanel.displayOther = !user.infoPanel.displayOther;
+                                break;
+                        }
+                        await reactWrapper.edit(user.infoPanel.toString(data, user), emojisList);
+                    });
                 });
                 break;
 

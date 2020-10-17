@@ -81,8 +81,8 @@ class InfoPanel {
         let statPointsPlur = data.statPoints > 1 ? "_plur" : "";
         let statsTitle = Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, data.resetValue]);
 
-        return embed.addField(Translator.getString(data.lang, "inventory_equipment", "attributes"), GenericMultipleEmbedList.getSeparator())
-            .addField(statsTitle, TextDrawings.statsToString(Utils.add(data.stats, data.talents.stats), data.statsEquipment, TextDrawings.statCompareTypes.character, user, data.lang) ,true)
+        return embed.addField(statsTitle, GenericMultipleEmbedList.getSeparator())
+            .addField(Translator.getString(data.lang, "inventory_equipment", "attributes"), TextDrawings.statsToString(Utils.add(data.stats, data.talents.stats), data.statsEquipment, TextDrawings.statCompareTypes.character, user, data.lang) ,true)
             .addField(Translator.getString(data.lang, "inventory_equipment", "secondary_attributes"), TextDrawings.statsToString(Utils.add(data.secondaryStats, data.talents.secondaryStats), data.secondaryStatsEquipment, TextDrawings.statCompareTypes.only_total, user, data.lang), true);
     }
 
