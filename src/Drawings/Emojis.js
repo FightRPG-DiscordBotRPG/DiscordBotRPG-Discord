@@ -362,6 +362,10 @@ Emojis.emojisProd = {
     "staff": {
         id: "755780336688037899",
         string: "<:staff:755780336688037899>"
+    },
+    "elements": {
+        id: "767364758097625088",
+        string: "<:elements:767364758097625088>"
     }
 };
 
@@ -469,7 +473,12 @@ Emojis.general = {
     "chains": "⛓️",
     "open_book": "📖",
     "yellow_book": "📒",
-    "raised_hand": "✋"
+    "raised_hand": "✋",
+    "bar_chart": "📊",
+    "drop_of_blood": "🩸",
+    "water_wave": "🌊",
+    "blue_heart": "💙",
+    "sweat_droplets": "💦"
 };
 
 Emojis.entitiesTypes = {
@@ -493,7 +502,7 @@ Emojis.stats = {
     "evadeRate": Emojis.general.person_running,
     "criticalRate": Emojis.general.critical,
     "regenHp": Emojis.general.syringe,
-    "regenMp": Emojis.general.water_droplet,
+    "regenMp": Emojis.general.sweat_droplets,
     "regenEnergy": Emojis.general.high_voltage,
     "skillManaCost": Emojis.general.mage,
     "skillEnergyCost": Emojis.general.battery,
@@ -502,7 +511,7 @@ Emojis.stats = {
     "threat": Emojis.general.target,
     "physicalResist": Emojis.general.shield,
     "fireResist": Emojis.general.fire,
-    "waterResist": Emojis.general.water_droplet,
+    "waterResist": Emojis.general.water_wave,
     "earthResist": Emojis.general.deciduous_tree,
     "airResist": Emojis.general.tornado,
     "darkResist": Emojis.general.ogre,
@@ -558,6 +567,16 @@ Emojis.areaBonus = {
     "item_drop": Emojis.emojisProd.sword.string,
     "collect_drop": Emojis.general.gloves,
     "xp_craft": Emojis.general.hammer
+}
+
+Emojis.damageTypes = {
+    "hpDamage": Emojis.stats.constitution,
+    "manaDamage": Emojis.general.blue_heart,
+    "lifeSteal": Emojis.general.drop_of_blood,
+    "manaSteal": Emojis.general.water_droplet,
+    "healHp": Emojis.stats.regenHp,
+    "healMp": Emojis.stats.regenMp,
+
 }
 
 function configureAliases() {

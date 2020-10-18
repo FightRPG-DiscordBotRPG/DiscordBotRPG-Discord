@@ -342,7 +342,7 @@ class FightManager {
             str += Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "fight_general", "results_gain") + " ";
 
             results.hpRegen > 0 ? str += Emojis.general.red_heart + " " + Translator.getString(lang, "fight_general", "results_health_points", [results.hpRegen]) + " " : null;
-            results.mpRegen > 0 ? str += Emojis.general.water_droplet + " " + Translator.getString(lang, "fight_general", "results_mana_points", [results.mpRegen]) + " " : null;
+            results.mpRegen > 0 ? str += Emojis.general.blue_heart + " " + Translator.getString(lang, "fight_general", "results_mana_points", [results.mpRegen]) + " " : null;
             results.energyRegen > 0 ? str += Emojis.general.high_voltage + " " + Translator.getString(lang, "fight_general", "results_energy_points", [results.energyRegen]) + " " : null;
 
             str += "\n";
@@ -352,7 +352,7 @@ class FightManager {
             str += Emojis.emojisProd.leveldown.string + " " + Translator.getString(lang, "fight_general", "results_lost") + " ";
 
             results.hpDamage > 0 ? str += Emojis.general.red_heart + " " + Translator.getString(lang, "fight_general", "results_health_points", [results.hpDamage]) + " " : null;
-            results.mpDamage > 0 ? str += Emojis.general.water_droplet + " " + Translator.getString(lang, "fight_general", "results_mana_points", [results.mpDamage]) + " " : null;
+            results.mpDamage > 0 ? str += Emojis.general.blue_heart + " " + Translator.getString(lang, "fight_general", "results_mana_points", [results.mpDamage]) + " " : null;
             results.energyDamage > 0 ? str += Emojis.general.high_voltage + " " + Translator.getString(lang, "fight_general", "results_energy_points", [results.energyDamage]) + " " : null;
 
             str += "\n";

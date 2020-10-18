@@ -9,6 +9,7 @@ const Talents = require("../../Drawings/Character/Talents");
 const User = require("../../Users/User");
 const InfoPanel = require("../../Drawings/Character/InfoPanel");
 const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
+const Skill = require("../../Drawings/Character/Skill");
 
 class CharacterModule extends GModule {
     constructor() {
@@ -188,8 +189,7 @@ class CharacterModule extends GModule {
                 break;
             case "skillshow":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/skills/show/" + args[0]), async (data) => {
-                    //return Talents.showOne(data, user);
-                    //TODO display skill
+                    return Skill.toString(data, user);
                 });
                 break;
 
