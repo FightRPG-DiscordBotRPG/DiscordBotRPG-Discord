@@ -9,7 +9,7 @@ axios.defaults.validateStatus = function (status) {
 
 var Globals = {
     /**
-     * @type {Array<User>}
+     * @type {Object<string, User>}
      */
     connectedUsers: {},
     ownerID: "241564725870198785",

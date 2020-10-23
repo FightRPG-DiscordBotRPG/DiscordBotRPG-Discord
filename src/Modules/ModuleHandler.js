@@ -16,11 +16,11 @@ class ModuleHandler extends GModule {
         this.prefix = "::";
         this.devMode = false;
         /**
-         * @type {Array<GModule>}
+         * @type {Object<string, GModule>}
          */
         this.modules = {};
         /**
-         * @type {Array<GModule>}
+         * @type {Object<string, GModule>}
          */
         this.commandsReact = {};
         this.startLoading("ModuleHandler");
@@ -60,6 +60,9 @@ class ModuleHandler extends GModule {
             return;
         }
 
+        /**
+         * @type {any[]}
+         **/
         let args = [].concat.apply([], message.content.slice(prefix.length).trim().split('"').map(function (v, i) {
             return i % 2 ? v : v.split(' ')
         })).filter(Boolean);
