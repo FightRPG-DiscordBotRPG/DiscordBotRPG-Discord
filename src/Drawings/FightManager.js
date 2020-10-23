@@ -341,9 +341,9 @@ class FightManager {
         if (results.hpRegen > 0 || results.mpRegen > 0 || results.energyRegen > 0) {
             str += Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "fight_general", "results_gain") + " ";
 
-            results.hpRegen > 0 ? str += Emojis.general.red_heart + " " + Translator.getString(lang, "fight_general", "results_health_points", [results.hpRegen]) + " " : null;
-            results.mpRegen > 0 ? str += Emojis.general.blue_heart + " " + Translator.getString(lang, "fight_general", "results_mana_points", [results.mpRegen]) + " " : null;
-            results.energyRegen > 0 ? str += Emojis.general.high_voltage + " " + Translator.getString(lang, "fight_general", "results_energy_points", [results.energyRegen]) + " " : null;
+            str += results.hpRegen > 0 ? Emojis.general.red_heart + " " + Translator.getString(lang, "fight_general", "results_health_points", [results.hpRegen]) + " " : "";
+            str += results.mpRegen > 0 ? Emojis.general.blue_heart + " " + Translator.getString(lang, "fight_general", "results_mana_points", [results.mpRegen]) + " " : "";
+            str += results.energyRegen > 0 ? Emojis.general.high_voltage + " " + Translator.getString(lang, "fight_general", "results_energy_points", [results.energyRegen]) + " " : "";
 
             str += "\n";
         }
@@ -351,9 +351,9 @@ class FightManager {
         if (results.hpDamage > 0 || results.mpDamage > 0 || results.energyDamage > 0) {
             str += Emojis.emojisProd.leveldown.string + " " + Translator.getString(lang, "fight_general", "results_lost") + " ";
 
-            results.hpDamage > 0 ? str += Emojis.general.red_heart + " " + Translator.getString(lang, "fight_general", "results_health_points", [results.hpDamage]) + " " : null;
-            results.mpDamage > 0 ? str += Emojis.general.blue_heart + " " + Translator.getString(lang, "fight_general", "results_mana_points", [results.mpDamage]) + " " : null;
-            results.energyDamage > 0 ? str += Emojis.general.high_voltage + " " + Translator.getString(lang, "fight_general", "results_energy_points", [results.energyDamage]) + " " : null;
+            str += results.hpDamage > 0 ? Emojis.general.red_heart + " " + Translator.getString(lang, "fight_general", "results_health_points", [results.hpDamage]) + " " : "";
+            str += results.mpDamage > 0 ? Emojis.general.blue_heart + " " + Translator.getString(lang, "fight_general", "results_mana_points", [results.mpDamage]) + " " : "";
+            str += results.energyDamage > 0 ? Emojis.general.high_voltage + " " + Translator.getString(lang, "fight_general", "results_energy_points", [results.energyDamage]) + " " : "";
 
             str += "\n";
         }
