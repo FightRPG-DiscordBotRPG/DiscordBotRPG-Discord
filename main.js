@@ -64,6 +64,7 @@ const express = require("express"),
     app = express(),
     port = 48921,
     url = require('url');
+app.disable("x-powered-by");
 
 
 app.listen(port, () => console.log("Local webhook for discord notifications at port: " + port));
