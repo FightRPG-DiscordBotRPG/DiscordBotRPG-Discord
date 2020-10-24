@@ -14,11 +14,11 @@ class Skill {
     toString(data, user) {
         let lang = data.lang;
         let titleBonus, color;
-
-        if (data.isEquiped) {
+        
+        if (data.skill.isEquiped) {
             titleBonus = Translator.getString(lang, "general", "currently_equipped");
             color = [128, 128, 128];
-        } else if (data.canEquip) {
+        } else if (data.skill.canEquip) {
             titleBonus = Translator.getString(lang, "general", "equipable");
             color = [0, 255, 0];
         } else {
@@ -81,8 +81,6 @@ class Skill {
     */
     getFieldsEffects(data, user, embed) {
         let allEffectsTypes = {};
-
-        
 
         for (let effect of data.skill.effects) {
             if (allEffectsTypes[effect.type] == null) {
