@@ -15,7 +15,7 @@ const SkillBuild = require("../../Drawings/Character/SkillBuild");
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear"];
+        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -147,6 +147,14 @@ class CharacterModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents"), (data) => {
                     return Talents.toString(data, user);
                 });
+                break;
+            case "talentsexport":
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents/export"), (data) => {
+                    return data.talents;
+                });
+                break;
+            case "talentsimport":
+                msg = await this.getBasicSuccessErrorMessage(await axios.post("/game/character/talents/import", { talentsIds: args[0] }));
                 break;
             case "talentshow":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents/show/" + args[0]), async (data) => {
