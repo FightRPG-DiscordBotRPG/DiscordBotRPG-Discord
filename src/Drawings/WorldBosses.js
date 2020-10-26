@@ -29,7 +29,7 @@ class WorldBosses {
                 let nextWorkBossInfo = Emojis.general.national_park + " " + info.regionName + " - " + info.areaName + "\n\n";
                 if (info.worldBoss != null) {
                     let str = nextWorkBossInfo
-                    return str + Emojis.emojisProd.boss.string + " " + info.worldBoss.name + " (" + Translator.getFormater(data.lang).format(info.worldBoss.actualHP) + "/" + Translator.getFormater(data.lang).format(info.worldBoss.maxHP) + "\n" + pb.draw(info.worldBoss.actualHP, info.worldBoss.maxHP);
+                    return str + Emojis.emojisProd.boss.string + " " + info.worldBoss.name + " (" + Translator.getFormater(data.lang).format(info.worldBoss.actualHP) + "/" + Translator.getFormater(data.lang).format(info.worldBoss.maxHP) + ")\n" + pb.draw(info.worldBoss.actualHP, info.worldBoss.maxHP);
                 } else {
                     let date = new Date();
                     date.setTime(info.spawnDate);
