@@ -10,11 +10,12 @@ const User = require("../../Users/User");
 const InfoPanel = require("../../Drawings/Character/InfoPanel");
 const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
 const Skill = require("../../Drawings/Character/Skill");
+const SkillBuild = require("../../Drawings/Character/SkillBuild");
 
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow"];
+        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -191,6 +192,57 @@ class CharacterModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/skills/show/" + args[0]), async (data) => {
                     return Skill.toString(data, user);
                 });
+                break;
+            case "buildshow":
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/character/build/show/"), async (data) => {
+
+                    //let talentTakeEmoji = Emojis.general.raised_hand;
+
+                    //let emojisList = [
+                    //    data.unlockable ? talentTakeEmoji : null
+                    //];
+
+                    //let reactWrapper = new MessageReactionsWrapper();
+
+                    //await reactWrapper.load(message, Talents.showOne(data, user), {
+                    //    reactionsEmojis: emojisList,
+                    //    collectorOptions: {
+                    //        time: 22000,
+                    //        max: 1,
+                    //    }
+                    //});
+
+                    //reactWrapper.collector.on('collect', async (reaction) => {
+                    //    switch (reaction.emoji.name) {
+                    //        case talentTakeEmoji:
+                    //            this.run(message, "talentup", [data.node.id]);
+                    //            break;
+                    //    }
+                    //});
+
+                    return SkillBuild.toString(data, user);
+                });
+                break;
+            case "buildadd":
+                msg = await this.getBasicSuccessErrorMessage(await axios.post("/game/character/build/add", {
+                    idSkill: args[0],
+                }));
+                break;
+            case "buildmove": {
+                let priority = parseInt(args[1], 10) - 1;
+                msg = await this.getBasicSuccessErrorMessage(await axios.post("/game/character/build/move", {
+                    idSkill: args[0],
+                    priority: priority
+                }));
+            }
+                break;
+            case "buildremove":
+                msg = await this.getBasicSuccessErrorMessage(await axios.post("/game/character/build/remove", {
+                    idSkill: args[0],
+                }));
+                break;
+            case "buildclear":
+                msg = await this.getBasicSuccessErrorMessage(await axios.post("/game/character/build/clear"));
                 break;
 
         }
