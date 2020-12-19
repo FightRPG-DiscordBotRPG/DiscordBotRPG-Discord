@@ -38,7 +38,7 @@ class ItemShow {
 
         return embed
             .addField(Translator.getString(lang, "inventory_equipment", "attributes"), TextDrawings.statsToString(item.stats, data.equippedStats, TextDrawings.statCompareTypes.item, user, lang))
-            .addField(Translator.getString(lang, "inventory_equipment", "secondaryAttributes"), TextDrawings.statsToString(item.secondaryStats, data.equippedSecondaryStats, TextDrawings.statCompareTypes.item, user, lang))
+            .addField(Translator.getString(lang, "inventory_equipment", "secondary_attributes"), TextDrawings.statsToString(item.secondaryStats, data.equippedSecondaryStats, TextDrawings.statCompareTypes.item, user, lang))
             .addField(Translator.getString(lang, "general", "description"), item.desc);
     }
 
