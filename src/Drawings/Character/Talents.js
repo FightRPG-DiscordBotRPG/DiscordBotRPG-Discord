@@ -81,11 +81,11 @@ class Talents {
         }
 
         this.isThereStats(data.node.secondaryStats);
-
-        let embed = new Discord.MessageEmbed()
+        console.log(data.node.realCost + " ___ " + (data.node.realCost > 1))
+        let embed = new Discord.MessageEmbed() 
             .setColor(color)
             .setAuthor(`${data.node.id} - ${data.node.visuals.name} (${titleBonus})`, data.node.visuals.icon)
-            .addField(Translator.getString(lang, "talents", "cost"), Emojis.general.target + " " + Translator.getString(lang, "talents", "x_point" + (data.node.realCost > 1 ? "" : "_plural"), [data.node.realCost]))
+            .addField(Translator.getString(lang, "talents", "cost"), Emojis.general.target + " " + Translator.getString(lang, "talents", "x_point" + (data.node.realCost > 1 ? "_plural" : ""), [data.node.realCost]))
             .addField(Translator.getString(lang, "talents", "reachable_talents_ids"), data.node.linkedNodes.length > 0 ? Emojis.general.link + " " + data.node.linkedNodes.join(", ") : Translator.getString(lang, "general", "none"))
             .addField(Translator.getString(lang, "talents", "unlockable_skills"), data.node.skillsUnlockedNames.length > 0 ? Emojis.general.open_book + " " + data.node.skillsUnlockedNames.join(", ") : Translator.getString(lang, "general", "none"));
 
