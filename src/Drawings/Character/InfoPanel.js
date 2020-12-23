@@ -95,14 +95,14 @@ class InfoPanel {
     embedInfoPanelAddCharacterAdvancement(data, user, embed) {
         // Player level title
         let playerLevelDisplay = TextDrawings.formatLevelProgressBar(data.actualXp, data.xpNextLevel, data.level, data.maxLevel, data.lang);
-        let titleXPFight = Translator.getString(data.lang, "character", "level") + ": " + data.level + "\n" + playerLevelDisplay.title + " ";
+        let titleXPFight = Translator.getString(data.lang, "character", "level") + ": " + data.level;
         // Craft level title
         let playerCraftLevelDisplay = TextDrawings.formatLevelProgressBar(data.craft.xp, data.craft.xpNextLevel, data.craft.level, data.craft.maxLevel, data.lang);
-        let titleXPCraft = Translator.getString(data.lang, "character", "craft_level") + ": " + data.craft.level + "\n" + playerCraftLevelDisplay.title + " ";
+        let titleXPCraft = Translator.getString(data.lang, "character", "craft_level") + ": " + data.craft.level ;
 
         return embed.addField(Translator.getString(data.lang, "character", "character_advancement"), GenericMultipleEmbedList.getSeparator())
-            .addField(titleXPFight, playerLevelDisplay.bar, true)
-            .addField(titleXPCraft, playerCraftLevelDisplay.bar, true);
+            .addField(titleXPFight, playerLevelDisplay.title + "\n" + playerLevelDisplay.bar, true)
+            .addField(titleXPCraft, playerCraftLevelDisplay.title + "\n" + playerCraftLevelDisplay.bar, true);
     }
 
     disableAll() {
