@@ -43,7 +43,7 @@ class UserChallenge {
             let wrapper = new MessageReactionsWrapper();
 
             
-            await wrapper.load(message, this.getEmbed(Translator.getString(lang, "antispam", "select_emoji", [this.answer.string]), { reactionsEmojis: answers, collectorOptions: { time: 60000 } });
+            await wrapper.load(message, this.getEmbed(Translator.getString(lang, "antispam", "select_emoji", [this.answer.string]), { reactionsEmojis: answers, collectorOptions: { time: 60000 } }));
             wrapper.collector.on("collect", (reaction, user) => {
                 switch (reaction.emoji.toString()) {
                     case this.answer.string:
