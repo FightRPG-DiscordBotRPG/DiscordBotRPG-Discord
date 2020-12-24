@@ -33,6 +33,63 @@ class Utils {
 
         return newObj;
     }
+
+     /**
+     * 
+     * @param {Array} pool
+     * @param {number} k
+     * @param {boolean} destructive
+     * @returns {Array}
+     */
+    static sample(pool, k, destructive) {
+        var n = pool.length;
+        if (k < 0 || k > n)
+            throw new RangeError("Sample larger than population or is negative");
+
+        if (destructive || n <= (k <= 5 ? 21 : 21 + Math.pow(4, Math.ceil(Math.log(k * 3, 4))))) {
+
+            if (!destructive)
+                pool = Array.prototype.slice.call(pool);
+            for (let i = 0; i < k; i++) { // invariant: non-selected at [i,n)
+                var j = i + Math.random() * (n - i) | 0;
+                var x = pool[i];
+                pool[i] = pool[j];
+                pool[j] = x;
+            }
+            pool.length = k; // truncate
+            return pool;
+        } else {
+            let selected = new Set();
+            let ret = [];
+            while (selected.add(Math.random() * n | 0).size < k) {}
+            selected.forEach((i, j) => ret.push(pool[i]));
+            return ret;
+        }
+    }
+
+    /**
+     * 
+     * @param {Array} arr
+     * @param {number} n
+     */
+    static getRandomItemsInArray(arr, n) {
+        return this.sample(arr, Utils.getProtectedNValue(arr, n), false);
+    }
+
+
+    /**
+    *
+    * @param {Array} arr
+    * @param {number} n
+    */
+    static getProtectedNValue(arr, n) {
+        if (n > arr.length) {
+            return arr.length;
+        } else if (n < 0) {
+            return 1;
+        }
+        return n;
+    }
 }
 
 

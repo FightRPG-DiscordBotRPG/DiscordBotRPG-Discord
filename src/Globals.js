@@ -77,7 +77,9 @@ var Globals = {
     /**
      * Minutes before disconnecting
      */
-    inactiveTimeBeforeDisconnect: 30
+    inactiveTimeBeforeDisconnect: 30,
+    antiSpamNumberOfTries: 3,
+    antiSpamMinutesOfBan: 30,
 }
 
 module.exports = Globals;

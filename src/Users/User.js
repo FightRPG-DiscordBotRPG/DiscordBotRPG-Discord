@@ -3,6 +3,7 @@ const axios = require("axios").default;
 const conf = require("../../conf/conf");
 const Globals = require("../Globals");
 const InfoPanel = require("../Drawings/Character/InfoPanel");
+const UserChallenge = require("../AntiSpam/UserChallenge");
 class User {
     constructor(id, username, avatar, lang="en") {
         this.id = id;
@@ -14,6 +15,7 @@ class User {
         this.lastCommandUsed = Date.now();
         this.axios = null;
         this.infoPanel = new InfoPanel();
+        this.challenge = new UserChallenge(this);
     }
 
     async load() {
@@ -67,6 +69,9 @@ class User {
         return this.axios;
     }
 
+    isAdmin() {
+        return Globals.admins.indexOf(this.id) > -1;
+    }
 
 }
 

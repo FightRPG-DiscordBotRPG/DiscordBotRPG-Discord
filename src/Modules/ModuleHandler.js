@@ -320,30 +320,38 @@ class ModuleHandler extends GModule {
     async executeCommand(message, command, args, prefix) {
         let mod = this.commandsReact[command];
         if (mod != null) {
-            if (mod.isActive) {
-                try {
-                    Globals.connectedUsers[message.author.id].lastCommandUsed = Date.now();
-                    await mod.run(message, command, args, prefix);
-                } catch (err) {
-                    if (!this.devMode) {
-                        if (err.constructor != Discord.DiscordAPIError) {
-                            let adminTell = "A module has crashed.\nCommand: " + command + "\nArgs: [" + args.toString() + "]\n" + "User that have crashed the command: " + message.author.username + "#" + message.author.discriminator;
-                            message.client.shard.broadcastEval(`let user = this.users.cache.get("241564725870198785");
+            let user = Globals.connectedUsers[message.author.id];
+            if (!user.isAdmin()) {
+                await user.challenge.manageIncomingCommand(message, command);
+            }
+            if (!user.challenge.mustAnswer && !user.challenge.isTimeout()) {
+                if (mod.isActive) {
+                    try {
+                        user.lastCommandUsed = Date.now();
+                        await mod.run(message, command, args, prefix);
+                    } catch (err) {
+                        if (!this.devMode) {
+                            if (err.constructor != Discord.DiscordAPIError) {
+                                let adminTell = "A module has crashed.\nCommand: " + command + "\nArgs: [" + args.toString() + "]\n" + "User that have crashed the command: " + message.author.username + "#" + message.author.discriminator;
+                                message.client.shard.broadcastEval(`let user = this.users.cache.get("241564725870198785");
                             if(user != null) {
                                 user.send(\`${adminTell}\`).catch((e) => {null});
                             }`);
-                        } else {
-                            console.log(err);
-                            message.channel.send(err.name).catch((e) => {
-                                message.author.send(err.name).catch((e) => null);
-                            });
+                            } else {
+                                console.log(err);
+                                message.channel.send(err.name).catch((e) => {
+                                    message.author.send(err.name).catch((e) => null);
+                                });
+                            }
                         }
+                        throw err;
                     }
-                    throw err;
+                } else {
+                    message.channel.send("Due to an error, this module is currently deactivated. The following commands will be disabled: " + mod.commands.toString() + "\nSorry for the inconvenience.").catch((e) => null);
                 }
-            } else {
-                message.channel.send("Due to an error, this module is currently deactivated. The following commands will be disabled: " + mod.commands.toString() + "\nSorry for the inconvenience.").catch((e) => null);
             }
+
+
         }
     }
 

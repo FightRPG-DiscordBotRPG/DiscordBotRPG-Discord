@@ -43,7 +43,7 @@ class MessageReactionsWrapper {
          * @param {Discord.User} user
          */
         const filter = (reaction, user) => {
-            return (this.currentEmojiReactList.includes(reaction.emoji.name) || this.currentEmojiReactList.includes(reaction.emoji.id) ) && user.id === messageDiscord.author.id;
+            return (this.currentEmojiReactList.includes(reaction.emoji.name) || this.currentEmojiReactList.includes(reaction.emoji.id)) && user.id === messageDiscord.author.id;
         };
 
         this.collector = this.message.createReactionCollector(filter, settings.collectorOptions);
@@ -56,12 +56,13 @@ class MessageReactionsWrapper {
 
     /**
      * 
-     * @param {string} message
+     * @param {string} content
      * @param {Array<string>=} arrOfEmojis
      */
     async edit(content, arrOfEmojis) {
-
+        console.log(content != null + " et " + !this.message.deleted)
         if (content != null && !this.message.deleted) {
+            console.log(content);
             await this.clearEmojis();
             await this.message.edit(content);
             await this.setReactionsEmojis(arrOfEmojis != null ? arrOfEmojis : []);
@@ -81,17 +82,20 @@ class MessageReactionsWrapper {
 
     /**
      * 
-     * @param {Array<string>} arrOfEmojis
+     * @param {Array<string> | Array<{id: number, string: string}>} arrOfEmojis
      * @param {boolean} clear
      */
     async setReactionsEmojis(arrOfEmojis, clear = false) {
         if (clear) {
             await this.clearEmojis();
         }
-        for (let emojiName of arrOfEmojis) {
-            if (emojiName != null) {
-                this.currentMessageReactions.push(await this.message.react(emojiName));
-                this.currentEmojiReactList.push(emojiName);
+        for (let emoji of arrOfEmojis) {
+            if (emoji != null) {
+                if (emoji.id != null) {
+                    emoji = emoji.id;
+                }
+                this.currentMessageReactions.push(await this.message.react(emoji));
+                this.currentEmojiReactList.push(emoji);
             }
         }
     }
