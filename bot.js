@@ -7,6 +7,7 @@ const Globals = require("./src/Globals");
 const conn = require("./conf/mysql");
 const Axios = require("axios").default;
 const Utils = require("./src/Utils");
+const Translator = require("./src/Translator/Translator");
 
 var bot = new Discord.Client({
     messageCacheLifetime: 3600,
@@ -24,6 +25,7 @@ let timeStart = Date.now();
 
 async function startBot() {
     try {
+        await Translator.loadTranslator();
         await bot.login(conf.discordbotkey);
         setTimeoutToRemoveInactiveUsers();
     } catch (error) {

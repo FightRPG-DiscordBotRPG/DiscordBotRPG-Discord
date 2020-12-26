@@ -209,22 +209,18 @@ class Translator {
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "polar_bear").toLowerCase()] = 17;
         }
     }
+
+    static async loadTranslator() {
+        Translator.translations = {};
+        Translator.nbOfTranslations = 0;
+        Translator.formaters = {};
+        await Translator.loadFromJson();
+        Translator.loadFormaters();
+        Translator.loadGlobalsRarities();
+        Translator.loadGlobalsTypes();
+        Translator.loadGlobalsSubTypes();
+    }
 }
-
-
-
-async function loadTranslator() {
-    Translator.translations = {};
-    Translator.nbOfTranslations = 0;
-    Translator.formaters = {};
-    await Translator.loadFromJson();
-    Translator.loadFormaters();
-    Translator.loadGlobalsRarities();
-    Translator.loadGlobalsTypes();
-    Translator.loadGlobalsSubTypes();
-}
-
-loadTranslator();
 
 /*
 var sizeof = require('object-sizeof');
