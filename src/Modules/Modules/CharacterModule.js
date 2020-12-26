@@ -101,9 +101,6 @@ class CharacterModule extends GModule {
                             case displayAttributesEmoji:
                                 user.infoPanel.displayAttributes = !user.infoPanel.displayAttributes;
                                 break;
-                            case displayAdvancementsEmoji:
-                                user.infoPanel.displayAdvancement = !user.infoPanel.displayAdvancement;
-                                break;
                             case displayResourcesEmoji:
                                 user.infoPanel.displayResources = !user.infoPanel.displayResources;
                                 break;
@@ -111,6 +108,13 @@ class CharacterModule extends GModule {
                                 user.infoPanel.displayOther = !user.infoPanel.displayOther;
                                 break;
                         }
+
+                        switch (reaction.emoji.id) {
+                            case displayAdvancementsEmoji:
+                                user.infoPanel.displayAdvancement = !user.infoPanel.displayAdvancement;
+                                break;
+                        }
+
                         await reactWrapper.edit(user.infoPanel.toString(data, user), emojisList);
                     });
                 });
