@@ -6,6 +6,7 @@ class MessageReactionsWrapper {
     * @typedef {Object} SettingsMessageReact
     * @property {Array<string>} reactionsEmojis Items be result of Emojis.getString()
     * @property {Discord.ReactionCollectorOptions=} collectorOptions time in ms and max as number
+    * @property {boolean=} waitForEmojis If the collector needs to wait for emojis before listening
     */
 
     constructor() {
@@ -33,7 +34,10 @@ class MessageReactionsWrapper {
         }
 
         if (!this.message.deleted && settings.reactionsEmojis != null) {
-            await this.setReactionsEmojis(settings.reactionsEmojis);
+            let promiseEmojis = this.setReactionsEmojis(settings.reactionsEmojis);
+            if (settings.waitForEmojis == null || settings.waitForEmojis === true) {
+                await promiseEmojis;
+            }
         }
 
 
