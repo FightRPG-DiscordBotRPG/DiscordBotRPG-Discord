@@ -43,9 +43,8 @@ class UserChallenge {
 
             let wrapper = new MessageReactionsWrapper();
 
-            await wrapper.load(message, this.getEmbed(Translator.getString(lang, "antispam", "select_emoji", [this.answer.string])), { reactionsEmojis: answers, collectorOptions: { time: 60000 } });
+            await wrapper.load(message, this.getEmbed(Translator.getString(lang, "antispam", "select_emoji", [this.answer.string])), { reactionsEmojis: answers, collectorOptions: { time: 60000 }, waitForEmojis: false });
 
-            console.log(wrapper.message);
             this.challengeMessageUrl = wrapper.message.url;
 
             wrapper.collector.on("collect", (reaction, user) => {
@@ -81,7 +80,7 @@ class UserChallenge {
 
             });
         } else if (this.mustAnswer && !this.isTimeout()) {
-            message.channel.send(this.getEmbed(Translator.getString(lang, "antispam", "in_progress"), this.challengeMessageUrl != null ? "\n" + this.challengeMessageUrl : ""));
+            message.channel.send(this.getEmbed(Translator.getString(lang, "antispam", "in_progress") + ( this.challengeMessageUrl != null ? "\n" + this.challengeMessageUrl : "")));
         }
         
     }
