@@ -6,14 +6,18 @@ class Utils {
      * @param {discord.ShardClientUtil} shard
      */
     static async getTotalNumberOfGuilds(shard) {
+        try {
+            let allCounts = await shard.broadcastEval("this.guilds.cache.size");
+            let total = 0;
+            for (let count in allCounts) {
+                total += allCounts[count];
+            }
 
-        let allCounts = await shard.broadcastEval("this.guilds.cache.size");
-        let total = 0;
-        for (let count in allCounts) {
-            total += allCounts[count];
+            return total;
+        } catch {
+            return 1;
         }
 
-        return total;
     }
 
     static clean(text) {

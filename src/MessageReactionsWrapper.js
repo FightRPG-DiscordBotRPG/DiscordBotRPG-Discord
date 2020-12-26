@@ -32,7 +32,7 @@ class MessageReactionsWrapper {
             return;
         }
 
-        if (!this.message.deleted) {
+        if (!this.message.deleted && settings.reactionsEmojis != null) {
             await this.setReactionsEmojis(settings.reactionsEmojis);
         }
 
@@ -60,9 +60,7 @@ class MessageReactionsWrapper {
      * @param {Array<string>=} arrOfEmojis
      */
     async edit(content, arrOfEmojis) {
-        console.log(content != null + " et " + !this.message.deleted)
         if (content != null && !this.message.deleted) {
-            console.log(content);
             await this.clearEmojis();
             await this.message.edit(content);
             await this.setReactionsEmojis(arrOfEmojis != null ? arrOfEmojis : []);
@@ -94,10 +92,24 @@ class MessageReactionsWrapper {
                 if (emoji.id != null) {
                     emoji = emoji.id;
                 }
-                this.currentMessageReactions.push(await this.message.react(emoji));
-                this.currentEmojiReactList.push(emoji);
+                await this.addEmoji(emoji);
             }
         }
+    }
+
+    /**
+     * 
+     * @param {string} emojiIdentifier
+     */
+    async addEmoji(emojiIdentifier) {
+        if (this.message.deleted) {
+            return;
+        }
+        try {
+            this.currentMessageReactions.push(await this.message.react(emojiIdentifier));
+            this.currentEmojiReactList.push(emojiIdentifier);
+        } catch (e) { /* Do noting cause the message is maybe deleted */ }
+
     }
 
     async clearEmojis() {

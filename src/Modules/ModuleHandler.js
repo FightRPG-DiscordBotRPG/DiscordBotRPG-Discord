@@ -7,6 +7,7 @@ const User = require("../Users/User");
 const Translator = require("../Translator/Translator");
 const version = require("../../conf/version");
 const Utils = require("../Utils");
+const conf = require("../../conf/conf");
 
 class ModuleHandler extends GModule {
     constructor() {
@@ -321,7 +322,8 @@ class ModuleHandler extends GModule {
         let mod = this.commandsReact[command];
         if (mod != null) {
             let user = Globals.connectedUsers[message.author.id];
-            if (!user.isAdmin()) {
+
+            if (!user.isAdmin() || conf.env === "dev") {
                 await user.challenge.manageIncomingCommand(message, command);
             }
             if (!user.challenge.mustAnswer && !user.challenge.isTimeout()) {

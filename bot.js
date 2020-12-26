@@ -25,7 +25,7 @@ let timeStart = Date.now();
 async function startBot() {
     try {
         await bot.login(conf.discordbotkey);
-        removedInactiveUsers();
+        setTimeoutToRemoveInactiveUsers();
     } catch (error) {
         let errorDate = new Date();
         console.log("Error when connecting Shard. Restarting shard in 30 seconds...");
@@ -49,8 +49,15 @@ async function removedInactiveUsers() {
         }
     }
 
-    console.log(`Removed: ${inactiveUsers} inactive users. Memory consumption: ${await getMemory()} MB`);
+    try {
+        console.log(`Removed: ${inactiveUsers} inactive users. Memory consumption: ${await getMemory()} MB`);
+    } catch (ex) { console.error(ex); }
     //createDummyUsers();
+    setTimeoutToRemoveInactiveUsers();
+    
+}
+
+function setTimeoutToRemoveInactiveUsers() {
     setTimeout(removedInactiveUsers, Globals.inactiveTimeBeforeDisconnect * 60000);
 }
 
@@ -91,6 +98,7 @@ async function getMemory() {
 
 bot.on("ready", async () => {
     console.log("Shard Connected");
+
     bot.user.setPresence({
         activity: {
             name: "On " + await Utils.getTotalNumberOfGuilds(bot.shard) + " servers!"
