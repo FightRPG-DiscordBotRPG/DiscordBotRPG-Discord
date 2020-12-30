@@ -15,6 +15,9 @@ class UserChallenge {
     constructor(user) {
         this.mustAnswer = false;
         this.answer = null;
+        /**
+         * @type Array<CommandLog>
+         **/
         this.commands = [];
         this.lengthToCheck = 0;
         this.updateLengthCheck();
@@ -33,7 +36,7 @@ class UserChallenge {
      * @param {Array<string>} command
      */
     async manageIncomingCommand(message, command) {
-        this.commands.push({ command: command, time: Date.now() });
+        this.commands.push(new CommandLog(command, Date.now()));
         let lang = this.user.lang;
 
         if (this.commands.length >= this.lengthToCheck && !this.mustAnswer && !this.isTimeout()) {
@@ -94,6 +97,13 @@ class UserChallenge {
 
     updateLengthCheck() {
         this.lengthToCheck = Math.round(100 + (Math.random() * 400));
+    }
+}
+
+class CommandLog {
+    constructor(command, date) {
+        this.command = command;
+        this.date = date;
     }
 }
 
