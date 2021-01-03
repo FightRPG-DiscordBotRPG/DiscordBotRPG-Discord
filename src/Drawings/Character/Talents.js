@@ -16,10 +16,12 @@ class Talents {
 
         let reachableNodes = [];
 
+
         for (let item of data.talents) {
-            for (let link of item.linkedNodes) {
+            for (let i in item.linkedNodesIds) {
+                let link = item.linkedNodesIds[i];
                 if (!reachableNodes.includes(link) && !data.talents.find(e => e.id == link)) {
-                    reachableNodes.push(link);
+                    reachableNodes.push(item.linkedNodes[i]);
                 }
             }
         }
@@ -81,7 +83,7 @@ class Talents {
         }
 
         this.isThereStats(data.node.secondaryStats);
-        console.log(data.node.realCost + " ___ " + (data.node.realCost > 1))
+
         let embed = new Discord.MessageEmbed() 
             .setColor(color)
             .setAuthor(`${data.node.id} - ${data.node.visuals.name} (${titleBonus})`, data.node.visuals.icon)
