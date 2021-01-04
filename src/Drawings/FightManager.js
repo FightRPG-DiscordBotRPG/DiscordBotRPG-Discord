@@ -74,41 +74,28 @@ class FightManager {
 
 
         if (ind < summary.rounds.length) {
-            if (summary.rounds[ind].restrictions.targetEnemy === false && summary.rounds[ind].restrictions.targetAlly === false && summary.rounds[ind].restrictions.targetSelf === false) {
-                // Can't do anything due to restrictions
-                // Then ignore turn for now
-                // Maybe adding some display to summary
-                fight.summaryIndex++;
-                await this.discordFight(message, userid, fight, lang);
 
+            let textDecoration = "";
+
+            if (summary.type == "pve") {
+                textDecoration = Emojis.getEntityTypeEmoji(summary.rounds[ind].roundType)
             } else {
-
-
-                let textDecoration = "";
-
-                if (summary.type == "pve") {
-                    textDecoration = Emojis.getEntityTypeEmoji(summary.rounds[ind].roundType)
-                } else {
-                    textDecoration = summary.rounds[ind].roundEntitiesIndex == "0" ? Emojis.emojisProd.sword.string : Emojis.emojisProd.shield.string;
-                }
-
-                this.swapArrayIndexes(textDecoration + this.getSummaryText(summary.rounds[ind]), fight);
-
-
-                message.edit(this.embedFight(fight, null, lang, true))
-                    .then(() => {
-                        fight.summaryIndex++;
-                        setTimeout(async () => {
-                            await this.discordFight(message, userid, fight, lang);
-                        }, 4000);
-                    })
-                    .catch((e) => {
-                        console.log(e);
-                    });
+                textDecoration = summary.rounds[ind].roundEntitiesIndex == "0" ? Emojis.emojisProd.sword.string : Emojis.emojisProd.shield.string;
             }
 
+            this.swapArrayIndexes(textDecoration + this.getSummaryText(summary.rounds[ind]), fight);
 
 
+            message.edit(this.embedFight(fight, null, lang, true))
+                .then(() => {
+                    fight.summaryIndex++;
+                    setTimeout(async () => {
+                        await this.discordFight(message, userid, fight, lang);
+                    }, 4000);
+                })
+                .catch((e) => {
+                    console.log(e);
+                });
 
 
         } else {
@@ -206,7 +193,7 @@ class FightManager {
 
                 }
             } else {
-                fight = this.swapArrayIndexes(Emojis.emojisProd.loose.string + " " + Translator.getString(lang, "fight_general", "loose"), fight);
+                fight = this.swapArrayIndexes(Emojis.emojisProd.loose.string + " " + Translator.getString(lang, "fight_general", "loose") + "\n", fight);
 
                 if (summary.type == "pvp" && fight.team1_number == 1 && summary.honor > 0) {
                     fight = this.swapArrayIndexes(Emojis.emojisProd.honor.string + " " + Translator.getString(lang, "fight_pvp", "honor_lose", [summary.honor]), fight);
@@ -267,7 +254,13 @@ class FightManager {
             hitText = ` (${Translator.getString(lang, "fight_general", "critical_hit")}) `;
         }
 
-        let str = round.skillInfo.message + hitText + "\n";
+        let str;
+
+        if (round.skillInfo.message.length > 0) {
+            str = round.skillInfo.message + hitText + "\n";
+        } else {
+            str = round.attacker.entity.identity.name + " " + Translator.getString(lang, "fight_general", "cant_do_anything") + "\n";
+        }
 
         let attackerStr = "";
         let targetsStr = "";
@@ -304,12 +297,13 @@ class FightManager {
      * 
      * @param {EntityAffectedLogger} entityLogger
      */
-    getSummaryEntity(entityLogger, withName = true) {        
+    getSummaryEntity(entityLogger, withName = true) {
 
         let name = Emojis.getEntityTypeEmoji(entityLogger.entity.identity.type) + " **" + entityLogger.entity.identity.name + "**\n";
 
         let str = withName ? name : "";
         if (entityLogger.battle.removedStates.length > 0) {
+            //console.log(entityLogger.battle.removedStates);
             str += `${Emojis.emojisProd.minussign.string} ${Translator.getString(entityLogger.lang, "fight_general", "status_removed", [entityLogger.battle.removedStates.map(e => e.name).join(",")])}\n`;
         }
 
@@ -318,6 +312,7 @@ class FightManager {
         }
 
         let results = entityLogger.battle.skillResults;
+
         DamageAndHealLogger.add(results, entityLogger.battle.statesResults);
 
         str += this.getStatsResultsText(results, entityLogger.lang);
@@ -335,7 +330,7 @@ class FightManager {
      * @param {DamageAndHealLogger} results
      * @param {string} lang
      */
-    getStatsResultsText(results, lang="en") {
+    getStatsResultsText(results, lang = "en") {
         let str = "";
 
         if (results.hpRegen > 0 || results.mpRegen > 0 || results.energyRegen > 0) {
@@ -375,10 +370,10 @@ class FightManager {
 
         if (summary.rounds[ind].roundEntitiesIndex == 0) {
             leftEntity = summary.rounds[ind].attacker.entity;
-            rightEntity = summary.rounds[ind].defenders[0].entity;
+            rightEntity = summary.rounds[ind].defenders[0] != null ? summary.rounds[ind].defenders[0].entity : summary.rounds[ind].attacker.entity;
         } else {
             rightEntity = summary.rounds[ind].attacker.entity;
-            leftEntity = summary.rounds[ind].defenders[0].entity;
+            leftEntity = summary.rounds[ind].defenders[0] != null ? summary.rounds[ind].defenders[0].entity : summary.rounds[ind].attacker.entity;
         }
 
         if (type == "pve") {
@@ -410,7 +405,8 @@ class FightManager {
             .addField(leftEntity.identity.name + " | " + Translator.getString(lang, "general", "lvl") + " : " + leftEntity.level,
                 this.getBarsDisplay(leftEntity, lang), true)
             .addField(`${monsterTitle} ${rightEntity.identity.name} | ${Translator.getString(lang, "general", "lvl")} : ${rightEntity.level}`,
-                this.getBarsDisplay(rightEntity, lang), true);
+                this.getBarsDisplay(rightEntity, lang), true)
+            .setFooter((ind + 1) + " / " + fight.summary.rounds.length);
 
         return embed;
     }
