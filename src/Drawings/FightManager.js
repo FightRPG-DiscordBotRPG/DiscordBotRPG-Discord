@@ -303,7 +303,6 @@ class FightManager {
 
         let str = withName ? name : "";
         if (entityLogger.battle.removedStates.length > 0) {
-            //console.log(entityLogger.battle.removedStates);
             str += `${Emojis.emojisProd.minussign.string} ${Translator.getString(entityLogger.lang, "fight_general", "status_removed", [entityLogger.battle.removedStates.map(e => e.name).join(",")])}\n`;
         }
 
