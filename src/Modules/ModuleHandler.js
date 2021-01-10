@@ -99,6 +99,11 @@ class ModuleHandler extends GModule {
                 case "prefix":
                     msg = this.prefixCommand(message, command, args, "en");
                     break;
+                case "tutorial":
+                case "play":
+                case "start":
+                    msg = Translator.getString(Globals.connectedUsers[authorIdentifier].lang, "help_panel", "tutorial", [Globals.tutorialLink]);
+                    break;
                 case "load_module":
                     if (isAdmin) {
                         if (this.loadModule(args[0])) {

@@ -6,7 +6,7 @@ const Globals = require("../../Globals");
 class ShopModule extends GModule {
     constructor() {
         super();
-        this.commands = ["sitems", "sbuy"];
+        this.commands = ["sitems", "sbuy", "shop"];
         this.startLoading("Shop");
         this.init();
         this.endLoading("Shop");
@@ -18,6 +18,7 @@ class ShopModule extends GModule {
 
         switch (command) {
             case "sitems":
+            case "shop":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/shop/items/" + args[0]), async (data) => {
                     await this.pageListener(data, message, Shop.displayItems(data), async (currPage) => {
                         let d = await axios.get("/game/shop/items/" + currPage);
