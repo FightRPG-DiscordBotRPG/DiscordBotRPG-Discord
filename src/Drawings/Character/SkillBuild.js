@@ -27,7 +27,7 @@ class SkillBuild {
         let embed = new Discord.MessageEmbed()
             .setColor(color)
             .setAuthor(user.username, user.avatar)
-            .setTitle(Translator.getString(lang, "skills_builds", "title_show", [data.build.length, data.maximumSkills]));
+            .setTitle(Translator.getString(lang, "skills_builds", "title_show", [data.build.length, data.maximumSkills]) + titleMaximum);
 
 
         if (data.build.length > 0) {
