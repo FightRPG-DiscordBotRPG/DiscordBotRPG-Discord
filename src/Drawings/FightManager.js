@@ -10,6 +10,7 @@ const RoundLogger = require("./Fight/RoundLogger");
 const EntityAffectedLogger = require("./Fight/EntityAffectedLogger");
 const DamageAndHealLogger = require("./Fight/DamageAndHealLogger");
 const TextDrawings = require("./TextDrawings");
+const User = require("../Users/User");
 
 class FightManager {
     constructor() {
@@ -30,7 +31,13 @@ class FightManager {
         return fight;
     }
 
-    async fight(data, message) {
+    /**
+     * 
+     * @param {any} data
+     * @param {any} message
+     * @param {User} user
+     */
+    async fight(data, message, user) {
         let lang = data.lang;
         let userid = message.author.id;
         let leftName = data.summary.rounds[0].roundEntitiesIndex == 0 ? data.summary.rounds[0].attacker.entity.identity.name : data.summary.rounds[0].defenders[0].entity.identity.name;
@@ -60,11 +67,19 @@ class FightManager {
         }
 
 
-        let msg = await message.channel.send(this.embedFight(theFight, null, lang, true));
-        await this.discordFight(msg, userid, theFight, lang);
+        let msg = await message.channel.send(this.embedFight(theFight, null, lang, user, true));
+        await this.discordFight(msg, userid, theFight, lang, user);
     }
 
-    async discordFight(message, userid, fight, lang) {
+    /**
+     * 
+     * @param {any} message
+     * @param {any} userid
+     * @param {any} fight
+     * @param {any} lang
+     * @param {User} user
+     */
+    async discordFight(message, userid, fight, lang, user) {
         let ind = fight.summaryIndex;
         /**
          *  @type {{type: string, rounds: Array<RoundLogger>, drops: Array<{name: string, drop: Array<{equipable: number, other: number}>}>, xp: number, money:number, honor: number, levelUpped: Array<string>, xpGained: Array<Object.<string, number>>, goldGained: Array<Object.<string, number>>, userIds: Array<string>, winner: number}}
@@ -86,11 +101,11 @@ class FightManager {
             this.swapArrayIndexes(textDecoration + this.getSummaryText(summary.rounds[ind]), fight);
 
 
-            message.edit(this.embedFight(fight, null, lang, true))
+            message.edit(this.embedFight(fight, null, lang, user, true))
                 .then(() => {
                     fight.summaryIndex++;
                     setTimeout(async () => {
-                        await this.discordFight(message, userid, fight, lang);
+                        await this.discordFight(message, userid, fight, lang, user);
                     }, 4000);
                 })
                 .catch((e) => {
@@ -211,7 +226,7 @@ class FightManager {
                 color = [255, 0, 0];
             }
 
-            await message.edit(this.embedFight(fight, color, lang, false));
+            await message.edit(this.embedFight(fight, color, lang, user, false));
 
             try {
                 if (summary.type == "pve") {
@@ -355,7 +370,15 @@ class FightManager {
         return str;
     }
 
-    embedFight(fight, color, lang, ongoing = true) {
+    /**
+     * 
+     * @param {any} fight
+     * @param {number[]} color
+     * @param {string} lang
+     * @param {User} user
+     * @param {boolean} ongoing
+     */
+    embedFight(fight, color, lang, user, ongoing = true) {
         color = color || [128, 128, 128]
         lang = lang || "en"
         let ind = fight.summaryIndex;
@@ -396,10 +419,19 @@ class FightManager {
                 battleStatus = Translator.getString(lang, "fight_general", "loose");
             }
         }
+
+        let contentText = "";
+
+        if (ongoing) {
+            contentText = this.separator + fight.text[1] + this.separator + fight.text[2]
+        } else {
+            contentText = this.separator + fight.text[0] + this.separator + fight.text[1] + this.separator + fight.text[2];
+        }
+
         let embed = new Discord.MessageEmbed()
             .setAuthor(Emojis.getString("crossed_swords") + "  " + Translator.getString(lang, "fight_general", "status_of_fight", [battleStatus]) + "  " + Emojis.getString("crossed_swords"))
             .setColor(color)
-            .setDescription(fight.text[0] + this.separator + fight.text[1] + this.separator + fight.text[2])
+            .setDescription(contentText)
             //.addField(Translator.getString(lang, "fight_general", "combat_log"), text)
             .addField(leftEntity.identity.name + " | " + Translator.getString(lang, "general", "lvl") + " : " + leftEntity.level,
                 this.getBarsDisplay(leftEntity, lang), true)

@@ -18,6 +18,7 @@ class FightModule extends GModule {
         let mentions = message.mentions.users;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
         let firstMention;
+        let user = Globals.connectedUsers[message.author.id];
 
         //PStatistics.incrStat(Globals.connectedUsers[authorIdentifier].character.id, "commands_fights", 1);
 
@@ -26,7 +27,7 @@ class FightModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.post("/game/fight/monster", {
                     idMonster: args[0],
                 }), async (data) => {
-                        await fightManager.fight(data, message);
+                    await fightManager.fight(data, message, user);
                 });
                 break;
 
@@ -36,7 +37,7 @@ class FightModule extends GModule {
                     idCharacter: args[0],
                     mention: firstMention != null ? firstMention.id : undefined
                 }), async (data) => {
-                    await fightManager.fight(data, message);
+                    await fightManager.fight(data, message, user);
                 });
         }
 
