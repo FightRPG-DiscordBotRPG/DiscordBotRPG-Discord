@@ -32,11 +32,10 @@ class AdminModule extends GModule {
         switch (command) {
             case "updatepresence":
                 try {
-
                     await message.client.user.setPresence({
-                        game: {
-                            name: "On " + Utils.getTotalNumberOfGuilds(message.client.shard) + " guilds !",
-                        },
+                        activity: {
+                            name: "On " + await Utils.getTotalNumberOfGuilds(message.client.shard) + " servers!"
+                        }
                     });
                     msg = "Présence mise à jour.";
                 } catch (e) {
