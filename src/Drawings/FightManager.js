@@ -139,7 +139,7 @@ class FightManager {
                         }
 
                         if (summary.levelUpped.length > 0) {
-                            fight = this.swapArrayIndexes(Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "fight_pve", "level_up", [summary.levelUpped[0].levelGained, summary.levelUpped[0].newLevel]), fight);
+                            fight = this.swapArrayIndexes(Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "fight_pve", "level_up", [summary.levelUpped[0].levelGained, summary.levelUpped[0].newLevel]) + "\n", fight);
                         }
 
                         if (summary.xp == 0) {
@@ -174,10 +174,10 @@ class FightManager {
                                     highestDropName = rname;
                                 }
                             }
-                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "group_drop_item", [highestDropName]), fight);
+                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "group_drop_item", [highestDropName]) + "\n", fight);
                         }
                         if (summary.levelUpped.length > 0) {
-                            fight = this.swapArrayIndexes(Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "fight_pve", "group_level_up"), fight);
+                            fight = this.swapArrayIndexes(Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "fight_pve", "group_level_up") + "\n", fight);
                         }
 
                         if (summary.xp == 0) {
