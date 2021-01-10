@@ -159,7 +159,7 @@ class CharacterModule extends GModule {
                 });
                 break;
             case "talentsimport":
-                msg = await this.getBasicSuccessErrorMessage(await axios.post("/game/character/talents/import", { talentsIds: args[0] }));
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/character/talents/import", { talentsIds: args[0] }));
                 break;
             case "talentshow":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents/show/" + args[0]), async (data) => {
@@ -237,25 +237,25 @@ class CharacterModule extends GModule {
                 });
                 break;
             case "buildadd":
-                msg = await this.getBasicSuccessErrorMessage(await axios.post("/game/character/build/add", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/character/build/add", {
                     idSkill: args[0],
                 }));
                 break;
             case "buildmove": {
                 let priority = parseInt(args[1], 10) - 1;
-                msg = await this.getBasicSuccessErrorMessage(await axios.post("/game/character/build/move", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/character/build/move", {
                     idSkill: args[0],
                     priority: priority
                 }));
             }
                 break;
             case "buildremove":
-                msg = await this.getBasicSuccessErrorMessage(await axios.post("/game/character/build/remove", {
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/character/build/remove", {
                     idSkill: args[0],
                 }));
                 break;
             case "buildclear":
-                msg = await this.getBasicSuccessErrorMessage(await axios.post("/game/character/build/clear"));
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/character/build/clear"));
                 break;
 
         }
