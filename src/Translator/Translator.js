@@ -197,7 +197,7 @@ class Translator {
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "wood").toLowerCase()] = 3;
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "sword").toLowerCase()] = 4;
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "whip").toLowerCase()] = 5;
-            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "armor").toLowerCase()] = 6;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "metal").toLowerCase()] = 6;
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "reset_time_potion").toLowerCase()] = 9;
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "founder_box").toLowerCase()] = 10;
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "horse").toLowerCase()] = 11;
@@ -207,6 +207,12 @@ class Translator {
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "salamander").toLowerCase()] = 15;
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "camel").toLowerCase()] = 16;
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "polar_bear").toLowerCase()] = 17;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "cloth").toLowerCase()] = 18;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "leather").toLowerCase()] = 19;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "bow").toLowerCase()] = 20;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "dagger").toLowerCase()] = 21;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "wand").toLowerCase()] = 22;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "staff").toLowerCase()] = 23;
         }
     }
 
