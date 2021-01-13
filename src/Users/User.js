@@ -4,6 +4,8 @@ const conf = require("../../conf/conf");
 const Globals = require("../Globals");
 const InfoPanel = require("../Drawings/Character/InfoPanel");
 const UserChallenge = require("../AntiSpam/UserChallenge");
+const WildArea = require("../Drawings/Areas/WildArea");
+const CityArea = require("../Drawings/Areas/CityArea");
 class User {
     constructor(id, username, avatar, lang="en") {
         this.id = id;
@@ -15,6 +17,8 @@ class User {
         this.lastCommandUsed = Date.now();
         this.axios = null;
         this.infoPanel = new InfoPanel();
+        this.wildAreaDisplay = new WildArea();
+        this.cityAreaDisplay = new CityArea();
         this.challenge = new UserChallenge(this);
     }
 
@@ -71,6 +75,15 @@ class User {
 
     isAdmin() {
         return Globals.admins.indexOf(this.id) > -1;
+    }
+
+    getAreaDisplay(data) {
+        switch (data?.area?.type) {
+            case "city":
+                return this.cityAreaDisplay;
+            default:
+                return this.wildAreaDisplay;
+        }
     }
 
 }

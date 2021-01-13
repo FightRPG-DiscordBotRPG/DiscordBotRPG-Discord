@@ -482,6 +482,9 @@ Emojis.general = {
     "snail": "🐌",
     "mans_shoe": "👞",
     "hiking_boot": "🥾",
+    "framed_picture": "🖼️",
+    "clockwise_vertical_arrows": "🔃",
+    "counterclockwise_arrows_button": "🔄",
 };
 
 Emojis.entitiesTypes = {
