@@ -437,7 +437,7 @@ class FightManager {
                 this.getBarsDisplay(leftEntity, lang), true)
             .addField(`${monsterTitle} ${rightEntity.identity.name} | ${Translator.getString(lang, "general", "lvl")} : ${rightEntity.level}`,
                 this.getBarsDisplay(rightEntity, lang), true)
-            .setFooter((ind + 1) + " / " + fight.summary.rounds.length);
+            .setFooter((ind + 1) + " / " + ((ind + 1) / fight.summary.rounds.length >= 0.9 ? fight.summary.rounds.length : "?"));
 
         return embed;
     }
