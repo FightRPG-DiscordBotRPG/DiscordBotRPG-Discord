@@ -478,7 +478,10 @@ Emojis.general = {
     "drop_of_blood": "🩸",
     "water_wave": "🌊",
     "blue_heart": "💙",
-    "sweat_droplets": "💦"
+    "sweat_droplets": "💦",
+    "snail": "🐌",
+    "mans_shoe": "👞",
+    "hiking_boot": "🥾",
 };
 
 Emojis.entitiesTypes = {
@@ -515,7 +518,8 @@ Emojis.stats = {
     "earthResist": Emojis.general.deciduous_tree,
     "airResist": Emojis.general.tornado,
     "darkResist": Emojis.general.ogre,
-    "lightResist": Emojis.general.sun
+    "lightResist": Emojis.general.sun,
+    "initiative": Emojis.general.snail,
 };
 
 Emojis.typeItem = {
