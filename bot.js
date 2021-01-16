@@ -123,7 +123,7 @@ bot.on("ready", async () => {
 
 });
 
-let moduleHandler = new ModuleHandler();
+Globals.moduleHandler = new ModuleHandler();
 
 // Key Don't open
 startBot();
@@ -134,7 +134,7 @@ startBot();
 
 bot.on('message', async (message) => {
     try {
-        await moduleHandler.run(message);
+        await Globals.moduleHandler.run(message);
     } catch (err) {
         let msgError = "";
         if (err.constructor == Discord.DiscordAPIError) {

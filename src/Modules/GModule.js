@@ -24,7 +24,13 @@ class GModule {
         this.allModulesReference = {};
     }
 
-    async run() { }
+    /**
+    *
+    * @param {Discord.Message} message
+    * @param {string} command
+    * @param {Array} args
+    */
+    async run(message, command, args) { }
 
     init() {
 

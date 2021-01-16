@@ -75,6 +75,10 @@ var Globals = {
     typesByLang: {},
     subtypesByLang: {},
     /**
+     * @type {ModuleHandler}
+     */
+    moduleHandler: null,
+    /**
      * Minutes before disconnecting
      */
     inactiveTimeBeforeDisconnect: 30,
@@ -85,3 +89,4 @@ var Globals = {
 module.exports = Globals;
 
 const User = require("./Users/User");
+const ModuleHandler = require("./Modules/ModuleHandler");

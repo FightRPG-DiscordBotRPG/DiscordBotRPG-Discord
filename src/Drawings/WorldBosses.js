@@ -42,7 +42,7 @@ class WorldBosses {
             if (data.bosses.length > 0) {
                 let str = "";
                 for (let info of data.bosses) {
-                    str += Emojis.general.national_park + " " + info.regionName + " - " + info.areaName + "\n";
+                    str += Emojis.general.national_park + " " + info.regionName + " - " + info.areaName + " (" + info.idArea  + ")\n";
                     if (info.worldBoss != null) {
                         str += Emojis.emojisProd.boss.string + " " + info.worldBoss.name + " (" + Translator.getFormater(data.lang).format(info.worldBoss.actualHP) + "/" + Translator.getFormater(data.lang).format(info.worldBoss.maxHP) + ")\n" + pb.draw(info.worldBoss.actualHP, info.worldBoss.maxHP);
                     } else {
