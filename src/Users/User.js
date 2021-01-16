@@ -20,6 +20,7 @@ class User {
         this.wildAreaDisplay = new WildArea();
         this.cityAreaDisplay = new CityArea();
         this.challenge = new UserChallenge(this);
+        this.setMobileMode = "auto";
     }
 
     async load() {
@@ -62,12 +63,12 @@ class User {
     }
 
     setMobile(status) {
-        if (status != null && (status["desktop"] || status["web"])) {
+        if (status == null || (status != null && (status["desktop"] || status["web"])) ) {
             this.isOnMobile = false;
         } else {
             this.isOnMobile = true;
         }
-    }
+    }    
 
     getAxios() {
         return this.axios;

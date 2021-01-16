@@ -88,8 +88,10 @@ class ModuleHandler extends GModule {
                 return;
             }
 
-            Globals.connectedUsers[authorIdentifier].setMobile(message.author.presence.clientStatus);
-
+            let user = Globals.connectedUsers[authorIdentifier];
+            if (user.setMobileMode === "auto") {
+                user.setMobile(message.author.presence.clientStatus);
+            }
 
             // exec module corresponding to command
             await this.executeCommand(message, command, nonDiscordArgs, prefix);
@@ -102,7 +104,20 @@ class ModuleHandler extends GModule {
                 case "tutorial":
                 case "play":
                 case "start":
-                    msg = Translator.getString(Globals.connectedUsers[authorIdentifier].lang, "help_panel", "tutorial", [Globals.tutorialLink]);
+                    msg = Translator.getString(user.lang, "help_panel", "tutorial", [Globals.tutorialLink]);
+                    break;
+                case "setmobile":
+                    if (args[0] === "true") {
+                        user.setMobileMode = "manual";
+                        user.isOnMobile = true;
+                    } else if (args[0] === "false") {
+                        user.setMobileMode = "manual";
+                        user.isOnMobile = false;
+                    } else {
+                        user.setMobileMode = "auto";
+                    }
+
+                    msg = Translator.getString(user.lang, "general", "mobile_set", [user.setMobileMode, Translator.getString(user.lang, "general", user.isOnMobile ? "yes" : "no")]);
                     break;
                 case "load_module":
                     if (isAdmin) {
