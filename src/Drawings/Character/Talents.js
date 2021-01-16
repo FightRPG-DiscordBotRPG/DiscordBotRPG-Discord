@@ -3,6 +3,7 @@ const Discord = require("discord.js");
 const Emojis = require("../../Drawings/Emojis");
 const TextDrawings = require("../TextDrawings");
 const User = require("../../Users/User");
+const Canvas = require('canvas');
 
 class Talents {
 
@@ -102,6 +103,45 @@ class Talents {
         }
 
         return embed;
+    }
+
+    allToImage(data, message) {
+
+        console.log(data);
+
+        let talentsByIds = {};
+
+        const nodesCanvas = Canvas.createCanvas(1024, 1024);
+
+        const ctx = nodesCanvas.getContext("2d");
+
+        ctx.beginPath();
+        ctx.rect(0, 0, 1024, 1024);
+        ctx.fillStyle = "gray";
+        ctx.fill();
+
+        let size = 50;
+
+        for (let talent of data.talents) {
+            let talentIcon = await Canvas.loadImage(talent.visuals.icon);
+            ctx.drawImage(talentIcon, (talent.x * size) + 500, (-talent.y * size) + 500, size, size);
+            console.log(talent.linkedNodes);
+            talentsByIds[talent.id] = talent;
+        }
+        let decal = 500 + size / 2;
+        for (let talent of data.talents) {
+            for (let link of talent.linkedNodesIds) {
+                if (talentsByIds[link]) {
+                    ctx.moveTo((talent.x * size) + decal, (-talent.y * size) + decal);
+                    ctx.lineTo((talentsByIds[link].x * size) + decal, (-talentsByIds[link].y * size) + decal);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        const attachment = new Discord.MessageAttachment(nodesCanvas.toBuffer(), 'talents.png');
+
+        message.channel.send("hey !", attachment);
     }
 
 }

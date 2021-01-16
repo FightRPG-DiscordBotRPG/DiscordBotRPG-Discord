@@ -11,6 +11,7 @@
   "license": "SEE LICENCE IN LICENSE.md",
   "dependencies": {
     "axios": "^0.21.1",
+    "canvas": "^2.6.1",
     "dblapi.js": "^2.4.1",
     "discord.js": "^12.5.1",
     "express": "^4.17.1",
