@@ -485,6 +485,7 @@ Emojis.general = {
     "framed_picture": "🖼️",
     "clockwise_vertical_arrows": "🔃",
     "counterclockwise_arrows_button": "🔄",
+    "next_track_button": "⏭️",
 };
 
 Emojis.entitiesTypes = {

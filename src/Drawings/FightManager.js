@@ -11,6 +11,7 @@ const EntityAffectedLogger = require("./Fight/EntityAffectedLogger");
 const DamageAndHealLogger = require("./Fight/DamageAndHealLogger");
 const TextDrawings = require("./TextDrawings");
 const User = require("../Users/User");
+const MessageReactionsWrapper = require("../MessageReactionsWrapper");
 
 class FightManager {
     constructor() {
@@ -34,7 +35,7 @@ class FightManager {
     /**
      * 
      * @param {any} data
-     * @param {any} message
+     * @param {Discord.Message} message
      * @param {User} user
      */
     async fight(data, message, user) {
@@ -50,7 +51,8 @@ class FightManager {
             summaryIndex: 0,
             team1_number: data.team1_number,
             team2_number: data.team2_number,
-            playersMovedTo: data.playersMovedTo
+            playersMovedTo: data.playersMovedTo,
+            skip: false
         };
 
         if (theFight.summary.type == "pve") {
@@ -67,8 +69,32 @@ class FightManager {
         }
 
 
-        let msg = await message.channel.send(this.embedFight(theFight, null, lang, user, true));
-        await this.discordFight(msg, userid, theFight, lang, user);
+
+        let displaySkipFight = Emojis.general.next_track_button;
+
+        let emojisList = [
+            displaySkipFight
+        ];
+
+        let reactWrapper = new MessageReactionsWrapper();
+
+        await reactWrapper.load(message, this.embedFight(theFight, null, lang, user, true), {
+            reactionsEmojis: emojisList,
+            collectorOptions: {
+                time: data.summary.rounds.length * 4000,
+                max: 1,
+            }
+        });
+
+        reactWrapper.collector.on('collect', async (reaction) => {
+
+            if (reaction.emoji.name === displaySkipFight) {
+                theFight.skip = true;
+            }
+
+        });
+
+        await this.discordFight(reactWrapper.message, userid, theFight, lang, user);
     }
 
     /**
@@ -104,9 +130,14 @@ class FightManager {
             message.edit(this.embedFight(fight, null, lang, user, true))
                 .then(() => {
                     fight.summaryIndex++;
+                    let waitTime = 4000;
+                    if (fight.skip) {
+                        fight.summaryIndex = summary.rounds.length;
+                        waitTime = 100;
+                    }
                     setTimeout(async () => {
                         await this.discordFight(message, userid, fight, lang, user);
-                    }, 4000);
+                    }, waitTime);
                 })
                 .catch((e) => {
                     console.log(e);
