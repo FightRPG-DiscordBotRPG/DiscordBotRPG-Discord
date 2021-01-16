@@ -15,8 +15,8 @@ class Skill {
         let lang = data.lang;
         let titleBonus, color;
         
-        if (data.skill.isEquiped) {
-            titleBonus = Translator.getString(lang, "general", "currently_equipped");
+        if (data.skill.isEquipped) {
+            titleBonus = Translator.getString(lang, "inventory_equipment", "currently_equipped");
             color = [128, 128, 128];
         } else if (data.skill.canEquip) {
             titleBonus = Translator.getString(lang, "general", "equipable");
