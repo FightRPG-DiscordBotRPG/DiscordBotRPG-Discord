@@ -24,7 +24,7 @@ class Area {
 		let lang = data.lang;
 		let embed = new Discord.MessageEmbed()
 			.setColor([0, 255, 0])
-			.setAuthor(area.name + " | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by", [area.owner]), area.image);
+			.setAuthor(area.name + " (" + area.id  + ") | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by", [area.owner]), area.image);
 
 		if (this.displayWeather) {
 			embed = this.embedWeather(data, user, embed);
