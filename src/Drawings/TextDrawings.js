@@ -95,7 +95,7 @@ class TextDrawings {
                 // No more [x+x] xxx with the else
                 if (type !== this.statCompareTypes.only_total && type !== this.statCompareTypes.talents) {
                     statStr = stats[stat].toString();
-                    strStatWithDiff = "[" + stats[stat] + diff + "]";
+                    strStatWithDiff = "[" + this.getStatValue(stat, stats[stat]) + diff + "]";
                 } else {
                     diff = "";
                 }
@@ -178,6 +178,14 @@ class TextDrawings {
             return -statValue + "%";
         } else {
             return statValue.toString();
+        }
+    }
+
+    getStatValue(statName, statValue) {
+        if (statName.includes("Cost")) {
+            return -statValue;
+        } else {
+            return statValue;
         }
     }
 
