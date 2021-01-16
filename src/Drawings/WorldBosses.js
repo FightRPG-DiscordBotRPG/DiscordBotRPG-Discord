@@ -26,7 +26,7 @@ class WorldBosses {
 
             let ListOfWorldBosses = new GenericMultipleEmbedList();
             ListOfWorldBosses.load({ collection: data.bosses, displayIfEmpty: Translator.getString(lang, "world_bosses", "no_world_boss"), listType: 0 }, lang, (index, info) => {
-                let nextWorkBossInfo = Emojis.general.national_park + " " + info.regionName + " - " + info.areaName + "\n\n";
+                let nextWorkBossInfo = Emojis.general.national_park + " " + info.regionName + " - " + info.areaName + " (" + info.idArea + ")\n\n";
                 if (info.worldBoss != null) {
                     let str = nextWorkBossInfo
                     return str + Emojis.emojisProd.boss.string + " " + info.worldBoss.name + " (" + Translator.getFormater(data.lang).format(info.worldBoss.actualHP) + "/" + Translator.getFormater(data.lang).format(info.worldBoss.maxHP) + ")\n" + pb.draw(info.worldBoss.actualHP, info.worldBoss.maxHP);
@@ -77,10 +77,11 @@ class WorldBosses {
         let damageString = data_fight.isCriticalHit ? Translator.getString(lang, "world_bosses", "boss_fight_damage_inflicted_critical", [data_fight.damage]) : Translator.getString(lang, "world_bosses", "boss_fight_damage_inflicted", [data_fight.damage]);
         return new Discord.MessageEmbed()
             .setAuthor(data_ranks.worldBoss.bossName)
-            .addField(Emojis.getString("sword") + Translator.getString(lang, "fight_general", "combat_log"), damageString)
-            .addField(Emojis.getString("win") + Translator.getString(lang, "leaderboards", "wb_damage"), Translator.getString(lang, "world_bosses", "boss_fight_recap_damage_dealt", [data_ranks.worldBoss.damage, data_ranks.worldBoss.damageRank]), true)
-            .addField(Emojis.getString("win") + Translator.getString(lang, "leaderboards", "wb_attacks"), Translator.getString(lang, "world_bosses", "boss_fight_recap_attack_count", [data_ranks.worldBoss.attackCount, data_ranks.worldBoss.attackCountRank]), true)
-            .addField(Emojis.getString("monster") + Translator.getString(lang, "help_panel", "world_boss_title"), this.listToDiscord(data_boss, user, false));
+            .addField(Emojis.getString("sword") + " " + Translator.getString(lang, "fight_general", "combat_log"), damageString)
+            .addField(Emojis.general.yellow_book + " " + Translator.getString(lang, "world_bosses", "skill_used"), data_fight.skillUsed)
+            .addField(Emojis.getString("win") + " " + Translator.getString(lang, "leaderboards", "wb_damage"), Translator.getString(lang, "world_bosses", "boss_fight_recap_damage_dealt", [data_ranks.worldBoss.damage, data_ranks.worldBoss.damageRank]), true)
+            .addField(Emojis.getString("win") + " " + Translator.getString(lang, "leaderboards", "wb_attacks"), Translator.getString(lang, "world_bosses", "boss_fight_recap_attack_count", [data_ranks.worldBoss.attackCount, data_ranks.worldBoss.attackCountRank]), true)
+            .addField(Emojis.getString("monster") + " " + Translator.getString(lang, "help_panel", "world_boss_title"), this.listToDiscord(data_boss, user, false));
     }
 }
 
