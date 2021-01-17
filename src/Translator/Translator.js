@@ -232,6 +232,7 @@ class Translator {
         Translator.loadGlobalsRarities();
         Translator.loadGlobalsTypes();
         Translator.loadGlobalsSubTypes();
+        Translator.loadGlobalsYesNo();
     }
 }
 
