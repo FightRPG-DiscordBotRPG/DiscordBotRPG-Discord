@@ -105,7 +105,7 @@ class Talents {
         return embed;
     }
 
-    allToImage(data, message) {
+    async allToImage(data, message) {
 
         console.log(data);
 
