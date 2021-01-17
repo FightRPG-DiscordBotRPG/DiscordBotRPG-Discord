@@ -108,7 +108,7 @@ class ModuleHandler extends GModule {
                     break;
                 case "setmobile":
                     if (Globals.yesNoByLang[args[0]]) {
-                        args[0] = Globals.yesNoByLang[args[0];
+                        args[0] = Globals.yesNoByLang[args[0]];
                     }
 
                     if (args[0] == true) {
