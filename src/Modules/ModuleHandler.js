@@ -107,14 +107,19 @@ class ModuleHandler extends GModule {
                     msg = Translator.getString(user.lang, "help_panel", "tutorial", [Globals.tutorialLink]);
                     break;
                 case "setmobile":
-                    if (args[0] === "true") {
+                    if (Globals.yesNoByLang[args[0]]) {
+                        args[0] = Globals.yesNoByLang[args[0];
+                    }
+
+                    if (args[0] == true) {
                         user.setMobileMode = "manual";
                         user.isOnMobile = true;
-                    } else if (args[0] === "false") {
+                    } else if (args[0] == false) {
                         user.setMobileMode = "manual";
                         user.isOnMobile = false;
                     } else {
                         user.setMobileMode = "auto";
+                        user.setMobile(message.author.presence.clientStatus);
                     }
 
                     msg = Translator.getString(user.lang, "general", "mobile_set", [user.setMobileMode, Translator.getString(user.lang, "general", user.isOnMobile ? "yes" : "no")]);

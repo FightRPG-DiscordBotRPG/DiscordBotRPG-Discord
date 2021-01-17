@@ -216,6 +216,13 @@ class Translator {
         }
     }
 
+    static loadGlobalsYesNo() {
+        for (let lang in this.translations) {
+            Globals.yesNoByLang[Translator.getString(lang, "general", "yes").toLowerCase()] = true;
+            Globals.yesNoByLang[Translator.getString(lang, "general", "no").toLowerCase()] = false;
+        }
+    }
+
     static async loadTranslator() {
         Translator.translations = {};
         Translator.nbOfTranslations = 0;

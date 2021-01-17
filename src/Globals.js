@@ -74,6 +74,7 @@ var Globals = {
     raritiesByLang: {},
     typesByLang: {},
     subtypesByLang: {},
+    yesNoByLang: {},
     /**
      * @type {ModuleHandler}
      */
