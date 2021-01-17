@@ -15,7 +15,7 @@ const SkillBuild = require("../../Drawings/Character/SkillBuild");
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile"];
+        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile", "resettalents"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -48,11 +48,7 @@ class CharacterModule extends GModule {
                             return data.error;
                         } else {
 
-                            let embedMessage = new Discord.MessageEmbed()
-                                .setColor([0, 255, 0])
-                                .setAuthor(Emojis.getString("scroll") + " " + Translator.getString(data.lang, "character", "reset_price_title"))
-                                .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "travel", "gold_price_title"), Translator.getString(data.lang, "travel", "gold_price_body", [data.resetValue]), true)
-                                .addField(Emojis.getString("q_mark") + " " + Translator.getString(data.lang, "character", "sure_to_reset_title"), Translator.getString(data.lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]));
+                            let embedMessage = this.getResetEmbed("", data);
 
                             this.confirmListener(message, embedMessage, async (validation) => {
                                 if (validation == true) {
@@ -65,8 +61,30 @@ class CharacterModule extends GModule {
                     });
 
                 }
+                break;
 
+            case "resettalents":
+                if (args[0] === "confirm") {
+                    msg = this.getBasicSuccessErrorMessage(await axios.get("/game/character/talents/reset"));
+                } else {
+                    msg = await this.getDisplayIfSuccess(await axios.get("/game/character/info"), async (data) => {
+                        if (data.error != null) {
+                            return data.error;
+                        } else {
 
+                            let embedMessage = this.getResetEmbed("talents", data);
+
+                            this.confirmListener(message, embedMessage, async (validation) => {
+                                if (validation == true) {
+                                    return this.getBasicSuccessErrorMessage(await axios.get("/game/character/talents/reset"));
+                                } else {
+                                    return Translator.getString(data.lang, "character", "reset_talents_cancel");
+                                }
+                            });
+                        }
+                    });
+
+                }
                 break;
 
             case "leaderboard":
@@ -263,6 +281,21 @@ class CharacterModule extends GModule {
         this.sendMessage(message, msg);
     }
 
+    /**
+     * 
+     * @param {string} optionalType
+     * @param {any} lang
+     */
+    getResetEmbed(optionalType, data) {
+        if (optionalType) {
+            optionalType = "_" + optionalType;
+        }
+        return new Discord.MessageEmbed()
+            .setColor([0, 255, 0])
+            .setAuthor(Emojis.getString("scroll") + " " + Translator.getString(data.lang, "character", "reset" + optionalType + "_price_title"))
+            .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "travel", "gold_price_title"), Translator.getString(data.lang, "travel", "gold_price_body", [data.resetValue]), true)
+            .addField(Emojis.getString("q_mark") + " " + Translator.getString(data.lang, "character", "sure_to_reset" + optionalType + "_title"), Translator.getString(data.lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]));
+    }
 
 }
 
