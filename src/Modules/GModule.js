@@ -131,6 +131,19 @@ class GModule {
         return subtype;
     }
 
+    /**
+     * 
+     * @param {string} value
+     */
+    tryParseYesNo(value) {
+        if (value === "true" || value === "false") { return value };
+        let valueIndex = decodeURI(value.toLowerCase());
+        if (Globals.yesNoByLang[valueIndex] != null) {
+            return Globals.yesNoByLang[valueIndex];
+        }
+        return true;
+    }
+
     cmdToString(data, prefix = "::") {
         let str = "```apache\n" + "::" + Translator.getString(data.lang, "help_panel", "help") + "::\n";
         for (let category in data.commands) {
@@ -267,6 +280,11 @@ class GModule {
                         break;
                     case "power_up":
                         type = "power";
+                        break;
+                    case "fav":
+                    case "favorite":
+                        type = "fav";
+                        value = this.tryParseYesNo(value);
                         break;
                 }
 
