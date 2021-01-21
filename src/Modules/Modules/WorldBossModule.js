@@ -11,7 +11,7 @@ const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
 class WorldBossModule extends GModule {
     constructor() {
         super();
-        this.commands = ["wbshowall", "wbfight", "wbattack", "wblastinfo", "wbleaderboard"];
+        this.commands = ["wbshowall", "wbfight", "wbattack", "wblastinfo", "wbleaderboard", "wbs"];
         this.startLoading("World Boss");
         this.init();
         this.endLoading("World Boss");
@@ -25,6 +25,7 @@ class WorldBossModule extends GModule {
 
         switch (command) {
             case "wbshowall":
+            case "wbs":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/worldbosses/display/all"), async (data) => {
                     //return WorldBosses.listToDiscord(data, Globals.connectedUsers[authorIdentifier], true);
 
