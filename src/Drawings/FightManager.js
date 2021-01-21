@@ -296,7 +296,7 @@ class FightManager {
 
         if (!round.success) {
             hitText += ` (${Translator.getString(lang, "fight_general", "missed")}) `;
-        } else if (round.attacker.battle.isCritical === true) {
+        } else if (round.defenders[0].battle.isCritical === true) {
             hitText = ` (${Translator.getString(lang, "fight_general", "critical_hit")}) `;
         }
 
