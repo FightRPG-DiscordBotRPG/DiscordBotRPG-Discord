@@ -5,7 +5,6 @@ const Translator = require("../../Translator/Translator");
 const Emojis = require("../../Drawings/Emojis");
 const Axios = require("axios");
 const Region = require("../../Drawings/Areas/Region");
-const WildArea = require("../../../../discordbotrpg-server/bin/Areas/WildArea");
 const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
 
 
