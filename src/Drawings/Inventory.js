@@ -68,7 +68,7 @@ class Inventory {
                             str += Emojis.getItemSubTypeEmoji(Globals.getSubtypeName(data.params.subtype)) + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_subtype", [Translator.getString(lang, "item_sous_types", Globals.getSubtypeName(data.params.subtype))]);
                             break;
                         case "level_up":
-                            str += Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level_sup", [data.params.level]);
+                            str += Emojis.emojisProd.leveldown.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level_sup", [data.params.level]);
                             break;
                         case "level_down":
                             str += Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level_inf", [data.params.level]);
