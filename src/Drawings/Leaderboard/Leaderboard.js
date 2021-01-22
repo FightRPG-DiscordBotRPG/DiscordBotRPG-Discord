@@ -14,7 +14,7 @@ class Leaderboard {
 
     getNumberLength(number) {
         let numberLength = number.toString();
-        return numberLength.length;
+        return Translator.getFormater(this.lang).format(numberLength).length;
     }
 
     drawWithPages() {
@@ -49,7 +49,7 @@ class Leaderboard {
     }
 
     getFieldDisplay(value, maximumLength) {
-        let field = Translator.getFormater(this.lang).format(value)
+        let field = Translator.getFormater(this.lang).format(value);
         return "`" + ".".repeat(maximumLength - field.length) + field + "`";
     }
 
