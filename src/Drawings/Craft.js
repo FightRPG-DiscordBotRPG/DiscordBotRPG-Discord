@@ -63,11 +63,9 @@ class Craft {
     }
 
     getCraftList(data) {
-
         let listOfCrafts = new GenericMultipleEmbedList();
-
         listOfCrafts.load({ collection: data.crafts, displayIfEmpty: Translator.getString(data.lang, "general", "nothing_at_this_page"), listType: 0, pageRelated: { page: data.page, maxPage: data.maxPage } }, data.lang, (index, craft) => {
-            return index + " - **" + craft.name + "** - " + Emojis.getItemTypeEmoji(craft.type_shorthand) + " " + craft.type + " - " + Emojis.emojisProd.leveldown.string + " " + craft.minLevel + " - " + Emojis.emojisProd.levelup.string + " " + craft.maxLevel + " - " + Emojis.getRarityEmoji(craft.rarity_shorthand) + " " + craft.rarity
+            return craft.idEmplacement + " - **" + craft.name + "** - " + Emojis.getItemTypeEmoji(craft.type_shorthand) + " " + craft.type + " - " + Emojis.emojisProd.leveldown.string + " " + craft.minLevel + " - " + Emojis.emojisProd.levelup.string + " " + craft.maxLevel + " - " + Emojis.getRarityEmoji(craft.rarity_shorthand) + " " + craft.rarity
         });
 
         let embed = new Discord.MessageEmbed()
