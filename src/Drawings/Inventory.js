@@ -68,16 +68,16 @@ class Inventory {
                             str += Emojis.getItemSubTypeEmoji(Globals.getSubtypeName(data.params.subtype)) + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_subtype", [Translator.getString(lang, "item_sous_types", Globals.getSubtypeName(data.params.subtype))]);
                             break;
                         case "level_up":
-                            str += Emojis.emojisProd.leveldown.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level_sup", [data.params.level]);
+                            str += Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level_sup", [data.params.level]);
                             break;
                         case "level_down":
-                            str += Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level_inf", [data.params.level]);
+                            str += Emojis.emojisProd.leveldown.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level_inf", [data.params.level_down]);
                             break;
                         case "power_up":
                             str += Emojis.general.collision + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_sup", [data.params.power]);
                             break;
                         case "power_down":
-                            str += Emojis.general.collision + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_inf", [data.params.power]);
+                            str += Emojis.general.collision + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_inf", [data.params.power_down]);
                             break;
                         case "name":
                             str += Emojis.general.clipboard + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_name", [data.params.name.replace(/%/g, "")]);
