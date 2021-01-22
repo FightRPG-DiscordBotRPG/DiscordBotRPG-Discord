@@ -183,7 +183,11 @@ class TravelModule extends GModule {
                     if (validate == true) {
                         return await this.travelPost(args, axios, type);
                     } else {
-                        return Translator.getString(data.lang, "travel", "travel_cancel");
+                        let easterEgg = "";
+                        if (Math.random() < 0.001) {
+                            easterEgg = "_easter_egg";
+                        }
+                        return Translator.getString(data.lang, "travel", "travel_cancel" + easterEgg);
                     }
                 });
             });
