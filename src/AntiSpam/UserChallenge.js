@@ -96,7 +96,7 @@ class UserChallenge {
     }
 
     updateLengthCheck() {
-        this.lengthToCheck = Math.round(50 + (Math.random() * 200));
+        this.lengthToCheck = Math.round(100 + (Math.random() * 400));
     }
 }
 
