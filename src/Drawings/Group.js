@@ -3,6 +3,7 @@ const Translator = require("../Translator/Translator");
 const Emojis = require("./Emojis");
 const ProgressBarHealth = require("./ProgressBars/ProgressBarHealth");
 const GenericMultipleEmbedList = require("./GenericMultipleEmbedList");
+const TextDrawings = require("./TextDrawings");
 
 
 class Group {
@@ -40,9 +41,11 @@ class Group {
 
     getOnePlayerDisplay(player, lang = "en") {
         let emojiClass = Emojis.emojisProd.user.string;//[Emojis.emojisProd.user.string, Emojis.general.mage][Math.floor(Math.random() * 2)];
-        let healthText = "\n" + Emojis.getString("red_heart") + " " + Translator.getString(lang, "character", "health_points") + " " + Translator.getFormater(lang).format(player.currentHp) + " / " + Translator.getFormater(lang).format(player.maxHp) + "\n" + new ProgressBarHealth().draw(player.currentHp, player.maxHp);
+        let barsText = `${TextDrawings.formatHealth(player.actualHP, player.maxHP, lang, 0)}\n` +
+            `${TextDrawings.formatMana(player.actualMP, player.maxMP, lang, 0)}\n` +
+            `${TextDrawings.formatEnergy(player.actualEnergy, player.maxEnergy, lang, 0)}`;
 
-        return `${emojiClass} **${player.name}** (${player.areaName})\n${Emojis.getString("levelup")} ${Translator.getString(lang, "inventory_equipment", "level")} ${Translator.getFormater(lang).format(player.level)}\n${Emojis.general.collision} ${Translator.getString(lang, "inventory_equipment", "power")} ${Translator.getFormater(lang).format(player.power)}${healthText}\n\n`
+        return `${emojiClass} **${player.name}** (${player.areaName} - ${player.idArea})\n${Emojis.getString("levelup")} ${Translator.getString(lang, "inventory_equipment", "level")} ${Translator.getFormater(lang).format(player.level)}\n${Emojis.general.collision} ${Translator.getString(lang, "inventory_equipment", "power")} ${Translator.getFormater(lang).format(player.power)}\n${barsText}\n\n`
     }
 }
 
