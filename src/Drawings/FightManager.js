@@ -345,7 +345,8 @@ class FightManager {
      */
     getSummaryEntity(entityLogger, withName = true) {
 
-        let name = Emojis.getEntityTypeEmoji(entityLogger.entity.identity.type) + " **" + entityLogger.entity.identity.name + "**\n";
+        let deadEmojiString = entityLogger.entity.actualHP <= 0 ? " " + Emojis.general.skull : "";
+        let name = Emojis.getEntityTypeEmoji(entityLogger.entity.identity.type) + " **" + entityLogger.entity.identity.name + "**" + deadEmojiString +"\n";
 
         let str = withName ? name : "";
         if (entityLogger.battle.removedStates.length > 0) {
