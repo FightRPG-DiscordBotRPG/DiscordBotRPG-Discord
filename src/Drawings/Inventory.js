@@ -64,11 +64,20 @@ class Inventory {
                         case "type":
                             str += Emojis.getItemTypeEmoji(Globals.getTypeName(data.params.type)) + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_type", [Translator.getString(lang, "item_types", Globals.getTypeName(data.params.type))]);
                             break;
-                        case "level":
-                            str += Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level", [data.params.level]);
+                        case "subtype":
+                            str += Emojis.getItemSubTypeEmoji(Globals.getSubtypeName(data.params.subtype)) + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_subtype", [Translator.getString(lang, "item_sous_types", Globals.getSubtypeName(data.params.subtype))]);
                             break;
-                        case "power":
+                        case "level_up":
+                            str += Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level_sup", [data.params.level]);
+                            break;
+                        case "level_down":
+                            str += Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level_inf", [data.params.level]);
+                            break;
+                        case "power_up":
                             str += Emojis.general.collision + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_sup", [data.params.power]);
+                            break;
+                        case "power_down":
+                            str += Emojis.general.collision + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_inf", [data.params.power]);
                             break;
                         case "name":
                             str += Emojis.general.clipboard + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_name", [data.params.name.replace(/%/g, "")]);
