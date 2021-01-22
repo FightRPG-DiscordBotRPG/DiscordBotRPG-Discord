@@ -9,7 +9,7 @@ axios.defaults.validateStatus = function (status) {
 
 var Globals = {
     /**
-     * @type {Array<User>}
+     * @type {Object<string, User>}
      */
     connectedUsers: {},
     ownerID: "241564725870198785",
@@ -71,15 +71,52 @@ var Globals = {
         }
         return typeName;
     },
+    getSubtypeName: (idSubtype) => {
+        idSubtype = parseInt(idSubtype);
+        return Globals.subtypesIdsToText[idSubtype];
+    },
     raritiesByLang: {},
     typesByLang: {},
     subtypesByLang: {},
+    yesNoByLang: {},
+    subtypesIdsToText: {
+        1: "ore",
+        2: "plant",
+        3: "wood",
+        4: "sword",
+        5: "whip",
+        6: "metal",
+        7: "random_loot_box_equipment",
+        8: "random_loot_box_equipment",
+        9: "reset_time_potion",
+        10: "founder_box",
+        11: "horse",
+        12: "random_loot_box_equipment",
+        13: "crystal",
+        14: "energy_potion",
+        15: "salamander",
+        16: "camel",
+        17: "polar_bear",
+        18: "cloth",
+        19: "leather",
+        20: "bow",
+        21: "dagger",
+        22: "wand",
+        23: "staff",
+    },
+    /**
+     * @type {ModuleHandler}
+     */
+    moduleHandler: null,
     /**
      * Minutes before disconnecting
      */
-    inactiveTimeBeforeDisconnect: 30
+    inactiveTimeBeforeDisconnect: 30,
+    antiSpamNumberOfTries: 3,
+    antiSpamMinutesOfBan: 30,
 }
 
 module.exports = Globals;
 
 const User = require("./Users/User");
+const ModuleHandler = require("./Modules/ModuleHandler");

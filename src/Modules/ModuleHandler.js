@@ -7,6 +7,7 @@ const User = require("../Users/User");
 const Translator = require("../Translator/Translator");
 const version = require("../../conf/version");
 const Utils = require("../Utils");
+const conf = require("../../conf/conf");
 
 class ModuleHandler extends GModule {
     constructor() {
@@ -16,11 +17,11 @@ class ModuleHandler extends GModule {
         this.prefix = "::";
         this.devMode = false;
         /**
-         * @type {Array<GModule>}
+         * @type {Object<string, GModule>}
          */
         this.modules = {};
         /**
-         * @type {Array<GModule>}
+         * @type {Object<string, GModule>}
          */
         this.commandsReact = {};
         this.startLoading("ModuleHandler");
@@ -60,6 +61,9 @@ class ModuleHandler extends GModule {
             return;
         }
 
+        /**
+         * @type {any[]}
+         **/
         let args = [].concat.apply([], message.content.slice(prefix.length).trim().split('"').map(function (v, i) {
             return i % 2 ? v : v.split(' ')
         })).filter(Boolean);
@@ -84,8 +88,10 @@ class ModuleHandler extends GModule {
                 return;
             }
 
-            Globals.connectedUsers[authorIdentifier].setMobile(message.author.presence.clientStatus);
-
+            let user = Globals.connectedUsers[authorIdentifier];
+            if (user.setMobileMode === "auto") {
+                user.setMobile(message.author.presence.clientStatus);
+            }
 
             // exec module corresponding to command
             await this.executeCommand(message, command, nonDiscordArgs, prefix);
@@ -94,6 +100,29 @@ class ModuleHandler extends GModule {
             switch (command) {
                 case "prefix":
                     msg = this.prefixCommand(message, command, args, "en");
+                    break;
+                case "tutorial":
+                case "play":
+                case "start":
+                    msg = Translator.getString(user.lang, "help_panel", "tutorial", [Globals.tutorialLink]);
+                    break;
+                case "setmobile":
+                    if (Globals.yesNoByLang[args[0]]) {
+                        args[0] = Globals.yesNoByLang[args[0]];
+                    }
+
+                    if (args[0] == true) {
+                        user.setMobileMode = "manual";
+                        user.isOnMobile = true;
+                    } else if (args[0] == false) {
+                        user.setMobileMode = "manual";
+                        user.isOnMobile = false;
+                    } else {
+                        user.setMobileMode = "auto";
+                        user.setMobile(message.author.presence.clientStatus);
+                    }
+
+                    msg = Translator.getString(user.lang, "general", "mobile_set", [user.setMobileMode, Translator.getString(user.lang, "general", user.isOnMobile ? "yes" : "no")]);
                     break;
                 case "load_module":
                     if (isAdmin) {
@@ -317,30 +346,39 @@ class ModuleHandler extends GModule {
     async executeCommand(message, command, args, prefix) {
         let mod = this.commandsReact[command];
         if (mod != null) {
-            if (mod.isActive) {
-                try {
-                    Globals.connectedUsers[message.author.id].lastCommandUsed = Date.now();
-                    await mod.run(message, command, args, prefix);
-                } catch (err) {
-                    if (!this.devMode) {
-                        if (err.constructor != Discord.DiscordAPIError) {
-                            let adminTell = "A module has crashed.\nCommand: " + command + "\nArgs: [" + args.toString() + "]\n" + "User that have crashed the command: " + message.author.username + "#" + message.author.discriminator;
-                            message.client.shard.broadcastEval(`let user = this.users.cache.get("241564725870198785");
+            let user = Globals.connectedUsers[message.author.id];
+
+            if (!user.isAdmin() || conf.env === "dev") {
+                await user.challenge.manageIncomingCommand(message, command);
+            }
+            if (!user.challenge.mustAnswer && !user.challenge.isTimeout()) {
+                if (mod.isActive) {
+                    try {
+                        user.lastCommandUsed = Date.now();
+                        await mod.run(message, command, args, prefix);
+                    } catch (err) {
+                        if (!this.devMode) {
+                            if (err.constructor != Discord.DiscordAPIError) {
+                                let adminTell = "A module has crashed.\nCommand: " + command + "\nArgs: [" + args.toString() + "]\n" + "User that have crashed the command: " + message.author.username + "#" + message.author.discriminator;
+                                message.client.shard.broadcastEval(`let user = this.users.cache.get("241564725870198785");
                             if(user != null) {
                                 user.send(\`${adminTell}\`).catch((e) => {null});
                             }`);
-                        } else {
-                            console.log(err);
-                            message.channel.send(err.name).catch((e) => {
-                                message.author.send(err.name).catch((e) => null);
-                            });
+                            } else {
+                                console.log(err);
+                                message.channel.send(err.name).catch((e) => {
+                                    message.author.send(err.name).catch((e) => null);
+                                });
+                            }
                         }
+                        throw err;
                     }
-                    throw err;
+                } else {
+                    message.channel.send("Due to an error, this module is currently deactivated. The following commands will be disabled: " + mod.commands.toString() + "\nSorry for the inconvenience.").catch((e) => null);
                 }
-            } else {
-                message.channel.send("Due to an error, this module is currently deactivated. The following commands will be disabled: " + mod.commands.toString() + "\nSorry for the inconvenience.").catch((e) => null);
             }
+
+
         }
     }
 
@@ -368,11 +406,11 @@ class ModuleHandler extends GModule {
     }
 
     /**
-     * 
-     * @param {string} userid
-     * @param {string} command
-     * @param {string} timestamp
-     */
+    *
+    * @param {string} userid
+    * @param {string} command
+    * @param {string} timestamp
+    */
     async logCommand(userid, command, timestamp) {
         if (timestamp == null) {
             timestamp = Date.now();

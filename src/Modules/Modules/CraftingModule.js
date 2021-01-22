@@ -18,17 +18,22 @@ class CraftingModule extends GModule {
         let axios = Globals.connectedUsers[message.author.id].getAxios();
 
         switch (command) {
-            case "craftlist":
-                msg = await this.getDisplayIfSuccess(await axios.get("/game/crafting/craftlist/" + args[0]), async (data) => {
+            case "craftlist": {
+                let searchFilters = this.getSearchFilters(args);
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/crafting/craftlist/" + searchFilters.page, {
+                    params: searchFilters.params
+                }), async (data) => {
                     await this.pageListener(data, message, Craft.getCraftList(data), async (currPage) => {
-                        let d = await axios.get("/game/crafting/craftlist/" + currPage);
+                        let d = await axios.get("/game/crafting/craftlist/" + currPage, {
+                            params: searchFilters.params
+                        });
                         return d.data;
                     }, async (newData) => {
                         return Craft.getCraftList(newData);
                     });
                 });
+            }
                 break;
-
             case "craftshow":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/crafting/craftshow/" + args[0]), (data) => {
                     return Craft.craftToEmbed(data);

@@ -2,6 +2,11 @@ const Translator = require("../Translator/Translator");
 
 
 class GenericMultipleEmbedList {
+
+    static getSeparator() {
+        return "--------------------------------------";
+    }
+
     constructor() {
         this.fields = [];
     }

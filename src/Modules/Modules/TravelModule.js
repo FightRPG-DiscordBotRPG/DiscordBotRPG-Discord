@@ -3,8 +3,10 @@ const Discord = require("discord.js");
 const Globals = require("../../Globals");
 const Translator = require("../../Translator/Translator");
 const Emojis = require("../../Drawings/Emojis");
-const Areas = require("../../Drawings/Areas");
 const Axios = require("axios");
+const Region = require("../../Drawings/Areas/Region");
+const WildArea = require("../../../../discordbotrpg-server/bin/Areas/WildArea");
+const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
 
 
 
@@ -17,21 +19,87 @@ class TravelModule extends GModule {
         this.endLoading("Travel");
     }
 
+    /**
+    *
+    * @param {Discord.Message} message
+    * @param {string} command
+    * @param {Array} args
+    */
     async run(message, command, args) {
         let msg = "";
         let axios = Globals.connectedUsers[message.author.id].getAxios();
+        let user = Globals.connectedUsers[message.author.id];
 
         switch (command) {
             case "area":
-                msg = await this.getDisplayIfSuccess(await axios.get("/game/travel/area"), (data) => {
-                    return Areas.toString(data);
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/travel/area"), async (data) => {
+
+                    let area = user.getAreaDisplay(data);
+
+                    let displayWeatherEmoji = Emojis.general.cloud;
+                    let displayMonstersEmoji = Emojis.emojisProd.monster.id;
+                    let displayResourcesEmoji = Emojis.emojisProd.item_type_resource.id;
+                    let displayImageEmoji = Emojis.general.framed_picture;
+                    let resetDisplaysEmoji = Emojis.general.counterclockwise_arrows_button;
+
+                    let emojisList = [displayWeatherEmoji, displayImageEmoji];
+
+                    let isWildArea = area.type === "WildArea";
+
+                    if (isWildArea) {
+                        emojisList = [...emojisList, ...[displayMonstersEmoji, displayResourcesEmoji]];
+                    }
+
+                    // It's here because i want it to be at the end of the array
+                    emojisList.push(resetDisplaysEmoji);
+
+                    let reactWrapper = new MessageReactionsWrapper();
+
+                    await reactWrapper.load(message, area.toString(data, user), {
+                        reactionsEmojis: emojisList,
+                        collectorOptions: {
+                            time: 40000,
+                        }
+                    });
+
+
+                    reactWrapper.collector.on('collect', async (reaction) => {
+                        switch (reaction.emoji.name) {
+                            case displayWeatherEmoji:
+                                area.displayWeather = !area.displayWeather;
+                                break;
+                            case displayImageEmoji:
+                                area.displayImage = !area.displayImage;
+                                break;
+                            case resetDisplaysEmoji:
+                                area.enableAll();
+                                break;
+                        }
+
+
+                        if (isWildArea) {
+                            switch (reaction.emoji.id) {
+                                case displayMonstersEmoji:
+                                    area.displayMonsters = !area.displayMonsters;
+                                    break;
+                                case displayResourcesEmoji:
+                                    area.displayResources = !area.displayResources;
+                                    break;
+                            }
+
+                        }
+
+
+                        await reactWrapper.edit(area.toString(data, user), emojisList);
+                    });
+
                 });
                 break;
 
             case "areas":
             case "region":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/travel/region"), (data) => {
-                    return Areas.regionToString(data);
+                    return Region.toString(data);
                 });
                 break;
 
@@ -115,7 +183,11 @@ class TravelModule extends GModule {
                     if (validate == true) {
                         return await this.travelPost(args, axios, type);
                     } else {
-                        return Translator.getString(data.lang, "travel", "travel_cancel");
+                        let easterEgg = "";
+                        if (Math.random() < 0.001) {
+                            easterEgg = "_easter_egg";
+                        }
+                        return Translator.getString(data.lang, "travel", "travel_cancel" + easterEgg);
                     }
                 });
             });

@@ -8,28 +8,34 @@ const ProgressBarHealth = require("./ProgressBars/ProgressBarHealth");
 
 class TextDrawings {
 
+    statCompareTypes = {
+        "character": 0,
+        "item": 1,
+        "talents": 2,
+        "only_total": 3,
+    }
+
     /**
      * 
      * @param {any} stats
      * @param {any} compareStats
-     * @param {Boolean} isItem
+     * @param {number} type
      * @param {User} user
      * @param {string} lang
      */
-    statsToString(stats, compareStats, isItem, user, lang) {
+    statsToString(stats, compareStats, type, user, lang) {
         let str = "";
         let totalSpaces = 36;
         let noStats = true;
         let maximumStatLength = 0;
         compareStats = compareStats != undefined ? compareStats : {};
 
-        if (!isItem) {
+        if (type !== this.statCompareTypes.item) {
             maximumStatLength = this.getBiggestStatLength(stats, compareStats);
         }
 
-
         for (let stat in stats) {
-            if (!isItem || (isItem && stats[stat] > 0) || (isItem && compareStats[stat])) {
+            if (type !== this.statCompareTypes.item || (type === this.statCompareTypes.item && stats[stat] !== 0) || (type === this.statCompareTypes.item && compareStats[stat])) {
                 let compareEmoji = "";
                 let diff = "";
                 let end = "";
@@ -37,70 +43,112 @@ class TextDrawings {
                 //Used for character stats
                 let totalStat = "";
 
-                if (isItem) {
-                    if (compareStats[stat] >= 0) {
-                        let diffNumber = (stats[stat] - compareStats[stat]);
-                        diff = " -> " + diffNumber;
+                switch (type) {
+                    case this.statCompareTypes.item:
+                        if (!isNaN(compareStats[stat])) {
+                            let diffNumber = (stats[stat] - compareStats[stat]);
+                            diff = " -> " + diffNumber;
 
-                        if (diffNumber > 0) {
-                            compareEmoji = Emojis.emojisProd.levelup.string;
-                        }
-                        else if (diffNumber < 0) {
-                            compareEmoji = Emojis.emojisProd.leveldown.string;
+                            if (diffNumber > 0) {
+                                compareEmoji = Emojis.emojisProd.levelup.string;
+                            }
+                            else if (diffNumber < 0) {
+                                compareEmoji = Emojis.emojisProd.leveldown.string;
+                            } else {
+                                compareEmoji = Emojis.emojisProd.nochange.string;
+                            }
                         } else {
+                            diff = " -> 0";
                             compareEmoji = Emojis.emojisProd.nochange.string;
                         }
-                    } else {
-                        diff = " -> 0";
-                        compareEmoji = Emojis.emojisProd.nochange.string;
-                    }
-                } else {
-                    if (stat !== "armor") {
-                        diff = "+" + compareStats[stat].toString();
-                    } else {
-                        // Setting stats[armor] at total stat value 
-                        stats[stat] = compareStats[stat];   
-                        compareStats[stat] = 0;
-                    }
+                        break;
+                    case this.statCompareTypes.character:
+                    case this.statCompareTypes.only_total:
+                    case this.statCompareTypes.talents:
 
-                    totalStat = (stats[stat] + compareStats[stat]).toString();
-                    totalStat = " " + " ".repeat(1 + user.isOnMobile ? (maximumStatLength - totalStat.length) : 0) + totalStat;
+                        if (compareStats[stat] == null) {
+                            compareStats[stat] = 0;
+                        }
+
+                        if (stat !== "armor") {
+                            diff = "+" + compareStats[stat].toString();
+                        } else {
+                            // Setting stats[armor] at total stat value 
+                            stats[stat] += compareStats[stat]
+                            compareStats[stat] = 0;
+                        }
+
+                        totalStat = (stats[stat] + compareStats[stat]);
+                        totalStat = this.getStatString(stat, totalStat);
+
+                        totalStat = " " + " ".repeat(1 + user.isOnMobile ? (maximumStatLength - totalStat.length) : 0) + totalStat;
+                        break;
 
                 }
 
-
-
-                noStats = false;
-
                 let beforeNumber = "";
-                let statStr = stats[stat].toString();
+                let statStr = "";
                 let statLocalized = Translator.getString(lang, "stats", stat);
+                let strStatWithDiff = "";
+
+
+                // No more [x+x] xxx with the else
+                if (type !== this.statCompareTypes.only_total && type !== this.statCompareTypes.talents) {
+                    statStr = stats[stat].toString();
+                    strStatWithDiff = "[" + this.getStatValue(stat, stats[stat]) + diff + "]";
+                } else {
+                    diff = "";
+                }
+
                 let nbrChar = statLocalized.length + 3 + diff.length;
                 let lessSpaces = 1;
 
                 let quote = "";
-                if (user.isOnMobile && isItem) {
+                if (user.isOnMobile && type === this.statCompareTypes.item) {
                     end = "\n\n";
                     quote = " ";
                     statLocalized = "**" + statLocalized + "**";
                 } else {
 
-                    if (user.isOnMobile) {
-                        totalSpaces = 29
+                    if (this.statCompareTypes.character === type || this.statCompareTypes.only_total === type || this.statCompareTypes.talents === type) {
+                        totalSpaces = 30;
                     }
 
-                    lessSpaces = totalSpaces - nbrChar - (4 + statStr.length);
+
+                    lessSpaces = totalSpaces - nbrChar - (2 + statStr.length);
                     end = "\n";
                     quote = "`";
                 }
                 beforeNumber += " ".repeat(lessSpaces <= 0 ? 1 : lessSpaces);
 
-                str += Emojis.stats[stat] + quote + statLocalized + beforeNumber + "[" + stats[stat] + diff + "]" + totalStat + quote + " "  + compareEmoji + end;
+
+
+                let strToAdd = Emojis.stats[stat] + quote + statLocalized + beforeNumber + strStatWithDiff + totalStat + quote + " " + compareEmoji + end;
+
+                if (type === this.statCompareTypes.talents) {
+                    if (stats[stat] !== 0) {
+                        str += strToAdd;
+                        noStats = false;
+                    }
+                } else {
+                    str += strToAdd;
+                    noStats = false;
+                }
+
             }
 
         }
         if (noStats) {
-            str += "`" + Translator.getString(lang, "inventory_equipment", "item_no_stats") + "`";
+            let noStatText = "";
+
+            if (type === this.statCompareTypes.item) {
+                noStatText = Translator.getString(lang, "inventory_equipment", "item_no_stats");
+            } else {
+                noStatText = Translator.getString(lang, "general", "none");
+            }
+
+
+            str += "`" + noStatText + "`";
         }
 
 
@@ -110,75 +158,47 @@ class TextDrawings {
     getBiggestStatLength(stats, compareStats) {
         let length = 0;
         for (let i in stats) {
-            let total = (stats[i] + (compareStats[i] != null ? compareStats[i] : 0)).toString();
-            if (total.length > length) {
-                length = total.length;
+            let totalStat = (stats[i] + (compareStats[i] != null ? compareStats[i] : 0));
+            totalStat = this.getStatString(i, totalStat);
+            if (totalStat.length > length) {
+                length = totalStat.length;
             }
         }
 
         return length;
     }
 
-    /**
-     * 
-     * @param {any} data
-     * @param {User} user
-     */
-    userInfoPanel(data, user) {
-        let statPointsPlur = data.statPoints > 1 ? "_plur" : "";
-        let xpProgressBar = new ProgressBar(Color.Yellow);
-        let healthBar = new ProgressBarHealth().draw(data.currentHp, data.maxHp);
-        let xpBar = "";
-        let xpOn = "";
 
-        let xpBarCraft = "";
-        let xpOnCraft = "";
-
-        if (data.level === data.maxLevel) {
-            xpOn = Translator.getString(data.lang, "character", "maximum_level");
-            xpBar = xpProgressBar.draw(1, 1);
+    getStatString(statName, statValue) {
+        if (statName.includes("Resist")) {
+            return (statValue > 50 ? 50 : statValue) + "%";
+        } else if (statName.includes("Rate")) {
+            return (statValue < 0 ? 0 : statValue) + "%";
+        } else if (statName.includes("Cost")) {
+            return -statValue + "%";
         } else {
-            xpOn = Translator.getFormater(data.lang).format(data.actualXp) + " / " + Translator.getFormater(data.lang).format(data.xpNextLevel);
-            xpBar = xpProgressBar.draw(data.actualXp, data.xpNextLevel);
+            return statValue.toString();
         }
-
-        if (data.craft.level === data.maxLevel) {
-            xpOnCraft = Translator.getString(data.lang, "character", "maximum_level");
-            xpBarCraft = xpProgressBar.draw(1, 1);
-        } else {
-            xpOnCraft = Translator.getFormater(data.lang).format(data.craft.xp) + " / " + Translator.getFormater(data.lang).format(data.craft.xpNextLevel);
-            xpBarCraft = xpProgressBar.draw(data.craft.xp, data.craft.xpNextLevel);
-        }
-
-
-        let authorTitle = data.username + " | " + Translator.getString(data.lang, "inventory_equipment", "power") + ": " + Translator.getFormater(data.lang).format(data.power);
-        let statsTitle = Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, data.resetValue]);
-        let titleXPFight = Translator.getString(data.lang, "character", "level") + ": " + data.level + "\n" + xpOn + " ";
-        let titleXPCraft = Translator.getString(data.lang, "character", "craft_level") + ": " + data.craft.level + "\n" + xpOnCraft + " ";
-        let criticalChance = ((data.stats.dexterity + data.statsEquipment.dexterity) / (data.level * 8));
-        criticalChance = criticalChance > 0.75 ? 0.75 : criticalChance;
-        criticalChance = Math.round(criticalChance * 10000) / 100;
-
-        let maximumStunChance = ((data.stats.charisma + data.statsEquipment.charisma) / (data.level * 8));
-        maximumStunChance = maximumStunChance > 0.5 ? 0.5 : maximumStunChance;
-        maximumStunChance = Math.round(maximumStunChance * 10000) / 100;
-
-
-        let embed = new Discord.MessageEmbed()
-            .setColor([0, 255, 0])
-            .setAuthor(authorTitle, data.avatar)
-            .addField(statsTitle, this.statsToString(data.stats, data.statsEquipment, false, user, data.lang))
-            .addField(titleXPFight, xpBar, true)
-            .addField(titleXPCraft, xpBarCraft, true)
-            .addField(Emojis.getString("red_heart") + " " + Translator.getString(data.lang, "character", "health_points") + "\n" + Translator.getFormater(data.lang).format(data.currentHp) + " / " + Translator.getFormater(data.lang).format(data.maxHp), healthBar)
-            .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "character", "money"), Translator.getFormater(data.lang).format(data.money) + " G", true)
-            .addField(Emojis.getString("honor") + " " + Translator.getString(data.lang, "character", "honor"), Translator.getFormater(data.lang).format(data.honor), true)
-            .addField(Emojis.getString("shield") + " " + Translator.getString(data.lang, "character", "damage_reduction"), Translator.getFormater(data.lang).format(Math.round((data.stats.armor + data.statsEquipment.armor) / ((8 * (Math.pow(data.level, 2))) / 7 + 5) * .5 * 10000) / 100) + "%", true)
-            .addField(Emojis.getString("critical") + " " + Translator.getString(data.lang, "character", "critical_chance"), Translator.getFormater(data.lang).format(criticalChance) + "%", true)
-            .addField(Emojis.getString("stun") + " " + Translator.getString(data.lang, "character", "maximum_stun_chance"), Translator.getFormater(data.lang).format(maximumStunChance) + "%", true)
-        return embed;
     }
 
+    getStatValue(statName, statValue) {
+        if (statName.includes("Cost")) {
+            return -statValue;
+        } else {
+            return statValue;
+        }
+    }
+
+    userInfoPanel() {
+
+    }
+
+    /**
+     * DEPRECATED
+     * @param {any} stats
+     * @param {any} otherStats
+     * @param {any} lang
+     */
     characterStatsToBigString(stats, otherStats, lang) {
         let str = "```";
         let totalSpaces = 30;
@@ -213,8 +233,92 @@ class TextDrawings {
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(authorTitle, data.avatar)
-            .addField(statsTitle, this.statsToString(data.stats, data.statsEquipment, false, user, data.lang))
+            .addField(statsTitle, this.statsToString(data.stats, data.statsEquipment, this.statCompareTypes.character, user, data.lang))
         return embed;
+    }
+
+    /**
+     * 
+     * @param {any} min
+     * @param {any} max
+     * @param {string} lang
+     */
+    formatMinMax(min, max, lang = "en") {
+        return Translator.getFormater(lang).format(min) + " / " + Translator.getFormater(lang).format(max);
+    }
+
+    /**
+     * 
+     * @param {number} currentXp
+     * @param {number} maxXp
+     * @param {number} currentLevel
+     * @param {number} maxLevel
+     * @param {string} lang
+     */
+    formatLevelProgressBar(currentXp, maxXp, currentLevel, maxLevel, lang = "en") {
+        let xpProgressBar = new ProgressBar(Color.Yellow);
+        let xpOn, xpBar;
+
+        if (currentLevel === maxLevel) {
+            xpOn = Translator.getString(lang, "character", "maximum_level");
+            xpBar = xpProgressBar.draw(1, 1);
+        } else {
+            xpOn = this.formatMinMax(currentXp, maxXp, lang);
+            xpBar = xpProgressBar.draw(currentXp, maxXp);
+        }
+
+        return {
+            title: xpOn,
+            bar: xpBar
+        }
+    }
+
+    /**
+     * 
+     * @param {number} min
+     * @param {number} max
+     * @param {string} lang
+     * @param {number} barSize
+     */
+    formatHealth(min, max, lang, barSize = 8, fullText=false) {
+        let bar = new ProgressBarHealth();
+        bar.min = min;
+        bar.max = max;
+        bar.setSize(barSize);
+
+        return Emojis.general.red_heart + (fullText ? " " + Translator.getString(lang, "character", "health_points") : "") + " " + this.formatMinMax(min, max, lang) + (barSize > 0 ? "\n" + bar.draw() : "");
+    }
+
+    /**
+    *
+    * @param {number} min
+    * @param {number} max
+    * @param {string} lang
+    * @param {number} barSize
+    */
+    formatMana(min, max, lang, barSize = 8, fullText=false) {
+        let bar = new ProgressBar(Color.Blue);
+        bar.min = min;
+        bar.max = max;
+        bar.setSize(barSize);
+
+        return Emojis.general.water_droplet + (fullText ? " " + Translator.getString(lang, "character", "mana_points") : "") + " " + this.formatMinMax(min, max, lang) + (barSize > 0 ? "\n" + bar.draw() : "");
+    }
+
+    /**
+    *
+    * @param {number} min
+    * @param {number} max
+    * @param {string} lang
+    * @param {number} barSize
+    */
+    formatEnergy(min, max, lang, barSize = 8, fullText=false) {
+        let bar = new ProgressBar(Color.Yellow);
+        bar.min = min;
+        bar.max = max;
+        bar.setSize(barSize);
+
+        return Emojis.general.high_voltage + (fullText ? " " + Translator.getString(lang, "character", "energy_points") : "") + " " + this.formatMinMax(min, max, lang) + (barSize > 0 ? "\n" + bar.draw() : "");
     }
 }
 

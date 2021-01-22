@@ -4,12 +4,14 @@ const WorldBosses = require("../../Drawings/WorldBosses");
 const LeaderboardWBAttacks = require("../../Drawings/Leaderboard/LeaderboardWBAttacks");
 const LeaderboardWBDamage = require("../../Drawings/Leaderboard/LeaderboardWBDamage");
 const Translator = require("../../Translator/Translator");
+const Emojis = require("../../Drawings/Emojis");
+const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
 
 
 class WorldBossModule extends GModule {
     constructor() {
         super();
-        this.commands = ["wbshowall", "wbfight", "wbattack", "wblastinfo", "wbleaderboard"];
+        this.commands = ["wbshowall", "wbfight", "wbattack", "wblastinfo", "wbleaderboard", "wbs"];
         this.startLoading("World Boss");
         this.init();
         this.endLoading("World Boss");
@@ -18,12 +20,43 @@ class WorldBossModule extends GModule {
     async run(message, command, args) {
         let msg = "";
         let authorIdentifier = message.author.id;
-        let axios = Globals.connectedUsers[message.author.id].getAxios();
+        let user = Globals.connectedUsers[message.author.id];
+        let axios = user.getAxios();
 
         switch (command) {
             case "wbshowall":
-                msg = await this.getDisplayIfSuccess(await axios.get("/game/worldbosses/display/all"), (data) => {
-                    return WorldBosses.listToDiscord(data, Globals.connectedUsers[authorIdentifier], true);
+            case "wbs":
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/worldbosses/display/all"), async (data) => {
+                    //return WorldBosses.listToDiscord(data, Globals.connectedUsers[authorIdentifier], true);
+
+                    let displayTravelEmoji = Emojis.general.horse_face;
+
+                    let emojisList = [
+                        displayTravelEmoji
+                    ];
+
+                    let reactWrapper = new MessageReactionsWrapper();
+
+                    await reactWrapper.load(message, WorldBosses.listToDiscord(data, user, true), {
+                        reactionsEmojis: emojisList,
+                        collectorOptions: {
+                            time: 22000,
+                            max: 1,
+                        }
+                    });
+
+                    reactWrapper.collector.on('collect', async (reaction) => {
+
+                        if (data.bosses.length === 0) {
+                            return;
+                        }
+
+                        if (reaction.emoji.name === displayTravelEmoji) {
+                            let travelModule = Globals.moduleHandler.modules["TravelModule"];
+                            travelModule.run(message, "traveldirect", [data.bosses[0].idArea]);
+                        }
+
+                    });
                 });
                 break;
 
@@ -36,12 +69,12 @@ class WorldBossModule extends GModule {
                         });
                     });
                 }, async (d1) => {
-                        if (d1.error == Translator.getString(d1.lang, "world_bosses", "no_world_boss")) {
-                            this.run(message, "wbshowall", []);
-                            return d1.error;
-                        } else {
-                            return d1.error;
-                        }
+                    if (d1.error == Translator.getString(d1.lang, "world_bosses", "no_world_boss")) {
+                        this.run(message, "wbshowall", []);
+                        return d1.error;
+                    } else {
+                        return d1.error;
+                    }
                 });
                 break;
 

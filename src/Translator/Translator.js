@@ -21,6 +21,8 @@ class Translator {
         if (this.translations[lang][type] && this.translations[lang][type][name]) {
             return this.formatString(this.translations[lang][type][name], args, lang);
         }
+
+        
         if (lang != "en") {
             return this.getString("en", type, name, args, returnNull);
         }
@@ -125,9 +127,15 @@ class Translator {
             try {
                 let res = await axios.get(TranslatorConf.cdn_translator_url + lang + '.json', { timeout: 2000 });
                 if (res.status == 200) {
+                    if (typeof res.data === "string") {
+                        res.data = JSON.parse(res.data.trimLeft());
+                    }
                     this.translations[lang] = res.data;
                     this.nbOfTranslations++;
                     try {
+                        if (!fs.existsSync(__dirname + "/locale/")) {
+                            fs.mkdirSync(__dirname + "/locale");
+                        }
                         fs.writeFileSync(__dirname + "/locale/" + lang + ".json", JSON.stringify(res.data));
                     } catch (e) {
                         console.log(e);
@@ -189,7 +197,7 @@ class Translator {
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "wood").toLowerCase()] = 3;
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "sword").toLowerCase()] = 4;
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "whip").toLowerCase()] = 5;
-            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "armor").toLowerCase()] = 6;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "metal").toLowerCase()] = 6;
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "reset_time_potion").toLowerCase()] = 9;
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "founder_box").toLowerCase()] = 10;
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "horse").toLowerCase()] = 11;
@@ -199,24 +207,34 @@ class Translator {
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "salamander").toLowerCase()] = 15;
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "camel").toLowerCase()] = 16;
             Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "polar_bear").toLowerCase()] = 17;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "cloth").toLowerCase()] = 18;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "leather").toLowerCase()] = 19;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "bow").toLowerCase()] = 20;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "dagger").toLowerCase()] = 21;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "wand").toLowerCase()] = 22;
+            Globals.subtypesByLang[Translator.getString(lang, "item_sous_types", "staff").toLowerCase()] = 23;
         }
     }
+
+    static loadGlobalsYesNo() {
+        for (let lang in this.translations) {
+            Globals.yesNoByLang[Translator.getString(lang, "general", "yes").toLowerCase()] = true;
+            Globals.yesNoByLang[Translator.getString(lang, "general", "no").toLowerCase()] = false;
+        }
+    }
+
+    static async loadTranslator() {
+        Translator.translations = {};
+        Translator.nbOfTranslations = 0;
+        Translator.formaters = {};
+        await Translator.loadFromJson();
+        Translator.loadFormaters();
+        Translator.loadGlobalsRarities();
+        Translator.loadGlobalsTypes();
+        Translator.loadGlobalsSubTypes();
+        Translator.loadGlobalsYesNo();
+    }
 }
-
-
-
-async function loadTranslator() {
-    Translator.translations = {};
-    Translator.nbOfTranslations = 0;
-    Translator.formaters = {};
-    await Translator.loadFromJson();
-    Translator.loadFormaters();
-    Translator.loadGlobalsRarities();
-    Translator.loadGlobalsTypes();
-    Translator.loadGlobalsSubTypes();
-}
-
-loadTranslator();
 
 /*
 var sizeof = require('object-sizeof');

@@ -24,7 +24,13 @@ class GModule {
         this.allModulesReference = {};
     }
 
-    async run() { }
+    /**
+    *
+    * @param {Discord.Message} message
+    * @param {string} command
+    * @param {Array} args
+    */
+    async run(message, command, args) { }
 
     init() {
 
@@ -48,6 +54,12 @@ class GModule {
     async sendMessage(message, msg) {
         try {
             if (msg != null && msg != "") {
+                let msgCut = msg;
+                while (msgCut.length > 2000) {
+                    await message.channel.send(msgCut.substring(0, 1999));
+                    msgCut = msgCut.substring(1999);
+                }
+                msg = msgCut;
                 return await message.channel.send(msg);
             }
         } catch (ex) {
@@ -117,6 +129,19 @@ class GModule {
             return Globals.subtypesByLang[subtypeIndex];
         }
         return subtype;
+    }
+
+    /**
+     * 
+     * @param {string} value
+     */
+    tryParseYesNo(value) {
+        if (value === "true" || value === "false") { return value };
+        let valueIndex = decodeURI(value.toLowerCase());
+        if (Globals.yesNoByLang[valueIndex] != null) {
+            return Globals.yesNoByLang[valueIndex];
+        }
+        return true;
     }
 
     cmdToString(data, prefix = "::") {
@@ -250,6 +275,17 @@ class GModule {
                         type = "idSousType";
                         value = this.tryParseSubType(value)
                         break;
+                    case "level_up":
+                        type = "level";
+                        break;
+                    case "power_up":
+                        type = "power";
+                        break;
+                    case "fav":
+                    case "favorite":
+                        type = "fav";
+                        value = this.tryParseYesNo(value);
+                        break;
                 }
 
                 toReturn.params[type] = value;
@@ -272,7 +308,7 @@ class GModule {
 
     /**
      * 
-     * @param {any} initialData
+     * @param {{page: number, maxPage: number}} initialData
      * @param {Discord.Message} messageDiscord
      * @param {string | Discord.MessageEmbed} initialMessage
      * @param {dataCollectorCallback} dataCollectorCallback
@@ -344,7 +380,7 @@ class GModule {
     async confirmListener(messageDiscord, initialMessage, dataCollectorCallback) {
         let vmark = Emojis.general.vmark, xmark = Emojis.general.xmark;
 
-        let currentMessageReactions = [vmark,xmark];
+        let currentMessageReactions = [vmark, xmark];
 
         let messageReactWrapper = new MessageReactionsWrapper();
         await messageReactWrapper.load(messageDiscord, initialMessage, { reactionsEmojis: currentMessageReactions, collectorOptions: { time: 30000, max: 1 } });
@@ -369,7 +405,7 @@ class GModule {
         return msg;
     }
 
-    async getDisplayIfSuccess(axiosQueryResult, callbackData, callbackError=null) {
+    async getDisplayIfSuccess(axiosQueryResult, callbackData, callbackError = null) {
         let data = axiosQueryResult.data;
         let msg = "";
         if (data.error == null) {

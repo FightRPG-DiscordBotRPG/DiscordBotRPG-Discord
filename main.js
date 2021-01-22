@@ -6,7 +6,7 @@ const {
 } = require('discord.js');
 const manager = new ShardingManager(__dirname + '/bot.js', {
     token: conf.discordbotkey,
-    totalShards: conf.env === "dev" ? 2 : "auto"
+    totalShards: conf.env === "dev" ? 2 : "auto",
 });
 
 manager.spawn();
@@ -25,14 +25,15 @@ async function sendDMToSpecificUser(idUser, message) {
         for (let i in users) {
             if (users[i]) {
                 //u.send(message).catch((e) => null);
-                manager.shards.array()[i].eval(`this.users.cache.get("${idUser}").send(\`${message}\`).catch(e => null)`);
-                return;
+                await manager.shards.array()[i].eval(`this.users.cache.get("${idUser}").send(\`${message}\`).catch(e => null)`);
+                return true;
             }
         }
     } catch (e) {
         console.log(e);
     }
 
+    return false;
 }
 
 async function sendWorldBossMessage(message) {
@@ -63,6 +64,7 @@ const express = require("express"),
     app = express(),
     port = 48921,
     url = require('url');
+app.disable("x-powered-by");
 
 
 app.listen(port, () => console.log("Local webhook for discord notifications at port: " + port));
@@ -75,14 +77,14 @@ require('express-async-errors');
 app.use("/usr", async (req, res) => {
     if (req.body.id != null && typeof req.body.id == "string") {
         if (req.body.message != null && typeof req.body.message == "string") {
-            sendDMToSpecificUser(req.body.id, req.body.message);
+            let result = await sendDMToSpecificUser(req.body.id, req.body.message);
             return res.json({
-                sended: "yes"
+                sended: result,
             });
         }
     }
     return res.json({
-        sended: "no"
+        sended: false
     });
 });
 
@@ -90,10 +92,10 @@ app.use("/wb", async (req, res) => {
     if (req.body.message != null && typeof req.body.message == "string") {
         sendWorldBossMessage(req.body.message);
         return res.json({
-            sended: "yes"
+            sended: true,
         });
     }
     return res.json({
-        sended: "no"
+        sended: false,
     });
 });

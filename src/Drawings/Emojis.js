@@ -63,7 +63,12 @@ class Emojis {
         return emoji != null ? emoji : this.getItemSubTypeEmoji(subtypeShorthand);
     }
 
+    static getEntityTypeEmoji(type) {
+        return Emojis.entitiesTypes[type] ? Emojis.entitiesTypes[type] : Emojis.general.person;
+    }
+
 }
+
 
 Emojis.weather = {
     "sunny": "sun",
@@ -338,6 +343,30 @@ Emojis.emojisProd = {
         id: "706481565613686857",
         string: "<:tild:706481565613686857>"
     },
+    "plussign": {
+        id: "755419306124247091",
+        string: "<:plussign:755419306124247091>"
+    },
+    "minussign": {
+        id: "755419306254139392",
+        string: "<:minussign:755419306254139392>"
+    },
+    "leather": {
+        id: "755771984826335273",
+        string: "<:leather:755771984826335273>"
+    },
+    "wand": {
+        id: "755773260850790471",
+        string: "<:wand:755773260850790471>"
+    },
+    "staff": {
+        id: "755780336688037899",
+        string: "<:staff:755780336688037899>"
+    },
+    "elements": {
+        id: "767364758097625088",
+        string: "<:elements:767364758097625088>"
+    }
 };
 
 Emojis.emojisDev = {
@@ -427,9 +456,44 @@ Emojis.general = {
     "salamander": "🦎",
     "skull_and_bones": "☠️",
     "vmark": "✅",
-    "xmark": "❌"
-
+    "xmark": "❌",
+    "water_droplet": "💧",
+    "person_running": "🏃",
+    "syringe": "💉",
+    "battery": "🔋",
+    "target": "🎯",
+    "deciduous_tree": "🌳",
+    "dashing_away": "💨",
+    "vampire": "🧛",
+    "ogre": "👹",
+    "thread": "🧵",
+    "bow_and_arrow": "🏹",
+    "dagger": "🗡️",
+    "link": "🔗",
+    "chains": "⛓️",
+    "open_book": "📖",
+    "yellow_book": "📒",
+    "raised_hand": "✋",
+    "bar_chart": "📊",
+    "drop_of_blood": "🩸",
+    "water_wave": "🌊",
+    "blue_heart": "💙",
+    "sweat_droplets": "💦",
+    "snail": "🐌",
+    "mans_shoe": "👞",
+    "hiking_boot": "🥾",
+    "framed_picture": "🖼️",
+    "clockwise_vertical_arrows": "🔃",
+    "counterclockwise_arrows_button": "🔄",
+    "next_track_button": "⏭️",
+    "skull": "💀",
 };
+
+Emojis.entitiesTypes = {
+    "Character": Emojis.emojisProd.user.string,
+    "Monster": Emojis.emojisProd.monster.string,
+}
+
 
 Emojis.stats = {
     "strength": Emojis.general.biceps,
@@ -442,6 +506,25 @@ Emojis.stats = {
     "wisdom": Emojis.general.light_bulb,
     "perception": Emojis.general.eye,
     "luck": Emojis.general.game_die,
+    "hitRate": Emojis.general.waving_hand,
+    "evadeRate": Emojis.general.person_running,
+    "criticalRate": Emojis.general.critical,
+    "regenHp": Emojis.general.syringe,
+    "regenMp": Emojis.general.sweat_droplets,
+    "regenEnergy": Emojis.general.high_voltage,
+    "skillManaCost": Emojis.general.mage,
+    "skillEnergyCost": Emojis.general.battery,
+    "criticalEvadeRate": Emojis.general.person_running,
+    "magicalEvadeRate": Emojis.general.person_running,
+    "threat": Emojis.general.target,
+    "physicalResist": Emojis.general.shield,
+    "fireResist": Emojis.general.fire,
+    "waterResist": Emojis.general.water_wave,
+    "earthResist": Emojis.general.deciduous_tree,
+    "airResist": Emojis.general.tornado,
+    "darkResist": Emojis.general.ogre,
+    "lightResist": Emojis.general.sun,
+    "initiative": Emojis.general.snail,
 };
 
 Emojis.typeItem = {
@@ -461,7 +544,7 @@ Emojis.subtypeItem = {
     "plant": Emojis.emojisProd.herb_rare.string,
     "sword": Emojis.emojisProd.sword2.string,
     "whip": Emojis.emojisProd.sword2.string,
-    "armor": Emojis.emojisProd.item_type_chest.string,
+    "metal": Emojis.emojisProd.item_type_chest.string,
     "loot_box_equipment": Emojis.emojisProd.item_type_lootbox.string,
     "random_loot_box_equipment": Emojis.emojisProd.item_type_lootbox.string,
     "founder_box": Emojis.emojisProd.item_type_lootbox.string,
@@ -472,6 +555,12 @@ Emojis.subtypeItem = {
     "salamander": Emojis.general.salamander,
     "camel": Emojis.general.camel,
     "polar_bear": Emojis.emojisProd.polar_bear.string,
+    "cloth": Emojis.general.thread,
+    "leather": Emojis.emojisProd.leather.string,
+    "bow": Emojis.general.bow_and_arrow,
+    "dagger": Emojis.general.dagger,
+    "wand": Emojis.emojisProd.wand.string,
+    "staff": Emojis.emojisProd.staff.string
 };
 
 Emojis.areaType = {
@@ -487,6 +576,16 @@ Emojis.areaBonus = {
     "item_drop": Emojis.emojisProd.sword.string,
     "collect_drop": Emojis.general.gloves,
     "xp_craft": Emojis.general.hammer
+}
+
+Emojis.damageTypes = {
+    "hpDamage": Emojis.stats.constitution,
+    "manaDamage": Emojis.general.blue_heart,
+    "lifeSteal": Emojis.general.drop_of_blood,
+    "manaSteal": Emojis.general.water_droplet,
+    "healHp": Emojis.stats.regenHp,
+    "healMp": Emojis.stats.regenMp,
+
 }
 
 function configureAliases() {

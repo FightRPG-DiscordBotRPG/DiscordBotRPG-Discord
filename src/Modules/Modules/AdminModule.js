@@ -32,11 +32,10 @@ class AdminModule extends GModule {
         switch (command) {
             case "updatepresence":
                 try {
-
                     await message.client.user.setPresence({
-                        game: {
-                            name: "On " + Utils.getTotalNumberOfGuilds(message.client.shard) + " guilds !",
-                        },
+                        activity: {
+                            name: "On " + await Utils.getTotalNumberOfGuilds(message.client.shard) + " servers!"
+                        }
                     });
                     msg = "Présence mise à jour.";
                 } catch (e) {
@@ -206,10 +205,10 @@ class AdminModule extends GModule {
                 if (message.author.id !== Globals.ownerID) break;
                 try {
                     const code = args.join(" ");
-                    let evaled = eval(code);
-
-                    if (typeof evaled !== "string")
-                        evaled = require("util").inspect(evaled);
+                    let evaled = eval(`(async () => {${decodeURIComponent(code)}})()`);
+                    if (typeof evaled !== "string") {
+                        evaled = require("util").inspect(await evaled);
+                    }
 
                     msg = Utils.clean(evaled);
                 } catch (err) {

@@ -69,7 +69,7 @@ class GroupModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.post("/game/group/fight/monster", {
                     idMonster: args[0]
                 }), async (data) => {
-                    await FightManager.fight(data, message);
+                    await FightManager.fight(data, message, Globals.connectedUsers[message.author.id]);
                 });
                 break;
         }

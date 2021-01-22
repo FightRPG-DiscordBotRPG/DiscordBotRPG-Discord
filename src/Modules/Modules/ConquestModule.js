@@ -1,7 +1,5 @@
 const GModule = require("../GModule");
 const Globals = require("../../Globals");
-const Translator = require("../../Translator/Translator");
-const Areas = require("../../Drawings/Areas");
 
 
 class ConquestModule extends GModule {
@@ -34,11 +32,11 @@ class ConquestModule extends GModule {
                 break;
 
             case "areabonuseslist":
-                msg = await this.getDisplayIfSuccess(await axios.get("/game/conquest/area/bonuses"), (newData) => Areas.bonusesListToStr(newData))
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/conquest/area/bonuses"), (newData) => user.getAreaDisplay(newData).bonusesListToStr(newData))
                 break;
 
             case "areaconquest":
-                msg = await this.getDisplayIfSuccess(await axios.get("/game/conquest/area"), (newData) => Areas.conquestToStr(newData, user))
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/conquest/area"), (newData) => user.getAreaDisplay(newData).conquestToStr(newData, user))
                 break;
         }
 

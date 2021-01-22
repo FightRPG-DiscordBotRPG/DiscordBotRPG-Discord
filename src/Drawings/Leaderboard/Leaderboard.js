@@ -61,7 +61,7 @@ class Leaderboard {
         return Emojis.getString("win") + "`" + (Translator.getFormater(this.lang).format(this.getItemOffsetStr(i))) + ".`"
     }
 
-    getFullLine(user, i, content, showLevel=true) {
+    getFullLine(user, i, content, showLevel = true) {
         return this.getPositionString(i) + content + this.getIdAndNameString(user, showLevel);
     }
 

@@ -4,10 +4,24 @@ const ProgressBarHealth = require("./ProgressBars/ProgressBarHealth");
 const Globals = require("../Globals");
 const Translator = require("../Translator/Translator");
 const Emojis = require("./Emojis");
+const ProgressBar = require("./ProgressBars/ProgressBar");
+const Color = require("./Color");
+const RoundLogger = require("./Fight/RoundLogger");
+const EntityAffectedLogger = require("./Fight/EntityAffectedLogger");
+const DamageAndHealLogger = require("./Fight/DamageAndHealLogger");
+const TextDrawings = require("./TextDrawings");
+const User = require("../Users/User");
+const MessageReactionsWrapper = require("../MessageReactionsWrapper");
 
 class FightManager {
     constructor() {
         this.fights = {};
+        this.healthBar = new ProgressBarHealth();
+        this.manaBar = new ProgressBar(Color.Blue);
+        this.energyBar = new ProgressBar(Color.Yellow);
+        this.separator = "--------------------------------\n";
+
+        this.healthBar.setSize(8);
     }
 
     // Helper
@@ -18,11 +32,17 @@ class FightManager {
         return fight;
     }
 
-    async fight(data, message) {
+    /**
+     * 
+     * @param {any} data
+     * @param {Discord.Message} message
+     * @param {User} user
+     */
+    async fight(data, message, user) {
         let lang = data.lang;
         let userid = message.author.id;
-        let leftName = data.summary.rounds[0].roundEntitiesIndex == 0 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
-        let rightName = data.summary.rounds[0].roundEntitiesIndex == 1 ? data.summary.rounds[0].attackerName : data.summary.rounds[0].defenderName;
+        let leftName = data.summary.rounds[0].roundEntitiesIndex == 0 ? data.summary.rounds[0].attacker.entity.identity.name : data.summary.rounds[0].defenders[0].entity.identity.name;
+        let rightName = data.summary.rounds[0].roundEntitiesIndex == 1 ? data.summary.rounds[0].attacker.entity.identity.name : data.summary.rounds[0].defenders[0].entity.identity.name;
         let theFight = {
             text: ["", "", ""],
             summary: data.summary,
@@ -31,65 +51,93 @@ class FightManager {
             summaryIndex: 0,
             team1_number: data.team1_number,
             team2_number: data.team2_number,
-            playersMovedTo: data.playersMovedTo
+            playersMovedTo: data.playersMovedTo,
+            skip: false
         };
 
         if (theFight.summary.type == "pve") {
             if (data.beingAttacked == true) {
                 message.channel.send(Translator.getString(lang, "fight_pve", "ganked_by_monster")).catch((e) => console.log(e));
-                theFight.text[2] = Emojis.emojisProd.user.string + " " + Translator.getString(lang, "fight_pve", "user_get_attacked", [leftName, rightName]) + "\n\n";
+                theFight.text[2] = Emojis.emojisProd.user.string + " " + Translator.getString(lang, "fight_pve", "user_get_attacked", [leftName, rightName]) + "\n";
             } else {
-                theFight.text[2] = Emojis.emojisProd.user.string + " " + Translator.getString(lang, "fight_pve", "user_attacked", [leftName, rightName]) + "\n\n";
+                theFight.text[2] = Emojis.emojisProd.user.string + " " + Translator.getString(lang, "fight_pve", "user_attacked", [leftName, rightName]) + "\n";
             }
         } else if (theFight.summary.type == "pvp") {
             if (data.team1_number === 1) {
-                theFight.text[2] = Emojis.emojisProd.sword.string + " " + Translator.getString(lang, "fight_pve", "user_attacked", [leftName, rightName]) + "\n\n";
+                theFight.text[2] = Emojis.emojisProd.sword.string + " " + Translator.getString(lang, "fight_pve", "user_attacked", [leftName, rightName]) + "\n";
             }
         }
 
 
-        let msg = await message.channel.send(this.embedFight(theFight.text[0] + theFight.text[1] + theFight.text[2], theFight, null, lang, true));
-        await this.discordFight(msg, userid, theFight, lang);
+
+        let displaySkipFight = Emojis.general.next_track_button;
+
+        let emojisList = [
+            displaySkipFight
+        ];
+
+        let reactWrapper = new MessageReactionsWrapper();
+
+        await reactWrapper.load(message, this.embedFight(theFight, null, lang, user, true), {
+            reactionsEmojis: emojisList,
+            collectorOptions: {
+                time: data.summary.rounds.length * 4000,
+                max: 1,
+            }
+        });
+
+        reactWrapper.collector.on('collect', async (reaction) => {
+
+            if (reaction.emoji.name === displaySkipFight) {
+                theFight.skip = true;
+            }
+
+        });
+
+        await this.discordFight(reactWrapper.message, userid, theFight, lang, user);
     }
 
-    async discordFight(message, userid, fight, lang) {
+    /**
+     * 
+     * @param {any} message
+     * @param {any} userid
+     * @param {any} fight
+     * @param {any} lang
+     * @param {User} user
+     */
+    async discordFight(message, userid, fight, lang, user) {
         let ind = fight.summaryIndex;
+        /**
+         *  @type {{type: string, rounds: Array<RoundLogger>, drops: Array<{name: string, drop: Array<{equipable: number, other: number}>}>, xp: number, money:number, honor: number, levelUpped: Array<string>, xpGained: Array<Object.<string, number>>, goldGained: Array<Object.<string, number>>, userIds: Array<string>, winner: number}}
+         **/
         let summary = fight.summary;
+
+
+
         if (ind < summary.rounds.length) {
 
-            let hitText = "";
-            if (summary.rounds[ind].critical == true && summary.rounds[ind].stun == true) {
-                hitText = " (" + Translator.getString(lang, "fight_general", "critstun_hit") + "!) ";
-            } else if (summary.rounds[ind].critical == true) {
-                hitText = " (" + Translator.getString(lang, "fight_general", "critical_hit") + "!) ";
-            } else if (summary.rounds[ind].stun == true) {
-                hitText = " (" + Translator.getString(lang, "fight_general", "stun_hit") + "!) ";
-            }
+            let textDecoration = "";
 
             if (summary.type == "pve") {
-                if (summary.rounds[ind].roundType == "Character") {
-                    fight = this.swapArrayIndexes(Emojis.emojisProd.user.string + " " + Translator.getString(lang, "fight_pve", "onfight_user_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
-                        hitText +
-                        "\n\n", fight);
-                } else if (summary.rounds[ind].roundType == "Monster") {
-                    fight = this.swapArrayIndexes(Emojis.emojisProd.monster.string + " " + Translator.getString(lang, "fight_pve", "onfight_monster_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
-                        hitText +
-                        "\n\n", fight);
-                }
+                textDecoration = Emojis.getEntityTypeEmoji(summary.rounds[ind].roundType)
             } else {
-                fight = this.swapArrayIndexes((summary.rounds[ind].roundEntitiesIndex == "0" ? Emojis.emojisProd.sword.string : Emojis.emojisProd.shield.string) + " " + Translator.getString(lang, "fight_pvp", "onfight_user_attack", [summary.rounds[ind].attackerName, summary.rounds[ind].defenderName, summary.rounds[ind].damage]) +
-                    hitText +
-                    "\n\n", fight);
+                textDecoration = summary.rounds[ind].roundEntitiesIndex == "0" ? Emojis.emojisProd.sword.string : Emojis.emojisProd.shield.string;
             }
 
+            this.swapArrayIndexes(textDecoration + this.getSummaryText(summary.rounds[ind]), fight);
 
 
-            message.edit(this.embedFight(fight.text[0] + fight.text[1] + fight.text[2], fight, null, lang, true))
+            message.edit(this.embedFight(fight, null, lang, user, true))
                 .then(() => {
                     fight.summaryIndex++;
+                    let waitTime = 4000;
+                    if (fight.skip) {
+                        fight.summaryIndex = summary.rounds.length;
+                        waitTime = 100;
+                    }
                     setTimeout(async () => {
-                        await this.discordFight(message, userid, fight, lang);
-                    }, 4000);
+                        await this.discordFight(message, userid, fight, lang, user);
+                    }, waitTime);
                 })
                 .catch((e) => {
                     console.log(e);
@@ -98,7 +146,7 @@ class FightManager {
 
         } else {
             if (summary.winner == 0) {
-                fight = this.swapArrayIndexes(Emojis.emojisProd.win.string + " " + Translator.getString(lang, "fight_general", "win") + "\n\n", fight);
+                fight = this.swapArrayIndexes(Emojis.emojisProd.win.string + " " + Translator.getString(lang, "fight_general", "win") + "\n", fight);
 
                 if (fight.team1_number == 1) {
 
@@ -132,7 +180,7 @@ class FightManager {
                                 drop_string += Translator.getString(lang, "fight_pve", otherDrop > 1 ? "drop_item_other_plur" : "drop_item_other", [strOthers]) + "\n";
                             }
 
-                            fight = this.swapArrayIndexes(drop_string + "\n", fight);
+                            fight = this.swapArrayIndexes(drop_string, fight);
 
                         }
 
@@ -141,19 +189,19 @@ class FightManager {
                         }
 
                         if (summary.xp == 0) {
-                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "money_gain", [summary.money]) + "\n", fight);
+                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "money_gain", [summary.money]), fight);
                         } else if (summary.money == 0) {
-                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "xp_gain", [summary.xp]) + "\n", fight);
+                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "xp_gain", [summary.xp]), fight);
                         } else if (summary.xp == 0 && summary.money == 0) {
-                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "nothing_gain", [summary.xp]) + "\n", fight);
+                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "nothing_gain", [summary.xp]), fight);
                         } else {
-                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "both_gain", [summary.xp, summary.money]) + "\n", fight);
+                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "both_gain", [summary.xp, summary.money]), fight);
                         }
                     } else if (summary.type == "pvp") {
                         if (summary.honor > 0) {
-                            fight = this.swapArrayIndexes(Emojis.emojisProd.honor.string + " " + Translator.getString(lang, "fight_pvp", "honor_gain", [summary.honor]) + "\n", fight);
+                            fight = this.swapArrayIndexes(Emojis.emojisProd.honor.string + " " + Translator.getString(lang, "fight_pvp", "honor_gain", [summary.honor]), fight);
                         } else {
-                            fight = this.swapArrayIndexes(Emojis.emojisProd.honor.string + " " + Translator.getString(lang, "fight_pvp", "honor_not_honorable", [-summary.honor]) + "\n", fight);
+                            fight = this.swapArrayIndexes(Emojis.emojisProd.honor.string + " " + Translator.getString(lang, "fight_pvp", "honor_not_honorable", [-summary.honor]), fight);
                         }
                     }
 
@@ -172,20 +220,20 @@ class FightManager {
                                     highestDropName = rname;
                                 }
                             }
-                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "group_drop_item", [highestDropName]) + "\n\n", fight);
+                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "group_drop_item", [highestDropName]) + "\n", fight);
                         }
                         if (summary.levelUpped.length > 0) {
                             fight = this.swapArrayIndexes(Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "fight_pve", "group_level_up") + "\n", fight);
                         }
 
                         if (summary.xp == 0) {
-                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "group_money_gain", [summary.money]) + "\n", fight);
+                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "group_money_gain", [summary.money]), fight);
                         } else if (summary.money == 0) {
-                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "group_xp_gain", [summary.xp]) + "\n", fight);
+                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "group_xp_gain", [summary.xp]), fight);
                         } else if (summary.xp == 0 && summary.money == 0) {
-                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "group_nothing_gain", [summary.xp]) + "\n", fight);
+                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "group_nothing_gain", [summary.xp]), fight);
                         } else {
-                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "group_both_gain", [summary.xp, summary.money]) + "\n", fight);
+                            fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "group_both_gain", [summary.xp, summary.money]), fight);
                         }
                     }
 
@@ -194,7 +242,7 @@ class FightManager {
                 fight = this.swapArrayIndexes(Emojis.emojisProd.loose.string + " " + Translator.getString(lang, "fight_general", "loose") + "\n", fight);
 
                 if (summary.type == "pvp" && fight.team1_number == 1 && summary.honor > 0) {
-                    fight = this.swapArrayIndexes(Emojis.emojisProd.honor.string + " " + Translator.getString(lang, "fight_pvp", "honor_lose", [summary.honor]) + "\n", fight);
+                    fight = this.swapArrayIndexes(Emojis.emojisProd.honor.string + " " + Translator.getString(lang, "fight_pvp", "honor_lose", [summary.honor]), fight);
                 }
             }
 
@@ -209,7 +257,7 @@ class FightManager {
                 color = [255, 0, 0];
             }
 
-            await message.edit(this.embedFight(fight.text[0] + fight.text[1] + fight.text[2], fight, color, lang, false));
+            await message.edit(this.embedFight(fight, color, lang, user, false));
 
             try {
                 if (summary.type == "pve") {
@@ -238,53 +286,157 @@ class FightManager {
 
     }
 
-    embedFight(text, fight, color, lang, ongoing = true) {
+    /**
+     * 
+     * @param {RoundLogger} round
+     */
+    getSummaryText(round) {
+        let lang = round.attacker.lang;
+        let hitText = "";
+
+        if (!round.success) {
+            hitText += ` (${Translator.getString(lang, "fight_general", "missed")}) `;
+        } else if (round.defenders[0].battle.isCritical === true) {
+            hitText = ` (${Translator.getString(lang, "fight_general", "critical_hit")}) `;
+        }
+
+        let str;
+
+        if (round.skillInfo.message.length > 0) {
+            str = round.skillInfo.message + hitText + "\n";
+        } else {
+            str = round.attacker.entity.identity.name + " " + Translator.getString(lang, "fight_general", "cant_do_anything") + "\n";
+        }
+
+        let attackerStr = "";
+        let targetsStr = "";
+
+        for (let item of round.defenders) {
+            if (item.entity.identity.uuid === round.attacker.entity.identity.uuid) {
+                // If target is attacker then all in one and ignore
+                round.attacker.battle.addedStates = [...round.attacker.battle.addedStates, ...item.battle.addedStates];
+                round.attacker.battle.removedStates = [...round.attacker.battle.removedStates, ...item.battle.removedStates];
+                DamageAndHealLogger.add(round.attacker.battle.skillResults, item.battle.skillResults);
+                DamageAndHealLogger.add(round.attacker.battle.statesResults, item.battle.statesResults);
+            } else {
+                let targetSummary = this.getSummaryEntity(item);
+                if (targetSummary.length > 0) {
+                    targetsStr += targetSummary;
+                }
+            }
+        }
+
+        attackerStr = this.getSummaryEntity(round.attacker);
+
+        if (attackerStr.length > 0 || targetsStr.length > 0) {
+            str += "\n";
+        }
+
+        str += attackerStr + targetsStr;
+
+
+
+        return str;
+    }
+
+    /**
+     * 
+     * @param {EntityAffectedLogger} entityLogger
+     */
+    getSummaryEntity(entityLogger, withName = true) {
+
+        let deadEmojiString = entityLogger.entity.actualHP <= 0 ? " " + Emojis.general.skull : "";
+        let name = Emojis.getEntityTypeEmoji(entityLogger.entity.identity.type) + " **" + entityLogger.entity.identity.name + "**" + deadEmojiString +"\n";
+
+        let str = withName ? name : "";
+        if (entityLogger.battle.removedStates.length > 0) {
+            str += `${Emojis.emojisProd.minussign.string} ${Translator.getString(entityLogger.lang, "fight_general", "status_removed", [entityLogger.battle.removedStates.map(e => e.name).join(",")])}\n`;
+        }
+
+        if (entityLogger.battle.addedStates.length > 0) {
+            str += `${Emojis.emojisProd.plussign.string} ${Translator.getString(entityLogger.lang, "fight_general", "status_added", [entityLogger.battle.addedStates.map(e => e.name).join(",")])}\n`;
+        }
+
+        let results = entityLogger.battle.skillResults;
+
+        DamageAndHealLogger.add(results, entityLogger.battle.statesResults);
+
+        str += this.getStatsResultsText(results, entityLogger.lang);
+
+        if (withName) {
+            return str.length > name.length ? str : "";
+        }
+
+        return str;
+
+    }
+
+    /**
+     * 
+     * @param {DamageAndHealLogger} results
+     * @param {string} lang
+     */
+    getStatsResultsText(results, lang = "en") {
+        let str = "";
+
+        if (results.hpRegen > 0 || results.mpRegen > 0 || results.energyRegen > 0) {
+            str += Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "fight_general", "results_gain") + " ";
+
+            str += results.hpRegen > 0 ? Emojis.general.red_heart + " " + Translator.getString(lang, "fight_general", "results_health_points", [results.hpRegen]) + " " : "";
+            str += results.mpRegen > 0 ? Emojis.general.blue_heart + " " + Translator.getString(lang, "fight_general", "results_mana_points", [results.mpRegen]) + " " : "";
+            str += results.energyRegen > 0 ? Emojis.general.high_voltage + " " + Translator.getString(lang, "fight_general", "results_energy_points", [results.energyRegen]) + " " : "";
+
+            str += "\n";
+        }
+
+        if (results.hpDamage > 0 || results.mpDamage > 0 || results.energyDamage > 0) {
+            str += Emojis.emojisProd.leveldown.string + " " + Translator.getString(lang, "fight_general", "results_lost") + " ";
+
+            str += results.hpDamage > 0 ? Emojis.general.red_heart + " " + Translator.getString(lang, "fight_general", "results_health_points", [results.hpDamage]) + " " : "";
+            str += results.mpDamage > 0 ? Emojis.general.blue_heart + " " + Translator.getString(lang, "fight_general", "results_mana_points", [results.mpDamage]) + " " : "";
+            str += results.energyDamage > 0 ? Emojis.general.high_voltage + " " + Translator.getString(lang, "fight_general", "results_energy_points", [results.energyDamage]) + " " : "";
+
+            str += "\n";
+        }
+
+        return str;
+    }
+
+    /**
+     * 
+     * @param {any} fight
+     * @param {number[]} color
+     * @param {string} lang
+     * @param {User} user
+     * @param {boolean} ongoing
+     */
+    embedFight(fight, color, lang, user, ongoing = true) {
         color = color || [128, 128, 128]
         lang = lang || "en"
-        let healthBar = new ProgressBarHealth();
-
         let ind = fight.summaryIndex;
         let summary = fight.summary;
         let type = fight.summary.type;
         let monsterTitle = "";
-        let first, second, firstName, secondName, firstLevel, secondLevel, firstActualHP, secondActualHP, firstMaxHP, secondMaxHP;
 
         ind = fight.summaryIndex < summary.rounds.length ? ind : ind - 1;
 
+        let leftEntity, rightEntity;
+
         if (summary.rounds[ind].roundEntitiesIndex == 0) {
-            first = healthBar.draw(summary.rounds[ind].attackerHP, summary.rounds[ind].attackerMaxHP);
-            firstName = summary.rounds[ind].attackerName;
-            firstLevel = summary.rounds[ind].attackerLevel;
-            firstActualHP = summary.rounds[ind].attackerHP;
-            firstMaxHP = summary.rounds[ind].attackerMaxHP;
-
-            second = healthBar.draw(summary.rounds[ind].defenderHP, summary.rounds[ind].defenderMaxHP);
-            secondName = summary.rounds[ind].defenderName;
-            secondLevel = summary.rounds[ind].defenderLevel;
-            secondActualHP = summary.rounds[ind].defenderHP;
-            secondMaxHP = summary.rounds[ind].defenderMaxHP;
-
+            leftEntity = summary.rounds[ind].attacker.entity;
+            rightEntity = summary.rounds[ind].defenders[0] != null ? summary.rounds[ind].defenders[0].entity : summary.rounds[ind].attacker.entity;
         } else {
-            first = healthBar.draw(summary.rounds[ind].defenderHP, summary.rounds[ind].defenderMaxHP);
-            firstName = summary.rounds[ind].defenderName;
-            firstLevel = summary.rounds[ind].defenderLevel;
-            firstActualHP = summary.rounds[ind].defenderHP;
-            firstMaxHP = summary.rounds[ind].defenderMaxHP;
-
-            second = healthBar.draw(summary.rounds[ind].attackerHP, summary.rounds[ind].attackerMaxHP);
-            secondName = summary.rounds[ind].attackerName;
-            secondLevel = summary.rounds[ind].attackerLevel;
-            secondActualHP = summary.rounds[ind].attackerHP;
-            secondMaxHP = summary.rounds[ind].attackerMaxHP;
+            rightEntity = summary.rounds[ind].attacker.entity;
+            leftEntity = summary.rounds[ind].defenders[0] != null ? summary.rounds[ind].defenders[0].entity : summary.rounds[ind].attacker.entity;
         }
 
         if (type == "pve") {
-            if (summary.rounds[ind].monsterType == "elite") {
-                monsterTitle = "<:elite:406090076511141888> ";
-            } else if (summary.rounds[ind].monsterType == "boss") {
-                monsterTitle = "<:boss:456113364687388683> ";
+            if (rightEntity.identity.monsterType == "elite") {
+                monsterTitle = Emojis.emojisProd.elite.string;
+            } else if (rightEntity.identity.monsterType == "boss") {
+                monsterTitle = Emojis.emojisProd.boss.string;
             } else {
-                monsterTitle = this.getMonsterDifficultyEmoji(summary.rounds[ind].monsterDifficultyName) + " ";
+                monsterTitle = this.getMonsterDifficultyEmoji(rightEntity.identity.monsterDifficultyName);
             }
         }
 
@@ -299,13 +451,33 @@ class FightManager {
                 battleStatus = Translator.getString(lang, "fight_general", "loose");
             }
         }
+
+        let contentText = "";
+
+        if (ongoing) {
+            contentText = this.separator + fight.text[1] + this.separator + fight.text[2]
+        } else {
+            contentText = this.separator + fight.text[0] + this.separator + fight.text[1] + this.separator + fight.text[2];
+        }
+
         let embed = new Discord.MessageEmbed()
             .setAuthor(Emojis.getString("crossed_swords") + "  " + Translator.getString(lang, "fight_general", "status_of_fight", [battleStatus]) + "  " + Emojis.getString("crossed_swords"))
             .setColor(color)
-            .addField(Translator.getString(lang, "fight_general", "combat_log"), text)
-            .addField(firstName + " | " + Translator.getString(lang, "general", "lvl") + " : " + firstLevel, Translator.getFormater(lang).format(firstActualHP) + "/" + Translator.getFormater(lang).format(firstMaxHP) + "\n" + first, true)
-            .addField(monsterTitle + secondName + " | " + Translator.getString(lang, "general", "lvl") + " : " + secondLevel, Translator.getFormater(lang).format(secondActualHP) + "/" + Translator.getFormater(lang).format(secondMaxHP) + "\n" + second, true);
+            .setDescription(contentText)
+            //.addField(Translator.getString(lang, "fight_general", "combat_log"), text)
+            .addField(leftEntity.identity.name + " | " + Translator.getString(lang, "general", "lvl") + " : " + leftEntity.level,
+                this.getBarsDisplay(leftEntity, lang), true)
+            .addField(`${monsterTitle} ${rightEntity.identity.name} | ${Translator.getString(lang, "general", "lvl")} : ${rightEntity.level}`,
+                this.getBarsDisplay(rightEntity, lang), true)
+            .setFooter((ind + 1) + " / " + ((ind + 1) / fight.summary.rounds.length >= 0.9 ? fight.summary.rounds.length : "?"));
+
         return embed;
+    }
+
+    getBarsDisplay(entity, lang = "en") {
+        return `${TextDrawings.formatHealth(entity.actualHP, entity.maxHP, lang)}\n` +
+            `${TextDrawings.formatMana(entity.actualMP, entity.maxMP, lang)}\n` +
+            `${TextDrawings.formatEnergy(entity.actualEnergy, entity.maxEnergy, lang)}`;
     }
 
     getMonsterDifficultyEmoji(name) {

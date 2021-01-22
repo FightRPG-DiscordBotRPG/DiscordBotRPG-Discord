@@ -8,8 +8,15 @@ class ProgressBarHealth extends ProgressBar {
         this.size = 12;
     }
 
-    draw(min, max) {
-        let ratio = min / max;
+    /**
+     * 
+     * @param {number} min
+     * @param {number} max
+     */
+    draw(min = null, max = null) {
+        this.prepareMinMax(min, max);
+
+        let ratio = this.min / this.max;
         if (ratio > 0.66) {
             this.setColor(Color.Green);
         } else if (ratio <= 0.66 && ratio > 0.33) {

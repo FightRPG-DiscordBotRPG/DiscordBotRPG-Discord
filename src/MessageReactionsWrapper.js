@@ -6,6 +6,7 @@ class MessageReactionsWrapper {
     * @typedef {Object} SettingsMessageReact
     * @property {Array<string>} reactionsEmojis Items be result of Emojis.getString()
     * @property {Discord.ReactionCollectorOptions=} collectorOptions time in ms and max as number
+    * @property {boolean=} waitForEmojis If the collector needs to wait for emojis before listening
     */
 
     constructor() {
@@ -32,8 +33,11 @@ class MessageReactionsWrapper {
             return;
         }
 
-        if (!this.message.deleted) {
-            await this.setReactionsEmojis(settings.reactionsEmojis);
+        if (!this.message.deleted && settings.reactionsEmojis != null) {
+            let promiseEmojis = this.setReactionsEmojis(settings.reactionsEmojis);
+            if (settings.waitForEmojis == null || settings.waitForEmojis === true) {
+                await promiseEmojis;
+            }
         }
 
 
@@ -43,7 +47,7 @@ class MessageReactionsWrapper {
          * @param {Discord.User} user
          */
         const filter = (reaction, user) => {
-            return (this.currentEmojiReactList.includes(reaction.emoji.name) || this.currentEmojiReactList.includes(reaction.emoji.id) ) && user.id === messageDiscord.author.id;
+            return (this.currentEmojiReactList.includes(reaction.emoji.name) || this.currentEmojiReactList.includes(reaction.emoji.id)) && user.id === messageDiscord.author.id;
         };
 
         this.collector = this.message.createReactionCollector(filter, settings.collectorOptions);
@@ -56,11 +60,10 @@ class MessageReactionsWrapper {
 
     /**
      * 
-     * @param {string} message
+     * @param {string} content
      * @param {Array<string>=} arrOfEmojis
      */
     async edit(content, arrOfEmojis) {
-
         if (content != null && !this.message.deleted) {
             await this.clearEmojis();
             await this.message.edit(content);
@@ -81,19 +84,36 @@ class MessageReactionsWrapper {
 
     /**
      * 
-     * @param {Array<string>} arrOfEmojis
+     * @param {Array<string> | Array<{id: number, string: string}>} arrOfEmojis
      * @param {boolean} clear
      */
     async setReactionsEmojis(arrOfEmojis, clear = false) {
         if (clear) {
             await this.clearEmojis();
         }
-        for (let emojiName of arrOfEmojis) {
-            if (emojiName != null) {
-                this.currentMessageReactions.push(await this.message.react(emojiName));
-                this.currentEmojiReactList.push(emojiName);
+        for (let emoji of arrOfEmojis) {
+            if (emoji != null) {
+                if (emoji.id != null) {
+                    emoji = emoji.id;
+                }
+                await this.addEmoji(emoji);
             }
         }
+    }
+
+    /**
+     * 
+     * @param {string} emojiIdentifier
+     */
+    async addEmoji(emojiIdentifier) {
+        if (this.message.deleted) {
+            return;
+        }
+        try {
+            this.currentMessageReactions.push(await this.message.react(emojiIdentifier));
+            this.currentEmojiReactList.push(emojiIdentifier);
+        } catch (e) { /* Do noting cause the message is maybe deleted */ }
+
     }
 
     async clearEmojis() {

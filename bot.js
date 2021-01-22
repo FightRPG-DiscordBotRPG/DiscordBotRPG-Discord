@@ -7,8 +7,12 @@ const Globals = require("./src/Globals");
 const conn = require("./conf/mysql");
 const Axios = require("axios").default;
 const Utils = require("./src/Utils");
+const Translator = require("./src/Translator/Translator");
 
-var bot = new Discord.Client();
+var bot = new Discord.Client({
+    messageCacheLifetime: 3600,
+    messageSweepInterval: 3600,
+});
 
 process.on('unhandledRejection', err => {
     let errorDate = new Date();
@@ -21,8 +25,9 @@ let timeStart = Date.now();
 
 async function startBot() {
     try {
+        await Translator.loadTranslator();
         await bot.login(conf.discordbotkey);
-        removedInactiveUsers();
+        setTimeoutToRemoveInactiveUsers();
     } catch (error) {
         let errorDate = new Date();
         console.log("Error when connecting Shard. Restarting shard in 30 seconds...");
@@ -46,8 +51,15 @@ async function removedInactiveUsers() {
         }
     }
 
-    console.log(`Removed: ${inactiveUsers} inactive users. Memory consumption: ${await getMemory()} MB`);
+    try {
+        console.log(`Removed: ${inactiveUsers} inactive users. Memory consumption: ${await getMemory()} MB`);
+    } catch (ex) { console.error(ex); }
     //createDummyUsers();
+    setTimeoutToRemoveInactiveUsers();
+    
+}
+
+function setTimeoutToRemoveInactiveUsers() {
     setTimeout(removedInactiveUsers, Globals.inactiveTimeBeforeDisconnect * 60000);
 }
 
@@ -88,6 +100,7 @@ async function getMemory() {
 
 bot.on("ready", async () => {
     console.log("Shard Connected");
+
     bot.user.setPresence({
         activity: {
             name: "On " + await Utils.getTotalNumberOfGuilds(bot.shard) + " servers!"
@@ -110,7 +123,7 @@ bot.on("ready", async () => {
 
 });
 
-let moduleHandler = new ModuleHandler();
+Globals.moduleHandler = new ModuleHandler();
 
 // Key Don't open
 startBot();
@@ -121,7 +134,7 @@ startBot();
 
 bot.on('message', async (message) => {
     try {
-        await moduleHandler.run(message);
+        await Globals.moduleHandler.run(message);
     } catch (err) {
         let msgError = "";
         if (err.constructor == Discord.DiscordAPIError) {
