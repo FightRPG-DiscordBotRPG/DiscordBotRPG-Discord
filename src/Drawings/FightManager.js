@@ -124,7 +124,7 @@ class FightManager {
                 textDecoration = summary.rounds[ind].roundEntitiesIndex == "0" ? Emojis.emojisProd.sword.string : Emojis.emojisProd.shield.string;
             }
 
-            this.swapArrayIndexes(textDecoration + this.getSummaryText(summary.rounds[ind]), fight);
+            this.swapArrayIndexes(textDecoration +" " +  this.getSummaryText(summary.rounds[ind]), fight);
 
 
             message.edit(this.embedFight(fight, null, lang, user, true))
