@@ -194,7 +194,8 @@ bot.on("userUpdate", async (oldUser, newUser) => {
 
         if (axios != null) {
             let data = await axios.post("/game/character/update", {
-                username: newUser.tag
+                username: newUser.tag,
+                avatar: oldUser.avatar != newUser.avatar ? newUser.avatar : null,
             });
             if (data.data.error != null) {
                 console.log("Axios Existing.. hd5d6589d");
