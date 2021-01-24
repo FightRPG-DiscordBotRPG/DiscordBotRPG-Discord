@@ -49,13 +49,13 @@ class GModule {
     /**
      * 
      * @param {Discord.Message} message
-     * @param {string} msg
+     * @param {string | Discord.MessageEmbed} msg
      */
     async sendMessage(message, msg) {
         try {
             if (msg != null && msg != "") {
                 let msgCut = msg;
-                while (msgCut.length > 2000) {
+                while (msgCut.length > 2000 && !msg.fields) {
                     await message.channel.send(msgCut.substring(0, 1999));
                     msgCut = msgCut.substring(1999);
                 }
@@ -281,15 +281,17 @@ class GModule {
                     case "power_up":
                         type = "power";
                         break;
+                    case "rebirth_up":
+                        type = "rebirth";
+                        break;
                     case "fav":
                     case "favorite":
                         type = "fav";
                         value = this.tryParseYesNo(value);
                         break;
                 }
-
+                
                 toReturn.params[type] = value;
-
             }
 
 
