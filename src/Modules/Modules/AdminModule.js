@@ -47,6 +47,7 @@ class AdminModule extends GModule {
                 data = await axios.post("/game/admin/give/item/me", {
                     idItem: args[0],
                     number: args[1],
+                    rebirthLevel: args[2],
                 });
                 data = data.data;
                 if (data.error != null) {

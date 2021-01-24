@@ -366,6 +366,10 @@ Emojis.emojisProd = {
     "elements": {
         id: "767364758097625088",
         string: "<:elements:767364758097625088>"
+    },
+    "rebirth": {
+        id: "802866949608308766",
+        string: "<:rebirth:802866949608308766>"
     }
 };
 
