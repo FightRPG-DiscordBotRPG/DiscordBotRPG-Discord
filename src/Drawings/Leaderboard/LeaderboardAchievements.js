@@ -10,7 +10,7 @@ class LeaderboardAchievements extends Leaderboard {
 
     draw() {
         let maximumAchievPoints = this.getNumberLength(this.rankings[0].points);
-        return this.getDisplay(Translator.getString(this.lang, "leaderboards", "power", [this.sumOfAll.totalPOints]), (i, user) => {
+        return this.getDisplay(Translator.getString(this.lang, "leaderboards", "achievements", [this.sumOfAll.totalPoints]), (i, user) => {
             return this.getFullLine(user, i, Emojis.general.trophy + this.getFieldDisplay(user.points, maximumAchievPoints));
         });
     }
