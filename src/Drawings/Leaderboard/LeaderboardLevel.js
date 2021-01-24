@@ -28,7 +28,7 @@ class LeaderboardLevel extends Leaderboard {
         maximumExpLength = Translator.getFormater(this.lang).format(maximumExpLength).length;
 
         return this.getDisplay(Translator.getString(this.lang, "leaderboards", "level", [this.sumOfAll.totalLevels, this.sumOfAll.totalExp]), (i, user) => {
-            return this.getFullLine(user, i, Emojis.getString("levelup") + this.getFieldDisplay(user.actualLevel, maximumLevelLength) + Emojis.getString("exp") + this.getFieldDisplay(user.actualExp, maximumExpLength), false);
+            return this.getFullLine(user, i, Emojis.emojisProd.level.string + this.getFieldDisplay(user.actualLevel, maximumLevelLength) + Emojis.getString("exp") + this.getFieldDisplay(user.actualExp, maximumExpLength), false);
         });
     }
 }

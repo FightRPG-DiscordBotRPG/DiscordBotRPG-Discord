@@ -27,7 +27,7 @@ class ItemShow {
             .addField(Translator.getString(lang, "inventory_equipment", "type"), Emojis.getItemTypeEmoji(item.type_shorthand) + " " + item.type, true)
             .addField(Translator.getString(lang, "inventory_equipment", "subtype"), Emojis.getItemSubTypeEmoji(item.subtype_shorthand) + " " + item.subType, true)
             .addField(Translator.getString(lang, "inventory_equipment", "rarity"), Emojis.getRarityEmoji(item.rarity_shorthand) + " " + item.rarity, true)
-            .addField(Translator.getString(lang, "inventory_equipment", "level"), Emojis.getString("levelup") + " " + Translator.getFormater(lang).format(item.level), true)
+            .addField(Translator.getString(lang, "inventory_equipment", "level"), Emojis.emojisProd.level.string + " " + Translator.getFormater(lang).format(item.level), true)
             .addField(Translator.getString(lang, "inventory_equipment", "rebirth_level"), Emojis.emojisProd.rebirth.string + " " + Translator.getFormater(lang).format(item.rebirthLevel), true)
             .addField(Translator.getString(lang, "inventory_equipment", "power"), Emojis.general.collision + " " + Translator.getFormater(lang).format(item.power), true);
 
@@ -42,7 +42,7 @@ class ItemShow {
         let numberStr = item.number > 1 ? " [x" + Translator.getFormater(lang).format(item.number) + "]" : "";
         let fields = ["**" + item.name + "**" + (item.isFavorite == true ? " ★" : "") + numberStr,
             Emojis.getItemTypeEmoji(item.type_shorthand) + " " + item.type + " (" + Emojis.getItemSubTypeEmoji(item.subtype_shorthand != null ? item.subtype_shorthand : item.subType_shorthand) + " " + item.subType + ")",
-            Emojis.emojisProd.levelup.string + " " + item.level,
+            Emojis.emojisProd.level.string + " " + item.level,
             Emojis.emojisProd.rebirth.string + " " + item.rebirthLevel,
             Emojis.getRarityEmoji(item.rarity_shorthand) + " " + item.rarity,
         ];

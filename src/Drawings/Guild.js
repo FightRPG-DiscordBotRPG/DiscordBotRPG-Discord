@@ -108,7 +108,7 @@ class Guild {
             .addField(Emojis.getString("money_bag") + " " + Translator.getString(lang, "guild", "money_available"), Translator.getString(lang, "guild", "money", [data.money]), true)
             .addField(Emojis.getString("exp") + " " + Translator.getString(lang, "guild", "level_out_of", [data.level, data.maxLevel]), nextLevel, true)
             .addField(Emojis.general.collision + " " + Translator.getString(lang, "guild", "total_player_power").slice(0, -4), Translator.getFormater(lang).format(data.totalPower), true)
-            .addField(Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "guild", "total_player_level").slice(0, -4), Translator.getFormater(lang).format(data.totalLevel), true)
+            .addField(Emojis.emojisProd.level.string + " " + Translator.getString(lang, "guild", "total_player_level").slice(0, -4), Translator.getFormater(lang).format(data.totalLevel), true)
             ;
 
 
@@ -122,7 +122,7 @@ class Guild {
         for (let region in data.territories) {
             let areas = "--------------------\n";
             for (let area of data.territories[region]) {
-                areas += Emojis.getAreaTypeEmoji(area.type_shorthand) + " - " + area.name + (area.statPoints > 0 ? " (" + Emojis.emojisProd.levelup.string + " " + Translator.getString(data.lang, "area", "conquest_points_to_distribute", [area.statPoints]) + ")" : "") + "\n";
+                areas += Emojis.getAreaTypeEmoji(area.type_shorthand) + " - " + area.name + (area.statPoints > 0 ? " (" + Emojis.emojisProd.level.string + " " + Translator.getString(data.lang, "area", "conquest_points_to_distribute", [area.statPoints]) + ")" : "") + "\n";
             }
             embed.addField(region, areas + "--------------------");
         }
@@ -153,7 +153,7 @@ class Guild {
                 powerStr = ` - ${Emojis.general.collision} ${Translator.getString(lang, "inventory_equipment", "power")} ${Translator.getFormater(lang).format(userOrGuild.power)}`;
             }
 
-            return `${Emojis.emojisProd.idFRPG.string} ${userOrGuild.id} - ${Emojis.general.clipboard} ${userOrGuild.name} ${mobileLineBreaks}${desktopTrait}${Emojis.emojisProd.levelup.string} ${Translator.getString(lang, "inventory_equipment", "level")} ${userOrGuild.level}${powerStr}`
+            return `${Emojis.emojisProd.idFRPG.string} ${userOrGuild.id} - ${Emojis.general.clipboard} ${userOrGuild.name} ${mobileLineBreaks}${desktopTrait}${Emojis.emojisProd.level.string} ${Translator.getString(lang, "inventory_equipment", "level")} ${userOrGuild.level}${powerStr}`
         });
 
 
@@ -184,8 +184,8 @@ class Guild {
         ListedGuilds.load({ collection: data.guilds, displayIfEmpty: Translator.getString(lang, "guild", "nothing_to_print"), listType: 0, pageRelated: { page: data.page, maxPage: data.maxPage } }, lang, (index, guild) => {
             let levelSpaces = guild.level.toString().length < 2 ? "0" : "";
             return `${Emojis.emojisProd.idFRPG.string} ${guild.id} - ${Emojis.general.clipboard} ${guild.name} ${desktopTrait} ` +
-                `${mobileLineBreaks}${Emojis.emojisProd.levelup.string} ${Translator.getString(lang, "inventory_equipment", "level")} ${levelSpaces}${guild.level} - ${Emojis.emojisProd.user.string} ${guild.nbMembers} / ${guild.maxMembers}` +
-                `\n${Emojis.general.collision} ${Translator.getString(lang, "guild", "total_player_power", [guild.totalPower])} ${desktopTrait} ${mobileLineBreaks}${Emojis.emojisProd.levelup.string} ${Translator.getString(lang, "guild", "total_player_level", [guild.totalLevel])}`;
+                `${mobileLineBreaks}${Emojis.emojisProd.level.string} ${Translator.getString(lang, "inventory_equipment", "level")} ${levelSpaces}${guild.level} - ${Emojis.emojisProd.user.string} ${guild.nbMembers} / ${guild.maxMembers}` +
+                `\n${Emojis.general.collision} ${Translator.getString(lang, "guild", "total_player_power", [guild.totalPower])} ${desktopTrait} ${mobileLineBreaks}${Emojis.emojisProd.level.string} ${Translator.getString(lang, "guild", "total_player_level", [guild.totalLevel])}`;
         });
 
 

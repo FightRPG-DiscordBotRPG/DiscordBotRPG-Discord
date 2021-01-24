@@ -481,7 +481,7 @@ class FightManager {
      */
     getEntityTitleDisplay(entity, user) {
         let userIcon = entity.identity.monsterType ? "" : Emojis.emojisProd.user.string + " ";
-        return userIcon + entity.identity.name + (user.isOnMobile ? " " : "\n") + Emojis.emojisProd.levelup.string + " " + entity.level + "  " + Emojis.emojisProd.rebirth.string + " " + entity.rebirthLevel
+        return userIcon + entity.identity.name + (user.isOnMobile ? " " : "\n") + Emojis.emojisProd.level.string + " " + entity.level + "  " + Emojis.emojisProd.rebirth.string + " " + entity.rebirthLevel
     }
 
     getBarsDisplay(entity, lang = "en") {

@@ -54,7 +54,7 @@ class Leaderboard {
     }
 
     getIdAndNameString(user, showLevel) {
-        return Emojis.getString("idFRPG") + "`" + this.getFieldDisplay(user.idCharacter, this.idMaximumLength) + "` - **" + user.userName + "** " + (showLevel ? "(" + Emojis.emojisProd.levelup.string + " " + user.actualLevel + ")" : "");
+        return Emojis.getString("idFRPG") + "`" + this.getFieldDisplay(user.idCharacter, this.idMaximumLength) + "` - **" + user.userName + "** " + (showLevel ? "(" + Emojis.emojisProd.level.string + " " + user.actualLevel + ")" : "");
     }
 
     getPositionString(i) {
