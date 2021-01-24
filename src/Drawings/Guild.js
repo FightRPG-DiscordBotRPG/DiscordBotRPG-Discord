@@ -23,7 +23,6 @@ class Guild {
         let rgmStr = "`";
 
         let membersArray = [];
-
         for (let i in members) {
             members[i].id = i;
             membersArray.push(members[i]);
@@ -37,7 +36,7 @@ class Guild {
         let lastBeforelfOfficer = 0;
 
         membersArray.forEach((value) => {
-            let valToAdd = value.id + "-" + value.name + " (" + value.level + ")";
+            let valToAdd = value.id + "-" + value.name + " (" + value.level + " - " + value.rebirthLevel + ")";
 
             switch (value.rank) {
                 case 1:
@@ -109,8 +108,8 @@ class Guild {
             .addField(Emojis.getString("exp") + " " + Translator.getString(lang, "guild", "level_out_of", [data.level, data.maxLevel]), nextLevel, true)
             .addField(Emojis.general.collision + " " + Translator.getString(lang, "guild", "total_player_power").slice(0, -4), Translator.getFormater(lang).format(data.totalPower), true)
             .addField(Emojis.emojisProd.level.string + " " + Translator.getString(lang, "guild", "total_player_level").slice(0, -4), Translator.getFormater(lang).format(data.totalLevel), true)
+            .addField(Emojis.emojisProd.rebirth.string + " " + Translator.getString(lang, "guild", "total_player_rebirth_level").slice(0, -4), Translator.getFormater(lang).format(data.totalRebirthLevel), true)
             ;
-
 
         return embed;
     }
@@ -149,11 +148,15 @@ class Guild {
         let ListedAppliances = new GenericMultipleEmbedList();
         ListedAppliances.load({ collection: data.appliances, displayIfEmpty: Translator.getString(lang, "general", "none"), listType: 0, pageRelated: { page: data.page, maxPage: data.maxPage } }, lang, (index, userOrGuild) => {
             let powerStr = "";
+            let rebirthLevelStr = "";
             if (userOrGuild.power != null) {
                 powerStr = ` - ${Emojis.general.collision} ${Translator.getString(lang, "inventory_equipment", "power")} ${Translator.getFormater(lang).format(userOrGuild.power)}`;
             }
-
-            return `${Emojis.emojisProd.idFRPG.string} ${userOrGuild.id} - ${Emojis.general.clipboard} ${userOrGuild.name} ${mobileLineBreaks}${desktopTrait}${Emojis.emojisProd.level.string} ${Translator.getString(lang, "inventory_equipment", "level")} ${userOrGuild.level}${powerStr}`
+            if (userOrGuild.rebirthLevel != null) {
+                rebirthLevelStr = ` - ${Emojis.emojisProd.rebirth.string} ${Translator.getString(lang, "inventory_equipment", "rebirth_level")} ${Translator.getFormater(lang).format(userOrGuild.rebirthLevel)}`
+            }
+            console.log(userOrGuild);
+            return `${Emojis.emojisProd.idFRPG.string} ${userOrGuild.id} - ${Emojis.general.clipboard} ${userOrGuild.name} ${mobileLineBreaks}${desktopTrait} ${Emojis.emojisProd.level.string} ${Translator.getString(lang, "inventory_equipment", "level")} ${userOrGuild.level}${rebirthLevelStr}${powerStr}`
         });
 
 
