@@ -282,7 +282,11 @@ class GModule {
                         type = "power";
                         break;
                     case "rebirth_up":
+                    case "rebirth_level_up":
                         type = "rebirth";
+                        break;
+                    case "rebirth_level_down":
+                        type = "rebirth_down";
                         break;
                     case "fav":
                     case "favorite":
