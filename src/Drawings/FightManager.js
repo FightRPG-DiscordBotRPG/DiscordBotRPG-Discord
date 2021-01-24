@@ -465,13 +465,23 @@ class FightManager {
             .setColor(color)
             .setDescription(contentText)
             //.addField(Translator.getString(lang, "fight_general", "combat_log"), text)
-            .addField(leftEntity.identity.name + " | " + Translator.getString(lang, "general", "lvl") + " : " + leftEntity.level,
+            .addField(this.getEntityTitleDisplay(leftEntity, user),
                 this.getBarsDisplay(leftEntity, lang), true)
-            .addField(`${monsterTitle} ${rightEntity.identity.name} | ${Translator.getString(lang, "general", "lvl")} : ${rightEntity.level}`,
+            .addField(`${monsterTitle} ${this.getEntityTitleDisplay(rightEntity, user)}`,
                 this.getBarsDisplay(rightEntity, lang), true)
             .setFooter((ind + 1) + " / " + ((ind + 1) / fight.summary.rounds.length >= 0.9 ? fight.summary.rounds.length : "?"));
 
         return embed;
+    }
+
+    /**
+     * 
+     * @param {any} entity
+     * @param {User} user
+     */
+    getEntityTitleDisplay(entity, user) {
+        let userIcon = entity.identity.monsterType ? "" : Emojis.emojisProd.user.string + " ";
+        return userIcon + entity.identity.name + (user.isOnMobile ? " " : "\n") + Emojis.emojisProd.levelup.string + " " + entity.level + "  " + Emojis.emojisProd.rebirth.string + " " + entity.rebirthLevel
     }
 
     getBarsDisplay(entity, lang = "en") {
