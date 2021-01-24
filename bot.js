@@ -181,6 +181,8 @@ bot.on("userUpdate", async (oldUser, newUser) => {
         let axios;
         if (Globals.connectedUsers[newUser.id]) {
             axios = Globals.connectedUsers[newUser.id].getAxios();
+            Globals.connectedUsers[newUser.id].avatar = newUser.avatar;
+            Globals.connectedUsers[newUser.id].username = newUser.username;
         } else {
             let res = await conn.query("SELECT token FROM users WHERE idUser = ?;", [newUser.id]);
             if (res[0]) {
