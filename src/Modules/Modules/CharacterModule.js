@@ -94,10 +94,10 @@ class CharacterModule extends GModule {
             case "info":
             case "profile":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/info"), async (data) => {
-                    let displayAttributesEmoji = Emojis.general.yellow_book;
+                    let displayAttributesEmoji = Emojis.general.clipboard;
                     let displayAdvancementsEmoji = Emojis.emojisProd.exp.id;
-                    let displayResourcesEmoji = Emojis.general.red_heart;
-                    let displayOtherEmoji = Emojis.general.clipboard;
+                    let displayResourcesEmoji = Emojis.general.bar_chart;
+                    let displayOtherEmoji = Emojis.general.q_mark;
 
                     let emojisList = [
                         displayAttributesEmoji,

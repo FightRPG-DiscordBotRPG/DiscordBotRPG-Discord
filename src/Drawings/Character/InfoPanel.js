@@ -20,10 +20,10 @@ class InfoPanel {
      * @param {User} user
      */
     toString(data, user) {
-        let authorTitle = data.username + " | " + Translator.getString(data.lang, "inventory_equipment", "power") + ": " + Translator.getFormater(data.lang).format(data.power);
+        let authorTitle = data.username + "  " + Emojis.general.collision + " " + Translator.getString(data.lang, "inventory_equipment", "power") + ": " + Translator.getFormater(data.lang).format(data.power);
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(authorTitle, data.avatar);
+            .setAuthor(authorTitle, user.avatar);
 
         if (this.displayAttributes) {
             embed = this.embedInfoPanelAddAttributes(data, user, embed);
@@ -53,9 +53,10 @@ class InfoPanel {
      * @param {Discord.MessageEmbed} embed
      */
     embedInfoPanelAddOther(data, user, embed) {
-        return embed.addField(Translator.getString(data.lang, "help_panel", "other_title"), GenericMultipleEmbedList.getSeparator())
-            .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "character", "money"), Translator.getFormater(data.lang).format(data.money) + " G", true)
-            .addField(Emojis.getString("honor") + " " + Translator.getString(data.lang, "character", "honor"), Translator.getFormater(data.lang).format(data.honor), true)
+        return embed.addField(Emojis.general.q_mark + " " +Translator.getString(data.lang, "help_panel", "other_title"), GenericMultipleEmbedList.getSeparator())
+            .addField(Emojis.general.money_bag + " " + Translator.getString(data.lang, "character", "money"), Translator.getFormater(data.lang).format(data.money) + " G", true)
+            .addField(Emojis.emojisProd.honor.string + " " + Translator.getString(data.lang, "character", "honor"), Translator.getFormater(data.lang).format(data.honor), true)
+            .addField(Emojis.general.trophy + " " + Translator.getString(data.lang, "character", "achievement_points", [data.achievements.totalAchievementsEarned, data.achievements.totalAchievements]), Translator.getString(data.lang, "general", "points" + (data.achievements.totalPoints > 1 ? "_plur" : ""), [data.achievements.totalPoints]), true)
     }
 
     /**
@@ -65,10 +66,10 @@ class InfoPanel {
      * @param {Discord.MessageEmbed} embed
      */
     embedInfoPanelAddCharacterResources(data, user, embed) {
-        return embed.addField(Translator.getString(data.lang, "character", "character_resources"), GenericMultipleEmbedList.getSeparator())
-            .addField(Translator.getString(data.lang, "character", "health_points"), TextDrawings.formatHealth(data.currentHp, data.maxHp, data.lang), true)
-            .addField(Translator.getString(data.lang, "character", "mana_points"), TextDrawings.formatMana(data.currentMp, data.maxMp, data.lang), true)
-            .addField(Translator.getString(data.lang, "character", "energy_points"), TextDrawings.formatEnergy(data.currentEnergy, data.maxEnergy, data.lang), true)
+        return embed.addField(Emojis.general.bar_chart + " " + Translator.getString(data.lang, "character", "character_resources"), GenericMultipleEmbedList.getSeparator())
+            .addField(Emojis.general.red_heart + " " +Translator.getString(data.lang, "character", "health_points"), TextDrawings.formatHealth(data.currentHp, data.maxHp, data.lang, 8, false, false), true)
+            .addField(Emojis.general.water_droplet + " " + Translator.getString(data.lang, "character", "mana_points"), TextDrawings.formatMana(data.currentMp, data.maxMp, data.lang, 8, false, false), true)
+            .addField(Emojis.general.high_voltage + " " + Translator.getString(data.lang, "character", "energy_points"), TextDrawings.formatEnergy(data.currentEnergy, data.maxEnergy, data.lang, 8, false, false), true)
     }
 
     /**
@@ -79,11 +80,11 @@ class InfoPanel {
      */
     embedInfoPanelAddAttributes(data, user, embed) {
         let statPointsPlur = data.statPoints > 1 ? "_plur" : "";
-        let statsTitle = Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, data.resetValue]);
+        let statsTitle = (data.statPoints > 0 ? Emojis.emojisProd.plussign.string : Emojis.emojisProd.user.string) + " " + Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, data.resetValue]);
 
         return embed.addField(statsTitle, GenericMultipleEmbedList.getSeparator())
-            .addField(Translator.getString(data.lang, "inventory_equipment", "attributes"), TextDrawings.statsToString(Utils.add(data.stats, data.talents.stats), data.statsEquipment, TextDrawings.statCompareTypes.character, user, data.lang) ,true)
-            .addField(Translator.getString(data.lang, "inventory_equipment", "secondary_attributes"), TextDrawings.statsToString(Utils.add(data.secondaryStats, data.talents.secondaryStats), data.secondaryStatsEquipment, TextDrawings.statCompareTypes.only_total, user, data.lang), true);
+            .addField(Emojis.general.clipboard + " " + Translator.getString(data.lang, "inventory_equipment", "attributes"), TextDrawings.statsToString(Utils.add(data.stats, data.talents.stats), data.statsEquipment, TextDrawings.statCompareTypes.character, user, data.lang), true)
+            .addField(Emojis.general.clipboard + " " + Translator.getString(data.lang, "inventory_equipment", "secondary_attributes"), TextDrawings.statsToString(Utils.add(data.secondaryStats, data.talents.secondaryStats), data.secondaryStatsEquipment, TextDrawings.statCompareTypes.only_total, user, data.lang), true);
     }
 
     /**
@@ -95,14 +96,16 @@ class InfoPanel {
     embedInfoPanelAddCharacterAdvancement(data, user, embed) {
         // Player level title
         let playerLevelDisplay = TextDrawings.formatLevelProgressBar(data.actualXp, data.xpNextLevel, data.level, data.maxLevel, data.lang);
-        let titleXPFight = Translator.getString(data.lang, "character", "level") + ": " + data.level;
+        let titleXPFight = Emojis.emojisProd.level.string + " " + Translator.getString(data.lang, "character", "level") + ": " + data.level + "\n" + Emojis.emojisProd.rebirth.string + " " + Translator.getString(data.lang, "inventory_equipment", "rebirth_level") + ": " + data.rebirthLevel;
         // Craft level title
         let playerCraftLevelDisplay = TextDrawings.formatLevelProgressBar(data.craft.xp, data.craft.xpNextLevel, data.craft.level, data.craft.maxLevel, data.lang);
-        let titleXPCraft = Translator.getString(data.lang, "character", "craft_level") + ": " + data.craft.level ;
+        let titleXPCraft =  Emojis.general.hammer +" " + Translator.getString(data.lang, "character", "craft_level") + ": " + data.craft.level + "\n" + Emojis.emojisProd.rebirth.string + " " + Translator.getString(data.lang, "inventory_equipment", "rebirth_level") + ": " + data.craft.rebirthLevel ;
 
-        return embed.addField(Translator.getString(data.lang, "character", "character_advancement"), GenericMultipleEmbedList.getSeparator())
+        embed = embed.addField(Emojis.emojisProd.exp.string + " " +Translator.getString(data.lang, "character", "character_advancement"), GenericMultipleEmbedList.getSeparator())
             .addField(titleXPFight, playerLevelDisplay.title + "\n" + playerLevelDisplay.bar, true)
             .addField(titleXPCraft, playerCraftLevelDisplay.title + "\n" + playerCraftLevelDisplay.bar, true);
+
+        return embed;
     }
 
     disableAll() {
