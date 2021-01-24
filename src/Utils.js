@@ -20,6 +20,14 @@ class Utils {
 
     }
 
+    /**
+     * 
+     * @param {discord.MessageEmbed} embed
+     */
+    static addEmptyFieldToEmbed(embed) {
+        return embed.addField("\u200b", "\u200b", true);
+    }
+
     static clean(text) {
         if (typeof (text) === "string")
             return text.replace(/`/g, "`" + String.fromCharCode(8203)).replace(/@/g, "@" + String.fromCharCode(8203));
