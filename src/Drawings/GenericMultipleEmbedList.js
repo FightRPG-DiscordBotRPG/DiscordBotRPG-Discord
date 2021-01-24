@@ -1,4 +1,5 @@
 const Translator = require("../Translator/Translator");
+const { MessageEmbed } = require("discord.js");
 
 
 class GenericMultipleEmbedList {
@@ -73,6 +74,11 @@ class GenericMultipleEmbedList {
 
     }
 
+    /**
+     * 
+     * @param {MessageEmbed} embed
+     * @param {string} separator
+     */
     getEmbed(embed, separator = "--------------------------------------") {
 
         for (let i in this.fields) {

@@ -88,8 +88,6 @@ class ModuleHandler extends GModule {
 
 
         if (!message.author.bot && command != null && this.allCommands[command]) {
-            console.log("oui");
-            let dt = Date.now();
             let isAdmin = Globals.admins.indexOf(authorIdentifier) > -1;
             let data;
             this.logCommand(authorIdentifier, command, Date.now());

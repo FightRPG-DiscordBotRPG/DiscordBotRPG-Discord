@@ -4,11 +4,13 @@ const Globals = require("../../Globals");
 const Translator = require("../../Translator/Translator");
 const Discord = require("discord.js");
 const Utils = require("../../Utils");
+const Emojis = require("../../Drawings/Emojis");
+const GenericMultipleEmbedList = require("../../Drawings/GenericMultipleEmbedList");
 
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info", "eval"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info", "eval", "show_all_emojis"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -189,6 +191,33 @@ class AdminModule extends GModule {
                 } else {
                     msg = data.error;
                 }
+                break;
+            case "show_all_emojis": {
+                let emojis = [];
+                let page = args[0] > 0 ? args[0] : 1;
+                let perPage = 10;
+
+                for (let emojiName in Emojis.general) {
+                    emojis.push(emojiName + ": " + Emojis.general[emojiName]);
+                }
+
+                for (let emojiName in Emojis.emojisProd) {
+                    emojis.push(emojiName + ": " + Emojis.emojisProd[emojiName].string);
+                }
+
+                let maxPage = Math.ceil(emojis.length / perPage);
+                let genericList = new GenericMultipleEmbedList();
+                genericList.load({ collection: emojis.slice(perPage * (page - 1), perPage * page), listType: 0, pageRelated: { page: page, maxPage: maxPage } }, "en", (i, str) => str);
+
+
+                await this.pageListener({page: page, maxPage: maxPage}, message, genericList.getEmbed(new Discord.MessageEmbed().setAuthor("Emojis").setTitle("All Bot Emojis")), async (currPage) => {
+                    genericList.load({ collection: emojis.slice(perPage * (currPage - 1), perPage * currPage), listType: 0, pageRelated: { page: currPage, maxPage: maxPage } }, "en", (i, str) => str);
+                    return { page: currPage, maxPage: maxPage, text: genericList.getEmbed(new Discord.MessageEmbed().setAuthor("Emojis").setTitle("All Bot Emojis")) }
+                }, async (newData) => {
+                    return newData.text;
+                });
+
+            }
                 break;
             case "warn":
                 args[0] = decodeURIComponent(args[0]);
