@@ -117,7 +117,7 @@ var Globals = {
     helpPanel: {},
     loadHelpPanel: async function () {
 
-        let data = await axios.get("/helpers/help").data;
+        let data = (await axios.get("/helpers/help")).data;
 
         for (let lang in Translator.getAvailableLanguages()) {
 
