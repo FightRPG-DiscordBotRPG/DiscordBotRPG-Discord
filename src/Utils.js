@@ -2,6 +2,8 @@ const discord = require("discord.js");
 const Globals = require("./Globals");
 
 class Utils {
+    static emptyEmbedCharacter = "\u200b";
+
     /**
      * 
      * @param {discord.ShardClientUtil} shard

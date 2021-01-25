@@ -15,7 +15,7 @@ const SkillBuild = require("../../Drawings/Character/SkillBuild");
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile", "resettalents"];
+        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile", "resettalents", "rebirth"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -275,6 +275,58 @@ class CharacterModule extends GModule {
             case "buildclear":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/character/build/clear"));
                 break;
+            case "rebirth": {
+                if (args[0] == "craft_level" || args[0] == "level") {
+
+                }
+                else {
+                    msg = await this.getDisplayIfSuccess(await axios.get("/game/character/rebirth"), async (data) => {
+
+                        // Rebirth ask type
+
+                        let rebirthLevelEmoji = Emojis.emojisProd.level;
+                        let rebirthCraftLevelEmoji = Emojis.general.hammer;
+
+                        let canRebirthLevel = data.rebirthLevel < data.maxRebirthLevel && data.level == data.maxLevel;
+                        let canRebirthCraft = data.craft.rebirthLevel < data.maxRebirthLevel && data.craft.level == data.maxLevel;
+
+                        let emojisList = [
+                            canRebirthLevel ? rebirthLevelEmoji : null,
+                            canRebirthCraft ? rebirthCraftLevelEmoji : null
+                        ];
+
+
+                        let reactWrapper = new MessageReactionsWrapper();
+                        let description = `${Emojis.emojisProd.level.string} ${Translator.getString(user.lang, "character", "level")} ${this.getRebirthAvailabilityString(canRebirthLevel)}
+                            ${Emojis.general.hammer} ${Translator.getString(user.lang, "character", "craft_level")} ${this.getRebirthAvailabilityString(canRebirthCraft)}`;
+
+
+                        await reactWrapper.load(message,
+                            new Discord.MessageEmbed()
+                                .setColor([0, 255, 0])
+                                .setAuthor(Translator.getString(user.lang, "character", "rebirth_title"))
+                                .addField(Emojis.emojisProd.rebirth.string + " " + Translator.getString(user.lang, "character", "current_bonuses"), this.getRebirthBonuses(data, user, CharacterModule.rebirthsBonusesTypes.all, true) + "\n")
+                                .addField(Emojis.general.scroll + " " + Translator.getString(data.lang, "character", "rebirth_do_you_want"), description)
+                            , {
+                                reactionsEmojis: emojisList,
+                                collectorOptions: {
+                                    time: 20000,
+                                    max: 2,
+                                }
+                            });
+
+                        reactWrapper.collector.on('collect', async (reaction) => {
+                            if (reaction.emoji.id === rebirthLevelEmoji.id) {
+                                this.run(message, "rebirth", ["level"]);
+                            } else if (reaction.emoji.name === rebirthLevelEmoji.string) {
+                                this.run(message, "rebirth", ["craft_level"]);
+                            }
+                        });
+
+
+                    });
+                }
+            } break;
 
         }
 
@@ -295,6 +347,67 @@ class CharacterModule extends GModule {
             .setAuthor(Emojis.getString("scroll") + " " + Translator.getString(data.lang, "character", "reset" + optionalType + "_price_title"))
             .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "travel", "gold_price_title"), Translator.getString(data.lang, "travel", "gold_price_body", [data.resetValue]), true)
             .addField(Emojis.getString("q_mark") + " " + Translator.getString(data.lang, "character", "sure_to_reset" + optionalType + "_title"), Translator.getString(data.lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]));
+    }
+
+    getRebirthAvailabilityString(canRebirth, lang) {
+        if (canRebirth) {
+            return ` - (${Translator.getString(lang, "character", "rebirth_available")} ${Emojis.general.vmark})`;
+        } else {
+            return ` - (${Translator.getString(lang, "character", "rebirth_unavailable")} ${Emojis.general.xmark})`;
+        }
+    }
+
+    /**
+     * 
+     * @param {any} data
+     * @param {User} user
+     * @param {number} type
+     * @param {boolean} showCurrent
+     */
+    getRebirthBonuses(data, user, type, showCurrent=true) {
+
+        let content = "";
+
+        if (type === CharacterModule.rebirthsBonusesTypes.all || type === CharacterModule.rebirthsBonusesTypes.only_char) {
+
+            let modifiers, rebirthLevel;
+
+            if (showCurrent || data.nextRebirthsLevelsModifiers == null) {
+                modifiers = data.curentRebirthsLevelsModifiers;
+                rebirthLevel = data.rebirthLevel;
+            } else {
+                modifiers = data.nextRebirthsLevelsModifiers;
+                rebirthLevel = rebirthLevel + 1;
+            }
+
+
+            content += Emojis.emojisProd.treasure.string + " " + Translator.getString(user.lang, "character", "rebirht_items_loot", [rebirthLevel]) + "\n";
+            content += Emojis.emojisProd.sword2.string  + " " + Translator.getString(user.lang, "character", "rebirth_items_stats", [rebirthLevel, modifiers.percentageBonusToItemsStats]) + "\n";
+            content += Emojis.emojisProd.monster.string + " " + Translator.getString(user.lang, "character", "rebirth_monsters_stats", [rebirthLevel, modifiers.percentageBonusToMonstersStats]) + "\n";
+            content += Emojis.general.clipboard + " " + Translator.getString(user.lang, "character", "rebirth_stats_points_more", [modifiers.nbrOfStatsPointsPerLevel]) + "\n";
+            content += Emojis.general.open_book + " " + Translator.getString(user.lang, "character", "rebirth_talents_points_more", [modifiers.nbrOfTalentPointsBonus]) + "\n";
+        }
+
+        if (type === CharacterModule.rebirthsBonusesTypes.all || type === CharacterModule.rebirthsBonusesTypes.only_craft) {
+
+            let rebirthLevel;
+
+            if (showCurrent || data.craft.nextRebirthsLevelsModifiers == null) {
+                rebirthLevel = data.rebirthLevel;
+            } else {
+                rebirthLevel = rebirthLevel + 1;
+            }
+
+            content += Emojis.general.hammer + " " + Translator.getString(user.lang, "character", "rebirht_items_craft", [rebirthLevel]) + "\n";
+        }
+
+        return content;
+    }
+
+    static rebirthsBonusesTypes = {
+        "all": 1,
+        "only_char": 2,
+        "only_craft": 3
     }
 
 }
