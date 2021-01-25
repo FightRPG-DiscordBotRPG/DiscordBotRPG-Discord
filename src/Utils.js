@@ -1,4 +1,5 @@
 const discord = require("discord.js");
+const Globals = require("./Globals");
 
 class Utils {
     /**
@@ -101,6 +102,16 @@ class Utils {
             return 1;
         }
         return n;
+    }
+
+    static getHelpPanel(lang, page) {
+        let maxPage = 8;
+        page = page && page > 0 && page <= maxPage ? page : 1;
+        return {
+            commands: Globals.helpPanel[lang][page],
+            page: page,
+            maxPage: maxPage,
+        };
     }
 }
 

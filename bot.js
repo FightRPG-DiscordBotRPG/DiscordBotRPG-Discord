@@ -26,6 +26,7 @@ let timeStart = Date.now();
 async function startBot() {
     try {
         await Translator.loadTranslator();
+        await Globals.loadHelpPanel();
         await bot.login(conf.discordbotkey);
         setTimeoutToRemoveInactiveUsers();
     } catch (error) {

@@ -412,7 +412,7 @@ class GModule {
     }
 
     async getDisplayIfSuccess(axiosQueryResult, callbackData, callbackError = null) {
-        let data = axiosQueryResult.data;
+        let data = axiosQueryResult.data ? axiosQueryResult.data : axiosQueryResult;
         let msg = "";
         if (data.error == null) {
             msg = await callbackData(data);
@@ -425,8 +425,6 @@ class GModule {
         }
         return msg;
     }
-
-
 
 }
 

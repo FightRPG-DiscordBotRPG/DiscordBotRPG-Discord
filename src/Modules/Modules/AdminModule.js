@@ -257,15 +257,13 @@ class AdminModule extends GModule {
                     deleting.push(actumsg[1].delete());
                 }
                 await Promise.all(deleting);
-                data = await axios.get("/game/other/help/1");
-                data = data.data;
+                data = Utils.getHelpPanel("en", 1);
                 let maxPage = data.maxPage;
                 if (data.error == null) {
                     await message.channel.send(this.cmdToString(data)).catch(e => null);
                 }
                 for (let i = 2; i <= maxPage; i++) {
-                    data = await axios.get("/game/other/help/" + i);
-                    data = data.data;
+                    data = Utils.getHelpPanel("en", i);
                     if (data.error == null) {
                         await message.channel.send(this.cmdToString(data)).catch(e => null);
                     }
