@@ -295,6 +295,7 @@ var Globals = {
                 "buildclear": Translator.getString(lang, "help_panel", "buildclear"),
                 "talentsexport": Translator.getString(lang, "help_panel", "talentexport"),
                 "talentsimport <importString>": Translator.getString(lang, "help_panel", "talentimport"),
+                "resettalents": Translator.getString(lang, "help_panel", "resettalents"),
             }
 
         }
