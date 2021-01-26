@@ -396,7 +396,10 @@ class GModule {
         }
 
         messageReactWrapper.collector.on('collect', async (reaction) => {
-            await messageReactWrapper.deleteAndSend(await dataCollectorCallback(reaction.emoji.name == vmark ? true : false));
+            let content = await dataCollectorCallback(reaction.emoji.name == vmark ? true : false);
+            if (content != null && content != "") {
+                await messageReactWrapper.deleteAndSend(content);
+            }
         });
     }
 
