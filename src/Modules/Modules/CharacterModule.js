@@ -446,9 +446,9 @@ class CharacterModule extends GModule {
             let rebirthLevel;
 
             if (showCurrent || data.craft.nextRebirthsLevelsModifiers == null) {
-                rebirthLevel = data.rebirthLevel;
+                rebirthLevel = data.craft.rebirthLevel;
             } else {
-                rebirthLevel = data.rebirthLevel + 1;
+                rebirthLevel = data.craft.rebirthLevel + 1;
             }
 
             content += Emojis.general.hammer + " " + Translator.getString(user.lang, "character", "rebirht_items_craft", [rebirthLevel]) + "\n";
