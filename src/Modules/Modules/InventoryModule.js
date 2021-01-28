@@ -122,15 +122,16 @@ class InventoryModule extends GModule {
                 break;
 
             case "itemfav":
-                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/itemfav", {
-                    idItem: args[0]
-                }));
-                break;
-
-            case "itemunfav":
-                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/itemunfav", {
-                    idItem: args[0]
-                }));
+            case "itemunfav": {
+                searchFilters = this.getSearchFilters(args);
+                let body = {};
+                if (Object.values(searchFilters.params).length > 0) {
+                    body = searchFilters.params
+                } else {
+                    body = { idItem: args[0] }
+                }
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/" + command, body));
+            }
                 break;
 
             case "inv":
