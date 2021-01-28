@@ -374,6 +374,14 @@ Emojis.emojisProd = {
     "level": {
         id: "802937906691309608",
         string: "<:level:802937906691309608>"
+    },
+    "rebirth_down": {
+        id: "804386345849847859",
+        string: "<:rebirth_down:804386345849847859>"
+    },
+    "rebirth_up": {
+        id: "804386345657040918",
+        string: "<:rebirth_up:804386345657040918>"
     }
 };
 

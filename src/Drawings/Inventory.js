@@ -53,10 +53,9 @@ class Inventory {
     ciValueSellAllDisplay(data) {
         let lang = data.lang;
         let str = "";
-
         if (data.isFiltered) {
             for (let key of Object.keys(data.params)) {
-                if (data.params[key] !== 0 && data.params[key] != "" && data.params[key] != null) {
+                if (data.params[key] >= 0 && data.params[key] !== "" && data.params[key] !== null) {
                     switch (key) {
                         case "rarity":
                             str += Emojis.getRarityEmoji(Globals.getRarityName(data.params.rarity)) + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_rarity", [Translator.getString(lang, "rarities", Globals.getRarityName(data.params.rarity))]);
@@ -81,6 +80,12 @@ class Inventory {
                             break;
                         case "name":
                             str += Emojis.general.clipboard + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_name", [data.params.name.replace(/%/g, "")]);
+                            break;
+                        case "rebirth_up":
+                            str += Emojis.emojisProd.rebirth_up.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_rebirth_sup", [data.params.rebirth]);
+                            break;
+                        case "rebirth_down":
+                            str += Emojis.emojisProd.rebirth_down.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_rebirth_inf", [data.params.rebirth_down]);
                             break;
                     }
 
