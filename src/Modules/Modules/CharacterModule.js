@@ -371,7 +371,7 @@ class CharacterModule extends GModule {
                         reactWrapper.collector.on('collect', async (reaction) => {
                             if (reaction.emoji.id === rebirthLevelEmoji.id) {
                                 await this.run(message, "rebirth", ["level"]);
-                            } else if (reaction.emoji.name === rebirthLevelEmoji.string) {
+                            } else if (reaction.emoji.name === rebirthCraftLevelEmoji) {
                                 await this.run(message, "rebirth", ["craft_level"]);
                             }
                         });
