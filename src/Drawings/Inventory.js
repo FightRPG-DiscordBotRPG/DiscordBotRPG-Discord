@@ -52,52 +52,49 @@ class Inventory {
 
     ciValueSellAllDisplay(data) {
         let lang = data.lang;
-        let str = "";
+
+        let strFilters = [];
         if (data.isFiltered) {
             for (let key of Object.keys(data.params)) {
-                if (data.params[key] >= 0 && data.params[key] !== "" && data.params[key] !== null) {
+                if (data.params[key] >= 0 || data.params[key] !== "" && data.params[key] !== null) {
                     switch (key) {
                         case "rarity":
-                            str += Emojis.getRarityEmoji(Globals.getRarityName(data.params.rarity)) + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_rarity", [Translator.getString(lang, "rarities", Globals.getRarityName(data.params.rarity))]);
+                            strFilters.push(Emojis.getRarityEmoji(Globals.getRarityName(data.params.rarity)) + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_rarity", [Translator.getString(lang, "rarities", Globals.getRarityName(data.params.rarity))]));
                             break;
                         case "type":
-                            str += Emojis.getItemTypeEmoji(Globals.getTypeName(data.params.type)) + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_type", [Translator.getString(lang, "item_types", Globals.getTypeName(data.params.type))]);
+                            strFilters.push(Emojis.getItemTypeEmoji(Globals.getTypeName(data.params.type)) + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_type", [Translator.getString(lang, "item_types", Globals.getTypeName(data.params.type))]));
                             break;
                         case "subtype":
-                            str += Emojis.getItemSubTypeEmoji(Globals.getSubtypeName(data.params.subtype)) + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_subtype", [Translator.getString(lang, "item_sous_types", Globals.getSubtypeName(data.params.subtype))]);
+                            strFilters.push(Emojis.getItemSubTypeEmoji(Globals.getSubtypeName(data.params.subtype)) + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_subtype", [Translator.getString(lang, "item_sous_types", Globals.getSubtypeName(data.params.subtype))]));
                             break;
                         case "level_up":
-                            str += Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level_sup", [data.params.level]);
+                            strFilters.push(Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level_sup", [data.params.level]));
                             break;
                         case "level_down":
-                            str += Emojis.emojisProd.leveldown.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level_inf", [data.params.level_down]);
+                            strFilters.push(Emojis.emojisProd.leveldown.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_level_inf", [data.params.level_down]));
                             break;
                         case "power_up":
-                            str += Emojis.general.collision + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_sup", [data.params.power]);
+                            strFilters.push(Emojis.general.collision + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_sup", [data.params.power]));
                             break;
                         case "power_down":
-                            str += Emojis.general.collision + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_inf", [data.params.power_down]);
+                            strFilters.push(Emojis.general.collision + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_power_inf", [data.params.power_down]));
                             break;
                         case "name":
-                            str += Emojis.general.clipboard + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_name", [data.params.name.replace(/%/g, "")]);
+                            strFilters.push(Emojis.general.clipboard + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_name", [data.params.name.replace(/%/g, "")]));
                             break;
                         case "rebirth_up":
-                            str += Emojis.emojisProd.rebirth_up.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_rebirth_sup", [data.params.rebirth]);
+                            strFilters.push(Emojis.emojisProd.rebirth_up.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_rebirth_sup", [data.params.rebirth]));
                             break;
                         case "rebirth_down":
-                            str += Emojis.emojisProd.rebirth_down.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_rebirth_inf", [data.params.rebirth_down]);
+                            strFilters.push(Emojis.emojisProd.rebirth_down.string + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_rebirth_inf", [data.params.rebirth_down]));
                             break;
                     }
 
-                    // Fix use of fav filter
-                    if (str.length > 0) {
-                        str += "\n";
-                    }
                 }
             }
-
-            //str = str.length > 3 ? str.substring(0, str.length - 3) : str;
         }
+
+        let str = strFilters.join("\n");
 
         if (str.length === 0) {
             str = Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_all");
