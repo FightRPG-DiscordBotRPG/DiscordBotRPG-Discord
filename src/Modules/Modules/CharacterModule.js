@@ -12,6 +12,7 @@ const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
 const Skill = require("../../Drawings/Character/Skill");
 const SkillBuild = require("../../Drawings/Character/SkillBuild");
 const Utils = require("../../Utils");
+const Rebirth = require("../../Drawings/Character/Rebirth");
 
 class CharacterModule extends GModule {
     constructor() {
@@ -285,18 +286,18 @@ class CharacterModule extends GModule {
 
                         if (args[0] == "level") {
                             emojiRebirth = Emojis.emojisProd.level.string;
-                            canRebirthData = this.getRebirthPossible(data.rebirthLevel, data.maxRebirthLevel, data.level, data.maxLevel, data.nextRebirthsLevelsModifiers.requiredItems, user);
+                            canRebirthData = Rebirth.getRebirthPossible(data.rebirthLevel, data.maxRebirthLevel, data.level, data.maxLevel, data.nextRebirthsLevelsModifiers.requiredItems, user);
                             requiredItems = data.nextRebirthsLevelsModifiers.requiredItems;
                             rebirthDescriptionType = "rebirth_sure_to_description";
-                            rebirthTypeBonuses = CharacterModule.rebirthsBonusesTypes.only_char;
-                            titleType = `${emojiRebirth} ${Translator.getString(user.lang, "character", "level")} - ${this.getRebirthAvailabilityString(canRebirthData.canRebirth, user.lang)}`;
+                            rebirthTypeBonuses = Rebirth.rebirthsBonusesTypes.only_char;
+                            titleType = `${emojiRebirth} ${Translator.getString(user.lang, "character", "level")} - ${Rebirth.getRebirthAvailabilityString(canRebirthData.canRebirth, user.lang)}`;
                         } else {
                             emojiRebirth = Emojis.general.hammer;
-                            canRebirthData = this.getRebirthPossible(data.craft.rebirthLevel, data.maxRebirthLevel, data.craft.level, data.craft.maxLevel, data.craft.nextRebirthsLevelsModifiers.requiredItems, user);
+                            canRebirthData = Rebirth.getRebirthPossible(data.craft.rebirthLevel, data.maxRebirthLevel, data.craft.level, data.craft.maxLevel, data.craft.nextRebirthsLevelsModifiers.requiredItems, user);
                             requiredItems = data.craft.nextRebirthsLevelsModifiers.requiredItems
                             rebirthDescriptionType = "rebirth_sure_to_description_craft";
-                            rebirthTypeBonuses = CharacterModule.rebirthsBonusesTypes.only_craft;
-                            titleType = `${emojiRebirth} ${Translator.getString(user.lang, "character", "craft_level")} - ${this.getRebirthAvailabilityString(canRebirthData.canRebirth, user.lang)}`;
+                            rebirthTypeBonuses = Rebirth.rebirthsBonusesTypes.only_craft;
+                            titleType = `${emojiRebirth} ${Translator.getString(user.lang, "character", "craft_level")} - ${Rebirth.getRebirthAvailabilityString(canRebirthData.canRebirth, user.lang)}`;
                         }
 
 
@@ -309,7 +310,7 @@ class CharacterModule extends GModule {
                         if (canRebirthData.canRebirth) {
 
                             confirmEmbed = confirmEmbed
-                                .addField(titleType, Emojis.general.warning + " " + Translator.getString(user.lang, "character", rebirthDescriptionType) + "\n" + this.getRebirthBonuses(data, user, rebirthTypeBonuses, false) + "\n");
+                                .addField(titleType, Emojis.general.warning + " " + Translator.getString(user.lang, "character", rebirthDescriptionType) + "\n" + Rebirth.getRebirthBonuses(data, user, rebirthTypeBonuses, false) + "\n");
 
                             confirmEmbed = Utils.addToEmbedRequiredItems(confirmEmbed, requiredItems, user.lang)
                                 .addField(Emojis.getString("q_mark") + " " + Translator.getString(data.lang, "character", "rebirth_sure_to", [emojiRebirth + " " + Translator.getString(user.lang, "character", args[0])]), Translator.getString(data.lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]));
@@ -350,15 +351,15 @@ class CharacterModule extends GModule {
 
 
                         let reactWrapper = new MessageReactionsWrapper();
-                        let description = `${Emojis.emojisProd.level.string} ${Translator.getString(user.lang, "character", "level")} - ${this.getRebirthAvailabilityString(canRebirthLevel)}
-                            ${Emojis.general.hammer} ${Translator.getString(user.lang, "character", "craft_level")} - ${this.getRebirthAvailabilityString(canRebirthCraft)}`;
+                        let description = `${Emojis.emojisProd.level.string} ${Translator.getString(user.lang, "character", "level")} - ${Rebirth.getRebirthAvailabilityString(canRebirthLevel)}
+                            ${Emojis.general.hammer} ${Translator.getString(user.lang, "character", "craft_level")} - ${Rebirth.getRebirthAvailabilityString(canRebirthCraft)}`;
 
 
                         await reactWrapper.load(message,
                             new Discord.MessageEmbed()
                                 .setColor([0, 255, 0])
                                 .setAuthor(Translator.getString(user.lang, "character", "rebirth_title"))
-                                .addField(Emojis.emojisProd.rebirth.string + " " + Translator.getString(user.lang, "character", "current_bonuses"), this.getRebirthBonuses(data, user, CharacterModule.rebirthsBonusesTypes.all, true) + "\n")
+                                .addField(Emojis.emojisProd.rebirth.string + " " + Translator.getString(user.lang, "character", "current_bonuses"), Rebirth.getRebirthBonuses(data, user, Rebirth.rebirthsBonusesTypes.all, true) + "\n")
                                 .addField(Emojis.general.scroll + " " + Translator.getString(data.lang, "character", "rebirth_do_you_want"), description)
                             , {
                                 reactionsEmojis: emojisList,
@@ -400,95 +401,6 @@ class CharacterModule extends GModule {
             .setAuthor(Emojis.getString("scroll") + " " + Translator.getString(data.lang, "character", "reset" + optionalType + "_price_title"))
             .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "travel", "gold_price_title"), Translator.getString(data.lang, "travel", "gold_price_body", [data.resetValue]), true)
             .addField(Emojis.getString("q_mark") + " " + Translator.getString(data.lang, "character", "sure_to_reset" + optionalType + "_title"), Translator.getString(data.lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]));
-    }
-
-    getRebirthAvailabilityString(canRebirth, lang) {
-        if (canRebirth) {
-            return `(${Translator.getString(lang, "character", "rebirth_available")} ${Emojis.general.vmark})`;
-        } else {
-            return `(${Translator.getString(lang, "character", "rebirth_unavailable")} ${Emojis.general.xmark})`;
-        }
-    }
-
-    /**
-     * 
-     * @param {any} data
-     * @param {User} user
-     * @param {number} type
-     * @param {boolean} showCurrent
-     */
-    getRebirthBonuses(data, user, type, showCurrent = true) {
-
-        let content = "";
-
-        if (type === CharacterModule.rebirthsBonusesTypes.all || type === CharacterModule.rebirthsBonusesTypes.only_char) {
-
-            let modifiers, rebirthLevel;
-
-            if (showCurrent || data.nextRebirthsLevelsModifiers == null) {
-                modifiers = data.curentRebirthsLevelsModifiers;
-                rebirthLevel = data.rebirthLevel;
-            } else {
-                modifiers = data.nextRebirthsLevelsModifiers;
-                rebirthLevel = data.rebirthLevel + 1;
-            }
-
-
-            content += Emojis.emojisProd.treasure.string + " " + Translator.getString(user.lang, "character", "rebirht_items_loot", [rebirthLevel]) + "\n";
-            content += Emojis.emojisProd.sword2.string + " " + Translator.getString(user.lang, "character", "rebirth_items_stats", [rebirthLevel, modifiers.percentageBonusToItemsStats]) + "\n";
-            content += Emojis.emojisProd.monster.string + " " + Translator.getString(user.lang, "character", "rebirth_monsters_stats", [rebirthLevel, modifiers.percentageBonusToMonstersStats]) + "\n";
-            content += Emojis.general.clipboard + " " + Translator.getString(user.lang, "character", "rebirth_stats_points_more", [modifiers.nbrOfStatsPointsPerLevel]) + "\n";
-            content += Emojis.general.open_book + " " + Translator.getString(user.lang, "character", "rebirth_talents_points_more", [modifiers.nbrOfTalentPointsBonus]) + "\n";
-        }
-
-        if (type === CharacterModule.rebirthsBonusesTypes.all || type === CharacterModule.rebirthsBonusesTypes.only_craft) {
-
-            let rebirthLevel;
-
-            if (showCurrent || data.craft.nextRebirthsLevelsModifiers == null) {
-                rebirthLevel = data.craft.rebirthLevel;
-            } else {
-                rebirthLevel = data.craft.rebirthLevel + 1;
-            }
-
-            content += Emojis.general.hammer + " " + Translator.getString(user.lang, "character", "rebirht_items_craft", [rebirthLevel]) + "\n";
-        }
-
-        return content;
-    }
-
-    /**
-     * 
-     * @param {number} currentRebirthLevel
-     * @param {number} maxRebirthLevel
-     * @param {number} currentLevel
-     * @param {number} maxLevel
-     * @param {any[]} requiredItems
-     * @param {User} user
-     */
-    getRebirthPossible(currentRebirthLevel, maxRebirthLevel, currentLevel, maxLevel, requiredItems, user) {
-        if (currentRebirthLevel == maxRebirthLevel) {
-            return { canRebirth: false, reason: Translator.getString(user.lang, "errors", "rebirth_cant_rebirth_max_level") }
-        }
-
-        if (currentLevel < maxLevel) {
-            return { canRebirth: false, reason: Translator.getString(user.lang, "errors", "rebirth_cant_rebirth") }
-        }
-
-        for (let item of requiredItems) {
-            if (item.missing > 0) {
-                return { canRebirth: false, reason: Translator.getString(user.lang, "errors", "rebirth_dont_have_required_items") }
-            }
-        }
-
-        return { canRebirth: true, reason: "" };
-
-    }
-
-    static rebirthsBonusesTypes = {
-        "all": 1,
-        "only_char": 2,
-        "only_craft": 3
     }
 
 }

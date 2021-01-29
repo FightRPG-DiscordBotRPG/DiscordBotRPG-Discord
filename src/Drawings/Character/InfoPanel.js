@@ -5,6 +5,7 @@ const GenericMultipleEmbedList = require("../GenericMultipleEmbedList");
 const Utils = require("../../Utils");
 const User = require("../../Users/User");
 const TextDrawings = require("../TextDrawings");
+const Rebirth = require("./Rebirth");
 
 class InfoPanel {
     constructor() {
@@ -94,12 +95,28 @@ class InfoPanel {
     * @param {Discord.MessageEmbed} embed
     */
     embedInfoPanelAddCharacterAdvancement(data, user, embed) {
+
+
         // Player level title
         let playerLevelDisplay = TextDrawings.formatLevelProgressBar(data.actualXp, data.xpNextLevel, data.level, data.maxLevel, data.lang);
         let titleXPFight = Emojis.emojisProd.level.string + " " + Translator.getString(data.lang, "character", "level") + ": " + data.level + "\n" + Emojis.emojisProd.rebirth.string + " " + Translator.getString(data.lang, "inventory_equipment", "rebirth_level") + ": " + data.rebirthLevel;
+
+        if (Rebirth.getRebirthPossible(data.rebirthLevel, data.maxRebirthLevel, data.level, data.maxLevel, data.nextRebirthsLevelsModifiers.requiredItems, user).canRebirth) {
+            playerLevelDisplay.title += " " + Rebirth.getRebirthAvailabilityString(true, data.lang);
+        }
+
         // Craft level title
-        let playerCraftLevelDisplay = TextDrawings.formatLevelProgressBar(data.craft.xp, data.craft.xpNextLevel, data.craft.level, data.craft.maxLevel, data.lang);
-        let titleXPCraft =  Emojis.general.hammer +" " + Translator.getString(data.lang, "character", "craft_level") + ": " + data.craft.level + "\n" + Emojis.emojisProd.rebirth.string + " " + Translator.getString(data.lang, "inventory_equipment", "rebirth_level") + ": " + data.craft.rebirthLevel ;
+        console.log(data);
+        let playerCraftLevelDisplay = TextDrawings.formatLevelProgressBar(data.craft.xp, data.craft.xpNextLevel, data.craft.level, data.maxLevel, data.lang);
+        let titleXPCraft = Emojis.general.hammer + " " + Translator.getString(data.lang, "character", "craft_level") + ": " + data.craft.level + "\n" + Emojis.emojisProd.rebirth.string + " " + Translator.getString(data.lang, "inventory_equipment", "rebirth_level") + ": " + data.craft.rebirthLevel;
+
+
+        if (Rebirth.getRebirthPossible(data.craft.rebirthLevel, data.craft.maxRebirthLevel, data.craft.level, data.craft.maxLevel, data.craft.nextRebirthsLevelsModifiers.requiredItems, user).canRebirth) {
+            playerCraftLevelDisplay.title += " " + Rebirth.getRebirthAvailabilityString(true, data.lang);
+        }
+
+
+
 
         embed = embed.addField(Emojis.emojisProd.exp.string + " " +Translator.getString(data.lang, "character", "character_advancement"), GenericMultipleEmbedList.getSeparator())
             .addField(titleXPFight, playerLevelDisplay.title + "\n" + playerLevelDisplay.bar, true)
