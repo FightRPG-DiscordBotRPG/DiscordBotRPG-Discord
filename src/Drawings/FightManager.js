@@ -124,7 +124,7 @@ class FightManager {
                 textDecoration = summary.rounds[ind].roundEntitiesIndex == "0" ? Emojis.emojisProd.sword.string : Emojis.emojisProd.shield.string;
             }
 
-            this.swapArrayIndexes(textDecoration +" " +  this.getSummaryText(summary.rounds[ind]), fight);
+            this.swapArrayIndexes(textDecoration + " " +  this.getSummaryText(summary.rounds[ind]), fight);
 
 
             message.edit(this.embedFight(fight, null, lang, user, true))
@@ -455,7 +455,7 @@ class FightManager {
         let contentText = "";
 
         if (ongoing) {
-            contentText = this.separator + fight.text[1] + this.separator + fight.text[2]
+            contentText = this.separator + fight.text[2];
         } else {
             contentText = this.separator + fight.text[0] + this.separator + fight.text[1] + this.separator + fight.text[2];
         }
