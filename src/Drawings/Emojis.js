@@ -503,6 +503,8 @@ Emojis.general = {
     "counterclockwise_arrows_button": "🔄",
     "next_track_button": "⏭️",
     "skull": "💀",
+    "information": "ℹ️",
+    "package": "📦"
 };
 
 Emojis.entitiesTypes = {

@@ -121,7 +121,7 @@ class Utils {
 
     static addToEmbedRequiredItems(embed, requiredItems, lang = "en") {
         if (requiredItems != null && requiredItems.length > 0) {
-            embed = embed.addField(Translator.getString(lang, "craft", "needed_items"), Translator.getString(lang, "craft", "header_required"));
+            embed = embed.addField(Emojis.general.package + " " + Translator.getString(lang, "craft", "needed_items"), Translator.getString(lang, "craft", "header_required"));
             let neededItems = new GenericMultipleEmbedList();
             neededItems.load({ collection: requiredItems, displayIfEmpty: "", listType: 0 }, lang, (index, itemNeeded) => {
                 let emojiMissing = itemNeeded.missing == 0 ? Emojis.general.g_vmark : (itemNeeded.missing < itemNeeded.number ? Emojis.emojisProd.tild.string : Emojis.general.g_xmark);
