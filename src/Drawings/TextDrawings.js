@@ -223,20 +223,6 @@ class TextDrawings {
         return str;
     }
 
-    userStatsPanel(data, user) {
-        let statPointsPlur = data.statPoints > 1 ? "_plur" : "";
-
-        let authorTitle = data.username + " | " + Translator.getString(data.lang, "inventory_equipment", "power") + ": " + Translator.getFormater(data.lang).format(data.power);
-        let statsTitle = Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, data.resetValue]);
-
-        //calls an embed with sum = true
-        let embed = new Discord.MessageEmbed()
-            .setColor([0, 255, 0])
-            .setAuthor(authorTitle, data.avatar)
-            .addField(statsTitle, this.statsToString(data.stats, data.statsEquipment, this.statCompareTypes.character, user, data.lang))
-        return embed;
-    }
-
     /**
      * 
      * @param {any} min
