@@ -13,11 +13,12 @@ const Skill = require("../../Drawings/Character/Skill");
 const SkillBuild = require("../../Drawings/Character/SkillBuild");
 const Utils = require("../../Utils");
 const Rebirth = require("../../Drawings/Character/Rebirth");
+const State = require("../../Drawings/Fight/State");
 
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile", "resettalents", "rebirth"];
+        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile", "resettalents", "rebirth", "stateshow"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -229,6 +230,12 @@ class CharacterModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/skills/show/" + args[0]), async (data) => {
                     return Skill.toString(data, user);
                 });
+                break;
+            case "stateshow":
+                return;
+                //msg = await this.getDisplayIfSuccess(await axios.get("/game/character/states/show/" + args[0]), async (data) => {
+                //    return State.toString(data, user);
+                //});
                 break;
             case "buildshow":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/build/show/"), async (data) => {
