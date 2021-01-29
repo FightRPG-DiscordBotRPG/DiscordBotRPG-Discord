@@ -290,15 +290,15 @@ class CharacterModule extends GModule {
 
                         if (args[0] == "level") {
                             emojiRebirth = Emojis.emojisProd.level.string;
-                            canRebirthData = Rebirth.getRebirthPossible(data.rebirthLevel, data.maxRebirthLevel, data.level, data.maxLevel, data.nextRebirthsLevelsModifiers.requiredItems, user);
-                            requiredItems = data.nextRebirthsLevelsModifiers.requiredItems;
+                            canRebirthData = Rebirth.getRebirthPossible(data.rebirthLevel, data.maxRebirthLevel, data.level, data.maxLevel, data.nextRebirthsLevelsModifiers?.requiredItems, user);
+                            requiredItems = data.nextRebirthsLevelsModifiers?.requiredItems;
                             rebirthDescriptionType = "rebirth_sure_to_description";
                             rebirthTypeBonuses = Rebirth.rebirthsBonusesTypes.only_char;
                             titleType = `${emojiRebirth} ${Translator.getString(user.lang, "character", "level")} - ${Rebirth.getRebirthAvailabilityString(canRebirthData.canRebirth, user.lang)}`;
                         } else {
                             emojiRebirth = Emojis.general.hammer;
-                            canRebirthData = Rebirth.getRebirthPossible(data.craft.rebirthLevel, data.maxRebirthLevel, data.craft.level, data.craft.maxLevel, data.craft.nextRebirthsLevelsModifiers.requiredItems, user);
-                            requiredItems = data.craft.nextRebirthsLevelsModifiers.requiredItems
+                            canRebirthData = Rebirth.getRebirthPossible(data.craft.rebirthLevel, data.maxRebirthLevel, data.craft.level, data.craft.maxLevel, data.craft.nextRebirthsLevelsModifiers?.requiredItems, user);
+                            requiredItems = data.craft.nextRebirthsLevelsModifiers?.requiredItems
                             rebirthDescriptionType = "rebirth_sure_to_description_craft";
                             rebirthTypeBonuses = Rebirth.rebirthsBonusesTypes.only_craft;
                             titleType = `${emojiRebirth} ${Translator.getString(user.lang, "character", "craft_level")} - ${Rebirth.getRebirthAvailabilityString(canRebirthData.canRebirth, user.lang)}`;
