@@ -82,7 +82,7 @@ class Rebirth {
         }
 
         if (currentLevel < maxLevel) {
-            return { canRebirth: false, reason: Translator.getString(user.lang, "errors", "rebirth_cant_rebirth") }
+            return { canRebirth: false, reason: Translator.getString(user.lang, "errors", "rebirth_not_max_level") }
         }
 
         for (let item of requiredItems) {
