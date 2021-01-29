@@ -100,12 +100,14 @@ class CharacterModule extends GModule {
                     let displayAdvancementsEmoji = Emojis.emojisProd.exp.id;
                     let displayResourcesEmoji = Emojis.general.bar_chart;
                     let displayOtherEmoji = Emojis.general.q_mark;
+                    let rebirthEmoji = Emojis.emojisProd.rebirth.id;
 
                     let emojisList = [
                         displayAttributesEmoji,
                         displayAdvancementsEmoji,
                         displayResourcesEmoji,
-                        displayOtherEmoji
+                        displayOtherEmoji,
+                        rebirthEmoji
                     ];
 
                     let reactWrapper = new MessageReactionsWrapper();
@@ -134,6 +136,8 @@ class CharacterModule extends GModule {
                             case displayAdvancementsEmoji:
                                 user.infoPanel.displayAdvancement = !user.infoPanel.displayAdvancement;
                                 break;
+                            case rebirthEmoji:
+                                return this.run(message, "rebirth", []);
                         }
 
                         await reactWrapper.edit(user.infoPanel.toString(data, user), emojisList);
