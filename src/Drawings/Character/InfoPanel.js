@@ -106,7 +106,6 @@ class InfoPanel {
         }
 
         // Craft level title
-        console.log(data);
         let playerCraftLevelDisplay = TextDrawings.formatLevelProgressBar(data.craft.xp, data.craft.xpNextLevel, data.craft.level, data.maxLevel, data.lang);
         let titleXPCraft = Emojis.general.hammer + " " + Translator.getString(data.lang, "character", "craft_level") + ": " + data.craft.level + "\n" + Emojis.emojisProd.rebirth.string + " " + Translator.getString(data.lang, "inventory_equipment", "rebirth_level") + ": " + data.craft.rebirthLevel;
 
