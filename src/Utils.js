@@ -129,7 +129,7 @@ class Utils {
             });
             return neededItems.getEmbed(embed);
         } else {
-            embed = embed.addField(Translator.getString(lang, "craft", "needed_items"), Translator.getString(lang, "general", "none"));
+            embed = embed.addField(Emojis.general.package + " " +Translator.getString(lang, "craft", "needed_items"), Translator.getString(lang, "general", "none"));
             return embed;
         }
 

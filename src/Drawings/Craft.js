@@ -27,7 +27,7 @@ class Craft {
 
         if (missing) {
             let embed = this.getSharedEmbed(craft, lang)
-                .addField(Translator.getString(lang, "craft", "needed_items"), Translator.getString(lang, "errors", "craft_dont_have_required_items"));
+                .addField(Emojis.general.package + " " + Translator.getString(lang, "craft", "needed_items"), Translator.getString(lang, "errors", "craft_dont_have_required_items"));
             return neededItems.getEmbed(embed);
         } else {
             return null;
