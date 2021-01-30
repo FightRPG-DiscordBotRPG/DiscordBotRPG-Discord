@@ -47,7 +47,7 @@ class MessageReactionsWrapper {
          * @param {Discord.User} user
          */
         const filter = (reaction, user) => {
-            return (this.currentEmojiReactList.includes(reaction.emoji.name) || this.currentEmojiReactList.includes(reaction.emoji.id)) && user.id === messageDiscord.author.id;
+            return (user.id === messageDiscord.author.id && (this.currentEmojiReactList.includes(reaction.emoji.name) || this.currentEmojiReactList.includes(reaction.emoji.id)) || this.currentEmojiReactList.find(e => e.id === reaction.emoji.id));
         };
 
         this.collector = this.message.createReactionCollector(filter, settings.collectorOptions);
@@ -93,9 +93,6 @@ class MessageReactionsWrapper {
         }
         for (let emoji of arrOfEmojis) {
             if (emoji != null) {
-                if (emoji.id != null) {
-                    emoji = emoji.id;
-                }
                 await this.addEmoji(emoji);
             }
         }
@@ -103,14 +100,15 @@ class MessageReactionsWrapper {
 
     /**
      * 
-     * @param {string} emojiIdentifier
+     * @param {string | {id: number, string: string}} emojiIdentifier
      */
     async addEmoji(emojiIdentifier) {
         if (this.message.deleted) {
             return;
         }
         try {
-            this.currentMessageReactions.push(await this.message.react(emojiIdentifier));
+            console.log(emojiIdentifier.string);
+            this.currentMessageReactions.push(await this.message.react(emojiIdentifier.id != null ? emojiIdentifier.string : emojiIdentifier));
             this.currentEmojiReactList.push(emojiIdentifier);
         } catch (e) { /* Do noting cause the message is maybe deleted */ }
 
