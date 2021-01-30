@@ -288,6 +288,10 @@ class CharacterModule extends GModule {
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/character/build/clear"));
                 break;
             case "rebirth": {
+                if (args[0] == "craftlevel") {
+                    args[0] = "craft_level";
+                }
+
                 if (args[0] == "craft_level" || args[0] == "level") {
 
                     msg = await this.getDisplayIfSuccess(await axios.get("/game/character/rebirth"), async (data) => {
