@@ -107,7 +107,6 @@ class MessageReactionsWrapper {
             return;
         }
         try {
-            console.log(emojiIdentifier.string);
             this.currentMessageReactions.push(await this.message.react(emojiIdentifier.id != null ? emojiIdentifier.string : emojiIdentifier));
             this.currentEmojiReactList.push(emojiIdentifier);
         } catch (e) { /* Do noting cause the message is maybe deleted */ }
