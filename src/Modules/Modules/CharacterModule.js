@@ -98,10 +98,10 @@ class CharacterModule extends GModule {
             case "profile":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/info"), async (data) => {
                     let displayAttributesEmoji = Emojis.general.clipboard;
-                    let displayAdvancementsEmoji = Emojis.emojisProd.exp.id;
+                    let displayAdvancementsEmoji = Emojis.emojisProd.exp;
                     let displayResourcesEmoji = Emojis.general.bar_chart;
                     let displayOtherEmoji = Emojis.general.q_mark;
-                    let rebirthEmoji = Emojis.emojisProd.rebirth.id;
+                    let rebirthEmoji = Emojis.emojisProd.rebirth;
 
                     let emojisList = [
                         displayAttributesEmoji,
@@ -134,10 +134,10 @@ class CharacterModule extends GModule {
                         }
 
                         switch (reaction.emoji.id) {
-                            case displayAdvancementsEmoji:
+                            case displayAdvancementsEmoji.id:
                                 user.infoPanel.displayAdvancement = !user.infoPanel.displayAdvancement;
                                 break;
-                            case rebirthEmoji:
+                            case rebirthEmoji.id:
                                 return this.run(message, "rebirth", []);
                         }
 

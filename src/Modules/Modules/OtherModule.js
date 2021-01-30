@@ -55,9 +55,9 @@ class OtherModule extends GModule {
             case "settings": 
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/other/settings"), async (data) => {
 
-                    let one = Emojis.getString("one");
-                    let two = Emojis.getString("two");
-                    let three = Emojis.getString("three");
+                    let one = Emojis.general.one;
+                    let two = Emojis.general.two;
+                    let three = Emojis.general.three;
                     let four = Emojis.general.four;
                     //let five = Emojis.general.five;
 
