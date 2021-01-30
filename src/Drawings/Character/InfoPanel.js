@@ -57,7 +57,7 @@ class InfoPanel {
         return embed.addField(Emojis.general.q_mark + " " +Translator.getString(data.lang, "help_panel", "other_title"), GenericMultipleEmbedList.getSeparator())
             .addField(Emojis.general.money_bag + " " + Translator.getString(data.lang, "character", "money"), Translator.getFormater(data.lang).format(data.money) + " G", true)
             .addField(Emojis.emojisProd.honor.string + " " + Translator.getString(data.lang, "character", "honor"), Translator.getFormater(data.lang).format(data.honor), true)
-            .addField(Emojis.general.trophy + " " + Translator.getString(data.lang, "character", "achievement_points", [data.achievements.totalAchievementsEarned, data.achievements.totalAchievements]), Translator.getString(data.lang, "general", "points" + (data.achievements.totalPoints > 1 ? "_plur" : ""), [data.achievements.totalPoints]), true)
+            .addField(Emojis.general.trophy + " " + Translator.getString(data.lang, "character", "achievement_count", [data.achievements.totalAchievementsEarned, data.achievements.totalAchievements]), Translator.getString(data.lang, "general", "points" + (data.achievements.totalPoints > 1 ? "_plur" : ""), [data.achievements.totalPoints]), true)
     }
 
     /**
