@@ -232,7 +232,6 @@ class CharacterModule extends GModule {
                 });
                 break;
             case "stateshow":
-                return;
                 //msg = await this.getDisplayIfSuccess(await axios.get("/game/character/states/show/" + args[0]), async (data) => {
                 //    return State.toString(data, user);
                 //});

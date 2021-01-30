@@ -139,6 +139,9 @@ var Globals = {
                 "reset": Translator.getString(lang, "help_panel", "reset"),
                 "resettalents": Translator.getString(lang, "help_panel", "resettalents"),
                 "achievements <page>": Translator.getString(lang, "help_panel", "achievements"),
+                "rebirth": Translator.getString(lang, "help_panel", "rebirth"),
+                "rebirth level": Translator.getString(lang, "help_panel", "rebirth_level"),
+                "rebirth craft_level": Translator.getString(lang, "help_panel", "rebirth_craft_level"),
             };
 
             Globals.helpPanel[lang][1][Translator.getString(lang, "help_panel", "fight_title")] = {
