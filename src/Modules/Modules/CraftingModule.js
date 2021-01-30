@@ -49,6 +49,7 @@ class CraftingModule extends GModule {
                         return this.getBasicSuccessErrorMessage(await axios.post("/game/crafting/craft", {
                             idCraft: args[0],
                             level: args[1],
+                            rebirthLevel: args[2],
                         }));
                     }
                 });

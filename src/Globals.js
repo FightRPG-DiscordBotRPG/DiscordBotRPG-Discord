@@ -245,7 +245,7 @@ var Globals = {
             Globals.helpPanel[lang][6][Translator.getString(lang, "help_panel", "craft_title")] = {
                 "craftlist <page>": Translator.getString(lang, "help_panel", "craftlist"),
                 "craftshow <idCraft>": Translator.getString(lang, "help_panel", "craftshow"),
-                "craft <idCraft> <?level>": Translator.getString(lang, "help_panel", "craft"),
+                "craft <idCraft> <?level> <?rebirthLevel>": Translator.getString(lang, "help_panel", "craft"),
                 "collect <idResource> <number>": Translator.getString(lang, "help_panel", "collect", [data?.collectTriesOnce]),
             }
 
