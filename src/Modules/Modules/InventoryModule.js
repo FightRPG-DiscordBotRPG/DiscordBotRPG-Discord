@@ -127,6 +127,7 @@ class InventoryModule extends GModule {
                 let body = {};
                 if (Object.values(searchFilters.params).length > 0) {
                     body = searchFilters.params
+                    body.filter = true;
                 } else {
                     body = { idItem: args[0] }
                 }
