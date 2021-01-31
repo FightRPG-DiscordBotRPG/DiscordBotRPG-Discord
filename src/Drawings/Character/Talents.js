@@ -34,6 +34,8 @@ class Talents {
             }
         }
 
+        reachableNodes = [...new Set(reachableNodes)];
+
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
             .setAuthor(Translator.getString(lang, "talents", "header_talents") + " | " + Translator.getString(lang, "talents", "x_point" + (data.talentPoints > 1 ? "_plural" : ""), [data.talentPoints]))
