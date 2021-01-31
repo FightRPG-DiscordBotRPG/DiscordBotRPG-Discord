@@ -121,7 +121,7 @@ class Guild {
         for (let region in data.territories) {
             let areas = "--------------------\n";
             for (let area of data.territories[region]) {
-                areas += Emojis.getAreaTypeEmoji(area.type_shorthand) + " - " + area.name + (area.statPoints > 0 ? " (" + Emojis.emojisProd.level.string + " " + Translator.getString(data.lang, "area", "conquest_points_to_distribute", [area.statPoints]) + ")" : "") + "\n";
+                areas += Emojis.getAreaTypeEmoji(area.type_shorthand) + " - " + area.name + (area.statPoints > 0 ? " (" + Emojis.emojisProd.plussign.string + " " + Translator.getString(data.lang, "area", "conquest_points_to_distribute", [area.statPoints]) + ")" : "") + "\n";
             }
             embed.addField(region, areas + "--------------------");
         }
