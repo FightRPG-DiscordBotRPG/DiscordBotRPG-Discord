@@ -2,37 +2,21 @@ const Translator = require("../Translator/Translator");
 const Discord = require("discord.js");
 const GenericMultipleEmbedList = require("./GenericMultipleEmbedList");
 const Emojis = require("./Emojis");
+const Utils = require("../Utils");
 
 class Craft {
     craftToEmbed(data) {
-        let craft = data.craft;
-        let lang = data.lang;
-
-        let embed = this.getSharedEmbed(craft, lang)
-            .addField(Translator.getString(lang, "craft", "needed_items"), Translator.getString(lang, "craft", "header_required"));
-
-
-        let neededItems = new GenericMultipleEmbedList();
-        neededItems.load({ collection: craft.requiredItems, displayIfEmpty: "", listType: 0 }, lang, (index, itemNeeded) => {
-            let emojiMissing = itemNeeded.missing == 0 ? Emojis.general.g_vmark : (itemNeeded.missing < itemNeeded.number ? Emojis.emojisProd.tild.string : Emojis.general.g_xmark);
-            return `${emojiMissing} **${itemNeeded.name}** - ${Emojis.getItemTypeEmoji(itemNeeded.type_shorthand)} ${itemNeeded.type} - ${Emojis.getResourceSubtype(itemNeeded.subType_shorthand, itemNeeded.rarity_shorthand)} ${itemNeeded.subType} - ${Emojis.getRarityEmoji(itemNeeded.rarity_shorthand)} ${itemNeeded.rarity} - x${Translator.getFormater(lang).format(itemNeeded.number)}`;
-        });
-
-
-        return neededItems.getEmbed(embed);
+        return Utils.addToEmbedRequiredItems(this.getSharedEmbed(data.craft, data.lang), data.craft.requiredItems, data.lang);
     }
 
     craftToMissing(data) {
         let craft = data.craft;
         let lang = data.lang;
-
-
         let neededItems = new GenericMultipleEmbedList();
         let missing = false;
 
         neededItems.load({ collection: craft.requiredItems, listType: 0 }, lang, (index, itemNeeded) => {
             let missingNumber = itemNeeded.missing;
-
             if (missingNumber > 0) {
                 missing = true;
                 let emojiMissing = missingNumber == itemNeeded.number ? Emojis.general.g_xmark : Emojis.emojisProd.tild.string ;
@@ -43,7 +27,7 @@ class Craft {
 
         if (missing) {
             let embed = this.getSharedEmbed(craft, lang)
-                .addField(Translator.getString(lang, "craft", "needed_items"), Translator.getString(lang, "errors", "craft_dont_have_required_items"));
+                .addField(Emojis.general.package + " " + Translator.getString(lang, "craft", "needed_items"), Translator.getString(lang, "errors", "craft_dont_have_required_items"));
             return neededItems.getEmbed(embed);
         } else {
             return null;

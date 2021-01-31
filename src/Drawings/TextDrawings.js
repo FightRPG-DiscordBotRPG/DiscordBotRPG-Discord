@@ -223,20 +223,6 @@ class TextDrawings {
         return str;
     }
 
-    userStatsPanel(data, user) {
-        let statPointsPlur = data.statPoints > 1 ? "_plur" : "";
-
-        let authorTitle = data.username + " | " + Translator.getString(data.lang, "inventory_equipment", "power") + ": " + Translator.getFormater(data.lang).format(data.power);
-        let statsTitle = Translator.getString(data.lang, "character", "info_attributes_title" + statPointsPlur, [data.statPoints, data.resetValue]);
-
-        //calls an embed with sum = true
-        let embed = new Discord.MessageEmbed()
-            .setColor([0, 255, 0])
-            .setAuthor(authorTitle, data.avatar)
-            .addField(statsTitle, this.statsToString(data.stats, data.statsEquipment, this.statCompareTypes.character, user, data.lang))
-        return embed;
-    }
-
     /**
      * 
      * @param {any} min
@@ -280,13 +266,13 @@ class TextDrawings {
      * @param {string} lang
      * @param {number} barSize
      */
-    formatHealth(min, max, lang, barSize = 8, fullText=false) {
+    formatHealth(min, max, lang, barSize = 8, fullText=false, withEmoji=true) {
         let bar = new ProgressBarHealth();
         bar.min = min;
         bar.max = max;
         bar.setSize(barSize);
 
-        return Emojis.general.red_heart + (fullText ? " " + Translator.getString(lang, "character", "health_points") : "") + " " + this.formatMinMax(min, max, lang) + (barSize > 0 ? "\n" + bar.draw() : "");
+        return (withEmoji ? Emojis.general.red_heart + " ": "") + (fullText ? " " + Translator.getString(lang, "character", "health_points") + " " : "") + this.formatMinMax(min, max, lang) + (barSize > 0 ? "\n" + bar.draw() : "");
     }
 
     /**
@@ -296,13 +282,13 @@ class TextDrawings {
     * @param {string} lang
     * @param {number} barSize
     */
-    formatMana(min, max, lang, barSize = 8, fullText=false) {
+    formatMana(min, max, lang, barSize = 8, fullText = false, withEmoji = true) {
         let bar = new ProgressBar(Color.Blue);
         bar.min = min;
         bar.max = max;
         bar.setSize(barSize);
 
-        return Emojis.general.water_droplet + (fullText ? " " + Translator.getString(lang, "character", "mana_points") : "") + " " + this.formatMinMax(min, max, lang) + (barSize > 0 ? "\n" + bar.draw() : "");
+        return (withEmoji ? Emojis.general.water_droplet + " " : "") + (fullText ? Translator.getString(lang, "character", "mana_points") + " " : "") + this.formatMinMax(min, max, lang) + (barSize > 0 ? "\n" + bar.draw() : "");
     }
 
     /**
@@ -312,13 +298,13 @@ class TextDrawings {
     * @param {string} lang
     * @param {number} barSize
     */
-    formatEnergy(min, max, lang, barSize = 8, fullText=false) {
+    formatEnergy(min, max, lang, barSize = 8, fullText = false, withEmoji = true) {
         let bar = new ProgressBar(Color.Yellow);
         bar.min = min;
         bar.max = max;
         bar.setSize(barSize);
 
-        return Emojis.general.high_voltage + (fullText ? " " + Translator.getString(lang, "character", "energy_points") : "") + " " + this.formatMinMax(min, max, lang) + (barSize > 0 ? "\n" + bar.draw() : "");
+        return (withEmoji ? Emojis.general.high_voltage  + " ": "" ) + (fullText ? Translator.getString(lang, "character", "energy_points") + " " : "") + this.formatMinMax(min, max, lang) + (barSize > 0 ? "\n" + bar.draw() : "");
     }
 }
 

@@ -16,19 +16,18 @@ class LeaderboardCraftLevel extends Leaderboard {
 
         //first loop maximum of each
         for (let rank of this.rankings) {
-            if (rank.actualLevel > maximumLevelLength) {
-                maximumLevelLength = rank.actualLevel;
+            if (rank.actualCraftLevel > maximumLevelLength) {
+                maximumLevelLength = rank.actualCraftLevel;
             }
-            if (rank.actualExp > maximumExpLength) {
-                maximumExpLength = rank.actualExp;
+            if (rank.actualCraftExp > maximumExpLength) {
+                maximumExpLength = rank.actualCraftExp;
             }
         }
 
         maximumLevelLength = Translator.getFormater(this.lang).format(maximumLevelLength).length;
         maximumExpLength = Translator.getFormater(this.lang).format(maximumExpLength).length;
-
         return this.getDisplay(Translator.getString(this.lang, "leaderboards", "level", [this.sumOfAll.totalLevels, this.sumOfAll.totalExp]), (i, user) => {
-            return this.getFullLine(user, i, Emojis.getString("hammer") + this.getFieldDisplay(user.actualLevel, maximumLevelLength) + Emojis.getString("exp") + this.getFieldDisplay(user.actualExp, maximumExpLength), false);
+            return this.getFullLine(user, i, Emojis.getString("hammer") + this.getFieldDisplay(user.actualCraftLevel, maximumLevelLength) + Emojis.getString("exp") + this.getFieldDisplay(user.actualCraftExp, maximumExpLength));
         });
     }
 }

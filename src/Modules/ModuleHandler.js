@@ -16,6 +16,7 @@ class ModuleHandler extends GModule {
         this.prefixes = {};
         this.prefix = "::";
         this.devMode = false;
+        this.allCommands = {};
         /**
          * @type {Object<string, GModule>}
          */
@@ -24,6 +25,19 @@ class ModuleHandler extends GModule {
          * @type {Object<string, GModule>}
          */
         this.commandsReact = {};
+        this.commands = [
+            "prefix",
+            "tutorial",
+            "play",
+            "start",
+            "setmobile",
+            "load_module",
+            "disable_module",
+            "enable_module",
+            "load_all_modules",
+            "disabled_modules",
+            "bot_info",
+        ]
         this.startLoading("ModuleHandler");
         this.init();
         this.endLoading("ModuleHandler");
@@ -38,6 +52,7 @@ class ModuleHandler extends GModule {
         fs.readdirSync(__dirname + "/Modules/").forEach(file => {
             this.loadModule(file);
         });
+        this.updateAllCommands();
     }
 
     /**
@@ -60,7 +75,6 @@ class ModuleHandler extends GModule {
             }
             return;
         }
-
         /**
          * @type {any[]}
          **/
@@ -73,8 +87,7 @@ class ModuleHandler extends GModule {
         command = command != null ? command.toLowerCase() : "";
 
 
-        if (!message.author.bot && command != null) {
-            let dt = Date.now();
+        if (!message.author.bot && command != null && this.allCommands[command]) {
             let isAdmin = Globals.admins.indexOf(authorIdentifier) > -1;
             let data;
             this.logCommand(authorIdentifier, command, Date.now());
@@ -188,9 +201,9 @@ class ModuleHandler extends GModule {
                     }*/
                     break;
                 case "disabled_modules":
-                    /* if (isAdmin) {
+                     if (isAdmin) {
                          msg = this.getDisabledModules();
-                     }*/
+                     }
                     break;
                 case "bot_info": {
 
@@ -264,6 +277,7 @@ class ModuleHandler extends GModule {
                                 this.commandsReact[cmd] = mod;
                             }
                             this.modules[moduleName].allModulesReference = this.modules;
+                            this.updateAllCommands();
                             return true;
                         } else {
                             delete require.cache[require.resolve("./Modules/" + moduleName + ".js")];
@@ -277,6 +291,15 @@ class ModuleHandler extends GModule {
         }
 
         return false;
+    }
+
+    updateAllCommands() {
+        this.allCommands = {};
+        for (let module of [this, ...Object.values(this.modules)]) {
+            for (let command of module.commands) {
+                this.allCommands[command] = true;
+            }
+        }
     }
 
     prefixCommand(message, command, args, lang) {

@@ -41,18 +41,18 @@ class UserChallenge {
 
         if (this.commands.length >= this.lengthToCheck && !this.mustAnswer && !this.isTimeout()) {
             this.mustAnswer = true;
-            let answers = Utils.getRandomItemsInArray(Object.values(Emojis.emojisProd), 4);
+            let answers = Utils.getRandomItemsInArray(Object.values(Emojis.general), 4);
             this.answer = Utils.getRandomItemsInArray(answers, 1)[0];
 
             let wrapper = new MessageReactionsWrapper();
 
-            await wrapper.load(message, this.getEmbed(Translator.getString(lang, "antispam", "select_emoji", [this.answer.string])), { reactionsEmojis: answers, collectorOptions: { time: 60000 }, waitForEmojis: false });
+            await wrapper.load(message, this.getEmbed(Translator.getString(lang, "antispam", "select_emoji", [this.answer])), { reactionsEmojis: answers, collectorOptions: { time: 60000 }, waitForEmojis: false });
 
             this.challengeMessageUrl = wrapper.message.url;
 
             wrapper.collector.on("collect", (reaction, user) => {
-                switch (reaction.emoji.toString()) {
-                    case this.answer.string:
+                switch (reaction.emoji.name) {
+                    case this.answer:
                         this.mustAnswer = false;
                         this.commands = [];
                         this.updateLengthCheck();
@@ -96,7 +96,7 @@ class UserChallenge {
     }
 
     updateLengthCheck() {
-        this.lengthToCheck = Math.round(100 + (Math.random() * 400));
+        this.lengthToCheck = Math.round(100 + (Math.random() * 300));
     }
 }
 

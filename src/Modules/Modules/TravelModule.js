@@ -36,8 +36,8 @@ class TravelModule extends GModule {
                     let area = user.getAreaDisplay(data);
 
                     let displayWeatherEmoji = Emojis.general.cloud;
-                    let displayMonstersEmoji = Emojis.emojisProd.monster.id;
-                    let displayResourcesEmoji = Emojis.emojisProd.item_type_resource.id;
+                    let displayMonstersEmoji = Emojis.emojisProd.monster;
+                    let displayResourcesEmoji = Emojis.emojisProd.item_type_resource;
                     let displayImageEmoji = Emojis.general.framed_picture;
                     let resetDisplaysEmoji = Emojis.general.counterclockwise_arrows_button;
 
@@ -78,10 +78,10 @@ class TravelModule extends GModule {
 
                         if (isWildArea) {
                             switch (reaction.emoji.id) {
-                                case displayMonstersEmoji:
+                                case displayMonstersEmoji.id:
                                     area.displayMonsters = !area.displayMonsters;
                                     break;
-                                case displayResourcesEmoji:
+                                case displayResourcesEmoji.id:
                                     area.displayResources = !area.displayResources;
                                     break;
                             }

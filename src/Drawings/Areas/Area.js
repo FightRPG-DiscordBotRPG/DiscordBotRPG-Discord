@@ -154,7 +154,7 @@ class Area {
 		let lang = data.lang;
 		let str = "";
 		str += Emojis.emojisProd.exp.string + " " + Translator.getString(lang, "area", "conquest_actual_level", [data.level]) + "\n";
-		str += Emojis.emojisProd.levelup.string + " " + Translator.getString(lang, "area", "conquest_points_to_distribute", [data.statPoints]) + "\n";
+		str += (data.statPoints > 0 ? Emojis.emojisProd.plussign.string : Emojis.general.clipboard) + " " + Translator.getString(lang, "area", "conquest_points_to_distribute", [data.statPoints]) + "\n";
 		str += Emojis.emojisProd.gold_coins.string + " " + Translator.getString(lang, "area", "conquest_price_to_next_level", [data.price]) + "\n";
 		return str;
 	}

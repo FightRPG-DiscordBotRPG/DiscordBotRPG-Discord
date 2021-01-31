@@ -2,7 +2,8 @@ const GModule = require("../GModule");
 const Globals = require("../../Globals");
 const Translator = require("../../Translator/Translator");
 const Emojis = require("../../Drawings/Emojis");
-const MessageReactionsWrapper = require("../../MessageReactionsWrapper")
+const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
+const Utils = require("../../Utils");
 
 
 class OtherModule extends GModule {
@@ -18,6 +19,7 @@ class OtherModule extends GModule {
         let msg = "";
         let authorIdentifier = message.author.id;
         let axios = Globals.connectedUsers[message.author.id].getAxios();
+        let user = Globals.connectedUsers[message.author.id];
 
 
         switch (command) {
@@ -42,21 +44,20 @@ class OtherModule extends GModule {
                 }
                 break;
             case "help":
-                msg = await this.getDisplayIfSuccess(await axios.get("/game/other/help/" + args[0]), (data) => {
+                msg = await this.getDisplayIfSuccess(Utils.getHelpPanel(user.lang, args[0]), (data) => {
                     this.pageListener(data, message, this.cmdToString(data, prefix), async (currPage) => {
-                        let d = await axios.get("/game/other/help/" + currPage);
-                        return d.data;
+                        return Utils.getHelpPanel(user.lang, currPage);
                     }, async (newData) => {
-                        return this.cmdToString(newData, prefix)
+                            return this.cmdToString(newData, prefix);
                     });
                 });
                 break;
             case "settings": 
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/other/settings"), async (data) => {
 
-                    let one = Emojis.getString("one");
-                    let two = Emojis.getString("two");
-                    let three = Emojis.getString("three");
+                    let one = Emojis.general.one;
+                    let two = Emojis.general.two;
+                    let three = Emojis.general.three;
                     let four = Emojis.general.four;
                     //let five = Emojis.general.five;
 

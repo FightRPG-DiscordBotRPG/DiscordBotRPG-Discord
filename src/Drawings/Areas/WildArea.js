@@ -9,37 +9,39 @@ const Moment = require("moment");
 const Area = require("./Area");
 
 class WildArea extends Area {
-	constructor() {
-		super();
-		this.displayMonsters = true;
+    constructor() {
+        super();
+        this.displayMonsters = true;
         this.displayResources = true;
         this.type = "WildArea";
-	}
+    }
 
     /**
      * 
      * @param {any} data
      * @param {User} user
      */
-	toString(data, user) {
-		let embed = super.toString(data, user);
-		let area = data.area;
-		let lang = data.lang;
-
-		embed = embed
-			.addField(Translator.getString(lang, "area", "minimum_quality"), Emojis.getRarityEmoji(area.minimum_quality_shorthand) + " **" + area.minimum_quality + "** ", true)
-			.addField(Translator.getString(lang, "area", "maximum_quality"), Emojis.getRarityEmoji(area.maximum_quality_shorthand) + " **" + area.maximum_quality + "** ", true);
+    toString(data, user) {
+        let embed = super.toString(data, user);
+        let area = data.area;
+        let lang = data.lang;
 
         if (this.displayMonsters) {
-			embed = embed.addField(Translator.getString(lang, "general", "monsters"), this.monstersToString(area.monsters, lang));
-		}
+            let rebirthText = Emojis.emojisProd.rebirth.string + " " + Emojis.emojisProd.leveldown.string + " **" + area.minRebirthLevel + "** " + Emojis.emojisProd.levelup.string + " **" + area.maxRebirthLevel + "**";
 
-		if (this.displayResources) {
-			embed = embed.addField(Translator.getString(lang, "general", "resources"), this.resourcesToString(area.resources, lang));
-		}
+            embed = embed
+                .addField(Translator.getString(lang, "area", "minimum_quality"), Emojis.getRarityEmoji(area.minimum_quality_shorthand) + " **" + area.minimum_quality + "** ", true)
+                .addField(Translator.getString(lang, "area", "maximum_quality"), Emojis.getRarityEmoji(area.maximum_quality_shorthand) + " **" + area.maximum_quality + "** ", true)
+                .addField(Translator.getString(lang, "area", "monsters_rebirth_level"), rebirthText, true)
+                .addField(Translator.getString(lang, "general", "monsters"), this.monstersToString(area.monsters, lang));
+        }
 
-		return embed;
-	}
+        if (this.displayResources) {
+            embed = embed.addField(Translator.getString(lang, "general", "resources"), this.resourcesToString(area.resources, lang));
+        }
+
+        return embed;
+    }
 
     monstersToString(monsters, lang = "en") {
         let str = "";
@@ -109,10 +111,10 @@ class WildArea extends Area {
 
 
 
-	disableAll() {
-		super.disableAll();
-		this.displayMonsters = false;
-		this.displayResources = false;
+    disableAll() {
+        super.disableAll();
+        this.displayMonsters = false;
+        this.displayResources = false;
     }
 
     enableAll() {

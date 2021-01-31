@@ -45,7 +45,7 @@ class Group {
             `${TextDrawings.formatMana(player.actualMP, player.maxMP, lang, 0)}\n` +
             `${TextDrawings.formatEnergy(player.actualEnergy, player.maxEnergy, lang, 0)}`;
 
-        return `${emojiClass} **${player.name}** (${player.areaName} - ${player.idArea})\n${Emojis.getString("levelup")} ${Translator.getString(lang, "inventory_equipment", "level")} ${Translator.getFormater(lang).format(player.level)}\n${Emojis.general.collision} ${Translator.getString(lang, "inventory_equipment", "power")} ${Translator.getFormater(lang).format(player.power)}\n${barsText}\n\n`
+        return `${emojiClass} **${player.name}** (${player.areaName} - ${player.idArea})\n${Emojis.emojisProd.level.string} ${Translator.getString(lang, "inventory_equipment", "level")} ${Translator.getFormater(lang).format(player.level)}\n${Emojis.general.collision} ${Translator.getString(lang, "inventory_equipment", "power")} ${Translator.getFormater(lang).format(player.power)}\n${barsText}\n\n`
     }
 }
 

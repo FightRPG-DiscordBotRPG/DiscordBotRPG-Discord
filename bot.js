@@ -1,7 +1,7 @@
 const Discord = require("discord.js");
 const conf = require("./conf/conf");
 const ModuleHandler = require("./src/Modules/ModuleHandler");
-const DBL = require("dblapi.js");
+const Topgg = require("@top-gg/sdk");
 const DiscordServers = require("./src/Database/DiscordServers");
 const Globals = require("./src/Globals");
 const conn = require("./conf/mysql");
@@ -26,6 +26,7 @@ let timeStart = Date.now();
 async function startBot() {
     try {
         await Translator.loadTranslator();
+        await Globals.loadHelpPanel();
         await bot.login(conf.discordbotkey);
         setTimeoutToRemoveInactiveUsers();
     } catch (error) {
@@ -108,11 +109,11 @@ bot.on("ready", async () => {
     });
     //console.log(`${bot.guilds.cache.size}\n${bot.shard.ids}\n${bot.shard.count}`);
     if (conf.env === "prod") {
-        const dbl = new DBL(conf.topggkey, bot);
+        const api = new Topgg.Api(conf.topggkey);
         setInterval(async () => {
             console.log("Shards: " + bot.shard.ids);
-            console.log("Shard: " + bot.shard.ids[0] + " => Sending stats to https://discordbots.org/ ...");
-            await dbl.postStats(bot.guilds.cache.size, bot.shard.ids[0], bot.shard.count);
+            console.log("Shard: " + bot.shard.ids[0] + " => Sending stats to https://top.gg/ ...");
+            await api.postStats(bot.guilds.cache.size, bot.shard.ids[0], bot.shard.count);
             console.log("Data sent");
         }, 1800000);
     }
@@ -181,6 +182,8 @@ bot.on("userUpdate", async (oldUser, newUser) => {
         let axios;
         if (Globals.connectedUsers[newUser.id]) {
             axios = Globals.connectedUsers[newUser.id].getAxios();
+            Globals.connectedUsers[newUser.id].avatar = newUser.avatar;
+            Globals.connectedUsers[newUser.id].username = newUser.username;
         } else {
             let res = await conn.query("SELECT token FROM users WHERE idUser = ?;", [newUser.id]);
             if (res[0]) {
@@ -194,7 +197,8 @@ bot.on("userUpdate", async (oldUser, newUser) => {
 
         if (axios != null) {
             let data = await axios.post("/game/character/update", {
-                username: newUser.tag
+                username: newUser.tag,
+                avatar: oldUser.avatar != newUser.avatar ? newUser.avatar : null,
             });
             if (data.data.error != null) {
                 console.log("Axios Existing.. hd5d6589d");

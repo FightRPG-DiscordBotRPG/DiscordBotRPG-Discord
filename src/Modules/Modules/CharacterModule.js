@@ -11,11 +11,14 @@ const InfoPanel = require("../../Drawings/Character/InfoPanel");
 const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
 const Skill = require("../../Drawings/Character/Skill");
 const SkillBuild = require("../../Drawings/Character/SkillBuild");
+const Utils = require("../../Utils");
+const Rebirth = require("../../Drawings/Character/Rebirth");
+const State = require("../../Drawings/Fight/State");
 
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile", "resettalents"];
+        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile", "resettalents", "rebirth", "stateshow"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -94,16 +97,18 @@ class CharacterModule extends GModule {
             case "info":
             case "profile":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/info"), async (data) => {
-                    let displayAttributesEmoji = Emojis.general.yellow_book;
-                    let displayAdvancementsEmoji = Emojis.emojisProd.exp.id;
-                    let displayResourcesEmoji = Emojis.general.red_heart;
-                    let displayOtherEmoji = Emojis.general.clipboard;
+                    let displayAttributesEmoji = Emojis.general.clipboard;
+                    let displayAdvancementsEmoji = Emojis.emojisProd.exp;
+                    let displayResourcesEmoji = Emojis.general.bar_chart;
+                    let displayOtherEmoji = Emojis.general.q_mark;
+                    let rebirthEmoji = Emojis.emojisProd.rebirth;
 
                     let emojisList = [
                         displayAttributesEmoji,
                         displayAdvancementsEmoji,
                         displayResourcesEmoji,
-                        displayOtherEmoji
+                        displayOtherEmoji,
+                        rebirthEmoji
                     ];
 
                     let reactWrapper = new MessageReactionsWrapper();
@@ -129,9 +134,11 @@ class CharacterModule extends GModule {
                         }
 
                         switch (reaction.emoji.id) {
-                            case displayAdvancementsEmoji:
+                            case displayAdvancementsEmoji.id:
                                 user.infoPanel.displayAdvancement = !user.infoPanel.displayAdvancement;
                                 break;
+                            case rebirthEmoji.id:
+                                return this.run(message, "rebirth", []);
                         }
 
                         await reactWrapper.edit(user.infoPanel.toString(data, user), emojisList);
@@ -224,6 +231,11 @@ class CharacterModule extends GModule {
                     return Skill.toString(data, user);
                 });
                 break;
+            case "stateshow":
+                //msg = await this.getDisplayIfSuccess(await axios.get("/game/character/states/show/" + args[0]), async (data) => {
+                //    return State.toString(data, user);
+                //});
+                break;
             case "buildshow":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/build/show/"), async (data) => {
 
@@ -275,6 +287,114 @@ class CharacterModule extends GModule {
             case "buildclear":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/character/build/clear"));
                 break;
+            case "rebirth": {
+                if (args[0] == "craftlevel") {
+                    args[0] = "craft_level";
+                }
+
+                if (args[0] == "craft_level" || args[0] == "level") {
+
+                    msg = await this.getDisplayIfSuccess(await axios.get("/game/character/rebirth"), async (data) => {
+
+                        let canRebirthData, rebirthDescriptionType, rebirthTypeBonuses, titleType, emojiRebirth, requiredItems;
+
+                        if (args[0] == "level") {
+                            emojiRebirth = Emojis.emojisProd.level.string;
+                            canRebirthData = Rebirth.getRebirthPossible(data.rebirthLevel, data.maxRebirthLevel, data.level, data.maxLevel, data.nextRebirthsLevelsModifiers?.requiredItems, user);
+                            requiredItems = data.nextRebirthsLevelsModifiers?.requiredItems;
+                            rebirthDescriptionType = "rebirth_sure_to_description";
+                            rebirthTypeBonuses = Rebirth.rebirthsBonusesTypes.only_char;
+                            titleType = `${emojiRebirth} ${Translator.getString(user.lang, "character", "level")} - ${Rebirth.getRebirthAvailabilityString(canRebirthData.canRebirth, user.lang)}`;
+                        } else {
+                            emojiRebirth = Emojis.general.hammer;
+                            canRebirthData = Rebirth.getRebirthPossible(data.craft.rebirthLevel, data.maxRebirthLevel, data.craft.level, data.craft.maxLevel, data.craft.nextRebirthsLevelsModifiers?.requiredItems, user);
+                            requiredItems = data.craft.nextRebirthsLevelsModifiers?.requiredItems
+                            rebirthDescriptionType = "rebirth_sure_to_description_craft";
+                            rebirthTypeBonuses = Rebirth.rebirthsBonusesTypes.only_craft;
+                            titleType = `${emojiRebirth} ${Translator.getString(user.lang, "character", "craft_level")} - ${Rebirth.getRebirthAvailabilityString(canRebirthData.canRebirth, user.lang)}`;
+                        }
+
+
+
+
+                        let confirmEmbed = new Discord.MessageEmbed()
+                            .setColor([0, 255, 0])
+                            .setAuthor(Translator.getString(user.lang, "character", "rebirth_title"));
+
+                        if (canRebirthData.canRebirth) {
+
+                            confirmEmbed = confirmEmbed
+                                .addField(titleType, Emojis.general.warning + " " + Translator.getString(user.lang, "character", rebirthDescriptionType) + "\n" + Rebirth.getRebirthBonuses(data, user, rebirthTypeBonuses, false) + "\n");
+
+                            confirmEmbed = Utils.addToEmbedRequiredItems(confirmEmbed, requiredItems, user.lang)
+                                .addField(Emojis.getString("q_mark") + " " + Translator.getString(data.lang, "character", "rebirth_sure_to", [emojiRebirth + " " + Translator.getString(user.lang, "character", args[0])]), Translator.getString(data.lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]));
+
+
+
+                            this.confirmListener(message, confirmEmbed, async (validate) => {
+                                //return await this.travelPost(args, axios, type);
+                                if (validate) {
+                                    return this.getBasicSuccessErrorMessage(await axios.post("/game/character/rebirth/", {
+                                        rebirthType: args[0]
+                                    }));
+                                } else {
+                                    return Translator.getString(user.lang, "character", "rebirth_cancelled");
+                                }
+                            });
+                        } else {
+                            return Utils.addToEmbedRequiredItems(confirmEmbed, requiredItems, user.lang)
+                                .addField(titleType, canRebirthData.reason);
+                        }
+                    });
+                }
+                else {
+                    msg = await this.getDisplayIfSuccess(await axios.get("/game/character/rebirth"), async (data) => {
+
+                        // Rebirth ask type
+
+                        let rebirthLevelEmoji = Emojis.emojisProd.level;
+                        let rebirthCraftLevelEmoji = Emojis.general.hammer;
+
+                        let canRebirthLevel = data.rebirthLevel < data.maxRebirthLevel && data.level == data.maxLevel;
+                        let canRebirthCraft = data.craft.rebirthLevel < data.maxRebirthLevel && data.craft.level == data.maxLevel;
+
+                        let emojisList = [
+                            canRebirthLevel ? rebirthLevelEmoji : null,
+                            canRebirthCraft ? rebirthCraftLevelEmoji : null
+                        ];
+
+
+                        let reactWrapper = new MessageReactionsWrapper();
+                        let description = `${Emojis.emojisProd.level.string} ${Translator.getString(user.lang, "character", "level")} - ${Rebirth.getRebirthAvailabilityString(canRebirthLevel)}
+                            ${Emojis.general.hammer} ${Translator.getString(user.lang, "character", "craft_level")} - ${Rebirth.getRebirthAvailabilityString(canRebirthCraft)}`;
+
+
+                        await reactWrapper.load(message,
+                            new Discord.MessageEmbed()
+                                .setColor([0, 255, 0])
+                                .setAuthor(Translator.getString(user.lang, "character", "rebirth_title"))
+                                .addField(Emojis.emojisProd.rebirth.string + " " + Translator.getString(user.lang, "character", "current_bonuses"), Rebirth.getRebirthBonuses(data, user, Rebirth.rebirthsBonusesTypes.all, true) + "\n")
+                                .addField(Emojis.general.scroll + " " + Translator.getString(data.lang, "character", "rebirth_do_you_want"), description)
+                            , {
+                                reactionsEmojis: emojisList,
+                                collectorOptions: {
+                                    time: 20000,
+                                    max: 2,
+                                }
+                            });
+
+                        reactWrapper.collector.on('collect', async (reaction) => {
+                            if (reaction.emoji.id === rebirthLevelEmoji.id) {
+                                await this.run(message, "rebirth", ["level"]);
+                            } else if (reaction.emoji.name === rebirthCraftLevelEmoji) {
+                                await this.run(message, "rebirth", ["craft_level"]);
+                            }
+                        });
+
+
+                    });
+                }
+            } break;
 
         }
 

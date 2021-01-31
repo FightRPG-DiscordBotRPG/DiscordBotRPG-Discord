@@ -47,7 +47,7 @@ class MessageReactionsWrapper {
          * @param {Discord.User} user
          */
         const filter = (reaction, user) => {
-            return (user.id === messageDiscord.author.id && (this.currentEmojiReactList.includes(reaction.emoji.name) || this.currentEmojiReactList.includes(reaction.emoji.id)) || this.currentEmojiReactList.find(e => e.id === reaction.emoji.id));
+            return (user.id === messageDiscord.author.id && (this.currentEmojiReactList.includes(reaction.emoji.name) || this.currentEmojiReactList.includes(reaction.emoji.id) || this.currentEmojiReactList.find(e => e.id === reaction.emoji.id)));
         };
 
         this.collector = this.message.createReactionCollector(filter, settings.collectorOptions);

@@ -1,6 +1,12 @@
 const discord = require("discord.js");
+const Globals = require("./Globals");
+const GenericMultipleEmbedList = require("./Drawings/GenericMultipleEmbedList");
+const Emojis = require("./Drawings/Emojis");
+const Translator = require("./Translator/Translator");
 
 class Utils {
+    static emptyEmbedCharacter = "\u200b";
+
     /**
      * 
      * @param {discord.ShardClientUtil} shard
@@ -18,6 +24,14 @@ class Utils {
             return 1;
         }
 
+    }
+
+    /**
+     * 
+     * @param {discord.MessageEmbed} embed
+     */
+    static addEmptyFieldToEmbed(embed) {
+        return embed.addField("\u200b", "\u200b", true);
     }
 
     static clean(text) {
@@ -38,13 +52,13 @@ class Utils {
         return newObj;
     }
 
-     /**
-     * 
-     * @param {Array} pool
-     * @param {number} k
-     * @param {boolean} destructive
-     * @returns {Array}
-     */
+    /**
+    * 
+    * @param {Array} pool
+    * @param {number} k
+    * @param {boolean} destructive
+    * @returns {Array}
+    */
     static sample(pool, k, destructive) {
         var n = pool.length;
         if (k < 0 || k > n)
@@ -65,7 +79,7 @@ class Utils {
         } else {
             let selected = new Set();
             let ret = [];
-            while (selected.add(Math.random() * n | 0).size < k) {}
+            while (selected.add(Math.random() * n | 0).size < k) { }
             selected.forEach((i, j) => ret.push(pool[i]));
             return ret;
         }
@@ -93,6 +107,32 @@ class Utils {
             return 1;
         }
         return n;
+    }
+
+    static getHelpPanel(lang, page) {
+        let maxPage = 8;
+        page = page && page > 0 && page <= maxPage ? page : 1;
+        return {
+            commands: Globals.helpPanel[lang][page],
+            page: page,
+            maxPage: maxPage,
+        };
+    }
+
+    static addToEmbedRequiredItems(embed, requiredItems, lang = "en") {
+        if (requiredItems != null && requiredItems.length > 0) {
+            embed = embed.addField(Emojis.general.package + " " + Translator.getString(lang, "craft", "needed_items"), Translator.getString(lang, "craft", "header_required"));
+            let neededItems = new GenericMultipleEmbedList();
+            neededItems.load({ collection: requiredItems, displayIfEmpty: "", listType: 0 }, lang, (index, itemNeeded) => {
+                let emojiMissing = itemNeeded.missing == 0 ? Emojis.general.g_vmark : (itemNeeded.missing < itemNeeded.number ? Emojis.emojisProd.tild.string : Emojis.general.g_xmark);
+                return `${emojiMissing} **${itemNeeded.name}** - ${Emojis.getItemTypeEmoji(itemNeeded.type_shorthand)} ${itemNeeded.type} - ${Emojis.getResourceSubtype(itemNeeded.subType_shorthand, itemNeeded.rarity_shorthand)} ${itemNeeded.subType} - ${Emojis.getRarityEmoji(itemNeeded.rarity_shorthand)} ${itemNeeded.rarity} - x${Translator.getFormater(lang).format(itemNeeded.number)}`;
+            });
+            return neededItems.getEmbed(embed);
+        } else {
+            embed = embed.addField(Emojis.general.package + " " +Translator.getString(lang, "craft", "needed_items"), Translator.getString(lang, "general", "none"));
+            return embed;
+        }
+
     }
 }
 

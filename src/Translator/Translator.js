@@ -217,6 +217,8 @@ class Translator {
     }
 
     static loadGlobalsYesNo() {
+        Globals.yesNoByLang["true"] = true;
+        Globals.yesNoByLang["false"] = false;
         for (let lang in this.translations) {
             Globals.yesNoByLang[Translator.getString(lang, "general", "yes").toLowerCase()] = true;
             Globals.yesNoByLang[Translator.getString(lang, "general", "no").toLowerCase()] = false;

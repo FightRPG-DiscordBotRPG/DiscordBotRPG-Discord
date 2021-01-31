@@ -42,10 +42,10 @@ class InventoryModule extends GModule {
                     }
 
                     let isEquipped = (isNaN(parseInt(args[0])) && args[0] !== "last");
-                    let sellEmoji = Emojis.getID("money_bag");
-                    let equipUnequipEmoji = isEquipped ? Emojis.getID("backpack") : Emojis.general.shield;
-                    let favoEmoji = data.item.isFavorite == false ? Emojis.getID("star") : Emojis.getID("eight_pointed_black_star");
-                    let addToTradeEmoji = Emojis.getID("baggage_claim");
+                    let sellEmoji = Emojis.general.money_bag;
+                    let equipUnequipEmoji = isEquipped ? Emojis.general.backpack : Emojis.general.shield;
+                    let favoEmoji = data.item.isFavorite == false ? Emojis.general.star : Emojis.general.eight_pointed_black_star;
+                    let addToTradeEmoji = Emojis.general.baggage_claim;
 
                     // See if he is trading
                     let isTrading = await axios.get("/game/character/isTrading");
@@ -122,15 +122,17 @@ class InventoryModule extends GModule {
                 break;
 
             case "itemfav":
-                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/itemfav", {
-                    idItem: args[0]
-                }));
-                break;
-
-            case "itemunfav":
-                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/itemunfav", {
-                    idItem: args[0]
-                }));
+            case "itemunfav": {
+                searchFilters = this.getSearchFilters(args);
+                let body = {};
+                if (Object.values(searchFilters.params).length > 0) {
+                    body = searchFilters.params
+                    body.filter = true;
+                } else {
+                    body = { idItem: args[0] }
+                }
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/" + command, body));
+            }
                 break;
 
             case "inv":

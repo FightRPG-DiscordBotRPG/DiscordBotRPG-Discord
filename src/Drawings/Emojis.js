@@ -366,6 +366,22 @@ Emojis.emojisProd = {
     "elements": {
         id: "767364758097625088",
         string: "<:elements:767364758097625088>"
+    },
+    "rebirth": {
+        id: "802866949608308766",
+        string: "<:rebirth:802866949608308766>"
+    },
+    "level": {
+        id: "802937906691309608",
+        string: "<:level:802937906691309608>"
+    },
+    "rebirth_down": {
+        id: "804386345849847859",
+        string: "<:rebirth_down:804386345849847859>"
+    },
+    "rebirth_up": {
+        id: "804386345657040918",
+        string: "<:rebirth_up:804386345657040918>"
     }
 };
 
@@ -487,6 +503,8 @@ Emojis.general = {
     "counterclockwise_arrows_button": "🔄",
     "next_track_button": "⏭️",
     "skull": "💀",
+    "information": "ℹ️",
+    "package": "📦"
 };
 
 Emojis.entitiesTypes = {
