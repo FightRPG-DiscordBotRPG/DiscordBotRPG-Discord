@@ -25,7 +25,6 @@ class State {
      * @param {User} user
      */
     static toString(data, user) {
-        console.log(data.state.traits);
         return Translator.getString(user.lang, "stats", "1");
     }
 

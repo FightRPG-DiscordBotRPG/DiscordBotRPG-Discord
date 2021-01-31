@@ -121,7 +121,6 @@ class Guild {
         for (let region in data.territories) {
             let areas = "--------------------\n";
             for (let area of data.territories[region]) {
-                console.log(area);
                 areas += Emojis.getAreaTypeEmoji(area.type_shorthand) + " - "+ area.idArea + " - "  + area.name + (area.statPoints > 0 ? " (" + Emojis.emojisProd.plussign.string + " " + Translator.getString(data.lang, "area", "conquest_points_to_distribute", [area.statPoints]) + ")" : "") + "\n";
             }
             embed.addField(region, areas + "--------------------");
@@ -156,7 +155,7 @@ class Guild {
             if (userOrGuild.rebirthLevel != null) {
                 rebirthLevelStr = ` - ${Emojis.emojisProd.rebirth.string} ${Translator.getString(lang, "inventory_equipment", "rebirth_level")} ${Translator.getFormater(lang).format(userOrGuild.rebirthLevel)}`
             }
-            console.log(userOrGuild);
+
             return `${Emojis.emojisProd.idFRPG.string} ${userOrGuild.id} - ${Emojis.general.clipboard} ${userOrGuild.name} ${mobileLineBreaks}${desktopTrait} ${Emojis.emojisProd.level.string} ${Translator.getString(lang, "inventory_equipment", "level")} ${userOrGuild.level}${rebirthLevelStr}${powerStr}`
         });
 
