@@ -113,7 +113,7 @@ bot.on("ready", async () => {
         setInterval(async () => {
             console.log("Shards: " + bot.shard.ids);
             console.log("Shard: " + bot.shard.ids[0] + " => Sending stats to https://top.gg/ ...");
-            await api.postStats(bot.guilds.cache.size, bot.shard.ids[0], bot.shard.count);
+            await api.postStats({ serverCount: bot.guilds.cache.size, shardId: bot.shard.ids[0], shardCount:bot.shard.count });
             console.log("Data sent");
         }, 1800000);
     }
