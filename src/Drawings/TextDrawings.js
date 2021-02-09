@@ -42,25 +42,13 @@ class TextDrawings {
 
                 //Used for character stats
                 let totalStat = "";
+                let compareResults;
 
                 switch (type) {
                     case this.statCompareTypes.item:
-                        if (!isNaN(compareStats[stat])) {
-                            let diffNumber = (stats[stat] - compareStats[stat]);
-                            diff = " -> " + diffNumber;
-
-                            if (diffNumber > 0) {
-                                compareEmoji = Emojis.emojisProd.levelup.string;
-                            }
-                            else if (diffNumber < 0) {
-                                compareEmoji = Emojis.emojisProd.leveldown.string;
-                            } else {
-                                compareEmoji = Emojis.emojisProd.nochange.string;
-                            }
-                        } else {
-                            diff = " -> 0";
-                            compareEmoji = Emojis.emojisProd.nochange.string;
-                        }
+                        compareResults = this.getDisplayItemCompare(stats[stat], compareStats[stat]);
+                        diff = compareResults.diff;
+                        compareEmoji = compareResults.compareEmoji;
                         break;
                     case this.statCompareTypes.character:
                     case this.statCompareTypes.only_total:
@@ -189,8 +177,26 @@ class TextDrawings {
         }
     }
 
-    userInfoPanel() {
+    getDisplayItemCompare(firstStat, secondStat) {
+        let diff, compareEmoji;
+        if (isNaN(secondStat)) {
+            secondStat = 0;
+        }
 
+        let diffNumber = (firstStat - secondStat);
+        diff = " (" + (diffNumber > 0 ? "+" : "") + diffNumber + ")";
+
+        if (diffNumber > 0) {
+            compareEmoji = Emojis.emojisProd.levelup.string;
+        }
+        else if (diffNumber < 0) {
+            compareEmoji = Emojis.emojisProd.leveldown.string;
+        } else {
+            compareEmoji = Emojis.emojisProd.nochange.string;
+        }
+
+
+        return { diff: diff, compareEmoji: compareEmoji };
     }
 
     /**
@@ -266,13 +272,13 @@ class TextDrawings {
      * @param {string} lang
      * @param {number} barSize
      */
-    formatHealth(min, max, lang, barSize = 8, fullText=false, withEmoji=true) {
+    formatHealth(min, max, lang, barSize = 8, fullText = false, withEmoji = true) {
         let bar = new ProgressBarHealth();
         bar.min = min;
         bar.max = max;
         bar.setSize(barSize);
 
-        return (withEmoji ? Emojis.general.red_heart + " ": "") + (fullText ? " " + Translator.getString(lang, "character", "health_points") + " " : "") + this.formatMinMax(min, max, lang) + (barSize > 0 ? "\n" + bar.draw() : "");
+        return (withEmoji ? Emojis.general.red_heart + " " : "") + (fullText ? " " + Translator.getString(lang, "character", "health_points") + " " : "") + this.formatMinMax(min, max, lang) + (barSize > 0 ? "\n" + bar.draw() : "");
     }
 
     /**
@@ -304,7 +310,7 @@ class TextDrawings {
         bar.max = max;
         bar.setSize(barSize);
 
-        return (withEmoji ? Emojis.general.high_voltage  + " ": "" ) + (fullText ? Translator.getString(lang, "character", "energy_points") + " " : "") + this.formatMinMax(min, max, lang) + (barSize > 0 ? "\n" + bar.draw() : "");
+        return (withEmoji ? Emojis.general.high_voltage + " " : "") + (fullText ? Translator.getString(lang, "character", "energy_points") + " " : "") + this.formatMinMax(min, max, lang) + (barSize > 0 ? "\n" + bar.draw() : "");
     }
 }
 
