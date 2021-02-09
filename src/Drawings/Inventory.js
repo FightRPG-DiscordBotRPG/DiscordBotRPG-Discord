@@ -56,7 +56,7 @@ class Inventory {
         let strFilters = [];
         if (data.isFiltered) {
             for (let key of Object.keys(data.params)) {
-                if (data.params[key] >= 0 || data.params[key] !== "" && data.params[key] !== null) {
+                if ((data.params[key] >= 0 || data.params[key] !== "") && data.params[key] !== null) {
                     switch (key) {
                         case "rarity":
                             strFilters.push(Emojis.getRarityEmoji(Globals.getRarityName(data.params.rarity)) + " " + Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell_rarity", [Translator.getString(lang, "rarities", Globals.getRarityName(data.params.rarity))]));
