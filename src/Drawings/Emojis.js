@@ -504,7 +504,8 @@ Emojis.general = {
     "next_track_button": "⏭️",
     "skull": "💀",
     "information": "ℹ️",
-    "package": "📦"
+    "package": "📦",
+    "handshake": "🤝"
 };
 
 Emojis.entitiesTypes = {

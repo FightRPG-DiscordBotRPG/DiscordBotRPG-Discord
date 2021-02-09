@@ -124,7 +124,7 @@ class FightManager {
                 textDecoration = summary.rounds[ind].roundEntitiesIndex == "0" ? Emojis.emojisProd.sword.string : Emojis.emojisProd.shield.string;
             }
 
-            this.swapArrayIndexes(textDecoration + " " +  this.getSummaryText(summary.rounds[ind]), fight);
+            this.swapArrayIndexes(textDecoration + " " + this.getSummaryText(summary.rounds[ind]), fight);
 
 
             message.edit(this.embedFight(fight, null, lang, user, true))
@@ -146,7 +146,12 @@ class FightManager {
 
         } else {
             if (summary.winner == 0) {
-                fight = this.swapArrayIndexes(Emojis.emojisProd.win.string + " " + Translator.getString(lang, "fight_general", "win") + "\n", fight);
+
+                if (summary.bothLost) {
+                    fight = this.swapArrayIndexes(Emojis.general.handshake + " " + Translator.getString(lang, "fight_general", "draw") + "\n", fight);
+                } else {
+                    fight = this.swapArrayIndexes(Emojis.emojisProd.win.string + " " + Translator.getString(lang, "fight_general", "win") + "\n", fight);
+                }
 
                 if (fight.team1_number == 1) {
 
@@ -197,7 +202,7 @@ class FightManager {
                         } else {
                             fight = this.swapArrayIndexes(Emojis.emojisProd.treasure.string + " " + Translator.getString(lang, "fight_pve", "both_gain", [summary.xp, summary.money]), fight);
                         }
-                    } else if (summary.type == "pvp") {
+                    } else if (summary.type == "pvp" && summary.honor != 0) {
                         if (summary.honor > 0) {
                             fight = this.swapArrayIndexes(Emojis.emojisProd.honor.string + " " + Translator.getString(lang, "fight_pvp", "honor_gain", [summary.honor]), fight);
                         } else {
@@ -252,7 +257,11 @@ class FightManager {
             // Color settings
             let color;
             if (summary.winner == 0) {
-                color = [0, 255, 0];
+                if (summary.bothLost) {
+                    color = [255, 64, 0];
+                } else {
+                    color = [0, 255, 0];
+                }
             } else {
                 color = [255, 0, 0];
             }
@@ -346,7 +355,7 @@ class FightManager {
     getSummaryEntity(entityLogger, withName = true) {
 
         let deadEmojiString = entityLogger.entity.actualHP <= 0 ? " " + Emojis.general.skull : "";
-        let name = Emojis.getEntityTypeEmoji(entityLogger.entity.identity.type) + " **" + entityLogger.entity.identity.name + "**" + deadEmojiString +"\n";
+        let name = Emojis.getEntityTypeEmoji(entityLogger.entity.identity.type) + " **" + entityLogger.entity.identity.name + "**" + deadEmojiString + "\n";
 
         let str = withName ? name : "";
         if (entityLogger.battle.removedStates.length > 0) {
