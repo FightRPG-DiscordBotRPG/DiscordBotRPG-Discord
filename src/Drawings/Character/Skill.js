@@ -3,6 +3,7 @@ const Translator = require("../../Translator/Translator");
 const Discord = require("discord.js");
 const Emojis = require("../Emojis");
 const GenericMultipleEmbedList = require("../GenericMultipleEmbedList");
+const Utils = require("../../Utils");
 
 class Skill {
 
@@ -51,13 +52,21 @@ class Skill {
         if (data.skill.damage.formula === null) {
             return embed;
         } else {
-            return embed
+            embed = embed
                 .addField(Translator.getString(user.lang, "skills", "damage_information"), GenericMultipleEmbedList.getSeparator())
                 .addField(Emojis.general.bar_chart + " " + Translator.getString(user.lang, "skills", "formula"), data.skill.repeat > 1 ? `(${data.skill.damage.formula}) * ${data.skill.repeat}` : data.skill.damage.formula)
+                .addField(Emojis.general.bar_chart + " " + Translator.getString(user.lang, "skills", "formula_result"), data.skill.repeat > 1 ? `(${data.skill.formulaResultVersusSelf}) * ${data.skill.repeat}` : data.skill.formulaResultVersusSelf, true)
                 .addField(Emojis.emojisProd.nochange.string + " " + Translator.getString(user.lang, "skills", "variance"), data.skill.damage.variance + "%", true)
                 .addField(Emojis.general.crossed_swords + " " + Translator.getString(user.lang, "skills", "damage_type"), Emojis.damageTypes[data.skill.damage.damageTypeShorthand] + " " + Translator.getString(user.lang, "skills", data.skill.damage.damageTypeShorthand), true)
                 .addField(Emojis.emojisProd.elements.string + " " + Translator.getString(user.lang, "elements", "type"), Emojis.stats[data.skill.damage.elementTypeShorthand + "Resist"] + " " + Translator.getString(user.lang, "elements", data.skill.damage.elementTypeShorthand), true)
                 .addField(Emojis.general.critical + " " + Translator.getString(user.lang, "fight_general", "critical_hit"), Translator.getString(user.lang, "general", data.skill.damage.criticalHit == true ? "yes" : "no"), true);
+
+            if (!user.isOnMobile) {
+                embed = Utils.addEmptyFieldToEmbed(embed);
+            }
+
+            return embed;
+
         }
     }
 
