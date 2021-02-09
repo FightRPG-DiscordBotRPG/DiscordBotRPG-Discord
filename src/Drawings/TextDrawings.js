@@ -187,10 +187,10 @@ class TextDrawings {
         diff = " (" + (diffNumber > 0 ? "+" : "") + diffNumber + ")";
 
         if (diffNumber > 0) {
-            compareEmoji = Emojis.emojisProd.levelup.string;
+            compareEmoji = Emojis.emojisProd.plussign.string;
         }
         else if (diffNumber < 0) {
-            compareEmoji = Emojis.emojisProd.leveldown.string;
+            compareEmoji = Emojis.emojisProd.minussign.string;
         } else {
             compareEmoji = Emojis.emojisProd.nochange.string;
         }
