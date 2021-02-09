@@ -121,6 +121,8 @@ var Globals = {
     loadHelpPanel: async function () {
 
         let data = (await axios.get("/helpers/help")).data;
+        let filters = ["rarity", "level", "level_down", "type", "subtype", "power", "power_down", "name", "rebirth", "rebirth_down"];
+        let filtersString = filters.join(",");
 
         for (let lang in Translator.getAvailableLanguages()) {
 
@@ -159,13 +161,13 @@ var Globals = {
 
             Globals.helpPanel[lang][2][Translator.getString(lang, "help_panel", "inventory_title")] = {
                 "inv/inventory": Translator.getString(lang, "help_panel", "inv"),
-                "inv/inventory <filter> <filterValue>": Translator.getString(lang, "help_panel", "inv_filter"),
+                "inv/inventory <filter> <filterValue>": Translator.getString(lang, "help_panel", "inv_filter", [filtersString]),
                 "item <itemID>": Translator.getString(lang, "help_panel", "item"),
                 "itemfav <itemID or itemType>": Translator.getString(lang, "help_panel", "itemfav"),
                 "itemunfav <itemID or itemType>": Translator.getString(lang, "help_panel", "itemunfav"),
                 "sell <itemID>": Translator.getString(lang, "help_panel", "sell"),
                 "sellall": Translator.getString(lang, "help_panel", "sellall"),
-                "sellall <filter> <filterValue> <page>": Translator.getString(lang, "help_panel", "sellall_filter"),
+                "sellall <filter> <filterValue> <page>": Translator.getString(lang, "help_panel", "sellall_filter", [filtersString]),
                 "sendmoney <@mention or idCharacter> <value>": Translator.getString(lang, "help_panel", "sendmoney"),
             }
 
@@ -238,7 +240,7 @@ var Globals = {
                 "mkplace <idItemInInventory> <nb> <price>": Translator.getString(lang, "help_panel", "mkplace"),
                 "mkcancel <idItem>": Translator.getString(lang, "help_panel", "mkcancel"),
                 "mkbuy <idItem>": Translator.getString(lang, "help_panel", "mkbuy"),
-                "mkshow/mksearch <filter> <filterValue> <page>": Translator.getString(lang, "help_panel", "mksearch"),
+                "mkshow/mksearch <filter> <filterValue> <page>": Translator.getString(lang, "help_panel", "mksearch", [filtersString]),
                 "mksee <idItem>": Translator.getString(lang, "help_panel", "mksee"),
             }
 
