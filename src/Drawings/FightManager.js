@@ -303,7 +303,7 @@ class FightManager {
         let str;
 
         if (round.skillInfo.message.length > 0) {
-            str = round.skillInfo.message + hitText + "\n";
+            str = "**" + round.skillInfo.message + hitText + "**\n";
         } else {
             str = round.attacker.entity.identity.name + " " + Translator.getString(lang, "fight_general", "cant_do_anything") + "\n";
         }
