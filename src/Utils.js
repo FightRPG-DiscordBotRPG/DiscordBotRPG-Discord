@@ -109,7 +109,7 @@ class Utils {
         return n;
     }
 
-    static getHelpPanel(lang, page) {
+    static getHelpPanel(lang="en", page=1) {
         let maxPage = 8;
         page = page && page > 0 && page <= maxPage ? page : 1;
         return {
