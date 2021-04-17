@@ -112,6 +112,9 @@ class Utils {
     static getHelpPanel(lang, page) {
         let maxPage = 8;
         page = page && page > 0 && page <= maxPage ? page : 1;
+        // Fix lang is null on some users, maybe when first loaded
+        // So now if lang isn't valid or loaded, we use the default english one
+        lang = Globals.helpPanel[lang] == null ? "en" : lang;
         return {
             commands: Globals.helpPanel[lang][page],
             page: page,
