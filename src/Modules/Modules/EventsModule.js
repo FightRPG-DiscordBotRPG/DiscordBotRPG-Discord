@@ -19,7 +19,7 @@ class EventsModule extends GModule {
         let mentions = message.mentions.users;
         let user = Globals.connectedUsers[message.author.id];
         let axios = user.getAxios();
-        console.log(args[0]);
+
         switch (command) {
             case "showevent":
             case "sevt":
@@ -30,6 +30,31 @@ class EventsModule extends GModule {
                     }
                 )
                 break;
+            case "showongoingevents":
+            case "sogevts":
+                msg = await this.getDisplayIfSuccess(
+                    await axios.get("/game/events/ongoing"),
+                    async (data) => {
+                        //return new GameEvent(data.event).toEmbed(user);
+                        data.events = Object.values(data.events);
+
+                        if (data.events.length > 0) {
+                            data.page = 1;
+                            data.maxPage = data.events.length;
+                            await this.pageListener(data, message, new GameEvent(data.events[0]).toEmbed(user), async (currPage) => {
+                                data.page = currPage;
+                                return data;
+                            }, async (newData) => {
+                                console.log(newData);
+                                return new GameEvent(newData.events[newData.page - 1]).toEmbed(user);
+                            });
+                        } else {
+                            return Translator.getString(user.lang, "events", "no_events");
+                        }
+                    }
+                )
+                break;
+
         }
 
         this.sendMessage(message, msg);

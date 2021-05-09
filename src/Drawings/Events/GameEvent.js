@@ -29,11 +29,6 @@ class GameEvent {
         this.willFireAgain = data.willFireAgain;
     }
 
-
-    static getEventList(data) {
-
-    }
-
     /**
      * 
      * @param {User} user
