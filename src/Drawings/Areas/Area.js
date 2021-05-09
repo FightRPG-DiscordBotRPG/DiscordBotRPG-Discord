@@ -123,26 +123,11 @@ class Area {
 	}
 
     /**
-     * 
      * @param {any} data
      * @param {User} user
      */
 	bonusesToStr(data, user) {
-		let bonuses = data.bonuses;
-		let str = "";
-		let empty = true;
-
-		for (let bonus of bonuses) {
-			if (bonus.percentage > 0) {
-				str += Emojis.getAreaBonusEmoji(bonus.bonus_identifier) + " " + bonus.name + " : " + bonus.percentage + "%" + "\n";
-				empty = false;
-			}
-		}
-
-		if (empty) {
-			str += Translator.getString(data.lang, "bonuses", "no_bonuses");
-		}
-		return str;
+		return Utils.bonusesToStr(data.bonuses, user);
 	}
 
     /**

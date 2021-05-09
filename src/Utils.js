@@ -3,6 +3,7 @@ const Globals = require("./Globals");
 const GenericMultipleEmbedList = require("./Drawings/GenericMultipleEmbedList");
 const Emojis = require("./Drawings/Emojis");
 const Translator = require("./Translator/Translator");
+const User = require("./Users/User");
 
 class Utils {
     static emptyEmbedCharacter = "\u200b";
@@ -109,7 +110,7 @@ class Utils {
         return n;
     }
 
-    static getHelpPanel(lang="en", page=1) {
+    static getHelpPanel(lang = "en", page = 1) {
         let maxPage = 8;
         page = page && page > 0 && page <= maxPage ? page : 1;
         // Fix lang is null on some users, maybe when first loaded
@@ -132,10 +133,40 @@ class Utils {
             });
             return neededItems.getEmbed(embed);
         } else {
-            embed = embed.addField(Emojis.general.package + " " +Translator.getString(lang, "craft", "needed_items"), Translator.getString(lang, "general", "none"));
+            embed = embed.addField(Emojis.general.package + " " + Translator.getString(lang, "craft", "needed_items"), Translator.getString(lang, "general", "none"));
             return embed;
         }
 
+    }
+
+    /**
+     * 
+     * @param {Date} date
+     */
+    static dateToLocalizedString(date, lang = "en") {
+        return date.toLocaleString(lang.length > 2 ? lang : lang + "-" + lang.toUpperCase()) + " UTC";
+    }
+
+    /**
+    *
+    * @param {{bonus_identifier: string, name:string, percentage:number}[]} bonuses
+    * @param {User} user
+    */
+    static bonusesToStr(bonuses, user) {
+        let str = "";
+        let empty = true;
+
+        for (let bonus of bonuses) {
+            if (bonus.percentage > 0) {
+                str += Emojis.getAreaBonusEmoji(bonus.bonus_identifier) + " " + bonus.name + " : " + bonus.percentage + "%" + "\n";
+                empty = false;
+            }
+        }
+
+        if (empty) {
+            str += Translator.getString(user.lang, "bonuses", "no_bonuses");
+        }
+        return str;
     }
 }
 
