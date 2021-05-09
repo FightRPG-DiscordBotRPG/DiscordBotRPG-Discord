@@ -124,14 +124,6 @@ class Area {
 	}
 
     /**
-     * @param {any} data
-     * @param {User} user
-     */
-	bonusesToStr(data, user) {
-		return Utils.bonusesToStr(data.bonuses, user);
-	}
-
-    /**
      * 
      * @param {any} data
      * @param {User} user
