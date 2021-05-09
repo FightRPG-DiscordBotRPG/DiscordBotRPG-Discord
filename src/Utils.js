@@ -7,6 +7,7 @@ const User = require("./Users/User");
 
 class Utils {
     static emptyEmbedCharacter = "\u200b";
+    static defaultSeparator = "--------------------------------------";
 
     /**
      * 
