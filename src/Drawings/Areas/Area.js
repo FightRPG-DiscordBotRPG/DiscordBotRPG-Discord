@@ -89,11 +89,12 @@ class Area {
 	conquestToStr(data, user) {
 		let lang = data.lang;
 
-		return new Discord.MessageEmbed()
+		let embed = new Discord.MessageEmbed()
 			.setColor([0, 255, 0])
 			.setAuthor(data.name + " | " + data.levels + " | " + Translator.getString(lang, "area", "owned_by", [data.owner]), data.image)
-			.addField(Translator.getString(lang, "area", "conquest"), this.tournamentInfoToStr(data, user))
-			.addField(Translator.getString(lang, "bonuses", "bonuses"), this.bonusesToStr(data, user))
+			.addField(Translator.getString(lang, "area", "conquest"), this.tournamentInfoToStr(data, user));
+
+		return Utils.addBonusesToEmbed(data.bonuses, user, embed)
 			.addField(Translator.getString(lang, "area", "area_progression"), this.statsAndLevelToStr(data, user));
 	}
 

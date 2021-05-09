@@ -168,6 +168,16 @@ class Utils {
         }
         return str;
     }
+
+    /**
+     * 
+     * @param {any} bonuses
+     * @param {User} user
+     * @param {discord.MessageEmbed} embed
+     */
+    static addBonusesToEmbed(bonuses, user, embed) {
+        return embed.addField(Translator.getString(user.lang, "bonuses", "bonuses"), this.bonusesToStr(bonuses, user));
+    }
 }
 
 
