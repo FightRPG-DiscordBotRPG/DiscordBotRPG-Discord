@@ -281,6 +281,11 @@ var Globals = {
                 "tvalidate": Translator.getString(lang, "help_panel", "tvalidate"),
             }
 
+            Globals.helpPanel[lang][7][Translator.getString(lang, "help_panel", "events_title")] = {
+                "showevent/sevt <idEvent>": Translator.getString(lang, "help_panel", "event"),
+                "showongoingevents/sogevts": Translator.getString(lang, "help_panel", "event_ongoing"),
+            }
+
             // Page 8
             Globals.helpPanel[lang][8] = {};
 
