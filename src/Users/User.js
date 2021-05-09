@@ -11,7 +11,7 @@ class User {
         this.id = id;
         this.username = username;
         this.avatar = avatar;
-        this.lang = lang
+        this.lang = lang;
         this.token = null;
         this.isOnMobile = false;
         this.lastCommandUsed = Date.now();
@@ -33,7 +33,7 @@ class User {
                 username: this.username
             });
 
-            this.lang = (await this.axios.post("/game/other/lang")).data.lang;
+            this.setLang((await this.axios.post("/game/other/lang")).data.lang);
         }
     }
 
