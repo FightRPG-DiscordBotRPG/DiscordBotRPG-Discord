@@ -382,7 +382,32 @@ Emojis.emojisProd = {
     "rebirth_up": {
         id: "804386345657040918",
         string: "<:rebirth_up:804386345657040918>"
-    }
+    },
+    "animals_common": {
+        id: "842447042358149150",
+        string: "<:animals_common:842447042358149150>"
+    },
+    "animals_rare": {
+        id: "842447041715503205",
+        string: "<:animals_rare:842447041715503205>"
+    },
+    "animals_superior": {
+        id: "842447042713616405",
+        string: "<:animals_superior:842447042713616405>"
+    },
+    "animals_epic": {
+        id: "842447042386460692",
+        string: "<:animals_epic:842447042386460692>"
+    },
+    "animals_legendary": {
+        id: "842447042512289902",
+        string: "<:animals_legendary:842447042512289902>"
+    },
+    "animals_mythic": {
+        id: "842447042462744586",
+        string: "<:animals_mythic:842447042462744586>"
+    },
+
 };
 
 Emojis.emojisDev = {
