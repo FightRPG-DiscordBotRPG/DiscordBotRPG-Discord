@@ -73,6 +73,9 @@ class WildArea extends Area {
         let strAnimalsHeader = Emojis.emojisProd.leather.string + " " + Translator.getString(lang, "resources", "animals") + "\n";
         let strAnimals = "";
 
+        let strFabricsHeader = Emojis.general.yarn + " " + Translator.getString(lang, "resources", "fabrics") + "\n";
+        let strFabrics = "";
+
         let str = "";
         let tempString = "";
 
@@ -83,6 +86,7 @@ class WildArea extends Area {
             "ores": "ore",
             "plants": "herb",
             "animals": "animals",
+            "fabrics": "fabric"
         }
 
         for (let rType in resources) {
@@ -101,6 +105,9 @@ class WildArea extends Area {
                     case "animals":
                         strAnimals += tempString;
                         break;
+                    case "fabrics": 
+                        strFabrics += tempString;
+                        break;
 
                 }
                 length++;
@@ -110,7 +117,7 @@ class WildArea extends Area {
         if (length === 0) {
             str += Translator.getString(lang, "resources", "noresources");
         } else {
-            str += this.getResourceString(strTreesHeader, strTrees) + this.getResourceString(strOresHeader, strOres) + this.getResourceString(strPlantsHeader, strPlants) + this.getResourceString(strAnimalsHeader, strAnimals);
+            str += this.getResourceString(strTreesHeader, strTrees) + this.getResourceString(strOresHeader, strOres) + this.getResourceString(strPlantsHeader, strPlants) + this.getResourceString(strAnimalsHeader, strAnimals) + this.getResourceString(strFabricsHeader, strFabrics);
         }
 
         return str + "";
