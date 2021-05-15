@@ -70,6 +70,12 @@ class WildArea extends Area {
         let strPlantsHeader = Emojis.general.gloves + " " + Translator.getString(lang, "resources", "plants") + "\n";
         let strPlants = "";
 
+        let strAnimalsHeader = Emojis.emojisProd.leather.string + " " + Translator.getString(lang, "resources", "animals") + "\n";
+        let strAnimals = "";
+
+        let strFabricsHeader = Emojis.general.yarn + " " + Translator.getString(lang, "resources", "fabrics") + "\n";
+        let strFabrics = "";
+
         let str = "";
         let tempString = "";
 
@@ -78,7 +84,9 @@ class WildArea extends Area {
         let resourcesTypesEquivalent = {
             "trees": "wood",
             "ores": "ore",
-            "plants": "herb"
+            "plants": "herb",
+            "animals": "animals",
+            "fabrics": "fabric"
         }
 
         for (let rType in resources) {
@@ -94,6 +102,12 @@ class WildArea extends Area {
                     case "plants":
                         strPlants += tempString;
                         break;
+                    case "animals":
+                        strAnimals += tempString;
+                        break;
+                    case "fabrics": 
+                        strFabrics += tempString;
+                        break;
 
                 }
                 length++;
@@ -103,10 +117,14 @@ class WildArea extends Area {
         if (length === 0) {
             str += Translator.getString(lang, "resources", "noresources");
         } else {
-            str += (strTrees.length > 0 ? strTreesHeader + strTrees + "\n" : "") + (strOres.length > 0 ? strOresHeader + strOres + "\n" : "") + (strPlants.length > 0 ? strPlantsHeader + strPlants + "\n" : "");
+            str += this.getResourceString(strTreesHeader, strTrees) + this.getResourceString(strOresHeader, strOres) + this.getResourceString(strPlantsHeader, strPlants) + this.getResourceString(strAnimalsHeader, strAnimals) + this.getResourceString(strFabricsHeader, strFabrics);
         }
 
         return str + "";
+    }
+
+    getResourceString(header, content) {
+        return content.length > 0 ? header + content + "\n" : "";
     }
 
 

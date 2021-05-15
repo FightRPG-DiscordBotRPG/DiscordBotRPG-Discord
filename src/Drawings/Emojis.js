@@ -382,7 +382,56 @@ Emojis.emojisProd = {
     "rebirth_up": {
         id: "804386345657040918",
         string: "<:rebirth_up:804386345657040918>"
-    }
+    },
+    "animals_common": {
+        id: "842447042358149150",
+        string: "<:animals_common:842447042358149150>"
+    },
+    "animals_rare": {
+        id: "842447041715503205",
+        string: "<:animals_rare:842447041715503205>"
+    },
+    "animals_superior": {
+        id: "842447042713616405",
+        string: "<:animals_superior:842447042713616405>"
+    },
+    "animals_epic": {
+        id: "842447042386460692",
+        string: "<:animals_epic:842447042386460692>"
+    },
+    "animals_legendary": {
+        id: "842447042512289902",
+        string: "<:animals_legendary:842447042512289902>"
+    },
+    "animals_mythic": {
+        id: "842447042462744586",
+        string: "<:animals_mythic:842447042462744586>"
+    },
+    "fabric_common": {
+        id: "842695739448492102",
+        string: "<:fabric_common:842695739448492102>"
+    },
+    "fabric_rare": {
+        id: "842695739385708565",
+        string: "<:fabric_rare:842695739385708565>"
+    },
+    "fabric_superior": {
+        id: "842695739460157490",
+        string: "<:fabric_superior:842695739460157490>"
+    },
+    "fabric_epic": {
+        id: "842695739125661728",
+        string: "<:fabric_epic:842695739125661728>"
+    },
+    "fabric_legendary": {
+        id: "842695739419131914",
+        string: "<:fabric_legendary:842695739419131914>"
+    },
+    "fabric_mythic": {
+        id: "842695739238121473",
+        string: "<:fabric_mythic:842695739238121473>"
+    },
+
 };
 
 Emojis.emojisDev = {
@@ -505,7 +554,8 @@ Emojis.general = {
     "skull": "💀",
     "information": "ℹ️",
     "package": "📦",
-    "handshake": "🤝"
+    "handshake": "🤝",
+    "yarn": "🧶"
 };
 
 Emojis.entitiesTypes = {
