@@ -38,6 +38,7 @@ class GameEvent {
 
         let embed = new MessageEmbed()
             .setAuthor(`${this.title}${this.isOngoing ? " - " + Translator.getString(lang, "events", "ongoing") : ""}${!this.willFireAgain ? " - " + Translator.getString(lang, "events", "wont_fire_again") : ""}`, this.icon)
+            .setImage(this.background)
             .setDescription(this.desc ? this.desc : Translator.getString(lang, "skills", "no_desc"));
 
         if (this.willFireAgain) {
