@@ -4,7 +4,7 @@ const Translator = require("../../Translator/Translator");
 const { MessageEmbed } = require("discord.js");
 const Utils = require("../../Utils");
 const Emojis = require("../Emojis");
-const Globals = require("../../../../discordbotrpg-server/bin/Globals");
+const Globals = require("../../Globals");
 
 class GameEvent {
 
