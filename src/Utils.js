@@ -4,6 +4,7 @@ const GenericMultipleEmbedList = require("./Drawings/GenericMultipleEmbedList");
 const Emojis = require("./Drawings/Emojis");
 const Translator = require("./Translator/Translator");
 const User = require("./Users/User");
+const Canvas = require("canvas");
 
 class Utils {
     static emptyEmbedCharacter = "\u200b";
@@ -178,6 +179,31 @@ class Utils {
      */
     static addBonusesToEmbed(bonuses, user, embed) {
         return embed.addField(Translator.getString(user.lang, "bonuses", "bonuses"), this.bonusesToStr(bonuses, user));
+    }
+
+    static randRangeInteger(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    static canvasTintImage(image, color, opacity = 0.5) {
+
+        const canvas = Canvas.createCanvas(image.width, image.height);
+        const context = canvas.getContext("2d");
+
+        context.save();
+        context.fillStyle = color;
+        context.globalAlpha = opacity;
+        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+        context.globalCompositeOperation = "destination-atop";
+        context.globalAlpha = 1;
+        context.drawImage(image, 0, 0);
+        context.restore();
+
+        return context.canvas;
+    }
+
+    static getRandomHexColor() {
+        return "#" + Math.floor(Math.random() * 16777215).toString(16);
     }
 }
 

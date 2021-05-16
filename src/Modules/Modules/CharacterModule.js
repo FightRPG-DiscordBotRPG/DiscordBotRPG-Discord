@@ -18,7 +18,7 @@ const State = require("../../Drawings/Fight/State");
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile", "resettalents", "rebirth", "stateshow"];
+        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile", "resettalents", "rebirth", "stateshow", "appearance"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -395,6 +395,9 @@ class CharacterModule extends GModule {
                     });
                 }
             } break;
+            case "appearance":
+                await user.infoPanel.displayCharacter(message, args);
+                break;
 
         }
 
