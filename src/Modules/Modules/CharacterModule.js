@@ -396,7 +396,9 @@ class CharacterModule extends GModule {
                 }
             } break;
             case "appearance":
+                console.time("Appearance");
                 await user.infoPanel.displayCharacter(message, args);
+                console.timeEnd("Appearance");
                 break;
 
         }

@@ -138,19 +138,27 @@ class InfoPanel {
      */
     async displayCharacter(message, args) {
 
-        const canvasCharacter = Canvas.createCanvas(500, 1300);
+        const imageHeight = 1300;
+        const canvasCharacter = Canvas.createCanvas(500, imageHeight);
 
         const ctx = canvasCharacter.getContext("2d");
 
         //ctx.beginPath();
-        //ctx.rect(0, 0, 500, 1300);
-        //ctx.fillStyle = "red";
+        //ctx.rect(0, 0, 1300, 1300);
+        //ctx.fillStyle = "gray";
         //ctx.fill();
         let debugPossibleSkinColor = ["#CE8E71", "#DFA98F", "#E9C8BC", "#D69D70", "#B37344", "#88583B", "#4A332D"];
 
+        console.time("Load Images");
+
         let bodyColor = Utils.getRandomItemsInArray(debugPossibleSkinColor, 1)[0];
 
+        //let background = await Canvas.loadImage("https://img00.deviantart.net/b5ba/i/2016/117/d/2/cracked_landsape_by_thechrispman-da0ehq0.png");
+            
         let body = await Canvas.loadImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_body.png");
+
+        let leftArm = await Canvas.loadImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_left_arm_full.png");
+        let rightArm = await Canvas.loadImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_right_arm_full.png");
 
         let ear = await Canvas.loadImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Ear\\0${Utils.randRangeInteger(0, 2)}.png`);
 
@@ -161,10 +169,7 @@ class InfoPanel {
 
         let nose = await Canvas.loadImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Nose\\${Utils.randRangeInteger(0, 10).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
 
-
-        let debugMouth = args[0] != null ? args[0] : Utils.randRangeInteger(0, 13);
-
-        let lips = await Canvas.loadImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
+        let basicPants = await Canvas.loadImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Pants\\male_01.png`);
 
 
         //let hairColor = Utils.getRandomItemsInArray(["#aa8866", "#debe99", "#241c11", "#41f1a00", "#9a3300"], 1)[0];
@@ -177,46 +182,75 @@ class InfoPanel {
         let hair = await Canvas.loadImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
 
         // Back Hair
+        let backHair = null;
         if ([4, 5, 11, 13, 14, 15, 16, 17, 19, 20].includes(parseInt(debugHair))) {
-            let backHair = await Canvas.loadImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`);
-
-            ctx.drawImage(Utils.canvasTintImage(backHair, hairColor), 64, -142, backHair.width, backHair.height);
+            backHair = await Canvas.loadImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`);
         }
+
+
+        // Mouth
+        let debugMouth = args[0] != null ? args[0] : Utils.randRangeInteger(0, 13);
+
+        let teeths = null;
+        if ([3, 6, 7].includes(parseInt(debugMouth))) {
+            teeths = await Canvas.loadImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`);
+        }
+
+
+        let lips = await Canvas.loadImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
+
+        console.timeEnd("Load Images");
+
+        console.time("Draw Images");
+
+        let bodyX = 0, bodyY = imageHeight - body.height;
+        let xDecal = bodyX + body.width / 2;
+
+
+        // Back Hair
+        if (backHair) {
+            ctx.drawImage(Utils.canvasTintImage(backHair, hairColor), bodyX - 36, bodyY -242, backHair.width, backHair.height);
+        }
+
+        // Right Arm
+        ctx.drawImage(Utils.canvasTintImage(rightArm, bodyColor), bodyX, bodyY, rightArm.width, rightArm.height);
 
         // Body
-        ctx.drawImage(Utils.canvasTintImage(body, bodyColor), 100, 100, body.width, body.height);
+        ctx.drawImage(Utils.canvasTintImage(body, bodyColor), bodyX, bodyY, body.width, body.height);
+
 
         // Pants
-        let basicPants = await Canvas.loadImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Pants\\male_01.png`);
-        ctx.drawImage(Utils.canvasTintImage(basicPants, Utils.getRandomHexColor()), body.width / 2 - 35, body.height / 2 + 25, basicPants.width, basicPants.height)
+        ctx.drawImage(Utils.canvasTintImage(basicPants, Utils.getRandomHexColor()), xDecal - 135, bodyY + 525, basicPants.width, basicPants.height)
+
+        // Left Arm
+        ctx.drawImage(Utils.canvasTintImage(leftArm, bodyColor), bodyX, bodyY, leftArm.width, leftArm.height);
 
         // Eyes
-        ctx.drawImage(Utils.canvasTintImage(eyebrow, hairColor), body.width / 2 + 65, 162, eyebrow.width, eyebrow.height);
-        ctx.drawImage(eyesBack, body.width / 2 + 91, 192, eyes.width, eyes.height);
-        ctx.drawImage(Utils.canvasTintImage(eyes, "#FF0000", 0.2), body.width / 2 + 93, 194, eyes.width, eyes.height);
+        ctx.drawImage(Utils.canvasTintImage(eyebrow, hairColor), xDecal - 35, bodyY + 62, eyebrow.width, eyebrow.height);
+        ctx.drawImage(eyesBack, xDecal - 9, bodyY + 92, eyes.width, eyes.height);
+        ctx.drawImage(Utils.canvasTintImage(eyes, "#FF0000", 0.2), xDecal - 7, bodyY + 94, eyes.width, eyes.height);
 
         // Hair
-        ctx.drawImage(Utils.canvasTintImage(hair, hairColor), 64, -142, hair.width, hair.height);
+        ctx.drawImage(Utils.canvasTintImage(hair, hairColor), bodyX - 36, bodyY -242, hair.width, hair.height);
 
         // Ear / Nose
-        ctx.drawImage(Utils.canvasTintImage(ear, bodyColor), body.width / 2 - 88, 80, ear.width, ear.height);
-        ctx.drawImage(Utils.canvasTintImage(nose, bodyColor), body.width / 2 + 58, 167, nose.width, nose.height);
+        ctx.drawImage(Utils.canvasTintImage(ear, bodyColor), xDecal - 188, bodyY  - 20, ear.width, ear.height);
+        ctx.drawImage(Utils.canvasTintImage(nose, bodyColor), xDecal - 42, bodyY + 67, nose.width, nose.height);
 
-        // Mount
-        if ([3, 6, 7].includes(parseInt(debugMouth))) {
-            let teeths = await Canvas.loadImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`);
-            ctx.drawImage(teeths, body.width / 2 + 70, 236, teeths.width, teeths.height);
+        // Mounth
+        if (teeths) {
+            ctx.drawImage(teeths, xDecal - 30, bodyY + 136, teeths.width, teeths.height);
         }
-        ctx.drawImage(Utils.canvasTintImage(lips, bodyColor), body.width / 2 + 70, 236, lips.width, lips.height);
+        ctx.drawImage(Utils.canvasTintImage(lips, bodyColor), xDecal - 30, bodyY + 136, lips.width, lips.height);
 
 
+        console.timeEnd("Draw Images");
 
-
-
-        const attachment = new Discord.MessageAttachment(canvasCharacter.toBuffer(), 'talents.png');
-
-
+        console.time("Send To Discord");
+        
+        const attachment = new Discord.MessageAttachment(canvasCharacter.createPNGStream(), 'talents.png');
         message.channel.send("hey !", attachment);
+        console.timeEnd("Send To Discord");
 
 
         return "";
