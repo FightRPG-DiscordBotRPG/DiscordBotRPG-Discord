@@ -28,6 +28,7 @@ class CharacterAppearance {
 		this.teeths = null;
 		this.lips = null;
 		this.hairColor = null;
+		this.gloves = null;
 	}
 
 
@@ -46,6 +47,20 @@ class CharacterAppearance {
 		this.eyesBack = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\00\\back.png");
 		this.eyebrow = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyebrow\\${Utils.randRangeInteger(0, 14).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
 		this.nose = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Nose\\${Utils.randRangeInteger(0, 10).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
+
+		let debugGloves = Utils.randRangeInteger(10, 10).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
+
+		this.gloves = {
+			left: {
+				wrist: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy-${debugGloves}_01.png`),
+				hand: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy-${debugGloves}_04.png`),
+			},
+			right: {
+				wrist: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy-${debugGloves}_02.png`),
+				hand: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy-${debugGloves}_05.png`),
+			}
+		}
+
 		this.basicPants = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Pants\\male_01.png`);
 
 
@@ -103,15 +118,23 @@ class CharacterAppearance {
 		// Right Arm
 		ctx.drawImage(Utils.canvasTintImage(this.rightArm, this.bodyColor), bodyX, bodyY, this.rightArm.width, this.rightArm.height);
 
+		ctx.drawImage(Utils.canvasRotateImage(this.gloves.right.wrist, -10), bodyX + 208, bodyY + 400, this.gloves.right.wrist.width, this.gloves.right.wrist.height);
+		ctx.drawImage(Utils.canvasRotateImage(this.gloves.right.hand, -16.5), bodyX + 235, bodyY + 557, this.gloves.right.hand.width, this.gloves.right.hand.height);
+
+
+
 		// Body
 		ctx.drawImage(Utils.canvasTintImage(this.body, this.bodyColor), bodyX, bodyY, this.body.width, this.body.height);
 
 
 		// Pants
-		ctx.drawImage(Utils.canvasTintImage(this.basicPants, Utils.getRandomHexColor()), xDecal - 135, bodyY + 525, this.basicPants.width, this.basicPants.height)
+		ctx.drawImage(Utils.canvasTintImage(this.basicPants, Utils.getRandomHexColor()), xDecal - 131, bodyY + 525, this.basicPants.width, this.basicPants.height)
 
 		// Left Arm
 		ctx.drawImage(Utils.canvasTintImage(this.leftArm, this.bodyColor), bodyX, bodyY, this.leftArm.width, this.leftArm.height);
+
+		ctx.drawImage(Utils.canvasRotateImage(this.gloves.left.wrist, -5), bodyX - 49, bodyY + 405, this.gloves.left.wrist.width, this.gloves.left.wrist.height);
+		ctx.drawImage(Utils.canvasRotateImage(this.gloves.left.hand, -11), bodyX - 34, bodyY + 567, this.gloves.left.hand.width, this.gloves.left.hand.height);
 
 		// Eyes
 		ctx.drawImage(Utils.canvasTintImage(this.eyebrow, this.hairColor), xDecal - 35, bodyY + 62, this.eyebrow.width, this.eyebrow.height);
@@ -134,7 +157,7 @@ class CharacterAppearance {
 
 		console.timeEnd("Draw Images");
 
-		return canvasCharacter.createPNGStream();
+		return canvasCharacter;
 
 	}
 

@@ -202,6 +202,18 @@ class Utils {
         return context.canvas;
     }
 
+    static canvasRotateImage(image, deg) {
+        const canvas = Canvas.createCanvas(image.width, image.height);
+        const context = canvas.getContext("2d");
+
+        context.save();
+        context.rotate(deg * Math.PI / 180);
+        context.drawImage(image, 0, 0);
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.restore();
+        return context.canvas;
+    }
+
     static getRandomHexColor() {
         return "#" + Math.floor(Math.random() * 16777215).toString(16);
     }
