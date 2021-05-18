@@ -48,7 +48,7 @@ class CharacterAppearance {
 		this.eyebrow = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyebrow\\${Utils.randRangeInteger(0, 14).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
 		this.nose = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Nose\\${Utils.randRangeInteger(0, 10).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
 
-		let debugGloves = Utils.randRangeInteger(10, 10).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
+		let debugGloves = Utils.randRangeInteger(0, 10).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
 
 		this.gloves = {
 			left: {
@@ -61,12 +61,21 @@ class CharacterAppearance {
 			}
 		}
 
+		let debugHelmet = Utils.randRangeInteger(0, 21).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
+
+		let doesHelmetHaveBack = ["07", "08", "09"].includes(debugHelmet);
+
+		this.helmet = {
+			back: doesHelmetHaveBack ? await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Helmet\\Fantasy ${debugHelmet}_02.png`) : null,
+			front: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Helmet\\Fantasy ${debugHelmet + (doesHelmetHaveBack ? "_01" : "")}.png`),
+        }
+
 		this.basicPants = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Pants\\male_01.png`);
 
 
 		this.hairColor = Utils.getRandomHexColor();
 
-		let debugHair = Utils.randRangeInteger(0, 25);
+		let debugHair = Utils.randRangeInteger(0, 0);
 
 		this.hair = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
 
@@ -115,6 +124,11 @@ class CharacterAppearance {
 			ctx.drawImage(Utils.canvasTintImage(this.backHair, this.hairColor), bodyX - 36, bodyY - 242, this.backHair.width, this.backHair.height);
 		}
 
+		// Helmet Back
+		if (this.helmet.back) {
+			ctx.drawImage(this.helmet.back, bodyX - 30, bodyY - 158, this.helmet.back.width, this.helmet.back.height);
+        }
+
 		// Right Arm
 		ctx.drawImage(Utils.canvasTintImage(this.rightArm, this.bodyColor), bodyX, bodyY, this.rightArm.width, this.rightArm.height);
 
@@ -122,6 +136,7 @@ class CharacterAppearance {
 		ctx.drawImage(Utils.canvasRotateImage(this.gloves.right.hand, -16.5), bodyX + 235, bodyY + 557, this.gloves.right.hand.width, this.gloves.right.hand.height);
 
 
+		
 
 		// Body
 		ctx.drawImage(Utils.canvasTintImage(this.body, this.bodyColor), bodyX, bodyY, this.body.width, this.body.height);
@@ -155,6 +170,10 @@ class CharacterAppearance {
 		ctx.drawImage(Utils.canvasTintImage(this.lips, this.bodyColor), xDecal - 30, bodyY + 136, this.lips.width, this.lips.height);
 
 
+		// Helmet Front
+		ctx.drawImage(this.helmet.front, bodyX - 30, bodyY - 158, this.helmet.front.width, this.helmet.front.height);
+
+
 		console.timeEnd("Draw Images");
 
 		return canvasCharacter;
@@ -172,6 +191,10 @@ class CharacterAppearance {
 	 * @param {string} url
 	 */
 	static async getImage(url) {
+		if (!url) {
+			return null;
+		}
+
 		let img = CharacterAppearance.cache[url] ? CharacterAppearance.cache[url] : await Canvas.loadImage(url);
 		CharacterAppearance.updateCache(url, img);
 		return img;
