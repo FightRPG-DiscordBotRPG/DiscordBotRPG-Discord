@@ -397,7 +397,7 @@ class CharacterModule extends GModule {
             } break;
             case "appearance":
                 console.time("Appearance");
-                await user.infoPanel.displayCharacter(message, args);
+                message.channel.send("hey !", new Discord.MessageAttachment(await user.appearance.getCharacter(), message.author.username +".png"));
                 console.timeEnd("Appearance");
                 break;
 

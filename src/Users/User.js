@@ -6,6 +6,8 @@ const InfoPanel = require("../Drawings/Character/InfoPanel");
 const UserChallenge = require("../AntiSpam/UserChallenge");
 const WildArea = require("../Drawings/Areas/WildArea");
 const CityArea = require("../Drawings/Areas/CityArea");
+const CharacterAppearance = require("../Drawings/Character/CharacterAppearance");
+
 class User {
     constructor(id, username, avatar, lang="en") {
         this.id = id;
@@ -20,6 +22,8 @@ class User {
         this.wildAreaDisplay = new WildArea();
         this.cityAreaDisplay = new CityArea();
         this.challenge = new UserChallenge(this);
+        this.appearance = new CharacterAppearance();
+
         this.setMobileMode = "auto";
     }
 
