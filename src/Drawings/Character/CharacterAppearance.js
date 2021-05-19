@@ -43,8 +43,14 @@ class CharacterAppearance {
 		this.leftArm = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_left_arm_full.png");
 		this.rightArm = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_right_arm_full.png");
 		this.ear = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Ear\\0${Utils.randRangeInteger(0, 2)}.png`);
-		this.eyes = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\00\\front.png");
-		this.eyesBack = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\00\\back.png");
+
+		let debugEyes = Utils.randRangeInteger(0, 15).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
+
+		this.eyesBack = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\${debugEyes}_01.png`);
+		this.eyes = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\${debugEyes}_02.png`);
+		
+
+
 		this.eyebrow = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyebrow\\${Utils.randRangeInteger(0, 14).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
 		this.nose = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Nose\\${Utils.randRangeInteger(0, 10).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
 
@@ -153,8 +159,8 @@ class CharacterAppearance {
 
 		// Eyes
 		ctx.drawImage(Utils.canvasTintImage(this.eyebrow, this.hairColor), xDecal - 35, bodyY + 62, this.eyebrow.width, this.eyebrow.height);
-		ctx.drawImage(this.eyesBack, xDecal - 9, bodyY + 92, this.eyes.width, this.eyes.height);
-		ctx.drawImage(Utils.canvasTintImage(this.eyes, "#FF0000", 0.2), xDecal - 7, bodyY + 94, this.eyes.width, this.eyes.height);
+		ctx.drawImage(this.eyesBack, xDecal - 35, bodyY + 63, this.eyesBack.width, this.eyesBack.height);
+		ctx.drawImage(Utils.canvasTintImage(this.eyes, "#FF0000", 0.2), xDecal - 35, bodyY + 63, this.eyes.width, this.eyes.height);
 
 		// Hair
 		ctx.drawImage(Utils.canvasTintImage(this.hair, this.hairColor), bodyX - 36, bodyY - 242, this.hair.width, this.hair.height);
@@ -171,7 +177,7 @@ class CharacterAppearance {
 
 
 		// Helmet Front
-		ctx.drawImage(this.helmet.front, bodyX - 30, bodyY - 158, this.helmet.front.width, this.helmet.front.height);
+		//ctx.drawImage(this.helmet.front, bodyX - 30, bodyY - 158, this.helmet.front.width, this.helmet.front.height);
 
 
 		console.timeEnd("Draw Images");

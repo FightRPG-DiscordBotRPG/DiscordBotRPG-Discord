@@ -185,6 +185,13 @@ class Utils {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
 
+    /**
+     * 
+     * @param {Canvas.Image} image
+     * @param {string} color
+     * @param {number} opacity
+     * @returns {Canvas.Canvas}
+     */
     static canvasTintImage(image, color, opacity = 0.5) {
 
         const canvas = Canvas.createCanvas(image.width, image.height);
@@ -202,6 +209,12 @@ class Utils {
         return context.canvas;
     }
 
+    /**
+     * 
+     * @param {Canvas.Image} image
+     * @param {number} deg
+     * @returns {Canvas.Canvas}
+     */
     static canvasRotateImage(image, deg) {
         const canvas = Canvas.createCanvas(image.width, image.height);
         const context = canvas.getContext("2d");
@@ -211,6 +224,27 @@ class Utils {
         context.drawImage(image, 0, 0);
         context.setTransform(1, 0, 0, 1, 0, 0);
         context.restore();
+        return context.canvas;
+    }
+
+    /**
+     * 
+     * @param {Canvas.Image} image
+     * @param {number} dx
+     * @param {number} dy
+     * @param {number} width
+     * @param {number} height
+     * @returns {Canvas.Canvas}
+     */
+    static canvasCut(image, dx, dy, width, height) {
+
+        const canvas = Canvas.createCanvas(width, height);
+        const context = canvas.getContext("2d");
+
+        context.save();
+        context.drawImage(image, dx, dy, width, height, 0, 0, width, height);
+        context.restore();
+
         return context.canvas;
     }
 
