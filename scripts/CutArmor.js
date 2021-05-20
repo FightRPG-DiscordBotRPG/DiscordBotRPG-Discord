@@ -4,7 +4,7 @@ const Utils = require("../src/Utils");
 
 async function start() {
 
-    let path = "W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor";
+    let path = "W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\without masks";
     //350x512
     // 190 x 335
     // 190 x 177
@@ -21,12 +21,12 @@ async function start() {
         let fileName = file.replace(".png", "");
 
         //console.log(Utils.canvasCut(img, 0, 0, 350, 512).toBuffer());
-        fs.writeFileSync(`${path}/${fileName}_body.png`, Utils.canvasCut(img, 0, 0, 350, 512).toBuffer());
-        fs.writeFileSync(`${path}/${fileName}_neck.png`, Utils.canvasCut(img, 350, 0, 190, 177).toBuffer());
-        fs.writeFileSync(`${path}/${fileName}_upper_left.png`, Utils.canvasCut(img, 350, 177, 190, 335).toBuffer());
-        fs.writeFileSync(`${path}/${fileName}_upper_right.png`, Utils.canvasCut(img, 540, 177, 190, 335).toBuffer());
-        fs.writeFileSync(`${path}/${fileName}_lower_left.png`, Utils.canvasCut(img, 730, 232, 147, 280).toBuffer());
-        fs.writeFileSync(`${path}/${fileName}_lower_rigth.png`, Utils.canvasCut(img, 877, 232, 147, 280).toBuffer());
+        fs.writeFileSync(`${path}/../${fileName}_body.png`, Utils.canvasCut(img, 0, 0, 350, 512).toBuffer());
+        fs.writeFileSync(`${path}/../${fileName}_neck.png`, Utils.canvasCut(img, 350, 0, 190, 177).toBuffer());
+        fs.writeFileSync(`${path}/../${fileName}_upper_left.png`, Utils.canvasCut(img, 350, 177, 190, 335).toBuffer());
+        fs.writeFileSync(`${path}/../${fileName}_upper_right.png`, Utils.canvasCut(img, 540, 177, 190, 335).toBuffer());
+        fs.writeFileSync(`${path}/../${fileName}_lower_left.png`, Utils.canvasCut(img, 730, 232, 147, 280).toBuffer());
+        fs.writeFileSync(`${path}/../${fileName}_lower_right.png`, Utils.canvasCut(img, 877, 232, 147, 280).toBuffer());
     }
 
     //fs.writeFileSync("./testAction.png", );
