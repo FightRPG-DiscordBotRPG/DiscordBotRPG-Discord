@@ -78,7 +78,7 @@ class CharacterAppearance {
         }
 
 
-        let debugArmor = "07"
+        let debugArmor = Utils.randRangeInteger(1, 10).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
         this.armor = {
             body: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} Male_body.png`),
             neck: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} Male_neck.png`),
@@ -90,6 +90,16 @@ class CharacterAppearance {
 
 
         this.basicPants = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Pants\\male_01.png`);
+
+        let debugPants = Utils.randRangeInteger(0, 10).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });;
+
+        this.pants = {
+            hip: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} Male_hip.png`),
+            upper_right: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} Male_upper_right.png`),
+            upper_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} Male_upper_left.png`),
+            lower_right: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} Male_lower_right.png`),
+            lower_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} Male_lower_left.png`),
+        }
 
 
         this.hairColor = Utils.getRandomHexColor();
@@ -113,6 +123,10 @@ class CharacterAppearance {
         }
 
         this.lips = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
+
+        //this.boots = {
+        //    left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`),
+        //}
 
     }
 
@@ -154,6 +168,8 @@ class CharacterAppearance {
         ctx.drawImage(Utils.canvasRotateImage(this.armor.upper_right, 1), bodyX + 210, bodyY + 205);
         ctx.drawImage(Utils.canvasRotateImage(this.armor.lower_right, -12, true), bodyX + 250, bodyY + 375);
 
+
+        // TODO Fix hand pas assez de rotation
         ctx.drawImage(Utils.canvasRotateImage(this.gloves.right.wrist, -10), bodyX + 237, bodyY + 379, this.gloves.right.wrist.width, this.gloves.right.wrist.height);
         ctx.drawImage(Utils.canvasRotateImage(this.gloves.right.hand, -16.5), bodyX + 262, bodyY + 536, this.gloves.right.hand.width, this.gloves.right.hand.height);
 
@@ -165,7 +181,13 @@ class CharacterAppearance {
 
         // Pants
         //ctx.drawImage(Utils.canvasTintImage(this.basicPants, Utils.getRandomHexColor()), xDecal - 131, bodyY + 525, this.basicPants.width, this.basicPants.height);
-        ctx.drawImage(this.basicPants, xDecal - 131, bodyY + 525, this.basicPants.width, this.basicPants.height);
+        ctx.drawImage(Utils.canvasRotateImage(this.pants.upper_right, -8, true), xDecal - 54, bodyY + 490, this.pants.upper_right.width, this.pants.upper_right.height);
+        ctx.drawImage(Utils.canvasRotateImage(this.pants.lower_right, -2, true), xDecal - 46, bodyY + 785, this.pants.lower_right.width, this.pants.lower_right.height);
+
+        ctx.drawImage(this.pants.hip, xDecal - 188, bodyY + 445, this.pants.hip.width, this.pants.hip.height);
+        ctx.drawImage(Utils.canvasRotateImage(this.pants.upper_left, 8, true), xDecal - 198, bodyY + 490, this.pants.upper_left.width, this.pants.upper_left.height);
+        ctx.drawImage(Utils.canvasRotateImage(this.pants.lower_left, 7, true), xDecal - 240, bodyY + 790, this.pants.lower_left.width, this.pants.lower_left.height);
+
 
         // Body Armor
         ctx.drawImage(this.armor.body, bodyX + 25, bodyY + 155, this.armor.body.width, this.armor.body.height);
