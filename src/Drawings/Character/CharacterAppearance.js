@@ -149,8 +149,11 @@ class CharacterAppearance {
         // Right Arm
         ctx.drawImage(Utils.canvasTintImage(this.rightArm, this.bodyColor), bodyX, bodyY, this.rightArm.width, this.rightArm.height);
 
-        ctx.drawImage(Utils.canvasRotateImage(this.gloves.right.wrist, -10), bodyX + 208, bodyY + 400, this.gloves.right.wrist.width, this.gloves.right.wrist.height);
-        ctx.drawImage(Utils.canvasRotateImage(this.gloves.right.hand, -16.5), bodyX + 235, bodyY + 557, this.gloves.right.hand.width, this.gloves.right.hand.height);
+        ctx.drawImage(Utils.canvasRotateImage(this.armor.upper_right, 1), bodyX + 210, bodyY + 205);
+        ctx.drawImage(Utils.canvasRotateImage(this.armor.lower_right, -12, true), bodyX + 250, bodyY + 375);
+
+        ctx.drawImage(Utils.canvasRotateImage(this.gloves.right.wrist, -10), bodyX + 237, bodyY + 379, this.gloves.right.wrist.width, this.gloves.right.wrist.height);
+        ctx.drawImage(Utils.canvasRotateImage(this.gloves.right.hand, -16.5), bodyX + 262, bodyY + 536, this.gloves.right.hand.width, this.gloves.right.hand.height);
 
 
 
@@ -188,20 +191,18 @@ class CharacterAppearance {
 
 
         if (this.armor) {
-            ctx.drawImage(this.armor.body, bodyX + 25, bodyY + 156, this.armor.body.width, this.armor.body.height);
+            ctx.drawImage(this.armor.body, bodyX + 25, bodyY + 155, this.armor.body.width, this.armor.body.height);
         }
 
         // Left Arm
         ctx.drawImage(Utils.canvasTintImage(this.leftArm, this.bodyColor), bodyX, bodyY, this.leftArm.width, this.leftArm.height);
 
-        ctx.drawImage(Utils.canvasRotateImage(this.armor.upper_left, 13, true), bodyX - 20, bodyY + 175);
-        ctx.drawImage(Utils.canvasRotateImage(this.armor.lower_left, -5, true), bodyX - 48, bodyY + 410);
+        ctx.drawImage(Utils.canvasRotateImage(this.armor.upper_left, 13, true), bodyX - 32, bodyY + 205);
+        ctx.drawImage(Utils.canvasRotateImage(this.armor.lower_left, -5, true), bodyX - 24, bodyY + 395);
 
 
-
-
-        ctx.drawImage(Utils.canvasRotateImage(this.gloves.left.wrist, -5), bodyX - 49, bodyY + 405, this.gloves.left.wrist.width, this.gloves.left.wrist.height);
-        ctx.drawImage(Utils.canvasRotateImage(this.gloves.left.hand, -11), bodyX - 34, bodyY + 567, this.gloves.left.hand.width, this.gloves.left.hand.height);
+        ctx.drawImage(Utils.canvasRotateImage(this.gloves.left.wrist, 0), bodyX - 30, bodyY + 386, this.gloves.left.wrist.width, this.gloves.left.wrist.height);
+        ctx.drawImage(Utils.canvasRotateImage(this.gloves.left.hand, -11), bodyX - 15, bodyY + 548, this.gloves.left.hand.width, this.gloves.left.hand.height);
 
 
         console.timeEnd("Draw Images");
