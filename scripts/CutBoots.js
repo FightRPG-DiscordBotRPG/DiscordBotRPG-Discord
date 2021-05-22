@@ -22,9 +22,10 @@ async function start() {
         let fileName = file.replace(".png", "");
 
         //console.log(Utils.canvasCut(img, 0, 0, 350, 512).toBuffer());
-        fs.writeFileSync(`${path}/../${fileName}_lower_left.png`, Utils.canvasCut(img, 0, 0, 256, 400).toBuffer());
 
-        fs.writeFileSync(`${path}/../${fileName}_lower_right.png`, Utils.canvasCut(img, 512, 0, 256, 400).toBuffer());
+        fs.writeFileSync(`${path}/../${fileName}_lower_left.png`, Utils.canvasCut(img, 512, 0, 256, 400).toBuffer());
+
+        fs.writeFileSync(`${path}/../${fileName}_lower_right.png`, Utils.canvasCut(img, 256, 0, 256, 400).toBuffer());
 
 
         fs.writeFileSync(`${path}/../${fileName}_foot_right.png`, Utils.canvasCut(img, 768, 170, 256, 170).toBuffer());
