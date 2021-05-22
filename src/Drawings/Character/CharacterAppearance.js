@@ -13,22 +13,42 @@ class CharacterAppearance {
 
     reset() {
         this.background = null;
+        this.canvasContext = null;
+
         this.bodyColor = null;
+
+        this.background = null;
         this.body = null;
+        this.head = null;
         this.leftArm = null;
         this.rightArm = null;
         this.ear = null;
-        this.eyes = null;
+
         this.eyesBack = null;
+        this.eyes = null;
+
+
         this.eyebrow = null;
         this.nose = null;
+        this.gloves = null
+
+        this.helmet = null;
+        this.armor = null;
+
         this.basicPants = null;
+
+        this.pants = null;
+
         this.hair = null;
+
+        // Back Hair
         this.backHair = null;
         this.teeths = null;
+
         this.lips = null;
-        this.hairColor = null;
-        this.gloves = null;
+
+
+        this.boots = null
     }
 
 
@@ -150,8 +170,8 @@ class CharacterAppearance {
         const imageHeight = Math.max(this.background.height, 1300);
         const canvasCharacter = Canvas.createCanvas(Math.max(this.background.width, 500), imageHeight);
 
-        const ctx = canvasCharacter.getContext("2d");
-        ctx.drawImage(this.background, 0, 0, canvasCharacter.width, canvasCharacter.height);
+        this.canvasContext = canvasCharacter.getContext("2d");
+        this.drawImage(this.background, 0, 0, canvasCharacter.width, canvasCharacter.height);
 
         console.time("Draw Images");
 
@@ -160,97 +180,105 @@ class CharacterAppearance {
 
 
         // Back Hair
-        if (this.backHair) {
-            ctx.drawImage(Utils.canvasTintImage(this.backHair, this.hairColor), bodyX - 36, bodyY - 242, this.backHair.width, this.backHair.height);
-        }
+        this.drawImage(Utils.canvasTintImage(this.backHair, this.hairColor), bodyX - 36, bodyY - 242);
 
         // Helmet Back
-        if (this.helmet.back) {
-            ctx.drawImage(this.helmet.back, bodyX - 30, bodyY - 158, this.helmet.back.width, this.helmet.back.height);
-        }
+        this.drawImage(this.helmet.back, bodyX - 30, bodyY - 158);
 
         // Right Arm
-        ctx.drawImage(Utils.canvasTintImage(this.rightArm, this.bodyColor), bodyX, bodyY, this.rightArm.width, this.rightArm.height);
+        this.drawImage(Utils.canvasTintImage(this.rightArm, this.bodyColor), bodyX, bodyY);
 
-        ctx.drawImage(Utils.canvasRotateImage(this.armor.upper_right, 1), bodyX + 210, bodyY + 205);
-        ctx.drawImage(Utils.canvasRotateImage(this.armor.lower_right, -12, true), bodyX + 250, bodyY + 375);
+        this.drawImage(Utils.canvasRotateImage(this.armor.upper_right, 1), bodyX + 210, bodyY + 205);
+        this.drawImage(Utils.canvasRotateImage(this.armor.lower_right, -12, true), bodyX + 250, bodyY + 375);
 
-
-        // TODO Fix hand pas assez de rotation
-        ctx.drawImage(Utils.canvasRotateImage(this.gloves.right.wrist, -10), bodyX + 237, bodyY + 379, this.gloves.right.wrist.width, this.gloves.right.wrist.height);
-        ctx.drawImage(Utils.canvasRotateImage(this.gloves.right.hand, -16.5), bodyX + 262, bodyY + 536, this.gloves.right.hand.width, this.gloves.right.hand.height);
+        // Glove Right
+        this.drawImage(Utils.canvasRotateImage(this.gloves.right.wrist, -10), bodyX + 237, bodyY + 379);
+        this.drawImage(Utils.canvasRotateImage(this.gloves.right.hand, -12), bodyX + 262, bodyY + 530);
 
 
 
 
         // Body
-        ctx.drawImage(Utils.canvasTintImage(this.body, this.bodyColor), bodyX, bodyY, this.body.width, this.body.height);
+        this.drawImage(Utils.canvasTintImage(this.body, this.bodyColor), bodyX, bodyY);
 
         // Pants
-        //ctx.drawImage(Utils.canvasTintImage(this.basicPants, Utils.getRandomHexColor()), xDecal - 131, bodyY + 525, this.basicPants.width, this.basicPants.height);
-        ctx.drawImage(Utils.canvasRotateImage(this.pants.upper_right, -8, true), xDecal - 54, bodyY + 490, this.pants.upper_right.width, this.pants.upper_right.height);
-        ctx.drawImage(Utils.canvasRotateImage(this.pants.lower_right, -2, true), xDecal - 46, bodyY + 785, this.pants.lower_right.width, this.pants.lower_right.height);
+        //this.drawImage(Utils.canvasTintImage(this.basicPants, Utils.getRandomHexColor()), xDecal - 131, bodyY + 525, this.basicPants.width, this.basicPants.height);
+        this.drawImage(Utils.canvasRotateImage(this.pants.upper_right, -8, true), xDecal - 54, bodyY + 490);
+        this.drawImage(Utils.canvasRotateImage(this.pants.lower_right, -2, true), xDecal - 46, bodyY + 785);
 
-        ctx.drawImage(this.pants.hip, xDecal - 188, bodyY + 445, this.pants.hip.width, this.pants.hip.height);
-        ctx.drawImage(Utils.canvasRotateImage(this.pants.upper_left, 8, true), xDecal - 198, bodyY + 490, this.pants.upper_left.width, this.pants.upper_left.height);
-        ctx.drawImage(Utils.canvasRotateImage(this.pants.lower_left, 7, true), xDecal - 240, bodyY + 790, this.pants.lower_left.width, this.pants.lower_left.height);
+        this.drawImage(this.pants.hip, xDecal - 188, bodyY + 445, this.pants.hip.width, this.pants.hip.height);
+        this.drawImage(Utils.canvasRotateImage(this.pants.upper_left, 8, true), xDecal - 198, bodyY + 490);
+        this.drawImage(Utils.canvasRotateImage(this.pants.lower_left, 7, true), xDecal - 240, bodyY + 790);
 
 
         // Boots
-        ctx.drawImage(Utils.canvasRotateImage(this.boots.lower_left, 7, true), xDecal - 238, bodyY + 800, this.boots.lower_left.width, this.boots.lower_left.height);
-        ctx.drawImage(Utils.canvasRotateImage(this.boots.foot_left, 0, true), bodyX, bodyY + 1053, this.boots.foot_left.width, this.boots.foot_left.height);
+        this.drawImage(Utils.canvasRotateImage(this.boots.lower_left, 7, true), xDecal - 238, bodyY + 800);
+        this.drawImage(Utils.canvasRotateImage(this.boots.foot_left, 0, true), bodyX, bodyY + 1053);
 
 
-        ctx.drawImage(Utils.canvasRotateImage(this.boots.lower_right, 0, true), xDecal - 42, bodyY + 780, this.boots.lower_right.width, this.boots.lower_right.height);
-        ctx.drawImage(Utils.canvasRotateImage(this.boots.foot_right, 0, true), xDecal + 4, bodyY + 1053, this.boots.foot_right.width, this.boots.foot_right.height);
+        this.drawImage(Utils.canvasRotateImage(this.boots.lower_right, 0, true), xDecal - 42, bodyY + 780);
+        this.drawImage(Utils.canvasRotateImage(this.boots.foot_right, 0, true), xDecal + 4, bodyY + 1053);
 
 
         // Body Armor
-        ctx.drawImage(this.armor.body, bodyX + 25, bodyY + 155, this.armor.body.width, this.armor.body.height);
+        this.drawImage(this.armor.body, bodyX + 25, bodyY + 155);
 
         // Neck
-        ctx.drawImage(this.armor.neck, bodyX + 105, bodyY + 90, this.armor.neck.width, this.armor.neck.height);
+        this.drawImage(this.armor.neck, bodyX + 105, bodyY + 90);
 
 
         // Head
-        ctx.drawImage(Utils.canvasTintImage(this.head, this.bodyColor), bodyX, bodyY, this.head.width, this.head.height);
+        this.drawImage(Utils.canvasTintImage(this.head, this.bodyColor), bodyX, bodyY);
 
         // Eyes
-        ctx.drawImage(Utils.canvasTintImage(this.eyebrow, this.hairColor), xDecal - 35, bodyY + 62, this.eyebrow.width, this.eyebrow.height);
-        ctx.drawImage(this.eyesBack, xDecal - 35, bodyY + 63, this.eyesBack.width, this.eyesBack.height);
-        ctx.drawImage(Utils.canvasTintImage(this.eyes, "#FF0000", 0.2), xDecal - 35, bodyY + 63, this.eyes.width, this.eyes.height);
+        this.drawImage(Utils.canvasTintImage(this.eyebrow, this.hairColor), xDecal - 35, bodyY + 62);
+        this.drawImage(this.eyesBack, xDecal - 35, bodyY + 63);
+        this.drawImage(Utils.canvasTintImage(this.eyes, "#FF0000", 0.2), xDecal - 35, bodyY + 63);
 
         // Hair
-        ctx.drawImage(Utils.canvasTintImage(this.hair, this.hairColor), bodyX - 36, bodyY - 242, this.hair.width, this.hair.height);
+        this.drawImage(Utils.canvasTintImage(this.hair, this.hairColor), bodyX - 36, bodyY - 242);
 
         // Ear / Nose
-        ctx.drawImage(Utils.canvasTintImage(this.ear, this.bodyColor), xDecal - 188, bodyY - 20, this.ear.width, this.ear.height);
-        ctx.drawImage(Utils.canvasTintImage(this.nose, this.bodyColor), xDecal - 42, bodyY + 67, this.nose.width, this.nose.height);
+        this.drawImage(Utils.canvasTintImage(this.ear, this.bodyColor), xDecal - 188, bodyY - 20);
+        this.drawImage(Utils.canvasTintImage(this.nose, this.bodyColor), xDecal - 42, bodyY + 67);
 
         // Mounth
-        if (this.teeths) {
-            ctx.drawImage(this.teeths, xDecal - 30, bodyY + 136, this.teeths.width, this.teeths.height);
-        }
-        ctx.drawImage(Utils.canvasTintImage(this.lips, this.bodyColor), xDecal - 30, bodyY + 136, this.lips.width, this.lips.height);
+        this.drawImage(this.teeths, xDecal - 30, bodyY + 136);
+
+        this.drawImage(Utils.canvasTintImage(this.lips, this.bodyColor), xDecal - 30, bodyY + 136);
 
         // Left Arm
-        ctx.drawImage(Utils.canvasTintImage(this.leftArm, this.bodyColor), bodyX, bodyY, this.leftArm.width, this.leftArm.height);
+        this.drawImage(Utils.canvasTintImage(this.leftArm, this.bodyColor), bodyX, bodyY);
 
-        ctx.drawImage(Utils.canvasRotateImage(this.armor.upper_left, 13, true), bodyX - 32, bodyY + 205);
-        ctx.drawImage(Utils.canvasRotateImage(this.armor.lower_left, -5, true), bodyX - 24, bodyY + 395);
+        this.drawImage(Utils.canvasRotateImage(this.armor.upper_left, 13, true), bodyX - 32, bodyY + 205);
+        this.drawImage(Utils.canvasRotateImage(this.armor.lower_left, -5, true), bodyX - 24, bodyY + 395);
 
-
-        ctx.drawImage(Utils.canvasRotateImage(this.gloves.left.wrist, 0), bodyX - 30, bodyY + 386, this.gloves.left.wrist.width, this.gloves.left.wrist.height);
-        ctx.drawImage(Utils.canvasRotateImage(this.gloves.left.hand, -11), bodyX - 15, bodyY + 548, this.gloves.left.hand.width, this.gloves.left.hand.height);
+        // Gloves left
+        this.drawImage(Utils.canvasRotateImage(this.gloves.left.wrist, 0), bodyX - 30, bodyY + 386);
+        this.drawImage(Utils.canvasRotateImage(this.gloves.left.hand, -11), bodyX - 15, bodyY + 548);
 
         // Helmet Front
-        ctx.drawImage(this.helmet.front, bodyX - 30, bodyY - 158, this.helmet.front.width, this.helmet.front.height);
+        this.drawImage(this.helmet.front, bodyX - 30, bodyY - 158);
 
 
         console.timeEnd("Draw Images");
 
         return canvasCharacter;
 
+    }
+
+    /**
+     * 
+     * @param {Canvas.Image | Canvas.Canvas} img
+     * @param {number} x
+     * @param {number} y
+     * @param {number} width
+     * @param {number} height
+     */
+    drawImage(img, x, y, width, height) {
+        if (img) {
+            this.canvasContext.drawImage(img, x, y, width ?? img.width, height ?? img.height);
+        }
     }
 
 
