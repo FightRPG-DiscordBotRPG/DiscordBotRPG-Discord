@@ -216,40 +216,31 @@ class Utils {
      * @returns {Canvas.Canvas}
      */
     static canvasRotateImage(image, deg, rescale = false) {
-        console.log(image.src);
-
-        let canvasRescable, dx = 0, dy = 0;
+        let width, height;
         if (rescale) {
-
-            const { width, height } = Utils.calcProjectedRectSizeOfRotatedRect(
-                { width: image.width, height: image.height }, deg * Math.PI / 180
+            let projected = Utils.calcProjectedRectSizeOfRotatedRect(
+                image.width, image.height, deg * Math.PI / 180
             );
+            width = projected.width;
+            height = projected.height;
 
-            canvasRescable = Canvas.createCanvas(width, height);
-            console.log(width + " " + image.width);
-            dx = (width - image.width) / 2;
         } else {
-            canvasRescable = Canvas.createCanvas(image.width, image.height);
+            width = image.width;
+            height = image.height;
         }
 
             
         const canvas = Canvas.createCanvas(image.width, image.height);
         const context = canvas.getContext("2d");
 
-
-
         context.save();
+        context.translate(width / 2, height / 2);
         context.rotate(deg * Math.PI / 180);
-        context.drawImage(image, dx, dy);
+        context.translate(-width / 2, -height / 2);
+        context.drawImage(image, 0, 0);
         context.restore();
 
-
-        const bgContext = canvasRescable.getContext("2d");
-        context.save();
-        bgContext.drawImage(context.canvas, 0, 0, image.width, image.height);
-        context.restore();
-
-        return bgContext.canvas;
+        return context.canvas;
     }
 
     /**
@@ -277,24 +268,22 @@ class Utils {
         return "#" + Math.floor(Math.random() * 16777215).toString(16);
     }
 
-    /**
-     * NOTE : When source rect is rotated at some rad or degrees, 
-     * it's original width and height is no longer usable in the rendered page.
-     * So, calculate projected rect size, that each edge are sum of the 
-     * width projection and height projection of the original rect.
-     */
-    /**
-     * 
-     * @param {{width:number, height:number}} size
-     * @param {number} rad
-     */
-    static calcProjectedRectSizeOfRotatedRect(size, rad) {
-        const { width, height } = size;
+    static calcProjectedRectSizeOfRotatedRect(width, height, rotation) {
+        const {
+            cos,
+            sin,
+            abs,
+        } = Math;
 
-        const rectProjectedWidth = Math.abs(width * Math.cos(rad)) + Math.abs(height * Math.sin(rad));
-        const rectProjectedHeight = Math.abs(width * Math.sin(rad)) + Math.abs(height * Math.cos(rad));
+        /* eslint-disable max-len */
+        const widthAfterRotation = abs(width * sin(rotation)) + abs(height * cos(rotation));
+        const heightAfterRotation = abs(width * cos(rotation)) + abs(height * sin(rotation));
+        /* eslint-enable max-len */
 
-        return { width: rectProjectedWidth, height: rectProjectedHeight };
+        return {
+            height: widthAfterRotation,
+            width: heightAfterRotation,
+        };
     }
 }
 
