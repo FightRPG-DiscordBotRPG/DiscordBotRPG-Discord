@@ -40,6 +40,7 @@ class CharacterAppearance {
 
         this.background = await CharacterAppearance.getImage("https://img00.deviantart.net/b5ba/i/2016/117/d/2/cracked_landsape_by_thechrispman-da0ehq0.png");
         this.body = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_body.png");
+        this.head = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_head_full.png");
         this.leftArm = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_left_arm_full.png");
         this.rightArm = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_right_arm_full.png");
         this.ear = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Ear\\0${Utils.randRangeInteger(0, 2)}.png`);
@@ -77,13 +78,14 @@ class CharacterAppearance {
         }
 
 
+        let debugArmor = "07"
         this.armor = {
-            body: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy 03 Male_body.png`),
-            neck: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy 03 Male_neck.png`),
-            lower_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy 03 Male_lower_left.png`),
-            lower_right: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy 03 Male_lower_right.png`),
-            upper_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy 03 Male_upper_left.png`),
-            upper_right: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy 03 Male_upper_right.png`),
+            body: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} Male_body.png`),
+            neck: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} Male_neck.png`),
+            lower_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} Male_lower_left.png`),
+            lower_right: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} Male_lower_right.png`),
+            upper_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} Male_upper_left.png`),
+            upper_right: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} Male_upper_right.png`),
         }
 
 
@@ -161,9 +163,19 @@ class CharacterAppearance {
         // Body
         ctx.drawImage(Utils.canvasTintImage(this.body, this.bodyColor), bodyX, bodyY, this.body.width, this.body.height);
 
-
         // Pants
-        ctx.drawImage(Utils.canvasTintImage(this.basicPants, Utils.getRandomHexColor()), xDecal - 131, bodyY + 525, this.basicPants.width, this.basicPants.height)
+        //ctx.drawImage(Utils.canvasTintImage(this.basicPants, Utils.getRandomHexColor()), xDecal - 131, bodyY + 525, this.basicPants.width, this.basicPants.height);
+        ctx.drawImage(this.basicPants, xDecal - 131, bodyY + 525, this.basicPants.width, this.basicPants.height);
+
+        // Body Armor
+        ctx.drawImage(this.armor.body, bodyX + 25, bodyY + 155, this.armor.body.width, this.armor.body.height);
+
+        // Neck
+        ctx.drawImage(this.armor.neck, bodyX + 105, bodyY + 90, this.armor.neck.width, this.armor.neck.height);
+
+
+        // Head
+        ctx.drawImage(Utils.canvasTintImage(this.head, this.bodyColor), bodyX, bodyY, this.head.width, this.head.height);
 
         // Eyes
         ctx.drawImage(Utils.canvasTintImage(this.eyebrow, this.hairColor), xDecal - 35, bodyY + 62, this.eyebrow.width, this.eyebrow.height);
@@ -183,17 +195,6 @@ class CharacterAppearance {
         }
         ctx.drawImage(Utils.canvasTintImage(this.lips, this.bodyColor), xDecal - 30, bodyY + 136, this.lips.width, this.lips.height);
 
-
-        // Helmet Front
-        ctx.drawImage(this.helmet.front, bodyX - 30, bodyY - 158, this.helmet.front.width, this.helmet.front.height);
-
-
-
-
-        if (this.armor) {
-            ctx.drawImage(this.armor.body, bodyX + 25, bodyY + 155, this.armor.body.width, this.armor.body.height);
-        }
-
         // Left Arm
         ctx.drawImage(Utils.canvasTintImage(this.leftArm, this.bodyColor), bodyX, bodyY, this.leftArm.width, this.leftArm.height);
 
@@ -203,6 +204,9 @@ class CharacterAppearance {
 
         ctx.drawImage(Utils.canvasRotateImage(this.gloves.left.wrist, 0), bodyX - 30, bodyY + 386, this.gloves.left.wrist.width, this.gloves.left.wrist.height);
         ctx.drawImage(Utils.canvasRotateImage(this.gloves.left.hand, -11), bodyX - 15, bodyY + 548, this.gloves.left.hand.width, this.gloves.left.hand.height);
+
+        // Helmet Front
+        ctx.drawImage(this.helmet.front, bodyX - 30, bodyY - 158, this.helmet.front.width, this.helmet.front.height);
 
 
         console.timeEnd("Draw Images");
