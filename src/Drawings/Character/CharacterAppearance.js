@@ -78,7 +78,7 @@ class CharacterAppearance {
         }
 
 
-        let debugArmor = Utils.randRangeInteger(1, 10).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
+        let debugArmor = Utils.randRangeInteger(1, 9).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
         this.armor = {
             body: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} Male_body.png`),
             neck: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} Male_neck.png`),
@@ -124,9 +124,16 @@ class CharacterAppearance {
 
         this.lips = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
 
-        //this.boots = {
-        //    left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`),
-        //}
+        //let debugBoots = Utils.randRangeInteger(0, 9).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
+        let debugBoots = "03";
+
+
+        this.boots = {
+            lower_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\Fantasy ${debugBoots}_lower_left.png`),
+            lower_right: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\Fantasy ${debugBoots}_lower_right.png`),
+            foot_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\Fantasy ${debugBoots}_foot_left.png`),
+            foot_right: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\Fantasy ${debugBoots}_foot_right.png`),
+        }
 
     }
 
@@ -187,6 +194,15 @@ class CharacterAppearance {
         ctx.drawImage(this.pants.hip, xDecal - 188, bodyY + 445, this.pants.hip.width, this.pants.hip.height);
         ctx.drawImage(Utils.canvasRotateImage(this.pants.upper_left, 8, true), xDecal - 198, bodyY + 490, this.pants.upper_left.width, this.pants.upper_left.height);
         ctx.drawImage(Utils.canvasRotateImage(this.pants.lower_left, 7, true), xDecal - 240, bodyY + 790, this.pants.lower_left.width, this.pants.lower_left.height);
+
+
+        // Boots
+        ctx.drawImage(Utils.canvasRotateImage(this.boots.lower_left, 7, true), xDecal - 238, bodyY + 800, this.boots.lower_left.width, this.boots.lower_left.height);
+        ctx.drawImage(Utils.canvasRotateImage(this.boots.foot_left, 0, true), bodyX, bodyY + 1053, this.boots.foot_left.width, this.boots.foot_left.height);
+
+
+        ctx.drawImage(Utils.canvasRotateImage(this.boots.lower_right, 0, true), xDecal - 42, bodyY + 780, this.boots.lower_right.width, this.boots.lower_right.height);
+        ctx.drawImage(Utils.canvasRotateImage(this.boots.foot_right, 0, true), xDecal + 4, bodyY + 1053, this.boots.foot_right.width, this.boots.foot_right.height);
 
 
         // Body Armor
