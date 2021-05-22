@@ -194,6 +194,8 @@ class Utils {
      */
     static canvasTintImage(image, color, opacity = 0.5) {
 
+        if (!image) { return null }
+
         const canvas = Canvas.createCanvas(image.width, image.height);
         const context = canvas.getContext("2d");
 
@@ -216,6 +218,9 @@ class Utils {
      * @returns {Canvas.Canvas}
      */
     static canvasRotateImage(image, deg, rescale = false) {
+
+        if (!image) { return null }
+
         let width, height;
         if (rescale) {
             let projected = Utils.calcProjectedRectSizeOfRotatedRect(
@@ -229,7 +234,7 @@ class Utils {
             height = image.height;
         }
 
-            
+
         const canvas = Canvas.createCanvas(image.width, image.height);
         const context = canvas.getContext("2d");
 
