@@ -25,7 +25,7 @@ async function start() {
 
         fs.writeFileSync(`${path}/../${fileName}_upper_right.png`, Utils.canvasCut(img, 256, 0, 256, 512).toBuffer());
 
-        fs.writeFileSync(`${path}/../${fileName}_lower_left.png`, Utils.canvasCut(img, 0, 512, 256, 400).toBuffer());
+        fs.writeFileSync(`${path}/../${fileName}_lower_left.png`, Utils.canvasCut(img, 512, 512, 256, 400).toBuffer());
         fs.writeFileSync(`${path}/../${fileName}_lower_right.png`, Utils.canvasCut(img, 256, 512, 256, 400).toBuffer());
         fs.writeFileSync(`${path}/../${fileName}_hip.png`, Utils.canvasCut(img, 512, 230, 380, 280).toBuffer());
     }
