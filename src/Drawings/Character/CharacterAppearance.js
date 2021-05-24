@@ -66,8 +66,10 @@ class CharacterAppearance {
 
         let debugEyes = Utils.randRangeInteger(0, 15).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
 
-        this.eyesBack = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\${debugEyes}_01.png`);
-        this.eyes = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\${debugEyes}_02.png`);
+        this.eyes = {
+            front: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\${debugEyes}_02.png`),
+            back: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\${debugEyes}_01.png`)
+        }
 
         let debugFacialHair = Utils.randRangeInteger(0, 17).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
 
@@ -229,23 +231,23 @@ class CharacterAppearance {
 
         // Eyes
         this.drawImage(Utils.canvasTintImage(this.eyebrow, this.hairColor), xDecal - 35, bodyY + 62);
-        this.drawImage(this.eyesBack, xDecal - 35, bodyY + 63);
-        this.drawImage(Utils.canvasTintImage(this.eyes, "#FF0000", 0.2), xDecal - 35, bodyY + 63);
+        this.drawImage(this.eyes?.back, xDecal - 35, bodyY + 63);
+        this.drawImage(Utils.canvasTintImage(this.eyes?.front, "#FF0000", 0.2), xDecal - 35, bodyY + 63);
+
+        // Mounth
+        this.drawImage(this.mouth?.teeths, xDecal - 30, bodyY + 130);
+
+        this.drawImage(Utils.canvasTintImage(this.mouth?.lips, this.bodyColor), xDecal - 30, bodyY + 136);
 
         // Facial Hair
-        this.drawImage(Utils.canvasTintImage(this.facialHair, this.hairColor), bodyX + 96, bodyY + 16);
-
-        // Hair
-        this.drawImage(Utils.canvasTintImage(this.hair?.front, this.hairColor), bodyX - 36, bodyY - 242);
+        this.drawImage(Utils.canvasTintImage(this.facialHair, this.hairColor), bodyX + 97, bodyY + 15);
 
         // Ear / Nose
         this.drawImage(Utils.canvasTintImage(this.ear, this.bodyColor), xDecal - 188, bodyY - 20);
-        this.drawImage(Utils.canvasTintImage(this.nose, this.bodyColor), xDecal - 42, bodyY + 67);
+        this.drawImage(Utils.canvasTintImage(this.nose, this.bodyColor), xDecal - 42, bodyY + 64);
 
-        // Mounth
-        this.drawImage(this.mouth?.teeths, xDecal - 30, bodyY + 136);
-
-        this.drawImage(Utils.canvasTintImage(this.mouth?.lips, this.bodyColor), xDecal - 30, bodyY + 136);
+        // Hair
+        this.drawImage(Utils.canvasTintImage(this.hair?.front, this.hairColor), bodyX - 36, bodyY - 242);
 
         // Left Arm
         this.drawImage(Utils.canvasTintImage(this.leftArm, this.bodyColor), bodyX, bodyY);
