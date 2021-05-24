@@ -15,6 +15,8 @@ class EquipmentModule extends GModule {
     async run(message, command, args) {
         let msg = "";
         let axios = Globals.connectedUsers[message.author.id].getAxios();
+        let user = Globals.connectedUsers[message.author.id];
+
 
         switch (command) {
             case "equip":
@@ -32,8 +34,8 @@ class EquipmentModule extends GModule {
             case "equiplist":
             case "equipment":
             case "equips":
-                msg = await this.getDisplayIfSuccess(await axios.get("/game/equipment/show"), (data) => {
-                    return Inventory.displayAsList(data, false);
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/equipment/show"),  async (data) => {
+                    return await Inventory.displayAsList(data, false, user);
                 });
                 break;
 

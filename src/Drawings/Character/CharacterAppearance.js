@@ -12,6 +12,8 @@ class CharacterAppearance {
     }
 
     reset() {
+        this.data = null;
+
         this.background = null;
         this.canvasContext = null;
 
@@ -20,11 +22,10 @@ class CharacterAppearance {
         this.background = null;
         this.body = null;
         this.head = null;
-        this.leftArm = null;
-        this.rightArm = null;
+        this.left = null;
+        this.right = null;
         this.ear = null;
 
-        this.eyesBack = null;
         this.eyes = null;
 
 
@@ -52,32 +53,9 @@ class CharacterAppearance {
 
     async loadAssets() {
 
-        let debugPossibleSkinColor = ["#CE8E71", "#DFA98F", "#E9C8BC", "#D69D70", "#B37344", "#88583B", "#4A332D"];
-        this.bodyColor = Utils.getRandomItemsInArray(debugPossibleSkinColor, 1)[0];
-
-
-        this.background = await CharacterAppearance.getImage("https://img00.deviantart.net/b5ba/i/2016/117/d/2/cracked_landsape_by_thechrispman-da0ehq0.png");
-        this.body = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_body.png");
-        this.head = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_head_full.png");
-        this.leftArm = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_left_arm_full.png");
-        this.rightArm = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_right_arm_full.png");
-
-        this.ear = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Ear\\0${Utils.randRangeInteger(0, 2)}.png`);
-
-        let debugEyes = Utils.randRangeInteger(0, 15).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
-
-        this.eyes = {
-            front: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\${debugEyes}_02.png`),
-            back: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\${debugEyes}_01.png`)
-        }
-
         let debugFacialHair = Utils.randRangeInteger(0, 17).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
 
         this.facialHair = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Facial Hair\\${debugFacialHair}.png`);
-
-
-        this.eyebrow = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyebrow\\${Utils.randRangeInteger(0, 14).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
-        this.nose = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Nose\\${Utils.randRangeInteger(0, 10).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
 
         let debugGloves = Utils.randRangeInteger(0, 10).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
 
@@ -99,7 +77,7 @@ class CharacterAppearance {
         this.helmet = {
             back: doesHelmetHaveBack ? await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Helmet\\Fantasy ${debugHelmet}_02.png`) : null,
             front: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Helmet\\Fantasy ${debugHelmet + (doesHelmetHaveBack ? "_01" : "")}.png`),
-        }       
+        }
 
 
         let debugArmor = Utils.randRangeInteger(1, 9).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
@@ -125,27 +103,7 @@ class CharacterAppearance {
             lower_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} Male_lower_left.png`),
         }
 
-
-        this.hairColor = Utils.getRandomHexColor();
-
-        let debugHair = Utils.randRangeInteger(0, 25);
-
-        this.hair = {
-            front: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`),
-            back: [4, 5, 11, 13, 14, 15, 16, 17, 19, 20].includes(parseInt(debugHair)) ? await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`) : null
-        }
-
-        // Mouth
-        let debugMouth = Utils.randRangeInteger(0, 13);
-
-        this.mouth = {
-            lips: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`),
-            teeths: [3, 6, 7].includes(parseInt(debugMouth)) ? await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`) : null
-        }
-
-
         let debugBoots = Utils.randRangeInteger(0, 9).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
-
 
         this.boots = {
             lower_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\Fantasy ${debugBoots}_lower_left.png`),
@@ -163,14 +121,16 @@ class CharacterAppearance {
      **/
     async getCharacter() {
 
-        this.reset();
         await this.loadAssets();
 
-        const imageHeight = Math.max(this.background.height, 1300);
-        const canvasCharacter = Canvas.createCanvas(Math.max(this.background.width, 500), imageHeight);
+        const imageHeight = 1300, imageWidth = 1000;
+
+
+        const canvasCharacter = Canvas.createCanvas(imageWidth, imageHeight);
 
         this.canvasContext = canvasCharacter.getContext("2d");
-        this.drawImage(this.background, 0, 0, canvasCharacter.width, canvasCharacter.height);
+
+        this.drawImage(this.background, 0, 0, canvasCharacter.height * (this.background.width / this.background.height), canvasCharacter.height);
 
         console.time("Draw Images");
 
@@ -185,7 +145,7 @@ class CharacterAppearance {
         this.drawImage(this.helmet?.back, bodyX - 30, bodyY - 158);
 
         // Right Arm
-        this.drawImage(Utils.canvasTintImage(this.rightArm, this.bodyColor), bodyX, bodyY);
+        this.drawImage(Utils.canvasTintImage(this.right, this.bodyColor), bodyX, bodyY);
 
         this.drawImage(Utils.canvasRotateImage(this.armor?.upper_right, 1), bodyX + 210, bodyY + 205);
         this.drawImage(Utils.canvasRotateImage(this.armor?.lower_right, -12, true), bodyX + 250, bodyY + 375);
@@ -250,7 +210,7 @@ class CharacterAppearance {
         this.drawImage(Utils.canvasTintImage(this.hair?.front, this.hairColor), bodyX - 36, bodyY - 242);
 
         // Left Arm
-        this.drawImage(Utils.canvasTintImage(this.leftArm, this.bodyColor), bodyX, bodyY);
+        this.drawImage(Utils.canvasTintImage(this.left, this.bodyColor), bodyX, bodyY);
 
         this.drawImage(Utils.canvasRotateImage(this.armor?.upper_left, 13, true), bodyX - 32, bodyY + 205);
         this.drawImage(Utils.canvasRotateImage(this.armor?.lower_left, -5, true), bodyX - 24, bodyY + 395);
@@ -283,6 +243,60 @@ class CharacterAppearance {
         }
     }
 
+    /**
+     * 
+     * @param {Object<string, {link: string}>} dict
+     */
+    async mapProperties(dict) {
+
+        //let toMerge = {};
+        let loadingImages = [];
+
+        for (let i of Object.keys(dict)) {
+            let props = i.split(".");
+
+            let ref = this;
+            for (let pIndex in props) {
+                if (pIndex == props.length - 1) {
+                    let refAsync = ref;
+                    let prop = props[pIndex];
+                    let link = typeof dict[i] === "string" ? dict[i] : dict[i].link;
+                    loadingImages.push((async () => {
+                        if (refAsync === null || typeof link !== "string") {
+                            return;
+                        }
+                        refAsync[prop] =  await CharacterAppearance.getImage(link);
+                    })());
+                } else {
+                    if (!ref[props[pIndex]]) {
+                        ref[props[pIndex]] = {};
+                    }
+                    ref = ref[props[pIndex]];
+                }
+            }
+        }
+
+        await Promise.all(loadingImages);
+    }
+
+    async setImageToProperty(profRef, link) {
+        if (profRef === null || typeof link !== "string") {
+            return;
+        }
+        profRef = await CharacterAppearance.getImage(link);
+    }
+
+    async setupFromData(data) {
+        this.reset();
+        this.hairColor = data.appearance.hairColor;
+        this.bodyColor = data.appearance.bodyColor;
+        this.eyeColor = data.appearance.eyeColor;
+
+        data.appearance.appearances["background"] = data.appearance.areaImage;
+        await this.mapProperties(data.appearance.appearances);
+        await this.mapProperties(data.appearance.body);
+
+    }
 
 
     static updateCache(key, value) {
@@ -301,6 +315,10 @@ class CharacterAppearance {
         let img = CharacterAppearance.cache[url] ? CharacterAppearance.cache[url] : await Canvas.loadImage(url);
         CharacterAppearance.updateCache(url, img);
         return img;
+    }
+
+    static async CacheAreasFromDatabase() {
+        
     }
 
 }

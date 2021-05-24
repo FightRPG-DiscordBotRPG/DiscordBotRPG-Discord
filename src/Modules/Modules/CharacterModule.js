@@ -174,9 +174,10 @@ class CharacterModule extends GModule {
                 });
                 break;
             case "talents":
-                msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents"), (data) => {
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents"), async (data) => {
                     return Talents.toString(data, user);
                 });
+                
                 break;
             case "talentsexport":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents/export"), (data) => {
@@ -397,7 +398,7 @@ class CharacterModule extends GModule {
             } break;
             case "appearance":
                 console.time("Appearance");
-                message.channel.send("hey !", new Discord.MessageAttachment(await user.appearance.getCharacter(), message.author.username +".png"));
+                message.channel.send("hey !", new Discord.MessageAttachment(await (await user.appearance.getCharacter()).createPNGStream(), message.author.username +".png"));
                 console.timeEnd("Appearance");
                 break;
 

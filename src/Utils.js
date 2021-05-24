@@ -258,7 +258,6 @@ class Utils {
      * @returns {Canvas.Canvas}
      */
     static canvasCut(image, dx, dy, width, height) {
-
         const canvas = Canvas.createCanvas(width, height);
         const context = canvas.getContext("2d");
 
@@ -290,6 +289,7 @@ class Utils {
             width: heightAfterRotation,
         };
     }
+
 }
 
 

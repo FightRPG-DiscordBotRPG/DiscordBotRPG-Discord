@@ -141,13 +141,13 @@ class InventoryModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/inventory/show/" + searchFilters.page, {
                     params: searchFilters.params
                 }), async (data) => {
-                    await this.pageListener(data, message, Inventory.displayAsList(data, true), async (currPage) => {
+                    await this.pageListener(data, message, await Inventory.displayAsList(data, true, user), async (currPage) => {
                         let d = await axios.get("/game/inventory/show/" + currPage, {
                             params: searchFilters.params
                         });
                         return d.data;
                     }, async (newData) => {
-                        return Inventory.displayAsList(newData, true)
+                        return await Inventory.displayAsList(newData, true, user)
                     });
                 });
                 break;
