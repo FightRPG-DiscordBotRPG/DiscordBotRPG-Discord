@@ -117,7 +117,8 @@ class ModuleHandler extends GModule {
                 case "tutorial":
                 case "play":
                 case "start":
-                    msg = Translator.getString(user.lang, "help_panel", "tutorial", [Globals.tutorialLink]);
+                    //msg = Translator.getString(user.lang, "help_panel", "tutorial", [Globals.tutorialLink]);
+                    user.tutorial.start(message, user.lang);
                     break;
                 case "setmobile":
                     if (Globals.yesNoByLang[args[0]]) {
@@ -415,11 +416,7 @@ class ModuleHandler extends GModule {
             await user.load();
             if (user.token == null) {
                 await user.createUser();
-                message.author.send(Translator.getString("en", "help_panel", "tutorial", [Globals.tutorialLink])).catch((e) => {
-                    message.channel.send(Translator.getString("en", "help_panel", "tutorial", [Globals.tutorialLink])).catch((e) => {
-                        console.log(e);
-                    });
-                });
+                await user.tutorial.start(message, "en");
             }
             if (user.token != null) {
                 Globals.connectedUsers[message.author.id] = user;

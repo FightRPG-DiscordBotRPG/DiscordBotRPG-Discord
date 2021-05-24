@@ -61,6 +61,8 @@ class TravelModule extends GModule {
                         }
                     });
 
+                    await user.tutorial.reactOnCommand("area", message, user.lang);
+
 
                     reactWrapper.collector.on('collect', async (reaction) => {
                         switch (reaction.emoji.name) {
@@ -104,10 +106,14 @@ class TravelModule extends GModule {
 
             case "travel":
                 msg = await this.travelSharedCommand(message, args, axios, "area");
+                // For tutorial
+                await user.tutorial.reactOnCommand(command, message, user.lang);
                 break;
 
             case "travelregion":
                 msg = await this.travelSharedCommand(message, args, axios, "region");
+                // For tutorial
+                await user.tutorial.reactOnCommand(command, message, user.lang);
                 break;
 
             case "traveldirect":
@@ -130,7 +136,7 @@ class TravelModule extends GModule {
                 break;
         }
 
-        this.sendMessage(message, msg);
+        this.sendMessage(message, msg, command);
     }
 
     getTravelMessage(data) {

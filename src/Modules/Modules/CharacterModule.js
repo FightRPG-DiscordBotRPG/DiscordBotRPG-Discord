@@ -120,6 +120,9 @@ class CharacterModule extends GModule {
                         }
                     });
 
+                    // For tutorial
+                    await user.tutorial.reactOnCommand("info", message, user.lang);
+
                     reactWrapper.collector.on('collect', async (reaction) => {
                         switch (reaction.emoji.name) {
                             case displayAttributesEmoji:
@@ -143,6 +146,7 @@ class CharacterModule extends GModule {
 
                         await reactWrapper.edit(user.infoPanel.toString(data, user), emojisList);
                     });
+
                 });
                 break;
 
@@ -205,6 +209,9 @@ class CharacterModule extends GModule {
                             max: 1,
                         }
                     });
+
+                    // For tutorial
+                    await user.tutorial.reactOnCommand("talentshow", message, user.lang);
 
                     reactWrapper.collector.on('collect', async (reaction) => {
                         switch (reaction.emoji.name) {
@@ -404,7 +411,7 @@ class CharacterModule extends GModule {
 
         }
 
-        this.sendMessage(message, msg);
+        this.sendMessage(message, msg, command);
     }
 
     /**

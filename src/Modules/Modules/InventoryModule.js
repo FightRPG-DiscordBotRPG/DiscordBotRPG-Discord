@@ -149,6 +149,8 @@ class InventoryModule extends GModule {
                     }, async (newData) => {
                         return await Inventory.displayAsList(newData, true, user)
                     });
+                    // For tutorial
+                    await user.tutorial.reactOnCommand("inv", message, user.lang);
                 });
                 break;
 
@@ -192,7 +194,7 @@ class InventoryModule extends GModule {
                 break;
         }
 
-        this.sendMessage(message, msg);
+        this.sendMessage(message, msg, command);
     }
 }
 
