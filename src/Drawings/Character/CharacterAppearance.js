@@ -144,8 +144,7 @@ class CharacterAppearance {
 
         this.lips = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
 
-        //let debugBoots = Utils.randRangeInteger(0, 9).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
-        let debugBoots = "03";
+        let debugBoots = Utils.randRangeInteger(0, 9).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
 
 
         this.boots = {
@@ -175,7 +174,7 @@ class CharacterAppearance {
 
         console.time("Draw Images");
 
-        let bodyX = 250, bodyY = imageHeight - this.body.height;
+        let bodyX = 250, bodyY = imageHeight - this.body.height - 20;
         let xDecal = bodyX + this.body.width / 2;
 
 
