@@ -41,14 +41,12 @@ class CharacterAppearance {
 
         this.hair = null;
 
-        // Back Hair
-        this.backHair = null;
-        this.teeths = null;
-
-        this.lips = null;
+        this.mouth = null;
 
 
-        this.boots = null
+        this.boots = null;
+
+        this.facialHair = null;
     }
 
 
@@ -63,6 +61,7 @@ class CharacterAppearance {
         this.head = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_head_full.png");
         this.leftArm = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_left_arm_full.png");
         this.rightArm = await CharacterAppearance.getImage("W:\\DocumentsWndows\\FightRPG\\character\\Base\\Body Skin\\male_right_arm_full.png");
+
         this.ear = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Ear\\0${Utils.randRangeInteger(0, 2)}.png`);
 
         let debugEyes = Utils.randRangeInteger(0, 15).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
@@ -70,6 +69,9 @@ class CharacterAppearance {
         this.eyesBack = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\${debugEyes}_01.png`);
         this.eyes = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\${debugEyes}_02.png`);
 
+        let debugFacialHair = Utils.randRangeInteger(0, 17).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
+
+        this.facialHair = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Facial Hair\\${debugFacialHair}.png`);
 
 
         this.eyebrow = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyebrow\\${Utils.randRangeInteger(0, 14).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
@@ -95,7 +97,7 @@ class CharacterAppearance {
         this.helmet = {
             back: doesHelmetHaveBack ? await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Helmet\\Fantasy ${debugHelmet}_02.png`) : null,
             front: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Helmet\\Fantasy ${debugHelmet + (doesHelmetHaveBack ? "_01" : "")}.png`),
-        }
+        }       
 
 
         let debugArmor = Utils.randRangeInteger(1, 9).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
@@ -124,25 +126,21 @@ class CharacterAppearance {
 
         this.hairColor = Utils.getRandomHexColor();
 
-        let debugHair = Utils.randRangeInteger(0, 0);
+        let debugHair = Utils.randRangeInteger(0, 25);
 
-        this.hair = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
-
-        // Back Hair
-        this.backHair = null;
-        if ([4, 5, 11, 13, 14, 15, 16, 17, 19, 20].includes(parseInt(debugHair))) {
-            this.backHair = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`);
+        this.hair = {
+            front: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`),
+            back: [4, 5, 11, 13, 14, 15, 16, 17, 19, 20].includes(parseInt(debugHair)) ? await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`) : null
         }
 
         // Mouth
         let debugMouth = Utils.randRangeInteger(0, 13);
 
-        this.teeths = null;
-        if ([3, 6, 7].includes(parseInt(debugMouth))) {
-            this.teeths = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`);
+        this.mouth = {
+            lips: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`),
+            teeths: [3, 6, 7].includes(parseInt(debugMouth)) ? await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`) : null
         }
 
-        this.lips = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
 
         let debugBoots = Utils.randRangeInteger(0, 9).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
 
@@ -179,20 +177,20 @@ class CharacterAppearance {
 
 
         // Back Hair
-        this.drawImage(Utils.canvasTintImage(this.backHair, this.hairColor), bodyX - 36, bodyY - 242);
+        this.drawImage(Utils.canvasTintImage(this.hair?.back, this.hairColor), bodyX - 36, bodyY - 242);
 
         // Helmet Back
-        this.drawImage(this.helmet.back, bodyX - 30, bodyY - 158);
+        this.drawImage(this.helmet?.back, bodyX - 30, bodyY - 158);
 
         // Right Arm
         this.drawImage(Utils.canvasTintImage(this.rightArm, this.bodyColor), bodyX, bodyY);
 
-        this.drawImage(Utils.canvasRotateImage(this.armor.upper_right, 1), bodyX + 210, bodyY + 205);
-        this.drawImage(Utils.canvasRotateImage(this.armor.lower_right, -12, true), bodyX + 250, bodyY + 375);
+        this.drawImage(Utils.canvasRotateImage(this.armor?.upper_right, 1), bodyX + 210, bodyY + 205);
+        this.drawImage(Utils.canvasRotateImage(this.armor?.lower_right, -12, true), bodyX + 250, bodyY + 375);
 
         // Glove Right
-        this.drawImage(Utils.canvasRotateImage(this.gloves.right.wrist, -10), bodyX + 237, bodyY + 379);
-        this.drawImage(Utils.canvasRotateImage(this.gloves.right.hand, -12), bodyX + 262, bodyY + 530);
+        this.drawImage(Utils.canvasRotateImage(this.gloves?.right.wrist, -10), bodyX + 237, bodyY + 379);
+        this.drawImage(Utils.canvasRotateImage(this.gloves?.right.hand, -12), bodyX + 262, bodyY + 530);
 
 
 
@@ -202,28 +200,28 @@ class CharacterAppearance {
 
         // Pants
         //this.drawImage(Utils.canvasTintImage(this.basicPants, Utils.getRandomHexColor()), xDecal - 131, bodyY + 525, this.basicPants.width, this.basicPants.height);
-        this.drawImage(Utils.canvasRotateImage(this.pants.upper_right, -8, true), xDecal - 54, bodyY + 490);
-        this.drawImage(Utils.canvasRotateImage(this.pants.lower_right, -2, true), xDecal - 46, bodyY + 785);
+        this.drawImage(Utils.canvasRotateImage(this.pants?.upper_right, -8, true), xDecal - 54, bodyY + 490);
+        this.drawImage(Utils.canvasRotateImage(this.pants?.lower_right, -2, true), xDecal - 46, bodyY + 785);
 
         this.drawImage(this.pants.hip, xDecal - 188, bodyY + 445, this.pants.hip.width, this.pants.hip.height);
-        this.drawImage(Utils.canvasRotateImage(this.pants.upper_left, 8, true), xDecal - 198, bodyY + 490);
-        this.drawImage(Utils.canvasRotateImage(this.pants.lower_left, 7, true), xDecal - 240, bodyY + 790);
+        this.drawImage(Utils.canvasRotateImage(this.pants?.upper_left, 8, true), xDecal - 198, bodyY + 490);
+        this.drawImage(Utils.canvasRotateImage(this.pants?.lower_left, 7, true), xDecal - 240, bodyY + 790);
 
 
         // Boots
-        this.drawImage(Utils.canvasRotateImage(this.boots.lower_left, 7, true), xDecal - 238, bodyY + 800);
-        this.drawImage(Utils.canvasRotateImage(this.boots.foot_left, 0, true), bodyX, bodyY + 1053);
+        this.drawImage(Utils.canvasRotateImage(this.boots?.lower_left, 7, true), xDecal - 238, bodyY + 800);
+        this.drawImage(Utils.canvasRotateImage(this.boots?.foot_left, 0, true), bodyX, bodyY + 1053);
 
 
-        this.drawImage(Utils.canvasRotateImage(this.boots.lower_right, 0, true), xDecal - 42, bodyY + 780);
-        this.drawImage(Utils.canvasRotateImage(this.boots.foot_right, 0, true), xDecal + 4, bodyY + 1053);
+        this.drawImage(Utils.canvasRotateImage(this.boots?.lower_right, 0, true), xDecal - 42, bodyY + 780);
+        this.drawImage(Utils.canvasRotateImage(this.boots?.foot_right, 0, true), xDecal + 4, bodyY + 1053);
 
 
         // Body Armor
-        this.drawImage(this.armor.body, bodyX + 25, bodyY + 155);
+        this.drawImage(this.armor?.body, bodyX + 25, bodyY + 155);
 
         // Neck
-        this.drawImage(this.armor.neck, bodyX + 105, bodyY + 90);
+        this.drawImage(this.armor?.neck, bodyX + 105, bodyY + 90);
 
 
         // Head
@@ -234,30 +232,33 @@ class CharacterAppearance {
         this.drawImage(this.eyesBack, xDecal - 35, bodyY + 63);
         this.drawImage(Utils.canvasTintImage(this.eyes, "#FF0000", 0.2), xDecal - 35, bodyY + 63);
 
+        // Facial Hair
+        this.drawImage(Utils.canvasTintImage(this.facialHair, this.hairColor), bodyX + 96, bodyY + 16);
+
         // Hair
-        this.drawImage(Utils.canvasTintImage(this.hair, this.hairColor), bodyX - 36, bodyY - 242);
+        this.drawImage(Utils.canvasTintImage(this.hair?.front, this.hairColor), bodyX - 36, bodyY - 242);
 
         // Ear / Nose
         this.drawImage(Utils.canvasTintImage(this.ear, this.bodyColor), xDecal - 188, bodyY - 20);
         this.drawImage(Utils.canvasTintImage(this.nose, this.bodyColor), xDecal - 42, bodyY + 67);
 
         // Mounth
-        this.drawImage(this.teeths, xDecal - 30, bodyY + 136);
+        this.drawImage(this.mouth?.teeths, xDecal - 30, bodyY + 136);
 
-        this.drawImage(Utils.canvasTintImage(this.lips, this.bodyColor), xDecal - 30, bodyY + 136);
+        this.drawImage(Utils.canvasTintImage(this.mouth?.lips, this.bodyColor), xDecal - 30, bodyY + 136);
 
         // Left Arm
         this.drawImage(Utils.canvasTintImage(this.leftArm, this.bodyColor), bodyX, bodyY);
 
-        this.drawImage(Utils.canvasRotateImage(this.armor.upper_left, 13, true), bodyX - 32, bodyY + 205);
-        this.drawImage(Utils.canvasRotateImage(this.armor.lower_left, -5, true), bodyX - 24, bodyY + 395);
+        this.drawImage(Utils.canvasRotateImage(this.armor?.upper_left, 13, true), bodyX - 32, bodyY + 205);
+        this.drawImage(Utils.canvasRotateImage(this.armor?.lower_left, -5, true), bodyX - 24, bodyY + 395);
 
         // Gloves left
-        this.drawImage(Utils.canvasRotateImage(this.gloves.left.wrist, 0), bodyX - 30, bodyY + 386);
-        this.drawImage(Utils.canvasRotateImage(this.gloves.left.hand, -11), bodyX - 15, bodyY + 548);
+        this.drawImage(Utils.canvasRotateImage(this.gloves?.left.wrist, 0), bodyX - 30, bodyY + 386);
+        this.drawImage(Utils.canvasRotateImage(this.gloves?.left.hand, -11), bodyX - 15, bodyY + 548);
 
         // Helmet Front
-        this.drawImage(this.helmet.front, bodyX - 30, bodyY - 158);
+        //this.drawImage(this.helmet?.front, bodyX - 30, bodyY - 158);
 
 
         console.timeEnd("Draw Images");
