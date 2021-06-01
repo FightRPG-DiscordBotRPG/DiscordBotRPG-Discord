@@ -9,6 +9,7 @@ const Canvas = require("canvas");
 class Utils {
     static emptyEmbedCharacter = "\u200b";
     static defaultSeparator = "--------------------------------------";
+    static manager = null;
 
     /**
      * 
@@ -288,6 +289,61 @@ class Utils {
             height: widthAfterRotation,
             width: heightAfterRotation,
         };
+    }
+
+    /**
+     * 
+     * @param {string} str
+     * @param {number} maxCharacters > 10
+     */
+    static cutAtLineBreaksIfMoreThan(str, maxCharacters) {
+        let arrOfCuttedText = [];
+
+        let cuttedAtLineBreaks = str.split("\n");
+
+        for (let i = 0; i < cuttedAtLineBreaks.length; i++) {
+            let cuttedText = cuttedAtLineBreaks[i];
+
+            while (cuttedText.length > maxCharacters) {
+                arrOfCuttedText.push(cuttedText.substring(0, maxCharacters - 1));
+                cuttedText = cuttedText.substring(maxCharacters - 1);
+            }
+
+            while (i < cuttedAtLineBreaks.length - 1 && (cuttedText.length + cuttedAtLineBreaks[i + 1].length + "\n".length) < maxCharacters) {
+                cuttedText += "\n" + cuttedAtLineBreaks[i + 1];
+                i++;
+            }
+
+            arrOfCuttedText.push(cuttedText);
+        }
+
+
+        return arrOfCuttedText;
+    }
+
+    static async sendDMToSpecificUser(idUser, message) {
+        if (Utils.manager === null) {
+            return;
+        }
+        let evalDyn = `this.users.cache.get("${idUser}");`;
+        try {
+            /**
+             * @type {Array<User>}
+             **/
+            let users = await Utils.manager.broadcastEval(evalDyn);
+
+            for (let i in users) {
+                if (users[i]) {
+                    //u.send(message).catch((e) => null);
+                    await Utils.manager.shards.array()[i].eval(`this.users.cache.get("${idUser}").send(\`${message}\`).catch(e => null)`);
+                    return true;
+                }
+            }
+        } catch (e) {
+            console.log(e);
+        }
+
+        return false;
     }
 
 }
