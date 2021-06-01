@@ -382,11 +382,8 @@ class ModuleHandler extends GModule {
                     } catch (err) {
                         if (!this.devMode) {
                             if (err.constructor != Discord.DiscordAPIError) {
-                                let adminTell = "A module has crashed.\nCommand: " + command + "\nArgs: [" + args.toString() + "]\n" + "User that have crashed the command: " + message.author.username + "#" + message.author.discriminator;
-                                message.client.shard.broadcastEval(`let user = this.users.cache.get("241564725870198785");
-                            if(user != null) {
-                                user.send(\`${adminTell}\`).catch((e) => {null});
-                            }`);
+                                let adminTell = "A module has crashed.\nCommand: " + command + "\nArgs: [" + args.toString() + "]\n" + "User that have crashed the command: " + message.author.username + "#" + message.author.discriminator + "\n";
+                                await Utils.sendDMToSpecificUser("241564725870198785", Utils.prepareStackError(err, adminTell));
                             } else {
                                 console.log(err);
                                 message.channel.send(err.name).catch((e) => {

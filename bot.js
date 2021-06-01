@@ -144,17 +144,7 @@ bot.on('message', async (message) => {
             msgError = "Oops something went wrong, report the issue here (https://github.com/FightRPG-DiscordBotRPG/FightRPG-Discord-BugTracker/issues)\n";
         }
 
-
-        let errorsLines = err.stack.split("\n");
-        let nameAndLine = errorsLines[1].split(" ");
-        nameAndLine = nameAndLine[nameAndLine.length - 1].split("\\");
-        nameAndLine = nameAndLine[nameAndLine.length - 1].split(")")[0];
-
-        msgError += "```js\n" + errorsLines[0] + "\nat " + nameAndLine + "\n```";
-
-        let errorDate = new Date();
-        console.log(errorDate.toUTCString());
-        console.log(err);
+        msgError = Utils.prepareStackError(err, msgError);
         message.channel.send(msgError).catch((e) => message.author.send(msgError).catch((e) => null));
     }
 

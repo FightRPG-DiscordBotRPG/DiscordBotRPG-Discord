@@ -5,11 +5,15 @@ const Emojis = require("./Drawings/Emojis");
 const Translator = require("./Translator/Translator");
 const User = require("./Users/User");
 const Canvas = require("canvas");
+const { default: axios } = require("axios");
 
 class Utils {
     static emptyEmbedCharacter = "\u200b";
     static defaultSeparator = "--------------------------------------";
-    static manager = null;
+
+    static axiosToUse = axios.create({
+        baseURL: "http://localhost:48921"
+    })
 
     /**
      * 
@@ -322,28 +326,31 @@ class Utils {
     }
 
     static async sendDMToSpecificUser(idUser, message) {
-        if (Utils.manager === null) {
-            return;
-        }
-        let evalDyn = `this.users.cache.get("${idUser}");`;
-        try {
-            /**
-             * @type {Array<User>}
-             **/
-            let users = await Utils.manager.broadcastEval(evalDyn);
+        console.log("send dm: " + message);
+        return (await Utils.axiosToUse.post(`/usr`, {
+            id: idUser,
+            message: message,
+        })).data;
+    }
 
-            for (let i in users) {
-                if (users[i]) {
-                    //u.send(message).catch((e) => null);
-                    await Utils.manager.shards.array()[i].eval(`this.users.cache.get("${idUser}").send(\`${message}\`).catch(e => null)`);
-                    return true;
-                }
-            }
-        } catch (e) {
-            console.log(e);
-        }
+    /**
+     * 
+     * @param {string} err
+     * @param {string} msgError
+     */
+    static prepareStackError(err, msgError) {
+        let errorsLines = err.stack.split("\n");
+        let nameAndLine = errorsLines[1].split(" ");
+        nameAndLine = nameAndLine[nameAndLine.length - 1].split("\\");
+        nameAndLine = nameAndLine[nameAndLine.length - 1].split(")")[0];
 
-        return false;
+        msgError += "```js\n" + errorsLines[0] + "\nat " + nameAndLine + "\n```";
+
+        let errorDate = new Date();
+        console.log(errorDate.toUTCString());
+        console.log(err);
+
+        return msgError;
     }
 
 }

@@ -15,7 +15,31 @@ manager.on('launch', shard => {
     console.log(`Launched shard ${shard.id}`);
 });
 
-Utils.manager = manager;
+
+/**
+ * 
+ * @param {string} idUser
+ * @param {string} message
+ */
+async function sendDMToSpecificUser(idUser, message) {
+    let evalDyn = `this.users.cache.get("${idUser}");`;
+    try {
+        /**
+         * @type {Array<User>}
+         **/
+        let users = await manager.broadcastEval(evalDyn);
+        for (let i in users) {
+            if (users[i]) {
+                await manager.shards.array()[i].eval(`this.users.cache.get("${idUser}").send(\`${message.replace(/`/gi, "\\`")}\`).catch(e => null)`);
+                return true;
+            }
+        }
+    } catch (e) {
+        console.log(e);
+    }
+
+    return false;
+}
 
 async function sendWorldBossMessage(message) {
     let evalDyn;
@@ -58,7 +82,7 @@ require('express-async-errors');
 app.use("/usr", async (req, res) => {
     if (req.body.id != null && typeof req.body.id == "string") {
         if (req.body.message != null && typeof req.body.message == "string") {
-            let result = await Utils.sendDMToSpecificUser(req.body.id, req.body.message);
+            let result = await sendDMToSpecificUser(req.body.id, req.body.message);
             return res.json({
                 sended: result,
             });
