@@ -67,6 +67,9 @@ class InventoryModule extends GModule {
                         }
                     });
 
+                    // For tutorial
+                    await user.tutorial.reactOnCommand("item", message, user.lang);
+
                     reactWrapper.collector.on('collect', async (reaction) => {
                         let dataCollector = null;
                         let msgCollector = null;
