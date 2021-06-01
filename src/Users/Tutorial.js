@@ -1,6 +1,7 @@
 const Discord = require("discord.js");
 const Globals = require("../Globals");
 const Translator = require("../Translator/Translator");
+const Utils = require("../Utils");
 
 class Tutorial {
 
@@ -25,10 +26,6 @@ class Tutorial {
             command: "attributes",
         },
         {
-            toDisplay: "up_first",
-            command: "up",
-        },
-        {
             toDisplay: "talents_first",
             command: "talents",
         },
@@ -45,6 +42,10 @@ class Tutorial {
             command: "inv",
         },
         {
+            toDisplay: "item_first",
+            command: "item",
+        },
+        {
             toDisplay: "equip_first",
             command: "equip",
         },
@@ -54,15 +55,7 @@ class Tutorial {
         },
         {
             toDisplay: "region_first",
-            command: "equiplist",
-        },
-        {
-            toDisplay: "travel_first",
-            command: "travel",
-        },
-        {
-            toDisplay: "travelregion_first",
-            command: "travelregion",
+            command: "region",
         }
     ];
 
@@ -86,8 +79,6 @@ class Tutorial {
      * @param {string} lang
      */
     async reactOnCommand(command, message, lang = "en") {
-        console.log(command);
-        console.log(this.currentStep);
         if (!this.hasStarted || this.currentStep.command !== command) {
             return;
         }
@@ -116,7 +107,7 @@ class Tutorial {
     }
 
     isLastStep() {
-        return Tutorial.Steps.length === this.indexStep + 1;
+        return Tutorial.Steps.length === this.indexStep;
     }
 
     /**
@@ -130,9 +121,7 @@ class Tutorial {
         this.hasStarted = true;
         this.currentStep = Tutorial.Steps[0];
         this.nextStep = Tutorial.Steps[1];
-        this.indexStep = 1;
-
-        await this.sendMessage(message, Translator.getString(lang, "help_panel", "tutorial", [Globals.tutorialLink]));
+        this.indexStep = 1;       
         await this.sendMessage(message, Translator.getString(lang, "tutorial", "start"));
     }
 
@@ -149,11 +138,12 @@ class Tutorial {
      * @param {string} content
      */
     async sendMessage(message, content) {
+        let arrOfMessages = Utils.cutAtLineBreaksIfMoreThan(content, 2000);
         try {
-            await message.author.send(content);
+            arrOfMessages.forEach(async (val) => await message.author.send(val));
         } catch {
             try {
-                await message.channel.send(content);
+                arrOfMessages.forEach(async (val) => await message.channel.send(val));
             } catch (e) {
                 console.log(e);
             }
