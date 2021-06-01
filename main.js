@@ -4,6 +4,7 @@ const {
     ShardingManager,
     User
 } = require('discord.js');
+const Utils = require("./src/Utils");
 const manager = new ShardingManager(__dirname + '/bot.js', {
     token: conf.discordbotkey,
     totalShards: conf.env === "dev" ? 2 : "auto",
@@ -14,27 +15,7 @@ manager.on('launch', shard => {
     console.log(`Launched shard ${shard.id}`);
 });
 
-async function sendDMToSpecificUser(idUser, message) {
-    let evalDyn = `this.users.cache.get("${idUser}");`;
-    try {
-        /**
-         * @type {Array<User>}
-         **/
-        let users = await manager.broadcastEval(evalDyn);
-
-        for (let i in users) {
-            if (users[i]) {
-                //u.send(message).catch((e) => null);
-                await manager.shards.array()[i].eval(`this.users.cache.get("${idUser}").send(\`${message}\`).catch(e => null)`);
-                return true;
-            }
-        }
-    } catch (e) {
-        console.log(e);
-    }
-
-    return false;
-}
+Utils.manager = manager;
 
 async function sendWorldBossMessage(message) {
     let evalDyn;
@@ -77,7 +58,7 @@ require('express-async-errors');
 app.use("/usr", async (req, res) => {
     if (req.body.id != null && typeof req.body.id == "string") {
         if (req.body.message != null && typeof req.body.message == "string") {
-            let result = await sendDMToSpecificUser(req.body.id, req.body.message);
+            let result = await Utils.sendDMToSpecificUser(req.body.id, req.body.message);
             return res.json({
                 sended: result,
             });
