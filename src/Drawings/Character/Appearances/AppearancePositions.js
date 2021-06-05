@@ -13,19 +13,23 @@ class AppearancePositions {
 		this.armor = {
 			upper_right: {
 				x: 0,
-				y: 0
+				y: 0,
+				rotation: 0
 			},
 			lower_right: {
 				x: 0,
-				y: 0
+				y: 0,
+				rotation: 0
 			},
 			upper_left: {
 				x: 0,
-				y: 0
+				y: 0,
+				rotation: 0
 			},
 			lower_left: {
 				x: 0,
-				y: 0
+				y: 0,
+				rotation: 0
 			},
 			body: {
 				x: 0,
@@ -38,24 +42,29 @@ class AppearancePositions {
 		};
 
 		this.gloves = {
+			scale: 1,
 			right: {
 				wrist: {
 					x: 0,
-					y: 0
+					y: 0,
+					rotation: 0
 				},
 				hand: {
 					x: 0,
-					y: 0
+					y: 0,
+					rotation: 0
 				}
 			},
 			left: {
 				wrist: {
 					x: 0,
-					y: 0
+					y: 0,
+					rotation: 0
 				},
 				hand: {
 					x: 0,
-					y: 0
+					y: 0,
+					rotation: 0
 				}
 			}
 		};
@@ -63,19 +72,23 @@ class AppearancePositions {
 		this.pants = {
 			upper_right: {
 				x: 0,
-				y: 0
+				y: 0,
+				rotation: 0
 			},
 			lower_right: {
 				x: 0,
-				y: 0
+				y: 0,
+				rotation: 0
 			},
 			upper_left: {
 				x: 0,
-				y: 0
+				y: 0,
+				rotation: 0
 			},
 			lower_left: {
 				x: 0,
-				y: 0
+				y: 0,
+				rotation: 0
 			},
 			hip: {
 				x: 0,
@@ -84,21 +97,26 @@ class AppearancePositions {
 		};
 
 		this.boots = {
+			scale: 1,
 			lower_left: {
 				x: 0,
-				y: 0
+				y: 0,
+				rotation: 0
 			},
 			foot_left: {
 				x: 0,
-				y: 0
+				y: 0,
+				rotation: 0
 			},
 			lower_right: {
 				x: 0,
-				y: 0
+				y: 0,
+				rotation: 0
 			},
 			foot_right: {
 				x: 0,
-				y: 0
+				y: 0,
+				rotation: 0
 			}
 		};
 		this.eyes = {
