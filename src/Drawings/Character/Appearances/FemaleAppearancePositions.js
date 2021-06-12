@@ -139,8 +139,8 @@ class FemaleAppearancePositions extends AppearancePositions {
 		};
 
 		this.facialHair = {
-			x: 97,
-			y: 54
+			x: 95,
+			y: 60
 		};
 
 		this.ear = {
