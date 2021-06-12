@@ -178,7 +178,7 @@ class CharacterAppearance {
      **/
     async getCharacter() {
 
-        await this.loadAssets();
+        //await this.loadAssets();
 
         const imageHeight = 1300, imageWidth = 1000;
         const positions = this.getPositions();
@@ -225,7 +225,7 @@ class CharacterAppearance {
         this.drawImage(Utils.canvasRotateImage(this.pants?.upper_right, positions.pants.upper_right.rotation, true), xDecal + positions.pants.upper_right.x, bodyY + positions.pants.upper_right.y);
         this.drawImage(Utils.canvasRotateImage(this.pants?.lower_right, positions.pants.lower_right.rotation, true), xDecal + positions.pants.lower_right.x, bodyY + positions.pants.lower_right.y);
 
-        this.drawImage(this.pants.hip, xDecal + positions.pants.hip.x, bodyY + positions.pants.hip.y, this.pants.hip.width, this.pants.hip.height);
+        this.drawImage(this.pants?.hip, xDecal + positions.pants.hip.x, bodyY + positions.pants.hip.y, this.pants?.hip.width, this.pants?.hip.height);
         this.drawImage(Utils.canvasRotateImage(this.pants?.upper_left, positions.pants.upper_left.rotation, true), xDecal + positions.pants.upper_left.x, bodyY + positions.pants.upper_left.y);
         this.drawImage(Utils.canvasRotateImage(this.pants?.lower_left, positions.pants.lower_left.rotation, true), xDecal + positions.pants.lower_left.x, bodyY + positions.pants.lower_left.y);
 
