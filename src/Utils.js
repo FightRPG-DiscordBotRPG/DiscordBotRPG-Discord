@@ -240,15 +240,21 @@ class Utils {
         }
 
 
-        const canvas = Canvas.createCanvas(image.width, image.height);
+        const canvas = Canvas.createCanvas(width, height);
         const context = canvas.getContext("2d");
 
         context.save();
         context.translate(width / 2, height / 2);
         context.rotate(deg * Math.PI / 180);
         context.translate(-width / 2, -height / 2);
-        context.drawImage(image, 0, 0);
-        context.restore();
+        context.drawImage(
+            image,
+            (width / 2) - (image.width / 2),
+            (height / 2) - (image.height / 2),
+            image.width,
+            image.height);
+
+        //context.restore();
 
         return context.canvas;
     }
