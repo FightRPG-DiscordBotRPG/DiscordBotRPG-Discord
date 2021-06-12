@@ -144,9 +144,23 @@ class AppearancePositions {
             x: 0,
             y: 0
         };
+
         this.nose = {
             x: 0,
             y: 0
+        };
+
+        this.weapon = {
+            main: {
+                x: 0,
+                y: 0,
+                rotation: 90,
+            },
+            offhand: {
+                x: 0,
+                y: 0,
+                rotation: 90,
+            }
         };
 
     }

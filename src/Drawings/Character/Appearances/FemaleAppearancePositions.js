@@ -19,19 +19,19 @@ class FemaleAppearancePositions extends AppearancePositions {
 				rotation: -4
 			},
 			lower_right: {
-				x: 250,
-				y: 375 + 40,
-				rotation: -10
+				x: 225,
+				y: 375 + 30,
+				rotation: -9.5
 			},
 			upper_left: {
-				x: -20 + 3,
-				y: 205 + 26,
+				x: -20 + 3 - 24,
+				y: 185 + 26,
 				rotation: 10
 			},
 			lower_left: {
-				x: 2,
-				y: 395 + 32,
-				rotation: -7
+				x: 2 - 18,
+				y: 375 + 20,
+				rotation: -5
 			},
 			body: {
 				x: 25 + 5,
@@ -73,7 +73,7 @@ class FemaleAppearancePositions extends AppearancePositions {
 
 		this.pants = {
 			upper_right: {
-				x: -62,
+				x: -92,
 				y: 490,
 				rotation: -7
 			},
@@ -83,13 +83,13 @@ class FemaleAppearancePositions extends AppearancePositions {
 				rotation: 0
 			},
 			upper_left: {
-				x: -202,
-				y: 490,
+				x: -202 - 39,
+				y: 470,
 				rotation: 10
 			},
 			lower_left: {
-				x: -238,
-				y: 790,
+				x: -257,
+				y: 780,
 				rotation: 6
 			},
 			hip: {
@@ -151,6 +151,19 @@ class FemaleAppearancePositions extends AppearancePositions {
 		this.nose = {
 			x: -42,
 			y: 103
+		};
+
+		this.weapon = {
+			main: {
+				x: 0,
+				y: 0,
+				rotation: 90,
+			},
+			offhand: {
+				x: 0,
+				y: 0,
+				rotation: 90,
+			}
 		};
 
 	}

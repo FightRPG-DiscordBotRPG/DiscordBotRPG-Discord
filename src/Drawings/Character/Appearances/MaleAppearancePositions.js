@@ -19,17 +19,17 @@ class MaleAppearancePositions extends AppearancePositions {
 				rotation: 1
 			},
 			lower_right: {
-				x: 250,
+				x: 220,
 				y: 375,
 				rotation: -12
 			},
 			upper_left: {
-				x: -32,
-				y: 205,
+				x: -62,
+				y: 185,
 				rotation: 13
 			},
 			lower_left: {
-				x: -24,
+				x: -36,
 				y: 395,
 				rotation: -5
 			},
@@ -73,28 +73,28 @@ class MaleAppearancePositions extends AppearancePositions {
 
 		this.pants = {
 			upper_right: {
-				x: -54,
+				x: -84,
 				y: 490,
-				rotation: -8
+				rotation: -7
 			},
 			lower_right: {
-				x: -46,
-				y: 785,
+				x: -52,
+				y: 784,
 				rotation: -2
 			},
 			upper_left: {
-				x: -198,
-				y: 490,
-				rotation: 8
+				x: -237,
+				y: 470,
+				rotation: 10
 			},
 			lower_left: {
-				x: -240,
-				y: 790,
-				rotation: 7
+				x: -258,
+				y: 780,
+				rotation: 6
 			},
 			hip: {
-				x: -188,
-				y: 445
+				x: -184,
+				y: 450
             }
 		};
 
@@ -151,6 +151,19 @@ class MaleAppearancePositions extends AppearancePositions {
 		this.nose = {
 			x: -42,
 			y: 64
+		};
+
+		this.weapon = {
+			main: {
+				x: -188,
+				y: 445,
+				rotation: 90,
+			},
+			offhand: {
+				x: 0,
+				y: 0,
+				rotation: 90,
+			}
 		};
 
 	}
