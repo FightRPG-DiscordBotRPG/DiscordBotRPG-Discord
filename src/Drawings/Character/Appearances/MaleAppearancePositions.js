@@ -163,6 +163,11 @@ class MaleAppearancePositions extends AppearancePositions {
 				x: 35,
 				y: 280,
 				rotation: 80,
+			},
+			bow: {
+				x: -200,
+				y: 280,
+				rotation: 80,
 			}
 		};
 

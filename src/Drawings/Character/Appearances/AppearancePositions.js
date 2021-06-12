@@ -160,6 +160,11 @@ class AppearancePositions {
                 x: 0,
                 y: 0,
                 rotation: 90,
+            },
+            bow: {
+                x: 0,
+                y: 0,
+                rotation: 90,
             }
         };
 

@@ -164,6 +164,12 @@ class FemaleAppearancePositions extends AppearancePositions {
 				y: 305,
 				rotation: 80,
 			}
+			,
+			bow: {
+				x: -180,
+				y: 305,
+				rotation: 80,
+			}
 		};
 
 	}

@@ -65,7 +65,7 @@ class CharacterAppearance {
         let debugFacialHair = Utils.randRangeInteger(0, 17).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
         //this.facialHair = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Facial Hair\\${debugFacialHair}.png`);
 
-        this.bodyType = 1;
+        this.bodyType = 2;
         this.background = await CharacterAppearance.getImage("https://img00.deviantart.net/b5ba/i/2016/117/d/2/cracked_landsape_by_thechrispman-da0ehq0.png");
         let name = this.bodyType === 2 ? "fe" : "";
 
@@ -107,9 +107,10 @@ class CharacterAppearance {
         this.nose = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Nose\\${Utils.randRangeInteger(0, 10).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
 
         this.weapon = {
+            bow: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Weapon\\Bow\\Bow 03.png`),
             //main: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Weapon\\Two Handed\\base\\Staff 00.png`),
             //offhand: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Weapon\\Two Handed\\base\\Staff 00.png`),
-            shield: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Weapon\\Shield\\Shield 00_back.png`),
+            //shield: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Weapon\\Shield\\Shield 00_back.png`),
         }
 
     }
@@ -211,8 +212,9 @@ class CharacterAppearance {
             this.drawImage(this.helmet?.back, bodyX + positions.helmet.x, bodyY + positions.helmet.y);
         }
 
-        // Right weapon (offhand)
+        // Right Shield (offhand)
         this.drawImage(Utils.canvasRotateImage(this.weapon?.shield, positions.weapon.offhand.rotation, true), bodyX + positions.weapon.offhand.x, bodyY + positions.weapon.offhand.y);
+
 
         // Right Arm
         this.drawImage(Utils.canvasTintImage(this.right, this.bodyColor), bodyX, bodyY);
@@ -226,6 +228,9 @@ class CharacterAppearance {
 
         // Right weapon (offhand)
         this.drawImage(Utils.canvasRotateImage(this.weapon?.offhand, positions.weapon.offhand.rotation, true), bodyX + positions.weapon.offhand.x, bodyY + positions.weapon.offhand.y);
+
+        // Bow
+        this.drawImage(Utils.canvasRotateImage(this.weapon?.bow, positions.weapon.bow.rotation, true), bodyX + positions.weapon.bow.x, bodyY + positions.weapon.bow.y);
 
 
 
