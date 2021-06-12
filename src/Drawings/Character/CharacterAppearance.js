@@ -186,7 +186,7 @@ class CharacterAppearance {
      **/
     async getCharacter() {
 
-        await this.loadAssets();
+        //await this.loadAssets();
 
         const imageHeight = 1300, imageWidth = 1000;
         const positions = this.getPositions();
@@ -276,7 +276,7 @@ class CharacterAppearance {
         // Eyes
         this.drawImage(Utils.canvasTintImage(this.eyebrow, this.hairColor), xDecal + positions.eyes.x, bodyY + positions.eyes.y);
         this.drawImage(this.eyes?.back, xDecal + positions.eyes.x, bodyY + positions.eyes.y);
-        this.drawImage(Utils.canvasTintImage(this.eyes?.front, "#FF0000", 0.2), xDecal + positions.eyes.x, bodyY + positions.eyes.y);
+        this.drawImage(Utils.canvasTintImage(this.eyes?.front, this.eyeColor, 0.2), xDecal + positions.eyes.x, bodyY + positions.eyes.y);
 
         // Mounth
         this.drawImage(this.mouth?.teeths, xDecal + positions.mouth.teeths.x, bodyY + positions.mouth.teeths.y);
