@@ -27,6 +27,7 @@ class CharacterAppearance {
         this.body = null;
         this.head = null;
         this.left = null;
+        this.left_leg = null;
         this.right = null;
         this.ear = null;
 
@@ -70,6 +71,7 @@ class CharacterAppearance {
         this.head = await CharacterAppearance.getImage("http://cdn.fight-rpg.com/images/appearances/base/bodies/" + name + "male_head_full.png");
         this.left = await CharacterAppearance.getImage("http://cdn.fight-rpg.com/images/appearances/base/bodies/" + name + "male_left_arm_full.png");
         this.right = await CharacterAppearance.getImage("http://cdn.fight-rpg.com/images/appearances/base/bodies/" + name + "male_right_arm_full.png");
+        this.left_leg = await CharacterAppearance.getImage("http://cdn.fight-rpg.com/images/appearances/base/bodies/" + name + "male_left_leg_full.png");
 
         this.ear = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Ear\\0${Utils.randRangeInteger(0, 2)}.png`);
 
@@ -140,9 +142,6 @@ class CharacterAppearance {
         //    upper_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} ${name}Male_upper_left.png`),
         //    upper_right: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} ${name}Male_upper_right.png`),
         //}
-
-
-        this.basicPants = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Pants\\male_01.png`);
 
         let debugPants = Utils.randRangeInteger(0, 0).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });;
 
@@ -221,11 +220,17 @@ class CharacterAppearance {
         this.drawImage(Utils.canvasTintImage(this.body, this.bodyColor), bodyX, bodyY);
 
         // Pants
-        //this.drawImage(Utils.canvasTintImage(this.basicPants, Utils.getRandomHexColor()), xDecal - 131, bodyY + 525, this.basicPants.width, this.basicPants.height);
+        if (!this.pants) {
+            await this.loadBasePants();
+        }
+
         this.drawImage(Utils.canvasRotateImage(this.pants?.upper_right, positions.pants.upper_right.rotation, true), xDecal + positions.pants.upper_right.x, bodyY + positions.pants.upper_right.y);
         this.drawImage(Utils.canvasRotateImage(this.pants?.lower_right, positions.pants.lower_right.rotation, true), xDecal + positions.pants.lower_right.x, bodyY + positions.pants.lower_right.y);
 
         this.drawImage(this.pants?.hip, xDecal + positions.pants.hip.x, bodyY + positions.pants.hip.y, this.pants?.hip.width, this.pants?.hip.height);
+
+        this.drawImage(Utils.canvasTintImage(this.left_leg, this.bodyColor), bodyX, bodyY);
+
         this.drawImage(Utils.canvasRotateImage(this.pants?.upper_left, positions.pants.upper_left.rotation, true), xDecal + positions.pants.upper_left.x, bodyY + positions.pants.upper_left.y);
         this.drawImage(Utils.canvasRotateImage(this.pants?.lower_left, positions.pants.lower_left.rotation, true), xDecal + positions.pants.lower_left.x, bodyY + positions.pants.lower_left.y);
 
@@ -385,6 +390,29 @@ class CharacterAppearance {
     }
 
 
+    async loadBasePants() {
+        const pants = CharacterAppearance.basicPantsPerBodyTypes[this.bodyType] ?? CharacterAppearance.basicPantsPerBodyTypes[1];
+        this.pants = {};
+        await Promise.all(
+            [
+                (async () => { this.pants.hip = await CharacterAppearance.getImage(pants.hip) })(),
+                (async () => { this.pants.upper_left = await CharacterAppearance.getImage(pants.upper_left) })(),
+                (async () => { this.pants.upper_right = await CharacterAppearance.getImage(pants.upper_right) })()
+            ]);
+    }
+
+    static basicPantsPerBodyTypes = {
+        1: {
+            hip: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Male_hip.png",
+            upper_left: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Male_upper_left.png",
+            upper_right: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Male_upper_right.png"
+        },
+        2: {
+            hip: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Female_hip.png",
+            upper_left: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Female_upper_left.png",
+            upper_right: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Female_upper_right.png"
+        }
+    }
 
 }
 

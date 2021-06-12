@@ -23,5 +23,5 @@ async function multipleTest() {
     }
 }
 
-//start();
-multipleTest();
+start();
+//multipleTest();
