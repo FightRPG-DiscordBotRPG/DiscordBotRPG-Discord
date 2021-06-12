@@ -155,14 +155,14 @@ class FemaleAppearancePositions extends AppearancePositions {
 
 		this.weapon = {
 			main: {
-				x: 0,
-				y: 0,
-				rotation: 90,
+				x: -220,
+				y: 375,
+				rotation: 100,
 			},
 			offhand: {
-				x: 0,
-				y: 0,
-				rotation: 90,
+				x: 35,
+				y: 305,
+				rotation: 80,
 			}
 		};
 

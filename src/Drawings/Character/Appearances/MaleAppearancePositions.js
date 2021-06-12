@@ -155,14 +155,14 @@ class MaleAppearancePositions extends AppearancePositions {
 
 		this.weapon = {
 			main: {
-				x: -188,
-				y: 445,
-				rotation: 90,
+				x: -240,
+				y: 385,
+				rotation: 100,
 			},
 			offhand: {
-				x: 0,
-				y: 0,
-				rotation: 90,
+				x: 35,
+				y: 280,
+				rotation: 80,
 			}
 		};
 
