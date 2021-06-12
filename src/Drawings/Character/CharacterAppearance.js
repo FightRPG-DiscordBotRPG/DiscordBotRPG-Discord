@@ -60,7 +60,7 @@ class CharacterAppearance {
         this.bodyColor = "#FF0000";
 
         let debugFacialHair = Utils.randRangeInteger(0, 17).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
-        this.facialHair = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Facial Hair\\${debugFacialHair}.png`);
+        //this.facialHair = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Facial Hair\\${debugFacialHair}.png`);
 
         this.bodyType = 2;
         this.background = await CharacterAppearance.getImage("https://img00.deviantart.net/b5ba/i/2016/117/d/2/cracked_landsape_by_thechrispman-da0ehq0.png");
@@ -87,6 +87,7 @@ class CharacterAppearance {
         this.hair = {
             front: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`),
             back: [4, 5, 11, 13, 14, 15, 16, 17, 19, 20].includes(parseInt(debugHair)) ? await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`) : null
+            //back: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${Utils.getRandomItemsInArray([4, 5, 11, 13, 14, 15, 16, 17, 19, 20], 1).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`)
         }
 
         // Mouth
