@@ -404,9 +404,9 @@ class CharacterModule extends GModule {
                 }
             } break;
             case "appearance":
-                console.time("Appearance");
-                message.channel.send("hey !", new Discord.MessageAttachment(await (await user.appearance.getCharacter()).createPNGStream(), message.author.username +".png"));
-                console.timeEnd("Appearance");
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/character/appearance", {
+                    selectedAppearances: args,
+                }));
                 break;
 
         }
