@@ -24,6 +24,10 @@ class User {
         this.cityAreaDisplay = new CityArea();
         this.challenge = new UserChallenge(this);
         this.appearance = new CharacterAppearance();
+        /**
+         * @type {CharacterAppearance}
+         **/
+        this.pendingAppearance = null;
         this.tutorial = new Tutorial();
 
         this.setMobileMode = "auto";

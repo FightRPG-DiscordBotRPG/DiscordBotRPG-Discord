@@ -3,6 +3,14 @@ const Utils = require("../../Utils");
 const AppearancePositions = require("./Appearances/AppearancePositions");
 const FemaleAppearancePositions = require("./Appearances/FemaleAppearancePositions");
 const MaleAppearancePositions = require("./Appearances/MaleAppearancePositions");
+const Discord = require("discord.js");
+const Translator = require("../../Translator/Translator");
+const User = require("../../Users/User");
+const Emojis = require("../Emojis");
+const hash = require('object-hash');
+const { default: axios } = require("axios");
+const conf = require("../../../conf/conf");
+const FormData = require('form-data');
 
 class CharacterAppearance {
     /**
@@ -11,12 +19,42 @@ class CharacterAppearance {
     static cache = {};
     static possibleAppearances = null;
 
+    static basicPantsPerBodyTypes = {
+        1: {
+            hip: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Male_hip.png",
+            upper_left: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Male_upper_left.png",
+            upper_right: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Male_upper_right.png"
+        },
+        2: {
+            hip: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Female_hip.png",
+            upper_left: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Female_upper_left.png",
+            upper_right: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Female_upper_right.png",
+        }
+    }
+
+    static basicArmorPerBodyTypes = {
+        1: {
+            body: null
+        },
+        2: {
+            body: "https://cdn.fight-rpg.com/images/appearances/base/armors/Base%2000%20Female.png"
+        }
+    }
+
+    /**
+    * @type {Object<string, string>}
+    **/
+    static uploadedImagesCacheLinks = {};
+
+    static defaultAxios = axios.create({
+        baseURL: conf.cdnAppearanceCache
+    })
+
     constructor() {
         this.reset();
     }
 
     reset() {
-        this.data = null;
 
         this.background = null;
         this.canvasContext = null;
@@ -57,6 +95,7 @@ class CharacterAppearance {
         this.shouldDisplayHelmet = false;
 
         this.weapon = null;
+        this.allLinks = ""
     }
 
     async debugLoadAssets() {
@@ -64,25 +103,25 @@ class CharacterAppearance {
         this.bodyColor = "#FF0000";
 
         let debugFacialHair = Utils.randRangeInteger(0, 17).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
-        //this.facialHair = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Facial Hair\\${debugFacialHair}.png`);
+        //this.facialHair = await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Facial Hair\\${debugFacialHair}.png`);
 
         this.bodyType = 2;
-        this.background = await CharacterAppearance.getImage("https://img00.deviantart.net/b5ba/i/2016/117/d/2/cracked_landsape_by_thechrispman-da0ehq0.png");
+        this.background = await this.getImage("https://img00.deviantart.net/b5ba/i/2016/117/d/2/cracked_landsape_by_thechrispman-da0ehq0.png");
         let name = this.bodyType === 2 ? "fe" : "";
 
-        this.body = await CharacterAppearance.getImage("http://cdn.fight-rpg.com/images/appearances/base/bodies/" + name + "male_body.png");
-        this.head = await CharacterAppearance.getImage("http://cdn.fight-rpg.com/images/appearances/base/bodies/" + name + "male_head_full.png");
-        this.left = await CharacterAppearance.getImage("http://cdn.fight-rpg.com/images/appearances/base/bodies/" + name + "male_left_arm_full.png");
-        this.right = await CharacterAppearance.getImage("http://cdn.fight-rpg.com/images/appearances/base/bodies/" + name + "male_right_arm_full.png");
-        this.left_leg = await CharacterAppearance.getImage("http://cdn.fight-rpg.com/images/appearances/base/bodies/" + name + "male_left_leg_full.png");
+        this.body = await this.getImage("http://cdn.fight-rpg.com/images/appearances/base/bodies/" + name + "male_body.png");
+        this.head = await this.getImage("http://cdn.fight-rpg.com/images/appearances/base/bodies/" + name + "male_head_full.png");
+        this.left = await this.getImage("http://cdn.fight-rpg.com/images/appearances/base/bodies/" + name + "male_left_arm_full.png");
+        this.right = await this.getImage("http://cdn.fight-rpg.com/images/appearances/base/bodies/" + name + "male_right_arm_full.png");
+        this.left_leg = await this.getImage("http://cdn.fight-rpg.com/images/appearances/base/bodies/" + name + "male_left_leg_full.png");
 
-        this.ear = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Ear\\0${Utils.randRangeInteger(0, 2)}.png`);
+        this.ear = await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Ear\\0${Utils.randRangeInteger(0, 2)}.png`);
 
         let debugEyes = Utils.randRangeInteger(0, 15).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
 
         this.eyes = {
-            front: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\${debugEyes}_02.png`),
-            back: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\${debugEyes}_01.png`)
+            front: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\${debugEyes}_02.png`),
+            back: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyes\\${debugEyes}_01.png`)
         }
 
         this.hairColor = Utils.getRandomHexColor();
@@ -90,28 +129,28 @@ class CharacterAppearance {
         let debugHair = Utils.randRangeInteger(0, 0);
 
         this.hair = {
-            front: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`),
-            back: [4, 5, 11, 13, 14, 15, 16, 17, 19, 20].includes(parseInt(debugHair)) ? await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`) : null
-            //back: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${Utils.getRandomItemsInArray([4, 5, 11, 13, 14, 15, 16, 17, 19, 20], 1).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`)
+            front: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`),
+            back: [4, 5, 11, 13, 14, 15, 16, 17, 19, 20].includes(parseInt(debugHair)) ? await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${debugHair.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`) : null
+            //back: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Hair\\${Utils.getRandomItemsInArray([4, 5, 11, 13, 14, 15, 16, 17, 19, 20], 1).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`)
         }
 
         // Mouth
         let debugMouth = Utils.randRangeInteger(7, 7);
 
         this.mouth = {
-            lips: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`),
-            teeths: [3, 6, 7].includes(parseInt(debugMouth)) ? await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`) : null
+            lips: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`),
+            teeths: [3, 6, 7].includes(parseInt(debugMouth)) ? await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Mouth\\${debugMouth.toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}_back.png`) : null
         }
 
 
-        this.eyebrow = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyebrow\\${Utils.randRangeInteger(0, 14).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
-        this.nose = await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Nose\\${Utils.randRangeInteger(0, 10).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
+        this.eyebrow = await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Eyebrow\\${Utils.randRangeInteger(0, 14).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
+        this.nose = await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Nose\\${Utils.randRangeInteger(0, 10).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true })}.png`);
 
         this.weapon = {
-            bow: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Weapon\\Bow\\Bow 03.png`),
-            //main: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Weapon\\Two Handed\\base\\Staff 00.png`),
-            //offhand: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Weapon\\Two Handed\\base\\Staff 00.png`),
-            //shield: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Weapon\\Shield\\Shield 00_back.png`),
+            bow: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Weapon\\Bow\\Bow 03.png`),
+            //main: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Weapon\\Two Handed\\base\\Staff 00.png`),
+            //offhand: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Weapon\\Two Handed\\base\\Staff 00.png`),
+            //shield: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Weapon\\Shield\\Shield 00_back.png`),
         }
 
     }
@@ -124,12 +163,12 @@ class CharacterAppearance {
 
         this.gloves = {
             left: {
-                wrist: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy-${debugGloves}_01.png`),
-                hand: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy-${debugGloves}_04.png`),
+                wrist: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy-${debugGloves}_01.png`),
+                hand: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy-${debugGloves}_04.png`),
             },
             right: {
-                wrist: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy-${debugGloves}_02.png`),
-                hand: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy-${debugGloves}_05.png`),
+                wrist: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy-${debugGloves}_02.png`),
+                hand: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy-${debugGloves}_05.png`),
             }
         }
 
@@ -138,38 +177,38 @@ class CharacterAppearance {
         let doesHelmetHaveBack = ["07", "08", "09"].includes(debugHelmet);
 
         this.helmet = {
-            back: doesHelmetHaveBack ? await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Helmet\\Fantasy ${debugHelmet}_02.png`) : null,
-            front: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Helmet\\Fantasy ${debugHelmet + (doesHelmetHaveBack ? "_01" : "")}.png`),
+            back: doesHelmetHaveBack ? await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Helmet\\Fantasy ${debugHelmet}_02.png`) : null,
+            front: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Helmet\\Fantasy ${debugHelmet + (doesHelmetHaveBack ? "_01" : "")}.png`),
         }
 
 
         let debugArmor = Utils.randRangeInteger(6, 6).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
         this.armor = {
-            body: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} ${name}Male_body.png`),
-            neck: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} ${name}Male_neck.png`),
-            lower_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} ${name}Male_lower_left.png`),
-            lower_right: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} ${name}Male_lower_right.png`),
-            upper_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} ${name}Male_upper_left.png`),
-            upper_right: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} ${name}Male_upper_right.png`),
+            body: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} ${name}Male_body.png`),
+            neck: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} ${name}Male_neck.png`),
+            lower_left: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} ${name}Male_lower_left.png`),
+            lower_right: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} ${name}Male_lower_right.png`),
+            upper_left: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} ${name}Male_upper_left.png`),
+            upper_right: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\Fantasy ${debugArmor} ${name}Male_upper_right.png`),
         }
 
         let debugPants = Utils.randRangeInteger(9, 9).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });;
 
         this.pants = {
-            hip: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} ${name}Male_hip.png`),
-            upper_right: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} ${name}Male_upper_right.png`),
-            upper_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} ${name}Male_upper_left.png`),
-            lower_right: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} ${name}Male_lower_right.png`),
-            lower_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} ${name}Male_lower_left.png`),
+            hip: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} ${name}Male_hip.png`),
+            upper_right: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} ${name}Male_upper_right.png`),
+            upper_left: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} ${name}Male_upper_left.png`),
+            lower_right: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} ${name}Male_lower_right.png`),
+            lower_left: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy ${debugPants} ${name}Male_lower_left.png`),
         }
 
         let debugBoots = Utils.randRangeInteger(3, 3).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
 
         this.boots = {
-            lower_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\Fantasy ${debugBoots}_lower_left.png`),
-            lower_right: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\Fantasy ${debugBoots}_lower_right.png`),
-            foot_left: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\Fantasy ${debugBoots}_foot_left.png`),
-            foot_right: await CharacterAppearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\Fantasy ${debugBoots}_foot_right.png`),
+            lower_left: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\Fantasy ${debugBoots}_lower_left.png`),
+            lower_right: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\Fantasy ${debugBoots}_lower_right.png`),
+            foot_left: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\Fantasy ${debugBoots}_foot_left.png`),
+            foot_right: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\Fantasy ${debugBoots}_foot_right.png`),
         }
 
     }
@@ -360,7 +399,7 @@ class CharacterAppearance {
                         if (refAsync === null || typeof link !== "string") {
                             return;
                         }
-                        refAsync[prop] = await CharacterAppearance.getImage(link);
+                        refAsync[prop] = await this.getImage(link);
                     })());
                 } else {
                     if (!ref[props[pIndex]]) {
@@ -378,7 +417,7 @@ class CharacterAppearance {
         if (profRef === null || typeof link !== "string") {
             return;
         }
-        profRef = await CharacterAppearance.getImage(link);
+        profRef = await this.getImage(link);
     }
 
     async setupFromData(appearance) {
@@ -388,7 +427,9 @@ class CharacterAppearance {
         this.eyeColor = appearance.eyeColor;
         this.bodyType = appearance.body.idBodyType;
         this.shouldDisplayHelmet = appearance.displayHelmet == 1;
-        appearance.appearances["background"] = appearance.areaImage;
+        if (appearance.areaImage) {
+            appearance.appearances["background"] = appearance.areaImage;
+        }
         await this.mapProperties(appearance.appearances);
         await this.mapProperties(appearance.body);
     }
@@ -402,10 +443,12 @@ class CharacterAppearance {
      * 
      * @param {string} url
      */
-    static async getImage(url) {
+    async getImage(url) {
         if (!url) {
             return null;
         }
+
+        this.allLinks += url;
 
         let img = CharacterAppearance.cache[url] ? CharacterAppearance.cache[url] : await Canvas.loadImage(url);
         CharacterAppearance.updateCache(url, img);
@@ -422,40 +465,88 @@ class CharacterAppearance {
         this.pants = {};
         await Promise.all(
             [
-                (async () => { this.pants.hip = await CharacterAppearance.getImage(pants.hip) })(),
-                (async () => { this.pants.upper_left = await CharacterAppearance.getImage(pants.upper_left) })(),
-                (async () => { this.pants.upper_right = await CharacterAppearance.getImage(pants.upper_right) })(),
+                (async () => { this.pants.hip = await this.getImage(pants.hip) })(),
+                (async () => { this.pants.upper_left = await this.getImage(pants.upper_left) })(),
+                (async () => { this.pants.upper_right = await this.getImage(pants.upper_right) })(),
             ]);
     }
 
     async loadBaseArmor() {
         const armor = CharacterAppearance.basicArmorPerBodyTypes[this.bodyType] ?? CharacterAppearance.basicArmorPerBodyTypes[1];
         this.armor = {
-            body: await CharacterAppearance.getImage(armor.body)
+            body: await this.getImage(armor.body)
         }
     }
 
-    static basicPantsPerBodyTypes = {
-        1: {
-            hip: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Male_hip.png",
-            upper_left: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Male_upper_left.png",
-            upper_right: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Male_upper_right.png"
-        },
-        2: {
-            hip: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Female_hip.png",
-            upper_left: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Female_upper_left.png",
-            upper_right: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Female_upper_right.png",
-        }
+
+    /**
+     * 
+     * @param {User} user
+     */
+    async getSelectEmbedDisplay(user) {
+        return this.addCurrentImageToEmbed(new Discord.MessageEmbed()
+            .setAuthor(Translator.getString(user.lang, "appearance", "title"))
+            .setDescription(
+                "Voici l'apparence votre personnage, cette apparence n'est pas forcément représentative de votre apparence actuelle.Pour appliquer les changements utilisez l'émoji :vmark:. Pour modifier votre apparence utilisez l'émoji ${Emojis.general.clipboard}."));
+
     }
 
-    static basicArmorPerBodyTypes = {
-        1: {
-            body: null
-        },
-        2: {
-            body: "https://cdn.fight-rpg.com/images/appearances/base/armors/Base%2000%20Female.png"
+
+    getHash() {
+        if (!this.allLinks) {
+            return null;
         }
+        return hash(this.allLinks);
     }
+
+    /**
+     * 
+     * @param {Discord.MessageEmbed} embed
+     */
+    async addCurrentImageToEmbed(embed) {
+
+        const hashFile = this.getHash();
+        let cachedLink = CharacterAppearance.uploadedImagesCacheLinks[hashFile];
+
+        // Test Cache
+        if (cachedLink && hashFile) {
+            return embed.setImage(cachedLink.url);
+        }
+
+        // Test if cdn cache is configured
+        if (!conf.cdnAppearanceCache || !hashFile) {
+            return embed
+                .attachFiles(new Discord.MessageAttachment((await this.getCharacter()).createPNGStream(), "character.png"))
+                .setImage("attachment://character.png");
+        }
+
+        // Test cache cdn and upload if needed
+        const filename = hashFile + ".png";
+        const data = (await CharacterAppearance.defaultAxios.get("get_cache.php?filename=" + filename)).data;
+
+        if (!data.cached) {
+            // Upload
+
+            const fileToCache = (await this.getCharacter()).createPNGStream();
+            const fData = new FormData();
+
+            fData.append('key', conf.cdnKey);
+            fData.append('fileToCache', fileToCache, filename);
+
+            await CharacterAppearance.defaultAxios.post(
+                "upload_cache.php",
+                fData,
+                {
+                    headers: fData.getHeaders()
+                }
+            );
+
+        }
+
+        return embed
+            .setImage(conf.cdnAppearanceCache + filename);
+    }
+
 
 }
 

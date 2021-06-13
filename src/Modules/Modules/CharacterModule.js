@@ -14,6 +14,7 @@ const SkillBuild = require("../../Drawings/Character/SkillBuild");
 const Utils = require("../../Utils");
 const Rebirth = require("../../Drawings/Character/Rebirth");
 const State = require("../../Drawings/Fight/State");
+const CharacterAppearance = require("../../Drawings/Character/CharacterAppearance");
 
 class CharacterModule extends GModule {
     constructor() {
@@ -404,9 +405,15 @@ class CharacterModule extends GModule {
                 }
             } break;
             case "appearance":
-                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/character/appearance", {
-                    selectedAppearances: args,
-                }));
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/character/appearance"), async (data) => {
+                    if (!user.pendingAppearance) {
+                        user.pendingAppearance = new CharacterAppearance();
+                    }
+
+                    await user.pendingAppearance.setupFromData(data.currentAppearance);
+                    const embed = await user.pendingAppearance.getSelectEmbedDisplay(user);
+                    return embed;
+                });
                 break;
 
         }
