@@ -264,6 +264,10 @@ class CharacterAppearance {
 
 
         // Body Armor
+        if (!this.armor) {
+            await this.loadBaseArmor();
+        }
+
         this.drawImage(this.armor?.body, bodyX + positions.armor.body.x, bodyY + positions.armor.body.y);
 
         // Neck
@@ -420,8 +424,15 @@ class CharacterAppearance {
             [
                 (async () => { this.pants.hip = await CharacterAppearance.getImage(pants.hip) })(),
                 (async () => { this.pants.upper_left = await CharacterAppearance.getImage(pants.upper_left) })(),
-                (async () => { this.pants.upper_right = await CharacterAppearance.getImage(pants.upper_right) })()
+                (async () => { this.pants.upper_right = await CharacterAppearance.getImage(pants.upper_right) })(),
             ]);
+    }
+
+    async loadBaseArmor() {
+        const armor = CharacterAppearance.basicArmorPerBodyTypes[this.bodyType] ?? CharacterAppearance.basicArmorPerBodyTypes[1];
+        this.armor = {
+            body: await CharacterAppearance.getImage(armor.body)
+        }
     }
 
     static basicPantsPerBodyTypes = {
@@ -433,7 +444,16 @@ class CharacterAppearance {
         2: {
             hip: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Female_hip.png",
             upper_left: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Female_upper_left.png",
-            upper_right: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Female_upper_right.png"
+            upper_right: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Female_upper_right.png",
+        }
+    }
+
+    static basicArmorPerBodyTypes = {
+        1: {
+            body: null
+        },
+        2: {
+            body: "https://cdn.fight-rpg.com/images/appearances/base/armors/Base%2000%20Female.png"
         }
     }
 
