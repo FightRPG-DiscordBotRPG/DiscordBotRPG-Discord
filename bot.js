@@ -25,9 +25,22 @@ let timeStart = Date.now();
 
 async function startBot() {
     try {
+        console.time("Load Translator");
         await Translator.loadTranslator();
+        console.timeEnd("Load Translator");
+
+        console.time("Load Help Panel");
         await Globals.loadHelpPanel();
+        console.timeEnd("Load Help Panel");
+
+        console.time("Load Appearances");
+        await Globals.loadAllAppearances();
+        console.timeEnd("Load Appearances");
+
+        console.time("Bot login");
         await bot.login(conf.discordbotkey);
+        console.timeEnd("Bot login");
+
         setTimeoutToRemoveInactiveUsers();
     } catch (error) {
         let errorDate = new Date();

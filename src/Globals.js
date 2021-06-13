@@ -314,6 +314,9 @@ var Globals = {
         }
 
     },
+    loadAllAppearances: async function () {
+        CharacterAppearance.possibleAppearances = (await axios.get("helpers/characters/appearances")).data.possibleAppearances;
+    }
 }
 
 module.exports = Globals;
@@ -321,3 +324,4 @@ module.exports = Globals;
 const User = require("./Users/User");
 const ModuleHandler = require("./Modules/ModuleHandler");
 const Translator = require("./Translator/Translator");
+const CharacterAppearance = require("./Drawings/Character/CharacterAppearance");

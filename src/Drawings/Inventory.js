@@ -50,7 +50,7 @@ class Inventory {
             ;
 
         if (!isInventory) {
-            await user.appearance.setupFromData(data);
+            await user.appearance.setupFromData(data.appearance);
             embed = embed.attachFiles(new Discord.MessageAttachment((await user.appearance.getCharacter()).createPNGStream(), "character.png"))
                 .setImage("attachment://character.png");
         }

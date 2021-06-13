@@ -9,6 +9,7 @@ class CharacterAppearance {
      * @type Object<string, Canvas.Image>
      */
     static cache = {};
+    static possibleAppearances = null;
 
     constructor() {
         this.reset();
@@ -380,17 +381,16 @@ class CharacterAppearance {
         profRef = await CharacterAppearance.getImage(link);
     }
 
-    async setupFromData(data) {
+    async setupFromData(appearance) {
         this.reset();
-        this.hairColor = data.appearance.hairColor;
-        this.bodyColor = data.appearance.bodyColor;
-        this.eyeColor = data.appearance.eyeColor;
-        this.bodyType = data.appearance.body.idBodyType;
-        this.shouldDisplayHelmet = data.appearance.displayHelmet == 1;
-        data.appearance.appearances["background"] = data.appearance.areaImage;
-        await this.mapProperties(data.appearance.appearances);
-        await this.mapProperties(data.appearance.body);
-
+        this.hairColor = appearance.hairColor;
+        this.bodyColor = appearance.bodyColor;
+        this.eyeColor = appearance.eyeColor;
+        this.bodyType = appearance.body.idBodyType;
+        this.shouldDisplayHelmet = appearance.displayHelmet == 1;
+        appearance.appearances["background"] = appearance.areaImage;
+        await this.mapProperties(appearance.appearances);
+        await this.mapProperties(appearance.body);
     }
 
 
