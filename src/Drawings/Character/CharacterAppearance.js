@@ -17,7 +17,16 @@ class CharacterAppearance {
      * @type Object<string, Canvas.Image>
      */
     static cache = {};
+
+    /**
+     * @type Object<number, {id:number,link:string,appearanceType:number,idBodyType:number|null,canBeDisplayedOnTop:boolean,linkedTo:number[]}>
+     */
     static possibleAppearances = null;
+
+    /**
+     * @type Object<string, Object<number, {"id":number,"link":string,"appearanceType":number,"idBodyType":number|null,"canBeDisplayedOnTop":boolean,"linkedTo":number[]}>[]>
+     */
+    static appearancesPerTypes = {};
 
     static basicPantsPerBodyTypes = {
         1: {
@@ -49,6 +58,15 @@ class CharacterAppearance {
     static defaultAxios = axios.create({
         baseURL: conf.cdnAppearanceCache
     })
+
+
+    /**
+     * @type Object<number, AppearancePositions>
+     */
+    static itemsPositions = {
+        1: MaleAppearancePositions,
+        2: FemaleAppearancePositions
+    }
 
     constructor() {
         this.reset();
@@ -211,14 +229,6 @@ class CharacterAppearance {
             foot_right: await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\Fantasy ${debugBoots}_foot_right.png`),
         }
 
-    }
-
-    /**
-     * @type Object<number, AppearancePositions>
-     */
-    static itemsPositions = {
-        1: MaleAppearancePositions,
-        2: FemaleAppearancePositions
     }
 
     /**
@@ -484,12 +494,36 @@ class CharacterAppearance {
      * @param {User} user
      */
     async getSelectEmbedDisplay(user) {
-        return this.addCurrentImageToEmbed(new Discord.MessageEmbed()
+        return await this.addCurrentImageToEmbed(new Discord.MessageEmbed()
             .setAuthor(Translator.getString(user.lang, "appearance", "title"))
             .setDescription(
                 "Voici l'apparence votre personnage, cette apparence n'est pas forcément représentative de votre apparence actuelle.Pour appliquer les changements utilisez l'émoji :vmark:. Pour modifier votre apparence utilisez l'émoji ${Emojis.general.clipboard}."));
 
     }
+
+    async editGeneralEmbed(user) {
+        console.log(CharacterAppearance.appearancesPerTypes);
+        return await this.addCurrentImageToEmbed(new Discord.MessageEmbed()
+            .setAuthor(Translator.getString(user.lang, "appearance", "edit_title"))
+            .setDescription(
+                `Choisir ce qu'il faut modifier:
+                - ${Emojis.general.ear} Oreilles
+                - ${Emojis.general.eye} Yeux
+                - ${Emojis.general.eyebrow} Sourcils
+                - ${Emojis.general.nose} Nez
+                - ${Emojis.general.facial_hair} Pilosité faciale
+                - ${Emojis.general.haircut} Coiffure
+                - ${Emojis.general.mouth} Bouche
+                - ${Emojis.general.humans_couple} Type de corps
+                - ${Emojis.general.left_arrow} Retour`
+            ));
+    }
+
+    async editSelectOne() {
+
+    }
+
+
 
 
     getHash() {

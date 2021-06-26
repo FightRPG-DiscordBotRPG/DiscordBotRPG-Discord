@@ -316,6 +316,18 @@ var Globals = {
     },
     loadAllAppearances: async function () {
         CharacterAppearance.possibleAppearances = (await axios.get("helpers/characters/appearances")).data.possibleAppearances;
+
+        /**
+         * @type {{id:number,link:string,appearanceType:number,idBodyType:number|    null,canBeDisplayedOnTop:boolean,linkedTo:number[]}}
+         */
+        let item;
+        for (item of Object.values(CharacterAppearance.possibleAppearances)) {
+            if (CharacterAppearance.appearancesPerTypes[item.appearanceType] === undefined) {
+                CharacterAppearance.appearancesPerTypes[item.appearanceType] = [];
+            }
+
+            CharacterAppearance.appearancesPerTypes[item.appearanceType].push(item);
+        }
     }
 }
 

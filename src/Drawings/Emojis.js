@@ -555,8 +555,16 @@ Emojis.general = {
     "information": "ℹ️",
     "package": "📦",
     "handshake": "🤝",
-    "yarn": "🧶"
-};
+    "yarn": "🧶",
+    "ear": "👂",
+    "eyebrow": "🤨",
+    "nose": "👃",
+    "facial_hair": "🧔",
+    "haircut": "💇",
+    "mouth": "👄",
+    "humans_couple": "👫",
+    "back_arrow": "🔙"
+    };
 
 Emojis.entitiesTypes = {
     "Character": Emojis.emojisProd.user.string,
