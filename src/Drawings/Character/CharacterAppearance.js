@@ -77,7 +77,7 @@ class CharacterAppearance {
         nose: 5,
         facialHair: 6,
         hair: 7,
-        mouth: 9,
+        mouth: 10,
     }
 
     static requiredAppearancesTypeForCharacter = [1, 3, 5, 10];
@@ -89,7 +89,7 @@ class CharacterAppearance {
         [Emojis.general.nose]: 5,
         [Emojis.general.facial_hair]: 6,
         [Emojis.general.haircut]: 7,
-        [Emojis.general.mouth]: 9,
+        [Emojis.general.mouth]: 10,
         [Emojis.general.humans_couple]: 0
     };
 
