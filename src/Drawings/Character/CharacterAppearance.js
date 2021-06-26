@@ -11,6 +11,8 @@ const hash = require('object-hash');
 const { default: axios } = require("axios");
 const conf = require("../../../conf/conf");
 const FormData = require('form-data');
+const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
+const Globals = require("../../Globals");
 
 class CharacterAppearance {
     /**
@@ -57,7 +59,7 @@ class CharacterAppearance {
 
     static defaultAxios = axios.create({
         baseURL: conf.cdnAppearanceCache
-    })
+    });
 
 
     /**
@@ -68,8 +70,44 @@ class CharacterAppearance {
         2: FemaleAppearancePositions
     }
 
+    static appearanceType = {
+        ear: 1,
+        eyes: 3,
+        eyebrow: 4,
+        nose: 5,
+        facialHair: 6,
+        hair: 7,
+        mouth: 9,
+    }
+
+    static requiredAppearancesTypeForCharacter = [1, 3, 5, 10];
+
+    static emojisTypesWithValues = {
+        [Emojis.general.ear]: 1,
+        [Emojis.general.eye]: 2,
+        [Emojis.general.eyebrow]: 4,
+        [Emojis.general.nose]: 5,
+        [Emojis.general.facial_hair]: 6,
+        [Emojis.general.haircut]: 7,
+        [Emojis.general.mouth]: 9,
+        [Emojis.general.humans_couple]: 0
+    };
+
+    static emojisForTypes = Object.keys(CharacterAppearance.emojisTypesWithValues);
+
     constructor() {
         this.reset();
+        this.editionSelectedIndex = null;
+        this.editionSelectedType = null;
+        this.editionPossibleValues = [];
+        /**
+         * @type Object<number, number>
+         **/
+        this.editionSelectedPerTypes = {};
+        /**
+         *  @type {MessageReactionsWrapper}
+         **/
+        this.editionMessageWrapper = null;
     }
 
     reset() {
@@ -248,7 +286,7 @@ class CharacterAppearance {
 
         this.drawImage(this.background, 0, 0, canvasCharacter.height * (this.background.width / this.background.height), canvasCharacter.height);
 
-        console.time("Draw Images");
+        /*console.time("Draw Images");*/
 
         let bodyX = 250, bodyY = imageHeight - this.body.height - 20;
         let xDecal = bodyX + this.body.width / 2;
@@ -367,7 +405,7 @@ class CharacterAppearance {
         }
 
 
-        console.timeEnd("Draw Images");
+        //console.timeEnd("Draw Images");
 
         return canvasCharacter;
 
@@ -404,11 +442,19 @@ class CharacterAppearance {
                 if (pIndex == props.length - 1) {
                     let refAsync = ref;
                     let prop = props[pIndex];
-                    let link = typeof dict[i] === "string" ? dict[i] : dict[i].link;
+
+                    let link = null;;
+                    if (typeof dict[i] === "string") {
+                        link = dict[i];
+                    } else if (dict[i] !== null) {
+                        link = dict[i].link;
+                    }
+
                     loadingImages.push((async () => {
-                        if (refAsync === null || typeof link !== "string") {
+                        if (refAsync === null || (typeof link !== "string" && link !== null)) {
                             return;
                         }
+                        console.log(prop + " & " + link);
                         refAsync[prop] = await this.getImage(link);
                     })());
                 } else {
@@ -454,11 +500,11 @@ class CharacterAppearance {
      * @param {string} url
      */
     async getImage(url) {
+        this.allLinks += url;
+
         if (!url) {
             return null;
         }
-
-        this.allLinks += url;
 
         let img = CharacterAppearance.cache[url] ? CharacterAppearance.cache[url] : await Canvas.loadImage(url);
         CharacterAppearance.updateCache(url, img);
@@ -489,42 +535,6 @@ class CharacterAppearance {
     }
 
 
-    /**
-     * 
-     * @param {User} user
-     */
-    async getSelectEmbedDisplay(user) {
-        return await this.addCurrentImageToEmbed(new Discord.MessageEmbed()
-            .setAuthor(Translator.getString(user.lang, "appearance", "title"))
-            .setDescription(
-                "Voici l'apparence votre personnage, cette apparence n'est pas forcément représentative de votre apparence actuelle.Pour appliquer les changements utilisez l'émoji :vmark:. Pour modifier votre apparence utilisez l'émoji ${Emojis.general.clipboard}."));
-
-    }
-
-    async editGeneralEmbed(user) {
-        console.log(CharacterAppearance.appearancesPerTypes);
-        return await this.addCurrentImageToEmbed(new Discord.MessageEmbed()
-            .setAuthor(Translator.getString(user.lang, "appearance", "edit_title"))
-            .setDescription(
-                `Choisir ce qu'il faut modifier:
-                - ${Emojis.general.ear} Oreilles
-                - ${Emojis.general.eye} Yeux
-                - ${Emojis.general.eyebrow} Sourcils
-                - ${Emojis.general.nose} Nez
-                - ${Emojis.general.facial_hair} Pilosité faciale
-                - ${Emojis.general.haircut} Coiffure
-                - ${Emojis.general.mouth} Bouche
-                - ${Emojis.general.humans_couple} Type de corps
-                - ${Emojis.general.left_arrow} Retour`
-            ));
-    }
-
-    async editSelectOne() {
-
-    }
-
-
-
 
     getHash() {
         if (!this.allLinks) {
@@ -547,7 +557,10 @@ class CharacterAppearance {
             return embed.setImage(cachedLink.url);
         }
 
+        const filename = hashFile + ".png";
+
         // Test if cdn cache is configured
+        // If you use this and you try to edit and embed, the image is not updated /!\
         if (!conf.cdnAppearanceCache || !hashFile) {
             return embed
                 .attachFiles(new Discord.MessageAttachment((await this.getCharacter()).createPNGStream(), "character.png"))
@@ -555,7 +568,6 @@ class CharacterAppearance {
         }
 
         // Test cache cdn and upload if needed
-        const filename = hashFile + ".png";
         const data = (await CharacterAppearance.defaultAxios.get("get_cache.php?filename=" + filename)).data;
 
         if (!data.cached) {
@@ -579,6 +591,216 @@ class CharacterAppearance {
 
         return embed
             .setImage(conf.cdnAppearanceCache + filename);
+    }
+
+    /**
+     * 
+     * @param {User} user
+     */
+    async getSelectEmbed(user) {
+        return await this.addCurrentImageToEmbed(new Discord.MessageEmbed()
+            .setAuthor(Translator.getString(user.lang, "appearance", "title"))
+            .setDescription(
+                "Voici l'apparence votre personnage, cette apparence n'est pas forcément représentative de votre apparence actuelle.Pour appliquer les changements utilisez l'émoji :vmark:. Pour modifier votre apparence utilisez l'émoji ${Emojis.general.clipboard}."));
+
+    }
+
+    /**
+     *
+     * @param {User} user
+     */
+    async getEditGeneralEmbed(user) {
+        return await this.addCurrentImageToEmbed(new Discord.MessageEmbed()
+            .setAuthor(Translator.getString(user.lang, "appearance", "edit_title"))
+            .setDescription(
+                `Choisir ce qu'il faut modifier:
+                - ${Emojis.general.ear} Oreilles
+                - ${Emojis.general.eye} Yeux
+                - ${Emojis.general.eyebrow} Sourcils
+                - ${Emojis.general.nose} Nez
+                - ${Emojis.general.facial_hair} Pilosité faciale
+                - ${Emojis.general.haircut} Coiffure
+                - ${Emojis.general.mouth} Bouche
+                - ${Emojis.general.humans_couple} Type de corps`
+            ));
+    }
+
+    /**
+     * 
+     * @param {User} user
+     */
+    async getEditSelectOneEmbed(user) {
+
+        const isBodyType = this.editionSelectedType > 0;
+
+        const stringAppearances = this.editionPossibleValues.map((item, i) => i == this.editionSelectedIndex ? "**" + (i + 1) + "**" : i + 1).join(", ");
+
+        return await this.addCurrentImageToEmbed(new Discord.MessageEmbed()
+            .setAuthor(Translator.getString(user.lang, "appearance", "edit_title"))
+            .setDescription(Translator.getString(user.lang, "appearance", "desc_select_one"))
+            .addField(Translator.getString(user.lang, "appearance", "list_of_possible_for_type"), stringAppearances)
+        );
+    }
+
+    async setupFromDataEdition(data) {
+        for (let appearance of Object.values(data.appearances)) {
+            if (Object.values(CharacterAppearance.appearanceType).includes(appearance.appearanceType)) {
+                this.editionSelectedPerTypes[appearance.appearanceType] = appearance.id;
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param {Discord.Message} message
+     * @param {User} user
+     */
+    async handleEdition(message, user) {
+
+        if (this.editionMessageWrapper?.collector) {
+            this.editionMessageWrapper?.collector.stop();
+        }
+
+        this.editionMessageWrapper = new MessageReactionsWrapper();
+
+        await this.editionMessageWrapper.load(message, await user.pendingAppearance.getSelectEmbed(user), {
+            reactionsEmojis: [Emojis.general.clipboard],
+            collectorOptions: {
+                time: 600000,
+            }
+        });
+
+        // For tutorial
+        //await user.tutorial.reactOnCommand("info", message, user.lang);
+        this.editionMessageWrapper.resetCollectListener();
+        this.editionMessageWrapper.collector.on('collect', async (reaction) => {
+            if (reaction.emoji.name == Emojis.general.clipboard) {
+                await this.handleEditionSelectType(user);
+            }
+        });
+    }
+
+    /**
+     * 
+     * @param {User} user
+     */
+    async handleEditionSelectType(user) {
+
+        await this.editionMessageWrapper.edit(await this.getEditGeneralEmbed(user), CharacterAppearance.emojisForTypes);
+
+        this.editionMessageWrapper.resetCollectListener();
+        this.editionMessageWrapper.collector.on('collect', async (reaction) => {
+            if (CharacterAppearance.emojisForTypes.includes(reaction.emoji.name)) {
+                this.editionSelectedType = CharacterAppearance.emojisTypesWithValues[reaction.emoji.name];
+
+                const isBodyType = this.editionSelectedType > 0;
+
+                if (isBodyType) {
+                    this.editionPossibleValues = Object.values(CharacterAppearance.appearancesPerTypes[this.editionSelectedType]).filter(i => i.idBodyType === null || i.idBodyType == this.bodyType);
+                    this.editionSelectedIndex = this.editionPossibleValues.findIndex(item => item.id == this.editionSelectedPerTypes[item.appearanceType]);
+                } else {
+                    this.editionPossibleValues = [1, 2];
+                    this.editionSelectedIndex = this.editionPossibleValues.findIndex(item => item == this.bodyType);
+                }
+
+                await this.handleEditionSelectOne(user);
+            }
+        });
+
+    }
+
+    async handleEditionSelectOne(user) {
+        await this.editionMessageWrapper.edit(await this.getEditSelectOneEmbed(user), [Emojis.general.left_arrow, Emojis.general.right_arrow, Emojis.general.g_vmark]);
+
+        const canBeNull = this.isSelectedEditionTypeCanBeNull();
+
+        this.editionMessageWrapper.resetCollectListener();
+        this.editionMessageWrapper.collector.on('collect', async (reaction) => {
+            console.log(reaction.emoji.name);
+            const oldIndex = this.editionSelectedIndex;
+            switch (reaction.emoji.name) {
+                case Emojis.general.left_arrow:
+                    this.editionSelectedIndex = this.editionSelectedIndex === null ? this.editionPossibleValues.length - 1 : this.editionSelectedIndex - 1;
+                    break;
+                case Emojis.general.right_arrow:
+                    this.editionSelectedIndex = this.editionSelectedIndex === null ? 0 : this.editionSelectedIndex + 1;
+                    break;
+                case Emojis.general.g_vmark:
+                    await this.handleEditionSelectType(user);
+                    break;
+            }
+
+
+            if (this.editionSelectedIndex < 0) {
+                this.editionSelectedIndex = canBeNull ? null : this.editionPossibleValues.length - 1;
+            } else if (this.editionSelectedIndex >= this.editionPossibleValues.length) {
+                this.editionSelectedIndex = canBeNull ? null : 0;
+            }
+
+            if (oldIndex !== this.editionSelectedIndex) {
+                // Redraw
+                const itemSelected = this.editionPossibleValues[this.editionSelectedIndex];
+
+                // Body
+                if (this.editionSelectedType === 0) {
+                    console.log(itemSelected);
+                    this.bodyType = itemSelected;
+                } else {
+
+                    console.log(this.getHash());
+
+                    // Clear value before
+                    if (this.editionPossibleValues[oldIndex]) {
+                        let appearanceToReload = {
+                            [Globals.appearancesTypesToText[this.editionPossibleValues[oldIndex].appearanceType]]: null,
+                        };
+
+
+                        for (let item of this.editionPossibleValues[oldIndex].linkedTo) {
+                            const appearance = CharacterAppearance.possibleAppearances[item];
+                            appearanceToReload[Globals.appearancesTypesToText[appearance.appearanceType]] = null;
+                        }
+
+                        await this.mapProperties(appearanceToReload);
+                        console.log(this.hair);
+                    }
+
+
+                    if (itemSelected) {
+                        //this.editionSelectedPerTypes
+                        this.editionSelectedPerTypes[this.editionSelectedType] = itemSelected.id;
+
+                        let appearanceToReload = {
+                            [Globals.appearancesTypesToText[itemSelected.appearanceType]]: itemSelected
+                        };
+
+                        for (let item of itemSelected?.linkedTo) {
+                            const appearance = CharacterAppearance.possibleAppearances[item];
+                            appearanceToReload[Globals.appearancesTypesToText[appearance.appearanceType]] = appearance;
+                        }
+
+                        await this.mapProperties(appearanceToReload);
+                    }
+
+
+
+                }
+
+
+                await this.editionMessageWrapper.edit(await this.getEditSelectOneEmbed(user), [Emojis.general.left_arrow, Emojis.general.right_arrow, Emojis.general.back_arrow], false);
+
+            }
+
+        });
+
+    }
+
+    getCurrentEditionMaxIndex() {
+        this.editionPossibleValues
+    }
+
+    isSelectedEditionTypeCanBeNull() {
+        return !CharacterAppearance.requiredAppearancesTypeForCharacter.includes(this.editionSelectedType);
     }
 
 

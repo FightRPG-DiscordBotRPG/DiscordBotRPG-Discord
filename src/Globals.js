@@ -107,6 +107,43 @@ var Globals = {
         22: "wand",
         23: "staff",
     },
+    appearancesTypesToText: {
+    1:  "ear",
+    2:  "eyes.front",
+    3:  "eyes.back",
+    4:  "eyebrow",
+    5:  "nose",
+    6:  "facialHair",
+    7:  "hair.front",
+    8:  "hair.back",
+    9:  "mouth.teeths",
+    10: "mouth.lips",
+    11: "gloves.left.wrist",
+    12: "gloves.left.hand",
+    13: "gloves.right.wrist",
+    14: "gloves.right.hand",
+    15: "helmet.back",
+    16: "helmet.front",
+    17: "armor.body",
+    18: "armor.neck",
+    19: "armor.lower_left",
+    20: "armor.lower_right",
+    21: "armor.upper_left",
+    22: "armor.upper_right",
+    23: "pants.hip",
+    24: "pants.lower_left",
+    25: "pants.lower_right",
+    26: "pants.upper_left",
+    27: "pants.upper_right",
+    28: "boots.lower_left",
+    29: "boots.lower_right",
+    30: "boots.foot_left",
+    31: "boots.foot_right",
+    32: "weapon.main",
+    33: "weapon.offhand",
+    34: "weapon.shield",
+    35: "weapon.bow",
+    },
     /**
      * @type {ModuleHandler}
      */
@@ -318,7 +355,7 @@ var Globals = {
         CharacterAppearance.possibleAppearances = (await axios.get("helpers/characters/appearances")).data.possibleAppearances;
 
         /**
-         * @type {{id:number,link:string,appearanceType:number,idBodyType:number|    null,canBeDisplayedOnTop:boolean,linkedTo:number[]}}
+         * @type {{id:number,link:string,appearanceType:number,idBodyType:number|null,canBeDisplayedOnTop:boolean,linkedTo:number[]}}
          */
         let item;
         for (item of Object.values(CharacterAppearance.possibleAppearances)) {
@@ -327,7 +364,7 @@ var Globals = {
             }
 
             CharacterAppearance.appearancesPerTypes[item.appearanceType].push(item);
-        }
+        }        
     }
 }
 

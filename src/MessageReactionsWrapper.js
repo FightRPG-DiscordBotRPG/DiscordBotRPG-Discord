@@ -62,12 +62,21 @@ class MessageReactionsWrapper {
      * 
      * @param {string} content
      * @param {Array<string>=} arrOfEmojis
+     * @param {boolean=} clearEmojis
      */
-    async edit(content, arrOfEmojis) {
+    async edit(content, arrOfEmojis, clearEmojis=true) {
         if (content != null && !this.message.deleted) {
-            await this.clearEmojis();
+            if (clearEmojis) {
+                await this.clearEmojis();
+            }
             await this.message.edit(content);
             await this.setReactionsEmojis(arrOfEmojis != null ? arrOfEmojis : []);
+        }
+    }
+
+    resetCollectListener() {
+        if (this.collector.listenerCount("collect") > 0) {
+            this.collector.removeAllListeners("collect");
         }
     }
 

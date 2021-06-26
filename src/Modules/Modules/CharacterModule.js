@@ -409,10 +409,10 @@ class CharacterModule extends GModule {
                     if (!user.pendingAppearance) {
                         user.pendingAppearance = new CharacterAppearance();
                         await user.pendingAppearance.setupFromData(data.currentAppearance);
+                        user.pendingAppearance.setupFromDataEdition(data.currentAppearance);
                     }
 
-                    const embed = await user.pendingAppearance.editGeneralEmbed(user);
-                    return embed;
+                    await user.pendingAppearance.handleEdition(message, user);
                 });
                 break;
 
