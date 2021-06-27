@@ -26,6 +26,11 @@ class CharacterAppearance {
     static possibleAppearances = null;
 
     /**
+     * @type Object<number, {idBodyType: number, body: string, head: string, left: string, right: string, left_leg: string}>
+     */
+    static bodyAppearances = null;
+
+    /**
      * @type Object<string, Object<number, {"id":number,"link":string,"appearanceType":number,"idBodyType":number|null,"canBeDisplayedOnTop":boolean,"linkedTo":number[]}>[]>
      */
     static appearancesPerTypes = {};
@@ -80,11 +85,9 @@ class CharacterAppearance {
         mouth: 10,
     }
 
-    static requiredAppearancesTypeForCharacter = [1, 3, 5, 10];
-
     static emojisTypesWithValues = {
         [Emojis.general.ear]: 1,
-        [Emojis.general.eye]: 2,
+        [Emojis.general.eye]: 3,
         [Emojis.general.eyebrow]: 4,
         [Emojis.general.nose]: 5,
         [Emojis.general.facial_hair]: 6,
@@ -100,6 +103,26 @@ class CharacterAppearance {
         this.editionSelectedIndex = null;
         this.editionSelectedType = null;
         this.editionPossibleValues = [];
+        /**
+         * @type string[]
+         **/
+        this.selectableHairColors = null;
+        /**
+         * @type string[]
+         **/
+        this.selectableBodyColors = null;
+        /**
+         * @type string[]
+         **/
+        this.selectableEyeColors = null;
+        /**
+         * @type string[]
+         **/
+        this.selectableBodyTypes = null;
+        /**
+         * @type number[]
+         **/
+        this.requiredAppearancesTypeForCharacter = null;
         /**
          * @type Object<number, number>
          **/
@@ -540,7 +563,14 @@ class CharacterAppearance {
         if (!this.allLinks) {
             return null;
         }
-        return hash(this.allLinks);
+
+        return hash(
+            this.allLinks +
+            this.hairColor +
+            this.bodyColor +
+            this.eyeColor +
+            this.shouldDisplayHelmet
+        );
     }
 
     /**
@@ -745,6 +775,10 @@ class CharacterAppearance {
                 if (this.editionSelectedType === 0) {
                     console.log(itemSelected);
                     this.bodyType = itemSelected;
+                    console.log(CharacterAppearance.bodyAppearances);
+                    await this.loadBaseArmor();
+                    await this.loadBasePants();
+                    await this.mapProperties(CharacterAppearance.bodyAppearances[this.bodyType]);
                 } else {
 
                     console.log(this.getHash());
@@ -795,12 +829,8 @@ class CharacterAppearance {
 
     }
 
-    getCurrentEditionMaxIndex() {
-        this.editionPossibleValues
-    }
-
     isSelectedEditionTypeCanBeNull() {
-        return !CharacterAppearance.requiredAppearancesTypeForCharacter.includes(this.editionSelectedType);
+        return this.editionSelectedType > 0 ? !this.requiredAppearancesTypeForCharacter.includes(this.editionSelectedType) : false;
     }
 
 

@@ -408,8 +408,9 @@ class CharacterModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/appearance"), async (data) => {
                     if (!user.pendingAppearance) {
                         user.pendingAppearance = new CharacterAppearance();
+                        user.pendingAppearance.requiredAppearancesTypeForCharacter = data.requiredAppearancesTypeForCharacter;
                         await user.pendingAppearance.setupFromData(data.currentAppearance);
-                        user.pendingAppearance.setupFromDataEdition(data.currentAppearance);
+                        await user.pendingAppearance.setupFromDataEdition(data.currentAppearance);
                     }
 
                     await user.pendingAppearance.handleEdition(message, user);

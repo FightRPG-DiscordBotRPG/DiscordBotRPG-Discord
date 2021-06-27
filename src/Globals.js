@@ -352,7 +352,9 @@ var Globals = {
 
     },
     loadAllAppearances: async function () {
-        CharacterAppearance.possibleAppearances = (await axios.get("helpers/characters/appearances")).data.possibleAppearances;
+        const data = (await axios.get("helpers/characters/appearances")).data;
+        CharacterAppearance.possibleAppearances = data.possibleAppearances;
+        CharacterAppearance.bodyAppearances = data.bodyAppearances;
 
         /**
          * @type {{id:number,link:string,appearanceType:number,idBodyType:number|null,canBeDisplayedOnTop:boolean,linkedTo:number[]}}
@@ -364,7 +366,7 @@ var Globals = {
             }
 
             CharacterAppearance.appearancesPerTypes[item.appearanceType].push(item);
-        }        
+        }
     }
 }
 
