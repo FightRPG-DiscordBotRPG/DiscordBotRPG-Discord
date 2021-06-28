@@ -409,6 +409,9 @@ class CharacterModule extends GModule {
                     if (!user.pendingAppearance) {
                         user.pendingAppearance = new CharacterAppearance();
                         user.pendingAppearance.requiredAppearancesTypeForCharacter = data.requiredAppearancesTypeForCharacter;
+                        user.pendingAppearance.selectableBodyColors = data.selectableBodyColors;
+                        user.pendingAppearance.selectableEyeColors = data.selectableEyeColors;
+                        user.pendingAppearance.selectableHairColors = data.selectableHairColors;
                         await user.pendingAppearance.setupFromData(data.currentAppearance);
                         await user.pendingAppearance.setupFromDataEdition(data.currentAppearance);
                     }

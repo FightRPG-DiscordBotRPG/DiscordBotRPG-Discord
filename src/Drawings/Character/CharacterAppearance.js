@@ -391,7 +391,7 @@ class CharacterAppearance {
         // Eyes
         this.drawImage(Utils.canvasTintImage(this.eyebrow, this.hairColor), xDecal + positions.eyes.x, bodyY + positions.eyes.y);
         this.drawImage(this.eyes?.back, xDecal + positions.eyes.x, bodyY + positions.eyes.y);
-        this.drawImage(Utils.canvasTintImage(this.eyes?.front, this.eyeColor, 0.2), xDecal + positions.eyes.x, bodyY + positions.eyes.y);
+        this.drawImage(Utils.canvasTintImage(this.eyes?.front, this.eyeColor, 0.6), xDecal + positions.eyes.x, bodyY + positions.eyes.y);
 
         // Mounth
         this.drawImage(this.mouth?.teeths, xDecal + positions.mouth.teeths.x, bodyY + positions.mouth.teeths.y);
@@ -477,7 +477,7 @@ class CharacterAppearance {
                         if (refAsync === null || (typeof link !== "string" && link !== null)) {
                             return;
                         }
-                        console.log(prop + " & " + link);
+                        //console.log(prop + " & " + link);
                         refAsync[prop] = await this.getImage(link);
                     })());
                 } else {
@@ -661,15 +661,46 @@ class CharacterAppearance {
      */
     async getEditSelectOneEmbed(user) {
 
-        const isBodyType = this.editionSelectedType > 0;
-
         const stringAppearances = this.editionPossibleValues.map((item, i) => i == this.editionSelectedIndex ? "**" + (i + 1) + "**" : i + 1).join(", ");
 
-        return await this.addCurrentImageToEmbed(new Discord.MessageEmbed()
+        let embed = await this.addCurrentImageToEmbed(new Discord.MessageEmbed()
             .setAuthor(Translator.getString(user.lang, "appearance", "edit_title"))
             .setDescription(Translator.getString(user.lang, "appearance", "desc_select_one"))
             .addField(Translator.getString(user.lang, "appearance", "list_of_possible_for_type"), stringAppearances)
         );
+
+        let stringColors = null;
+
+        switch (this.editionSelectedType) {
+            // eyes
+            case 3:
+                stringColors = this.getColorListDisplay(this.selectableEyeColors, this.eyeColor);
+                break;
+            case 4:
+            case 6:
+            case 7:
+                stringColors = this.getColorListDisplay(this.selectableHairColors, this.hairColor);
+                break;
+            case 0:
+                stringColors = this.getColorListDisplay(this.selectableBodyColors, this.bodyColor);
+                break;
+        }
+
+        if (stringColors !== null) {
+            embed = embed.addField(Translator.getString(user.lang, "appearance", "list_of_possible_color"), stringColors);
+        }
+
+
+        return embed;
+    }
+
+    /**
+     * 
+     * @param {[]} selectableColorArray
+     * @param {any} selectedColor
+     */
+    getColorListDisplay(selectableColorArray, selectedColor) {
+        return selectableColorArray.map((item) => item == selectedColor ? "**" + item + "**" : item).join(", ");
     }
 
     async setupFromDataEdition(data) {
@@ -740,13 +771,47 @@ class CharacterAppearance {
     }
 
     async handleEditionSelectOne(user) {
-        await this.editionMessageWrapper.edit(await this.getEditSelectOneEmbed(user), [Emojis.general.left_arrow, Emojis.general.right_arrow, Emojis.general.g_vmark]);
+
+
+        let emojisPossible = [Emojis.general.left_arrow, Emojis.general.right_arrow];
+        let colorsArrayRef = null;
+        let selectedColor = null;
+        let modifyFunc = null;
+
+        switch (this.editionSelectedType) {
+            // eyes
+            case 3:
+                colorsArrayRef = this.selectableEyeColors;
+                selectedColor = this.eyeColor;
+                emojisPossible.push(Emojis.general.rainbow);
+                modifyFunc = (col) => this.eyeColor = col;
+                break;
+            case 4:
+            case 6:
+            case 7:
+                colorsArrayRef = this.selectableHairColors;
+                selectedColor = this.hairColor;
+                emojisPossible.push(Emojis.general.rainbow);
+                modifyFunc = (col) => this.hairColor = col;
+                break;
+            case 0:
+                colorsArrayRef = this.selectableBodyColors;
+                selectedColor = this.bodyColor;
+                emojisPossible.push(Emojis.general.rainbow);
+                modifyFunc = (col) => this.bodyColor = col;
+                break;
+        }
+
+        // Add at the end the validate
+        emojisPossible.push(Emojis.general.g_vmark);
+
+
+        await this.editionMessageWrapper.edit(await this.getEditSelectOneEmbed(user), emojisPossible);
 
         const canBeNull = this.isSelectedEditionTypeCanBeNull();
 
         this.editionMessageWrapper.resetCollectListener();
         this.editionMessageWrapper.collector.on('collect', async (reaction) => {
-            console.log(reaction.emoji.name);
             const oldIndex = this.editionSelectedIndex;
             switch (reaction.emoji.name) {
                 case Emojis.general.left_arrow:
@@ -757,6 +822,14 @@ class CharacterAppearance {
                     break;
                 case Emojis.general.g_vmark:
                     await this.handleEditionSelectType(user);
+                    break;
+                case Emojis.general.rainbow:
+                    {
+                        const index = colorsArrayRef.indexOf(selectedColor);
+                        // Must update selected color since the collect is based on it's value
+                        selectedColor = colorsArrayRef[index >= colorsArrayRef.length - 1 ? 0 : index + 1]
+                        modifyFunc(selectedColor);
+                    }
                     break;
             }
 
@@ -773,15 +846,12 @@ class CharacterAppearance {
 
                 // Body
                 if (this.editionSelectedType === 0) {
-                    console.log(itemSelected);
                     this.bodyType = itemSelected;
-                    console.log(CharacterAppearance.bodyAppearances);
                     await this.loadBaseArmor();
                     await this.loadBasePants();
                     await this.mapProperties(CharacterAppearance.bodyAppearances[this.bodyType]);
+                    // TODO: Remove not compatible items (beard etc)
                 } else {
-
-                    console.log(this.getHash());
 
                     // Clear value before
                     if (this.editionPossibleValues[oldIndex]) {
@@ -796,7 +866,6 @@ class CharacterAppearance {
                         }
 
                         await this.mapProperties(appearanceToReload);
-                        console.log(this.hair);
                     }
 
 
@@ -820,10 +889,9 @@ class CharacterAppearance {
 
                 }
 
-
-                await this.editionMessageWrapper.edit(await this.getEditSelectOneEmbed(user), [Emojis.general.left_arrow, Emojis.general.right_arrow, Emojis.general.back_arrow], false);
-
             }
+
+            await this.editionMessageWrapper.edit(await this.getEditSelectOneEmbed(user), emojisPossible, false);
 
         });
 

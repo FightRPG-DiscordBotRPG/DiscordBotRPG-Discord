@@ -563,7 +563,8 @@ Emojis.general = {
     "haircut": "💇",
     "mouth": "👄",
     "humans_couple": "👫",
-    "back_arrow": "🔙"
+    "back_arrow": "🔙",
+    "rainbow": "🌈"
     };
 
 Emojis.entitiesTypes = {
