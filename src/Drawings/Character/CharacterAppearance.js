@@ -847,10 +847,21 @@ class CharacterAppearance {
                 // Body
                 if (this.editionSelectedType === 0) {
                     this.bodyType = itemSelected;
+
+                    let appearanceToReload = {};
+
+                    for (let i of Object.values(this.editionSelectedPerTypes)) {
+                        const appearance = CharacterAppearance.possibleAppearances[i];
+                        if (appearance.idBodyType !== null && appearance.idBodyType !== this.bodyType) {
+                            // TODO: Fix when can't be null
+                            appearanceToReload[Globals.appearancesTypesToText[appearance.appearanceType]] = null;
+                        }
+                    }
+
                     await this.loadBaseArmor();
                     await this.loadBasePants();
+                    await this.mapProperties(appearanceToReload);
                     await this.mapProperties(CharacterAppearance.bodyAppearances[this.bodyType]);
-                    // TODO: Remove not compatible items (beard etc)
                 } else {
 
                     // Clear value before
@@ -898,7 +909,11 @@ class CharacterAppearance {
     }
 
     isSelectedEditionTypeCanBeNull() {
-        return this.editionSelectedType > 0 ? !this.requiredAppearancesTypeForCharacter.includes(this.editionSelectedType) : false;
+        return this.isThisTypeCanBeNull(this.editionSelectedType);
+    }
+
+    isThisTypeCanBeNull(idType) {
+        return idType > 0 ? !this.requiredAppearancesTypeForCharacter.includes(idType) : false;
     }
 
 
