@@ -630,8 +630,8 @@ class CharacterAppearance {
     async getSelectEmbed(user) {
         return await this.addCurrentImageToEmbed(new Discord.MessageEmbed()
             .setAuthor(Translator.getString(user.lang, "appearance", "title"))
-            .setDescription(
-                "Voici l'apparence votre personnage, cette apparence n'est pas forcément représentative de votre apparence actuelle.Pour appliquer les changements utilisez l'émoji :vmark:. Pour modifier votre apparence utilisez l'émoji ${Emojis.general.clipboard}."));
+            .setDescription(Translator.getString(user.lang, "appearance", "desc_select", [Emojis.general.clipboard]))
+        );
 
     }
 
@@ -641,18 +641,42 @@ class CharacterAppearance {
      */
     async getEditGeneralEmbed(user) {
         return await this.addCurrentImageToEmbed(new Discord.MessageEmbed()
-            .setAuthor(Translator.getString(user.lang, "appearance", "edit_title"))
+            .setAuthor(Translator.getString(user.lang, "appearance", "title"))
             .setDescription(
-                `Choisir ce qu'il faut modifier:
-                - ${Emojis.general.ear} Oreilles
-                - ${Emojis.general.eye} Yeux
-                - ${Emojis.general.eyebrow} Sourcils
-                - ${Emojis.general.nose} Nez
-                - ${Emojis.general.facial_hair} Pilosité faciale
-                - ${Emojis.general.haircut} Coiffure
-                - ${Emojis.general.mouth} Bouche
-                - ${Emojis.general.humans_couple} Type de corps`
+                `${Translator.getString(user.lang, "appearance", "choose_modify")}
+                - ${this.getTypeDisplay(1, user.lang)}
+                - ${this.getTypeDisplay(3, user.lang)}
+                - ${this.getTypeDisplay(4, user.lang)}
+                - ${this.getTypeDisplay(5, user.lang)}
+                - ${this.getTypeDisplay(6, user.lang)}
+                - ${this.getTypeDisplay(7, user.lang)}
+                - ${this.getTypeDisplay(10, user.lang)}
+                - ${this.getTypeDisplay(0, user.lang)}
+                - ${Emojis.general.g_vmark} ${Translator.getString(user.lang, "general", "validate")}`
             ));
+    }
+
+    getTypeDisplay(type, lang = "en") {
+        switch (type) {
+            case 1:
+                return Emojis.general.ear + " " + Translator.getString(lang, "appearance", "ears");
+            case 3:
+                return Emojis.general.eye + " "+ Translator.getString(lang, "appearance", "eyes");
+            case 4:
+                return Emojis.general.eyebrow + " " + Translator.getString(lang, "appearance", "eyebrows");
+            case 5:
+                return Emojis.general.nose + " " + Translator.getString(lang, "appearance", "nose");
+            case 6:
+                return Emojis.general.facial_hair + " " + Translator.getString(lang, "appearance", "facial_hair");
+            case 7:
+                return Emojis.general.haircut + " " + Translator.getString(lang, "appearance", "haircut");
+            case 10:
+                return Emojis.general.mouth + " " + Translator.getString(lang, "appearance", "mouth");
+            case 0:
+                return Emojis.general.humans_couple + " " + Translator.getString(lang, "appearance", "body_type");
+        }
+
+        return "";
     }
 
     /**
@@ -661,10 +685,10 @@ class CharacterAppearance {
      */
     async getEditSelectOneEmbed(user) {
 
-        const stringAppearances = this.editionPossibleValues.map((item, i) => i == this.editionSelectedIndex ? "**" + (i + 1) + "**" : i + 1).join(", ");
+        const stringAppearances = this.editionPossibleValues.map((item, i) => i == this.editionSelectedIndex ? "[**" + (i + 1) + "**]" : i + 1).join(", ");
 
         let embed = await this.addCurrentImageToEmbed(new Discord.MessageEmbed()
-            .setAuthor(Translator.getString(user.lang, "appearance", "edit_title"))
+            .setAuthor(Translator.getString(user.lang, "appearance", "title") + " (" + this.getTypeDisplay(this.editionSelectedType, user.lang) + ")")
             .setDescription(Translator.getString(user.lang, "appearance", "desc_select_one"))
             .addField(Translator.getString(user.lang, "appearance", "list_of_possible_for_type"), stringAppearances)
         );
@@ -700,7 +724,7 @@ class CharacterAppearance {
      * @param {any} selectedColor
      */
     getColorListDisplay(selectableColorArray, selectedColor) {
-        return selectableColorArray.map((item) => item == selectedColor ? "**" + item + "**" : item).join(", ");
+        return selectableColorArray.map((item) => item == selectedColor ? "[**" + item + "**]" : item).join(", ");
     }
 
     async setupFromDataEdition(data) {
@@ -720,6 +744,7 @@ class CharacterAppearance {
 
         if (this.editionMessageWrapper?.collector) {
             this.editionMessageWrapper?.collector.stop();
+            await this.editionMessageWrapper.edit(Translator.getString(user.lang, "appearance", "modifying_elsewhere"), null, true);
         }
 
         this.editionMessageWrapper = new MessageReactionsWrapper();
