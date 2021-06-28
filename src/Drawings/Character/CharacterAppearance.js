@@ -747,9 +747,9 @@ class CharacterAppearance {
      */
     async handleEditionSelectType(user) {
 
-        await this.editionMessageWrapper.edit(await this.getEditGeneralEmbed(user), CharacterAppearance.emojisForTypes);
-
         this.editionMessageWrapper.resetCollectListener();
+        await this.editionMessageWrapper.edit(await this.getEditGeneralEmbed(user), [...CharacterAppearance.emojisForTypes, Emojis.general.g_vmark]);
+
         this.editionMessageWrapper.collector.on('collect', async (reaction) => {
             if (CharacterAppearance.emojisForTypes.includes(reaction.emoji.name)) {
                 this.editionSelectedType = CharacterAppearance.emojisTypesWithValues[reaction.emoji.name];
@@ -765,6 +765,21 @@ class CharacterAppearance {
                 }
 
                 await this.handleEditionSelectOne(user);
+            } else if (reaction.emoji.name === Emojis.general.g_vmark) {
+                const data = (await user.axios.post("/game/character/appearance", {
+                    bodyColor: this.bodyColor,
+                    hairColor: this.hairColor,
+                    eyeColor: this.eyeColor,
+                    bodyType: this.bodyType,
+                    selectedAppearances: Object.values(this.editionSelectedPerTypes).join(",")
+                })).data;
+
+                if (data.error) {
+                    await this.editionMessageWrapper.message.channel.send(data.error);
+                } else {
+                    await this.editionMessageWrapper.deleteAndSend(data.success);
+                }                
+                
             }
         });
 
@@ -822,7 +837,7 @@ class CharacterAppearance {
                     break;
                 case Emojis.general.g_vmark:
                     await this.handleEditionSelectType(user);
-                    break;
+                    return;
                 case Emojis.general.rainbow:
                     {
                         const index = colorsArrayRef.indexOf(selectedColor);

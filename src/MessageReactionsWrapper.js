@@ -87,6 +87,7 @@ class MessageReactionsWrapper {
     }
 
     async deleteAndSend(content) {
+        await this.resetCollectListener();
         await this.message.delete();
         this.message.channel.send(content);
     }
