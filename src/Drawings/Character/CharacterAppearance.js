@@ -131,6 +131,8 @@ class CharacterAppearance {
          *  @type {MessageReactionsWrapper}
          **/
         this.editionMessageWrapper = null;
+
+        this.typesMasks = {};
     }
 
     reset() {
@@ -174,6 +176,7 @@ class CharacterAppearance {
         this.shouldDisplayHelmet = false;
 
         this.weapon = null;
+        this.typesMasks = {};
         this.allLinks = ""
     }
 
@@ -379,7 +382,7 @@ class CharacterAppearance {
             await this.loadBaseArmor();
         }
 
-        this.drawImage(this.armor?.body, bodyX + positions.armor.body.x, bodyY + positions.armor.body.y);
+        this.drawImage(Utils.canvasApplyMask({ image: this.armor?.body, mask: await this.getImage(this.typesMasks["armor.body"]), colorsToReplace: [{ source: "#ff0000", target: "#8B4513" }, { source: "#00ff00", target: "#DEB887" }, { source: "#0000ff", target: "#800000" }]}), bodyX + positions.armor.body.x, bodyY + positions.armor.body.y);
 
         // Neck
         this.drawImage(this.armor?.neck, bodyX + positions.armor.neck.x, bodyY + positions.armor.neck.y);
@@ -453,6 +456,10 @@ class CharacterAppearance {
      * @param {Object<string, {link: string}>} dict
      */
     async mapProperties(dict) {
+
+        if (dict == null) {
+            return;
+        }
 
         //let toMerge = {};
         let loadingImages = [];
@@ -946,6 +953,20 @@ class CharacterAppearance {
 
         });
 
+    }
+
+    /**
+     * 
+     * @param {any} appearance
+     */
+    async applyItemAppearances(appearance) {
+        console.log(appearance.appearances["all"]);
+        const mergedAppearances = { ...appearance.appearances["all"], ...appearance.appearances[this.bodyType] };
+        await this.mapProperties(mergedAppearances);
+
+        for (let property in mergedAppearances) {
+            this.typesMasks[property] = mergedAppearances[property].maskLink;
+        }
     }
 
     isSelectedEditionTypeCanBeNull() {

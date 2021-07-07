@@ -4,7 +4,7 @@ const Utils = require("../src/Utils");
 
 async function start() {
 
-    let path = "W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\without masks";
+    let path = "W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Armor\\base";
     //350x512
     // 190 x 335
     // 190 x 177

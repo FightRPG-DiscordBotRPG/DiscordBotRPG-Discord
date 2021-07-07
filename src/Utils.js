@@ -218,6 +218,94 @@ class Utils {
 
     /**
      * 
+     * @param {{
+        image: Canvas.Image,
+        mask: Canvas.Image,
+        colorsToReplace: [{source: string, target: string}]
+     }} settings
+     */
+    static canvasApplyMask(settings) {
+
+
+        if (!settings.image && !settings.mask) {
+            return null;
+        }
+
+        const image = settings.image;
+
+        const canvas = Canvas.createCanvas(image.width, image.height);
+        const context = canvas.getContext("2d");
+
+        context.save();
+
+        context.drawImage(image, 0, 0);
+        context.globalCompositeOperation = "color";
+
+        let updatedMask = settings.mask;
+
+        for (let colors of settings.colorsToReplace) {
+            updatedMask = Utils.canvasReplaceColor(updatedMask, colors.source, colors.target);
+        }
+
+
+        context.drawImage(Utils.canvasRemoveWithMask(image, updatedMask), 0, 0);
+        context.restore();
+
+        return context.canvas;
+    }
+
+    /**
+     * 
+     * @param {Canvas.Image} source
+     * @param {Canvas.Image} target
+     */
+    static canvasRemoveWithMask(source, target) {
+        const canvas = Canvas.createCanvas(source.width, source.height);
+        const context = canvas.getContext("2d");
+
+        context.save();
+        context.drawImage(target, 0, 0);
+        context.globalCompositeOperation = "destination-atop";
+        context.drawImage(source, 0, 0);
+        context.restore();
+
+        return context.canvas;
+    }
+
+    /**
+     * 
+     * @param {Canvas.Image} image
+     * @param {string} sourceColor
+     * @param {string} targetColor
+     */
+    static canvasReplaceColor(image, sourceColor, targetColor) {
+        sourceColor = sourceColor.toLowerCase();
+        targetColor = targetColor.toLowerCase();
+        const canvas = Canvas.createCanvas(image.width, image.height);
+        const context = canvas.getContext("2d");
+        context.drawImage(image, 0, 0);
+
+        let imgd = context.getImageData(0, 0, image.width, image.height),
+            pix = imgd.data;
+
+        for (let i = 0, n = pix.length; i < n; i += 4) {
+            const r = pix[i],
+                g = pix[i + 1],
+                b = pix[i + 2];
+            if (Utils.rgbToHex(r, g, b) == sourceColor) {
+                const c = Utils.hexToRgb(targetColor);
+                pix[i] = c.r;
+                pix[i + 1] = c.g;
+                pix[i + 2] = c.b;
+
+            }
+        }
+        context.putImageData(imgd, 0, 0);
+        return context.canvas;
+    }
+
+    /**
+     * 
      * @param {Canvas.Image} image
      * @param {number} deg
      * @returns {Canvas.Canvas}
@@ -282,6 +370,25 @@ class Utils {
     static getRandomHexColor() {
         return "#" + Math.floor(Math.random() * 16777215).toString(16);
     }
+
+    static componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+
+    static rgbToHex(r, g, b) {
+        return "#" + Utils.componentToHex(r) + Utils.componentToHex(g) + Utils.componentToHex(b);
+    }
+
+    static hexToRgb(hex) {
+        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+
 
     static calcProjectedRectSizeOfRotatedRect(width, height, rotation) {
         const {
