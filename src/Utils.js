@@ -295,6 +295,8 @@ class Utils {
         let imgd = context.getImageData(0, 0, image.width, image.height),
             pix = imgd.data;
 
+        // Todo use array of colors instead of x=>y go array of x=>y
+
         for (let i = 0, n = pix.length; i < n; i += 4) {
             const r = pix[i],
                 g = pix[i + 1],
@@ -305,6 +307,13 @@ class Utils {
                 pix[i + 1] = c.g;
                 pix[i + 2] = c.b;
 
+            }
+
+            if (Utils.rgbToHex(r, g, b) == "#000000") {
+                pix[i] = 255;
+                pix[i + 1] = 255;
+                pix[i + 2] = 255;
+                pix[i+3] = 0;
             }
         }
         context.putImageData(imgd, 0, 0);
