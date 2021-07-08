@@ -233,7 +233,7 @@ class Utils {
 
         console.log(settings.colorsToReplace);
 
-        if (!settings.mask) {
+        if (!settings.mask || !Array.isArray(settings.colorsToReplace)) {
             return image;
         }
 
