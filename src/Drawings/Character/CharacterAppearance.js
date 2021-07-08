@@ -344,8 +344,8 @@ class CharacterAppearance {
         this.drawImage(Utils.canvasRotateImage(this.armor?.lower_right, positions.armor.lower_right.rotation, true), bodyX + positions.armor.lower_right.x, bodyY + positions.armor.lower_right.y);
 
         // Glove Right
-        this.drawImage(Utils.canvasRotateImage(this.gloves?.right?.wrist, positions.gloves.right.wrist.rotation), bodyX + positions.gloves.right.wrist.x, bodyY + positions.gloves.right.wrist.y, this.gloves?.right?.wrist?.width * positions.gloves.scale, this.gloves?.right?.wrist?.height * positions.gloves.scale);
-        this.drawImage(Utils.canvasRotateImage(this.gloves?.right?.hand, positions.gloves.right.hand.rotation), bodyX + positions.gloves.right.hand.x, bodyY + positions.gloves.right.hand.y, this.gloves?.right?.hand?.width * positions.gloves.scale, this.gloves?.right?.hand?.height * positions.gloves.scale);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.gloves?.right?.wrist, "gloves.right.wrist"), positions.gloves.right.wrist.rotation), bodyX + positions.gloves.right.wrist.x, bodyY + positions.gloves.right.wrist.y, this.gloves?.right?.wrist?.width * positions.gloves.scale, this.gloves?.right?.wrist?.height * positions.gloves.scale);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.gloves?.right?.hand, "gloves.right.hand"), positions.gloves.right.hand.rotation), bodyX + positions.gloves.right.hand.x, bodyY + positions.gloves.right.hand.y, this.gloves?.right?.hand?.width * positions.gloves.scale, this.gloves?.right?.hand?.height * positions.gloves.scale);
 
         // Right weapon (offhand)
         this.drawImage(Utils.canvasRotateImage(this.weapon?.offhand, positions.weapon.offhand.rotation, true), bodyX + positions.weapon.offhand.x, bodyY + positions.weapon.offhand.y);
@@ -389,7 +389,7 @@ class CharacterAppearance {
             await this.loadBaseArmor();
         }
 
-        this.drawImage(Utils.canvasApplyMask({ image: this.armor?.body, mask: await this.getImage(this.typesMasks["armor.body"]?.maskLink), colorsToReplace: this.typesMasks["armor.body"]?.maskColors}), bodyX + positions.armor.body.x, bodyY + positions.armor.body.y);
+        this.drawImage(await this.applyColor(this.armor?.body, "armor.body"), bodyX + positions.armor.body.x, bodyY + positions.armor.body.y);
 
         // Neck
         this.drawImage(this.armor?.neck, bodyX + positions.armor.neck.x, bodyY + positions.armor.neck.y);
@@ -429,8 +429,8 @@ class CharacterAppearance {
         this.drawImage(Utils.canvasRotateImage(this.armor?.lower_left, positions.armor.lower_left.rotation, true), bodyX + positions.armor.lower_left.x, bodyY + positions.armor.lower_left.y);
 
         // Gloves left
-        this.drawImage(Utils.canvasRotateImage(this.gloves?.left?.wrist, positions.gloves.left.wrist.rotation), bodyX + positions.gloves.left.wrist.x, bodyY + positions.gloves.left.wrist.y, this.gloves?.left?.wrist?.width * positions.gloves.scale, this.gloves?.left?.wrist?.height * positions.gloves.scale);
-        this.drawImage(Utils.canvasRotateImage(this.gloves?.left?.hand, positions.gloves.left.hand.rotation), bodyX + positions.gloves.left.hand.x, bodyY + positions.gloves.left.hand.y, this.gloves?.left?.hand?.width * positions.gloves.scale, this.gloves?.left?.hand?.height * positions.gloves.scale);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.gloves?.left?.wrist, "gloves.left.wrist"), positions.gloves.left.wrist.rotation), bodyX + positions.gloves.left.wrist.x, bodyY + positions.gloves.left.wrist.y, this.gloves?.left?.wrist?.width * positions.gloves.scale, this.gloves?.left?.wrist?.height * positions.gloves.scale);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.gloves?.left?.hand, "gloves.left.hand"), positions.gloves.left.hand.rotation), bodyX + positions.gloves.left.hand.x, bodyY + positions.gloves.left.hand.y, this.gloves?.left?.hand?.width * positions.gloves.scale, this.gloves?.left?.hand?.height * positions.gloves.scale);
 
         // Helmet Front
         if (this.shouldDisplayHelmet) {
@@ -456,6 +456,15 @@ class CharacterAppearance {
         if (img) {
             this.canvasContext.drawImage(img, x, y, width ?? img.width, height ?? img.height);
         }
+    }
+
+    /**
+     * 
+     * @param {Canvas.Image | null} image
+     * @param {string} maskType
+     */
+    async applyColor(image, maskType) {
+        return Utils.canvasApplyMask({ image: image, mask: await this.getImage(this.typesMasks[maskType]?.maskLink), colorsToReplace: this.typesMasks[maskType]?.maskColors })
     }
 
     /**
