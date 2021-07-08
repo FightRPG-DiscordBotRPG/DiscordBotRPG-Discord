@@ -131,7 +131,14 @@ class CharacterAppearance {
          *  @type {MessageReactionsWrapper}
          **/
         this.editionMessageWrapper = null;
-
+        /**
+         * @type {Object<string, 
+         { 
+            maskColors: {source: string, target: string}[],
+            maskLink: string
+         }
+         >}
+         **/
         this.typesMasks = {};
     }
 
@@ -382,7 +389,7 @@ class CharacterAppearance {
             await this.loadBaseArmor();
         }
 
-        this.drawImage(Utils.canvasApplyMask({ image: this.armor?.body, mask: await this.getImage(this.typesMasks["armor.body"]), colorsToReplace: [{ source: "#ff0000", target: "#8B4513" }, { source: "#00ff00", target: "#DEB887" }, { source: "#0000ff", target: "#800000" }]}), bodyX + positions.armor.body.x, bodyY + positions.armor.body.y);
+        this.drawImage(Utils.canvasApplyMask({ image: this.armor?.body, mask: await this.getImage(this.typesMasks["armor.body"]?.maskLink), colorsToReplace: this.typesMasks["armor.body"]?.maskColors}), bodyX + positions.armor.body.x, bodyY + positions.armor.body.y);
 
         // Neck
         this.drawImage(this.armor?.neck, bodyX + positions.armor.neck.x, bodyY + positions.armor.neck.y);
@@ -960,12 +967,16 @@ class CharacterAppearance {
      * @param {any} appearance
      */
     async applyItemAppearances(appearance) {
-        console.log(appearance.appearances["all"]);
-        const mergedAppearances = { ...appearance.appearances["all"], ...appearance.appearances[this.bodyType] };
+
+        if (!appearance.appearances) {
+            return;
+        }
+
+        const mergedAppearances = Object.assign(appearance.appearances["all"], appearance.appearances[this.bodyType]);
         await this.mapProperties(mergedAppearances);
 
         for (let property in mergedAppearances) {
-            this.typesMasks[property] = mergedAppearances[property].maskLink;
+            this.typesMasks[property] = mergedAppearances[property];
         }
     }
 

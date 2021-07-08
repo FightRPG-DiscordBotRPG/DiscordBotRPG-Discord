@@ -225,30 +225,37 @@ class Utils {
      }} settings
      */
     static canvasApplyMask(settings) {
+        const image = settings.image;
 
-
-        if (!settings.image && !settings.mask) {
+        if (!image) {
             return null;
         }
 
-        const image = settings.image;
+        console.log(settings.colorsToReplace);
+
+        if (!settings.mask) {
+            return image;
+        }
+
 
         const canvas = Canvas.createCanvas(image.width, image.height);
         const context = canvas.getContext("2d");
 
         context.save();
 
-        context.drawImage(image, 0, 0);
-        context.globalCompositeOperation = "color";
+        // Multiply if mask drawned before
 
+        context.drawImage(image, 0, 0);
+
+        context.globalCompositeOperation = "multiply";
         let updatedMask = settings.mask;
 
         for (let colors of settings.colorsToReplace) {
             updatedMask = Utils.canvasReplaceColor(updatedMask, colors.source, colors.target);
         }
 
-
         context.drawImage(Utils.canvasRemoveWithMask(image, updatedMask), 0, 0);
+
         context.restore();
 
         return context.canvas;
