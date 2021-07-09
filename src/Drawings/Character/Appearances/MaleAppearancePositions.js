@@ -59,9 +59,9 @@ class MaleAppearancePositions extends AppearancePositions {
 			},
 			left: {
 				wrist: {
-					x: -30,
+					x: -36,
 					y: 386,
-					rotation: 0
+					rotation: -3
 				},
 				hand: {
 					x: -15,
