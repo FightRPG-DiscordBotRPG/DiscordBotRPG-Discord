@@ -330,7 +330,7 @@ class CharacterAppearance {
 
         // Helmet Back
         if (this.shouldDisplayHelmet) {
-            this.drawImage(this.helmet?.back, bodyX + positions.helmet.x, bodyY + positions.helmet.y);
+            this.drawImage(await this.applyColor(this.helmet?.back, "helmet.back"), bodyX + positions.helmet.x, bodyY + positions.helmet.y);
         }
 
         // Right Shield (offhand)
@@ -434,7 +434,7 @@ class CharacterAppearance {
 
         // Helmet Front
         if (this.shouldDisplayHelmet) {
-            this.drawImage(this.helmet?.front, bodyX + positions.helmet.x, bodyY + positions.helmet.y);
+            this.drawImage(await this.applyColor(this.helmet?.front, "helmet.front"), bodyX + positions.helmet.x, bodyY + positions.helmet.y);
         }
 
 
@@ -538,7 +538,9 @@ class CharacterAppearance {
 
 
     static updateCache(key, value) {
-        CharacterAppearance.cache[key] = value;
+        if (value) {
+            CharacterAppearance.cache[key] = value;
+        }
     }
 
     /**
@@ -546,13 +548,18 @@ class CharacterAppearance {
      * @param {string} url
      */
     async getImage(url) {
-        this.allLinks += url;
 
         if (!url) {
             return null;
         }
 
-        let img = CharacterAppearance.cache[url] ? CharacterAppearance.cache[url] : await Canvas.loadImage(url);
+        this.allLinks += url;
+        let img = CharacterAppearance.cache[url];
+        if (!img) {
+            try {
+               img = await Canvas.loadImage(url)
+            } catch { console.log("Unable to load image " + url); };
+        }
         CharacterAppearance.updateCache(url, img);
         return img;
     }
@@ -684,7 +691,7 @@ class CharacterAppearance {
             case 1:
                 return Emojis.general.ear + " " + Translator.getString(lang, "appearance", "ears");
             case 3:
-                return Emojis.general.eye + " "+ Translator.getString(lang, "appearance", "eyes");
+                return Emojis.general.eye + " " + Translator.getString(lang, "appearance", "eyes");
             case 4:
                 return Emojis.general.eyebrow + " " + Translator.getString(lang, "appearance", "eyebrows");
             case 5:
@@ -826,8 +833,8 @@ class CharacterAppearance {
                     await this.editionMessageWrapper.message.channel.send(data.error);
                 } else {
                     await this.editionMessageWrapper.deleteAndSend(data.success);
-                }                
-                
+                }
+
             }
         });
 
