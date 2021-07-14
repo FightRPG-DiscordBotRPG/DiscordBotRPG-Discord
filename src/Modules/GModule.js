@@ -66,7 +66,10 @@ class GModule {
 
                 // Handle tutorial
                 let user = Globals.connectedUsers[message.author.id];
-                await user.tutorial.reactOnCommand(usedCommand, message, user.lang);
+
+                if (user) {
+                    await user.tutorial.reactOnCommand(usedCommand, message, user.lang);
+                }
 
                 return msgToReturn;
             }
