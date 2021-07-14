@@ -247,7 +247,7 @@ class Utils {
 
         context.drawImage(image, 0, 0);
 
-        context.globalCompositeOperation = "multiply";
+        context.globalCompositeOperation = "overlay";
         let updatedMask = settings.mask;
 
         for (let colors of settings.colorsToReplace) {
