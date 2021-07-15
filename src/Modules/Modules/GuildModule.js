@@ -162,7 +162,7 @@ class GuildModule extends GModule {
 
         }
 
-        this.sendMessage(message, msg);
+        this.sendMessage(message, msg, command);
     }
 }
 

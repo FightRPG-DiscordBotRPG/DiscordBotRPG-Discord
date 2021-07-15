@@ -65,7 +65,7 @@ class CraftingModule extends GModule {
                 msg = this.getBasicSuccessErrorMessage(await axios.get("/game/crafting/resources"));
                 break;
         }
-        this.sendMessage(message, msg);
+        this.sendMessage(message, msg, command);
     }
 }
 

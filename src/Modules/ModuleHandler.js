@@ -117,7 +117,7 @@ class ModuleHandler extends GModule {
                 case "tutorial":
                 case "play":
                 case "start":
-                    msg = Translator.getString(user.lang, "help_panel", "tutorial", [Globals.tutorialLink]);
+                    await user.tutorial.start(message, user.lang);
                     break;
                 case "setmobile":
                     if (Globals.yesNoByLang[args[0]]) {
@@ -382,11 +382,8 @@ class ModuleHandler extends GModule {
                     } catch (err) {
                         if (!this.devMode) {
                             if (err.constructor != Discord.DiscordAPIError) {
-                                let adminTell = "A module has crashed.\nCommand: " + command + "\nArgs: [" + args.toString() + "]\n" + "User that have crashed the command: " + message.author.username + "#" + message.author.discriminator;
-                                message.client.shard.broadcastEval(`let user = this.users.cache.get("241564725870198785");
-                            if(user != null) {
-                                user.send(\`${adminTell}\`).catch((e) => {null});
-                            }`);
+                                let adminTell = "A module has crashed.\nCommand: " + command + "\nArgs: [" + args.toString() + "]\n" + "User that have crashed the command: " + message.author.username + "#" + message.author.discriminator + "\n";
+                                await Utils.sendDMToSpecificUser("241564725870198785", Utils.prepareStackError(err, adminTell));
                             } else {
                                 console.log(err);
                                 message.channel.send(err.name).catch((e) => {
@@ -415,11 +412,8 @@ class ModuleHandler extends GModule {
             await user.load();
             if (user.token == null) {
                 await user.createUser();
-                message.author.send(Translator.getString("en", "help_panel", "tutorial", [Globals.tutorialLink])).catch((e) => {
-                    message.channel.send(Translator.getString("en", "help_panel", "tutorial", [Globals.tutorialLink])).catch((e) => {
-                        console.log(e);
-                    });
-                });
+                await this.sendMessage(message, Translator.getString("en", "help_panel", "tutorial", [Globals.tutorialLink]));
+                await user.tutorial.start(message, "en");
             }
             if (user.token != null) {
                 Globals.connectedUsers[message.author.id] = user;

@@ -4,14 +4,16 @@ const Discord = require("discord.js");
 const Emojis = require("./Emojis");
 const Globals = require("../Globals");
 const GenericMultipleEmbedList = require("./GenericMultipleEmbedList");
+const User = require("../Users/User");
 
 class Inventory {
     /**
      * 
      * @param {any} data
      * @param {Boolean} isInventory
+     * @param {User} user
      */
-    displayAsList(data, isInventory) {
+    async displayAsList(data, isInventory, user) {
         let lang = data.lang;
 
         let emptyTitle = "";
@@ -46,6 +48,18 @@ class Inventory {
             .setAuthor(titleEmbed)
             .setDescription(header)
             ;
+
+        if (!isInventory) {
+            await user.appearance.setupFromData(data.appearance);
+
+            for (let item of data.items) {
+                await user.appearance.applyItemAppearances(item.appearance);
+            }
+
+            embed = embed.attachFiles(new Discord.MessageAttachment((await user.appearance.getCharacter()).createPNGStream(), "character.png"))
+                .setImage("attachment://character.png");
+        }
+
 
         return inventoryList.getEmbed(embed);
     }

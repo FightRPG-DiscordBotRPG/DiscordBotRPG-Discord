@@ -28,6 +28,8 @@ class FightModule extends GModule {
                     idMonster: args[0],
                 }), async (data) => {
                     await fightManager.fight(data, message, user);
+                    // For tutorial
+                    await user.tutorial.reactOnCommand("fight", message, user.lang);
                 });
                 break;
 
@@ -38,10 +40,12 @@ class FightModule extends GModule {
                     mention: firstMention != null ? firstMention.id : undefined
                 }), async (data) => {
                     await fightManager.fight(data, message, user);
+                    // For tutorial
+                    await user.tutorial.reactOnCommand("arena", message, user.lang);
                 });
         }
 
-        this.sendMessage(message, msg);
+        this.sendMessage(message, msg, command);
     }
 }
 

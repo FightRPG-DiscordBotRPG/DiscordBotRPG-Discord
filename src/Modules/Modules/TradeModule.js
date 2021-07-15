@@ -82,7 +82,7 @@ class TradeModule extends GModule {
 
         }
 
-        this.sendMessage(message, msg);
+        this.sendMessage(message, msg, command);
     }
 }
 

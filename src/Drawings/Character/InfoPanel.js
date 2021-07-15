@@ -6,6 +6,7 @@ const Utils = require("../../Utils");
 const User = require("../../Users/User");
 const TextDrawings = require("../TextDrawings");
 const Rebirth = require("./Rebirth");
+const Canvas = require('canvas');
 
 class InfoPanel {
     constructor() {
@@ -54,7 +55,7 @@ class InfoPanel {
      * @param {Discord.MessageEmbed} embed
      */
     embedInfoPanelAddOther(data, user, embed) {
-        return embed.addField(Emojis.general.q_mark + " " +Translator.getString(data.lang, "help_panel", "other_title"), GenericMultipleEmbedList.getSeparator())
+        return embed.addField(Emojis.general.q_mark + " " + Translator.getString(data.lang, "help_panel", "other_title"), GenericMultipleEmbedList.getSeparator())
             .addField(Emojis.general.money_bag + " " + Translator.getString(data.lang, "character", "money"), Translator.getFormater(data.lang).format(data.money) + " G", true)
             .addField(Emojis.emojisProd.honor.string + " " + Translator.getString(data.lang, "character", "honor"), Translator.getFormater(data.lang).format(data.honor), true)
             .addField(Emojis.general.trophy + " " + Translator.getString(data.lang, "character", "achievement_count", [data.achievements.totalAchievementsEarned, data.achievements.totalAchievements]), Translator.getString(data.lang, "general", "points" + (data.achievements.totalPoints > 1 ? "_plur" : ""), [data.achievements.totalPoints]), true)
@@ -68,7 +69,7 @@ class InfoPanel {
      */
     embedInfoPanelAddCharacterResources(data, user, embed) {
         return embed.addField(Emojis.general.bar_chart + " " + Translator.getString(data.lang, "character", "character_resources"), GenericMultipleEmbedList.getSeparator())
-            .addField(Emojis.general.red_heart + " " +Translator.getString(data.lang, "character", "health_points"), TextDrawings.formatHealth(data.currentHp, data.maxHp, data.lang, 8, false, false), true)
+            .addField(Emojis.general.red_heart + " " + Translator.getString(data.lang, "character", "health_points"), TextDrawings.formatHealth(data.currentHp, data.maxHp, data.lang, 8, false, false), true)
             .addField(Emojis.general.water_droplet + " " + Translator.getString(data.lang, "character", "mana_points"), TextDrawings.formatMana(data.currentMp, data.maxMp, data.lang, 8, false, false), true)
             .addField(Emojis.general.high_voltage + " " + Translator.getString(data.lang, "character", "energy_points"), TextDrawings.formatEnergy(data.currentEnergy, data.maxEnergy, data.lang, 8, false, false), true)
     }
@@ -117,7 +118,7 @@ class InfoPanel {
 
 
 
-        embed = embed.addField(Emojis.emojisProd.exp.string + " " +Translator.getString(data.lang, "character", "character_advancement"), GenericMultipleEmbedList.getSeparator())
+        embed = embed.addField(Emojis.emojisProd.exp.string + " " + Translator.getString(data.lang, "character", "character_advancement"), GenericMultipleEmbedList.getSeparator())
             .addField(titleXPFight, playerLevelDisplay.title + "\n" + playerLevelDisplay.bar, true)
             .addField(titleXPCraft, playerCraftLevelDisplay.title + "\n" + playerCraftLevelDisplay.bar, true);
 
@@ -130,6 +131,7 @@ class InfoPanel {
         this.displayResources = false;
         this.displayAdvancement = false;
     }
+
 }
 
 module.exports = InfoPanel;

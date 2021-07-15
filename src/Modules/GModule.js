@@ -12,6 +12,7 @@ const LeaderboardCraftLevel = require("../Drawings/Leaderboard/LeaderboardCraftL
 const LeaderboardAchievements = require("../Drawings/Leaderboard/LeaderboardAchievements");
 const Emojis = require("../Drawings/Emojis");
 const MessageReactionsWrapper = require("../MessageReactionsWrapper");
+const User = require("../Users/User");
 
 class GModule {
     constructor() {
@@ -50,8 +51,9 @@ class GModule {
      * 
      * @param {Discord.Message} message
      * @param {string | Discord.MessageEmbed} msg
+     * @param {string} usedCommand
      */
-    async sendMessage(message, msg) {
+    async sendMessage(message, msg, usedCommand) {
         try {
             if (msg != null && msg != "") {
                 let msgCut = msg;
@@ -60,7 +62,16 @@ class GModule {
                     msgCut = msgCut.substring(1999);
                 }
                 msg = msgCut;
-                return await message.channel.send(msg);
+                let msgToReturn = await message.channel.send(msg);
+
+                // Handle tutorial
+                let user = Globals.connectedUsers[message.author.id];
+
+                if (user) {
+                    await user.tutorial.reactOnCommand(usedCommand, message, user.lang);
+                }
+
+                return msgToReturn;
             }
         } catch (ex) {
             message.author.send(ex.message).catch((e) => {
