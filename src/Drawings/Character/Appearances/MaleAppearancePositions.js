@@ -45,6 +45,7 @@ class MaleAppearancePositions extends AppearancePositions {
 
 		this.gloves = {
 			scale: 1,
+			wristScale: 1,
 			right: {
 				wrist: {
 					x: 237,
@@ -65,7 +66,7 @@ class MaleAppearancePositions extends AppearancePositions {
 				},
 				hand: {
 					x: -15,
-					y: 548,
+					y: 550,
 					rotation: -11
 				}
 			}

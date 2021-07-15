@@ -44,28 +44,29 @@ class FemaleAppearancePositions extends AppearancePositions {
 		};
 
 		this.gloves = {
-			scale: 0.95,
+			scale: 0.9,
+			wristScale: 0.85,
 			right: {
 				wrist: {
-					x: 246,
-					y: 420,
-					rotation: -10
+					x: 246 + 10,
+					y: 420 + 30,
+					rotation: -8
 				},
 				hand: {
-					x: 268,
-					y: 570,
-					rotation: -12
+					x: 268 + 5,
+					y: 570 + 9,
+					rotation: -14
 				}
 			},
 			left: {
 				wrist: {
-					x: -5,
-					y: 400,
+					x: -5 + 9,
+					y: 400 + 18,
 					rotation: 0
 				},
 				hand: {
-					x: 12,
-					y: 552,
+					x: 12 + 4,
+					y: 552  + 7,
 					rotation: -11
 				}
 			}

@@ -43,6 +43,7 @@ class AppearancePositions {
 
         this.gloves = {
             scale: 1,
+            wristScale: 1,
             right: {
                 wrist: {
                     x: 0,

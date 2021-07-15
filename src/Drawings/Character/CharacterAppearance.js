@@ -194,7 +194,6 @@ class CharacterAppearance {
         let debugFacialHair = Utils.randRangeInteger(0, 17).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: true });
         //this.facialHair = await this.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Base\\Facial Hair\\${debugFacialHair}.png`);
 
-        this.bodyType = 2;
         this.background = await this.getImage("https://img00.deviantart.net/b5ba/i/2016/117/d/2/cracked_landsape_by_thechrispman-da0ehq0.png");
         let name = this.bodyType === 2 ? "fe" : "";
 
@@ -344,7 +343,7 @@ class CharacterAppearance {
         this.drawImage(Utils.canvasRotateImage(this.armor?.lower_right, positions.armor.lower_right.rotation, true), bodyX + positions.armor.lower_right.x, bodyY + positions.armor.lower_right.y);
 
         // Glove Right
-        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.gloves?.right?.wrist, "gloves.right.wrist"), positions.gloves.right.wrist.rotation), bodyX + positions.gloves.right.wrist.x, bodyY + positions.gloves.right.wrist.y, this.gloves?.right?.wrist?.width * positions.gloves.scale, this.gloves?.right?.wrist?.height * positions.gloves.scale);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.gloves?.right?.wrist, "gloves.right.wrist"), positions.gloves.right.wrist.rotation), bodyX + positions.gloves.right.wrist.x, bodyY + positions.gloves.right.wrist.y, this.gloves?.right?.wrist?.width * positions.gloves.wristScale, this.gloves?.right?.wrist?.height * positions.gloves.wristScale);
         this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.gloves?.right?.hand, "gloves.right.hand"), positions.gloves.right.hand.rotation), bodyX + positions.gloves.right.hand.x, bodyY + positions.gloves.right.hand.y, this.gloves?.right?.hand?.width * positions.gloves.scale, this.gloves?.right?.hand?.height * positions.gloves.scale);
 
         // Right weapon (offhand)
@@ -429,7 +428,7 @@ class CharacterAppearance {
         this.drawImage(Utils.canvasRotateImage(this.armor?.lower_left, positions.armor.lower_left.rotation, true), bodyX + positions.armor.lower_left.x, bodyY + positions.armor.lower_left.y);
 
         // Gloves left
-        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.gloves?.left?.wrist, "gloves.left.wrist"), positions.gloves.left.wrist.rotation), bodyX + positions.gloves.left.wrist.x, bodyY + positions.gloves.left.wrist.y, this.gloves?.left?.wrist?.width * positions.gloves.scale, this.gloves?.left?.wrist?.height * positions.gloves.scale);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.gloves?.left?.wrist, "gloves.left.wrist"), positions.gloves.left.wrist.rotation), bodyX + positions.gloves.left.wrist.x, bodyY + positions.gloves.left.wrist.y, this.gloves?.left?.wrist?.width * positions.gloves.wristScale, this.gloves?.left?.wrist?.height * positions.gloves.wristScale);
         this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.gloves?.left?.hand, "gloves.left.hand"), positions.gloves.left.hand.rotation), bodyX + positions.gloves.left.hand.x, bodyY + positions.gloves.left.hand.y, this.gloves?.left?.hand?.width * positions.gloves.scale, this.gloves?.left?.hand?.height * positions.gloves.scale);
 
         // Helmet Front
