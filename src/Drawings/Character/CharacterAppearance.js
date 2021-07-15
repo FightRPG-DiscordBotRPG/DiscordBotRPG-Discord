@@ -339,8 +339,8 @@ class CharacterAppearance {
         // Right Arm
         this.drawImage(Utils.canvasTintImage(this.right, this.bodyColor), bodyX, bodyY);
 
-        this.drawImage(Utils.canvasRotateImage(this.armor?.upper_right, positions.armor.upper_right.rotation), bodyX + positions.armor.upper_right.x, bodyY + positions.armor.upper_right.y);
-        this.drawImage(Utils.canvasRotateImage(this.armor?.lower_right, positions.armor.lower_right.rotation, true), bodyX + positions.armor.lower_right.x, bodyY + positions.armor.lower_right.y);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.armor?.upper_right, "armor.upper_right"), positions.armor.upper_right.rotation), bodyX + positions.armor.upper_right.x, bodyY + positions.armor.upper_right.y);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.armor?.lower_right, "armor.lower_right"), positions.armor.lower_right.rotation, true), bodyX + positions.armor.lower_right.x, bodyY + positions.armor.lower_right.y);
 
         // Glove Right
         this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.gloves?.right?.wrist, "gloves.right.wrist"), positions.gloves.right.wrist.rotation), bodyX + positions.gloves.right.wrist.x, bodyY + positions.gloves.right.wrist.y, this.gloves?.right?.wrist?.width * positions.gloves.wristScale, this.gloves?.right?.wrist?.height * positions.gloves.wristScale);
@@ -391,7 +391,7 @@ class CharacterAppearance {
         this.drawImage(await this.applyColor(this.armor?.body, "armor.body"), bodyX + positions.armor.body.x, bodyY + positions.armor.body.y);
 
         // Neck
-        this.drawImage(this.armor?.neck, bodyX + positions.armor.neck.x, bodyY + positions.armor.neck.y);
+        this.drawImage(await this.applyColor(this.armor?.neck, "armor.neck"), bodyX + positions.armor.neck.x, bodyY + positions.armor.neck.y);
 
 
         // Head
@@ -424,8 +424,9 @@ class CharacterAppearance {
         // Left Arm
         this.drawImage(Utils.canvasTintImage(this.left, this.bodyColor), bodyX, bodyY);
 
-        this.drawImage(Utils.canvasRotateImage(this.armor?.upper_left, positions.armor.upper_left.rotation, true), bodyX + positions.armor.upper_left.x, bodyY + positions.armor.upper_left.y);
-        this.drawImage(Utils.canvasRotateImage(this.armor?.lower_left, positions.armor.lower_left.rotation, true), bodyX + positions.armor.lower_left.x, bodyY + positions.armor.lower_left.y);
+
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.armor?.upper_left, "armor.upper_left"), positions.armor.upper_left.rotation, true), bodyX + positions.armor.upper_left.x, bodyY + positions.armor.upper_left.y);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.armor?.lower_left, "armor.lower_left"), positions.armor.lower_left.rotation, true), bodyX + positions.armor.lower_left.x, bodyY + positions.armor.lower_left.y);
 
         // Gloves left
         this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.gloves?.left?.wrist, "gloves.left.wrist"), positions.gloves.left.wrist.rotation), bodyX + positions.gloves.left.wrist.x, bodyY + positions.gloves.left.wrist.y, this.gloves?.left?.wrist?.width * positions.gloves.wristScale, this.gloves?.left?.wrist?.height * positions.gloves.wristScale);
@@ -987,7 +988,7 @@ class CharacterAppearance {
             return;
         }
 
-        const mergedAppearances = Object.assign(appearance.appearances["all"], appearance.appearances[this.bodyType]);
+        const mergedAppearances = Object.assign(appearance.appearances["all"] ?? {}, appearance.appearances[this.bodyType] ?? {});
         await this.mapProperties(mergedAppearances);
 
         for (let property in mergedAppearances) {
