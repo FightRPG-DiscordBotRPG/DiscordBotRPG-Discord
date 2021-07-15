@@ -300,8 +300,11 @@ class Utils {
         for (let i = 0, n = pix.length; i < n; i += 4) {
             const r = pix[i],
                 g = pix[i + 1],
-                b = pix[i + 2];
-            if (Utils.rgbToHex(r, g, b) == sourceColor) {
+                b = pix[i + 2],
+                hexValue = Utils.rgbToHex(r, g, b),
+                sourceColorRgb = Utils.hexToRgb(sourceColor);
+
+            if (hexValue == sourceColor || Utils.colorDistance([r, g, b], [sourceColorRgb.r, sourceColorRgb.g, sourceColorRgb.b]) < 20) {
                 const c = Utils.hexToRgb(targetColor);
                 pix[i] = c.r;
                 pix[i + 1] = c.g;
@@ -309,15 +312,28 @@ class Utils {
 
             }
 
-            if (Utils.rgbToHex(r, g, b) == "#000000") {
+            if (hexValue == "#000000") {
                 pix[i] = 255;
                 pix[i + 1] = 255;
                 pix[i + 2] = 255;
-                pix[i+3] = 0;
+                pix[i + 3] = 0;
             }
         }
         context.putImageData(imgd, 0, 0);
         return context.canvas;
+    }
+
+    /**
+     * 
+     * @param {number[]} colors1
+     * @param {number[]} colors2
+     */
+    static colorDistance(colors1, colors2) {
+        let d = 0;
+        for (let i = 0; i < colors1.length; i++) {
+            d += (colors1[i] - colors2[i]) * (colors1[i] - colors2[i]);
+        }
+        return Math.sqrt(d);
     }
 
     /**
