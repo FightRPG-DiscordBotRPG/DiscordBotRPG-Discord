@@ -363,15 +363,15 @@ class CharacterAppearance {
             await this.loadBasePants();
         }
 
-        this.drawImage(Utils.canvasRotateImage(this.pants?.upper_right, positions.pants.upper_right.rotation, true), xDecal + positions.pants.upper_right.x, bodyY + positions.pants.upper_right.y);
-        this.drawImage(Utils.canvasRotateImage(this.pants?.lower_right, positions.pants.lower_right.rotation, true), xDecal + positions.pants.lower_right.x, bodyY + positions.pants.lower_right.y);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.pants?.upper_right, "pants.upper_right"), positions.pants.upper_right.rotation, true), xDecal + positions.pants.upper_right.x, bodyY + positions.pants.upper_right.y);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.pants?.lower_right, "pants.lower_right"), positions.pants.lower_right.rotation, true), xDecal + positions.pants.lower_right.x, bodyY + positions.pants.lower_right.y);
 
-        this.drawImage(this.pants?.hip, xDecal + positions.pants.hip.x, bodyY + positions.pants.hip.y, this.pants?.hip?.width, this.pants?.hip?.height);
+        this.drawImage(await this.applyColor(this.pants?.hip, "pants.hip"), xDecal + positions.pants.hip.x, bodyY + positions.pants.hip.y, this.pants?.hip?.width, this.pants?.hip?.height);
 
         this.drawImage(Utils.canvasTintImage(this.left_leg, this.bodyColor), bodyX, bodyY);
 
-        this.drawImage(Utils.canvasRotateImage(this.pants?.upper_left, positions.pants.upper_left.rotation, true), xDecal + positions.pants.upper_left.x, bodyY + positions.pants.upper_left.y);
-        this.drawImage(Utils.canvasRotateImage(this.pants?.lower_left, positions.pants.lower_left.rotation, true), xDecal + positions.pants.lower_left.x, bodyY + positions.pants.lower_left.y);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.pants?.upper_left, "pants.upper_left"), positions.pants.upper_left.rotation, true), xDecal + positions.pants.upper_left.x, bodyY + positions.pants.upper_left.y);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.pants?.lower_left, "pants.lower_left"), positions.pants.lower_left.rotation, true), xDecal + positions.pants.lower_left.x, bodyY + positions.pants.lower_left.y);
 
 
         // Boots
