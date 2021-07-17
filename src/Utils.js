@@ -299,20 +299,15 @@ class Utils {
                 g = pix[i + 1],
                 b = pix[i + 2],
                 hexValue = Utils.rgbToHex(r, g, b),
+
                 sourceColorRgb = Utils.hexToRgb(sourceColor);
 
-            if (hexValue == sourceColor || Utils.colorDistance([r, g, b], [sourceColorRgb.r, sourceColorRgb.g, sourceColorRgb.b]) < 20) {
+            if (hexValue == sourceColor || Utils.colorDistance([r, g, b], [sourceColorRgb.r, sourceColorRgb.g, sourceColorRgb.b]) < 180) {
                 const c = Utils.hexToRgb(targetColor);
                 pix[i] = c.r;
                 pix[i + 1] = c.g;
                 pix[i + 2] = c.b;
-
-            }
-
-            if (hexValue == "#000000") {
-                pix[i] = 255;
-                pix[i + 1] = 255;
-                pix[i + 2] = 255;
+            } else if (Utils.colorDistance([0, 0, 0], [sourceColorRgb.r, sourceColorRgb.g, sourceColorRgb.b]) < 100) {
                 pix[i + 3] = 0;
             }
         }

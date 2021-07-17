@@ -29,15 +29,23 @@ async function multipleTest() {
         //    back:  doesHelmetHaveBack ? await appearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Helmet\\Fantasy ${debugFacialHair}_back.png`) : null,
         //}
 
-        appearance.gloves = {
-            left: {
-                wrist: await appearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy ${debugFacialHair}_wrist_left.png`),
-                hand: await appearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy ${debugFacialHair}_hand_left.png`),
-            },
-            right: {
-                wrist: await appearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy ${debugFacialHair}_wrist_right.png`),
-                hand: await appearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy ${debugFacialHair}_hand_right.png`),
-            },
+        //appearance.gloves = {
+        //    left: {
+        //        wrist: await appearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy ${debugFacialHair}_wrist_left.png`),
+        //        hand: await appearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy ${debugFacialHair}_hand_left.png`),
+        //    },
+        //    right: {
+        //        wrist: await appearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy ${debugFacialHair}_wrist_right.png`),
+        //        hand: await appearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Gloves\\Fantasy ${debugFacialHair}_hand_right.png`),
+        //    },
+        //}
+
+        appearance.pants = {
+            lower_left: await appearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy 09 Female_real_lower_left.png`),
+            upper_left: await appearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy 09 Female_real_upper_left.png`),
+            hip: await appearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy 09 Female_real_hip.png`),
+            lower_right: await appearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy 09 Female_real_lower_right.png`),
+            upper_right: await appearance.getImage(`W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Pants\\Fantasy 09 Female_real_upper_right.png`),
         }
 
         fs.writeFileSync("./test" + debugFacialHair + ".png", await (await appearance.getCharacter()).toBuffer());
