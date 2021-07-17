@@ -375,12 +375,12 @@ class CharacterAppearance {
 
 
         // Boots
-        this.drawImage(Utils.canvasRotateImage(this.boots?.lower_left, positions.boots.lower_left.rotation, true), xDecal + positions.boots.lower_left.x, bodyY + positions.boots.lower_left.y, this.boots?.lower_left.width * positions.boots.scale, this.boots?.lower_left.height);
-        this.drawImage(Utils.canvasRotateImage(this.boots?.foot_left, positions.boots.foot_left.rotation, true), bodyX + positions.boots.foot_left.x, bodyY + positions.boots.foot_left.y, this.boots?.foot_left.width * positions.boots.scale, this.boots?.foot_left.height);
+        this.drawImage(Utils.canvasRotateImage(this.boots?.lower_left, positions.boots.lower_left.rotation, true), xDecal + positions.boots.lower_left.x, bodyY + positions.boots.lower_left.y, this.boots?.lower_left?.width * positions.boots.scale, this.boots?.lower_left?.height);
+        this.drawImage(Utils.canvasRotateImage(this.boots?.foot_left, positions.boots.foot_left.rotation, true), bodyX + positions.boots.foot_left.x, bodyY + positions.boots.foot_left.y, this.boots?.foot_left?.width * positions.boots.scale, this.boots?.foot_left?.height);
 
 
-        this.drawImage(Utils.canvasRotateImage(this.boots?.lower_right, positions.boots.lower_right.rotation, true), xDecal + positions.boots.lower_right.x, bodyY + positions.boots.lower_right.y, this.boots?.lower_right.width * positions.boots.scale, this.boots?.lower_right.height);
-        this.drawImage(Utils.canvasRotateImage(this.boots?.foot_right, positions.boots.foot_right.rotation, true), xDecal + positions.boots.foot_right.x, bodyY + positions.boots.foot_right.y, this.boots?.foot_right.width * positions.boots.scale, this.boots?.foot_right.height);
+        this.drawImage(Utils.canvasRotateImage(this.boots?.lower_right, positions.boots.lower_right.rotation, true), xDecal + positions.boots.lower_right.x, bodyY + positions.boots.lower_right.y, this.boots?.lower_right?.width * positions.boots.scale, this.boots?.lower_right?.height);
+        this.drawImage(Utils.canvasRotateImage(this.boots?.foot_right, positions.boots.foot_right.rotation, true), xDecal + positions.boots.foot_right.x, bodyY + positions.boots.foot_right.y, this.boots?.foot_right?.width * positions.boots.scale, this.boots?.foot_right?.height);
 
 
         // Body Armor
