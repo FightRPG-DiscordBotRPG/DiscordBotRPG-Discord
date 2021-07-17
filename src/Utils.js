@@ -231,12 +231,9 @@ class Utils {
             return null;
         }
 
-        console.log(settings.colorsToReplace);
-
         if (!settings.mask || !Array.isArray(settings.colorsToReplace)) {
             return image;
         }
-
 
         const canvas = Canvas.createCanvas(image.width, image.height);
         const context = canvas.getContext("2d");
@@ -471,7 +468,6 @@ class Utils {
     }
 
     static async sendDMToSpecificUser(idUser, message) {
-        console.log("send dm: " + message);
         return (await Utils.axiosToUse.post(`/usr`, {
             id: idUser,
             message: message,
