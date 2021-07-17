@@ -367,7 +367,51 @@ var Globals = {
 
             CharacterAppearance.appearancesPerTypes[item.appearanceType].push(item);
         }
-    }
+
+        //console.log(data.itemsAppearances);
+        if (conf.env === "dev") {
+            //return;
+        }
+
+        const loadingPromises = [];
+        for (let appearances of Object.values(data.itemsAppearances)) {
+            for (let bodyTypeAppearances of Object.values(appearances)) {
+                for (let item of Object.values(bodyTypeAppearances)) {
+                    loadingPromises.push(
+                        (async () => {
+                            const hash = CharacterAppearance.itemAppearanceToHash(item);
+                            const filename = hash + ".png";
+
+                            while (CharacterAppearance.itemsCache[hash] == null) {
+                                try {
+                                    // Test if cdn cache is configured
+                                    // If you use this and you try to edit and embed, the image is not updated /!\
+                                    if (!conf.cdnAppearanceCache || !hash) {
+                                        CharacterAppearance.itemsCache[hash] = await CharacterAppearance.applyColor(item);
+                                        return;
+                                    }
+
+                                    // Test cache cdn and upload if needed
+                                    const data = (await CharacterAppearance.defaultAxios.get("get_cache.php?filename=" + filename)).data;
+                                    if (!data.cached) {
+                                        await CharacterAppearance.setToCacheOnline(filename, (await CharacterAppearance.applyColor(item)).createPNGStream());
+                                    }
+
+                                    CharacterAppearance.itemsCache[hash] = await CharacterAppearance.getImage(conf.cdnAppearanceCache + filename);
+                                } catch {
+                                    console.error("Retrying item: " + filename);
+                                }
+
+                            }
+                        })()
+                    );
+                }
+            }
+        }
+
+        await Promise.all(loadingPromises);
+    },
+    isLoading: true,
 }
 
 module.exports = Globals;

@@ -35,6 +35,11 @@ class CharacterAppearance {
      */
     static appearancesPerTypes = {};
 
+    /**
+     * @type Object<string, Canvas.Image>
+     */
+    static itemsCache = {};
+
     static basicPantsPerBodyTypes = {
         1: {
             hip: "https://cdn.fight-rpg.com/images/appearances/base/pants/Base%2001%20Male_hip.png",
@@ -135,7 +140,8 @@ class CharacterAppearance {
          * @type {Object<string, 
          { 
             maskColors: {source: string, target: string}[],
-            maskLink: string
+            maskLink: string,
+            id: number,
          }
          >}
          **/
@@ -472,7 +478,20 @@ class CharacterAppearance {
      * @param {string} maskType
      */
     async applyColor(image, maskType) {
-        return Utils.canvasApplyMask({ image: image, mask: await this.getImage(this.typesMasks[maskType]?.maskLink), colorsToReplace: this.typesMasks[maskType]?.maskColors })
+
+        const itemData = this.typesMasks[maskType];
+
+        if (!itemData) {
+            return;
+        }
+
+        const key = CharacterAppearance.itemAppearanceToHash(itemData);
+
+        if (!CharacterAppearance.itemsCache[key]) {
+            return await CharacterAppearance.applyColor(itemData, image);
+        }
+
+        return CharacterAppearance.itemsCache[key];
     }
 
     /**
@@ -562,12 +581,25 @@ class CharacterAppearance {
         }
 
         this.allLinks += url;
+        return CharacterAppearance.getImage(url);
+    }
+
+    static async getImage(url, retry = true) {
         let img = CharacterAppearance.cache[url];
         if (!img) {
             try {
                 img = await Canvas.loadImage(url)
-            } catch { console.log("Unable to load image " + url); };
+            } catch (ex) {
+                if (!retry) {
+                    console.log("Unable to load image " + url + "\n" + ex);
+                }
+            };
         }
+
+        if (!img && retry) {
+            return await CharacterAppearance.getImage(url, false);
+        }
+
         CharacterAppearance.updateCache(url, img);
         return img;
     }
@@ -639,26 +671,27 @@ class CharacterAppearance {
         const data = (await CharacterAppearance.defaultAxios.get("get_cache.php?filename=" + filename)).data;
 
         if (!data.cached) {
-            // Upload
-
-            const fileToCache = (await this.getCharacter()).createPNGStream();
-            const fData = new FormData();
-
-            fData.append('key', conf.cdnKey);
-            fData.append('fileToCache', fileToCache, filename);
-
-            await CharacterAppearance.defaultAxios.post(
-                "upload_cache.php",
-                fData,
-                {
-                    headers: fData.getHeaders()
-                }
-            );
-
+            await CharacterAppearance.setToCacheOnline(filename, (await this.getCharacter()).createPNGStream());
         }
 
         return embed
             .setImage(conf.cdnAppearanceCache + filename);
+    }
+
+    static async setToCacheOnline(filename, fileToCache) {
+        // Upload
+        const fData = new FormData();
+
+        fData.append('key', conf.cdnKey);
+        fData.append('fileToCache', fileToCache, filename);
+
+        await CharacterAppearance.defaultAxios.post(
+            "upload_cache.php",
+            fData,
+            {
+                headers: fData.getHeaders()
+            }
+        );
     }
 
     /**
@@ -835,7 +868,7 @@ class CharacterAppearance {
                     hairColor: this.hairColor,
                     eyeColor: this.eyeColor,
                     bodyType: this.bodyType,
-                    shouldDisplayHelmet : this.shouldDisplayHelmet,
+                    shouldDisplayHelmet: this.shouldDisplayHelmet,
                     selectedAppearances: Object.values(this.editionSelectedPerTypes).join(",")
                 })).data;
 
@@ -1018,6 +1051,38 @@ class CharacterAppearance {
 
     isThisTypeCanBeNull(idType) {
         return idType > 0 ? !this.requiredAppearancesTypeForCharacter.includes(idType) : false;
+    }
+
+
+    /**
+     * 
+     * @param {{
+            maskColors: {source: string, target: string}[],
+            maskLink: string,
+            id: number,
+         }} item
+     */
+    static itemAppearanceToHash(item) {
+        const colors = Array.isArray(item.maskColors) ? item.maskColors.map(e => e.source + e.target).join(",") :"none";
+        return hash(item.id + colors);
+    }
+
+    /**
+     *
+     * @param {{
+            maskColors: {source: string, target: string}[],
+            maskLink: string,
+            id: number,
+         }} itemData
+         @param {Canvas.Image | HTMLCanvasElement} image
+     */
+    static async applyColor(itemData, image = null) {
+        if (!image) {
+            image = Utils.canvasRotateImage(await CharacterAppearance.getImage(itemData.link));
+        }
+
+        const mask = await this.getImage(itemData?.maskLink);
+        return Utils.canvasApplyMask({ image: image, mask: mask, colorsToReplace: itemData?.maskColors });
     }
 
 

@@ -8,6 +8,7 @@ const Translator = require("../Translator/Translator");
 const version = require("../../conf/version");
 const Utils = require("../Utils");
 const conf = require("../../conf/conf");
+const Emojis = require("../Drawings/Emojis");
 
 class ModuleHandler extends GModule {
     constructor() {
@@ -60,6 +61,12 @@ class ModuleHandler extends GModule {
      * @param {Discord.Message} message
      */
     async run(message) {
+
+        if (Globals.isLoading) {
+            await this.sendMessage("The bot is still loading. Please wait. " + Emojis.general.hourglass_not_done)
+            return;
+        }
+
         let msg = "";
         let authorIdentifier = message.author.id;
         let prefix = this.getPrefix(message.channel.guild ? message.channel.guild.id : null);

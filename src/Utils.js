@@ -6,6 +6,7 @@ const Translator = require("./Translator/Translator");
 const User = require("./Users/User");
 const Canvas = require("canvas");
 const { default: axios } = require("axios");
+const Color = require("./Drawings/Color");
 
 class Utils {
     static emptyEmbedCharacter = "\u200b";
@@ -223,6 +224,7 @@ class Utils {
         mask: Canvas.Image,
         colorsToReplace: [{source: string, target: string}]
      }} settings
+     @returns {HTMLCanvasElement}
      */
     static canvasApplyMask(settings) {
         const image = settings.image;
@@ -247,9 +249,14 @@ class Utils {
         context.globalCompositeOperation = "overlay";
         let updatedMask = settings.mask;
 
+        let sources = [];
+        let targets = [];
         for (let colors of settings.colorsToReplace) {
-            updatedMask = Utils.canvasReplaceColor(updatedMask, colors.source, colors.target);
+            sources.push(colors.source);
+            targets.push(colors.target);
         }
+
+        updatedMask = Utils.canvasReplaceColor(updatedMask, sources, targets);
 
         context.drawImage(Utils.canvasRemoveWithMask(image, updatedMask), 0, 0);
 
@@ -279,39 +286,45 @@ class Utils {
     /**
      * 
      * @param {Canvas.Image} image
-     * @param {string} sourceColor
-     * @param {string} targetColor
+     * @param {string[]} sourceColors
+     * @param {string[]} targetColors
      */
-    static canvasReplaceColor(image, sourceColor, targetColor) {
-        sourceColor = sourceColor.toLowerCase();
-        targetColor = targetColor.toLowerCase();
+    static canvasReplaceColor(image, sourceColors, targetColors) {
         const canvas = Canvas.createCanvas(image.width, image.height);
         const context = canvas.getContext("2d");
         context.drawImage(image, 0, 0);
 
+        
         let imgd = context.getImageData(0, 0, image.width, image.height),
             pix = imgd.data;
-
-        // Todo use array of colors instead of x=>y go array of x=>y
 
         for (let i = 0, n = pix.length; i < n; i += 4) {
             const r = pix[i],
                 g = pix[i + 1],
                 b = pix[i + 2],
-                hexValue = Utils.rgbToHex(r, g, b),
+                hexValue = Utils.rgbToHex(r, g, b);
 
-                sourceColorRgb = Utils.hexToRgb(sourceColor);
 
-            if (hexValue == sourceColor || Utils.colorDistance([r, g, b], [sourceColorRgb.r, sourceColorRgb.g, sourceColorRgb.b]) < 180) {
-                const c = Utils.hexToRgb(targetColor);
-                pix[i] = c.r;
-                pix[i + 1] = c.g;
-                pix[i + 2] = c.b;
-            } else if (Utils.colorDistance([0, 0, 0], [sourceColorRgb.r, sourceColorRgb.g, sourceColorRgb.b]) < 100) {
-                pix[i + 3] = 0;
+            for (let j in sourceColors) {
+                const sourceColor = sourceColors[j];
+                const sourceColorRgb = Utils.hexToRgb(sourceColor);
+                if (hexValue == sourceColor || Utils.colorDistance([r, g, b], [sourceColorRgb.r, sourceColorRgb.g, sourceColorRgb.b]) < 180) {
+                    const c = Utils.hexToRgb(targetColors[j]);
+                    pix[i] = c.r;
+                    pix[i + 1] = c.g;
+                    pix[i + 2] = c.b;
+                    break;
+                } else if (Utils.colorDistance([0, 0, 0], [sourceColorRgb.r, sourceColorRgb.g, sourceColorRgb.b]) < 100) {
+                    pix[i + 3] = 0;
+                    break;
+                }
             }
+
+            
         }
         context.putImageData(imgd, 0, 0);
+
+
         return context.canvas;
     }
 

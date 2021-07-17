@@ -25,6 +25,10 @@ let timeStart = Date.now();
 
 async function startBot() {
     try {
+        console.time("Bot login");
+        await bot.login(conf.discordbotkey);
+        console.timeEnd("Bot login");
+
         console.time("Load Translator");
         await Translator.loadTranslator();
         console.timeEnd("Load Translator");
@@ -37,17 +41,15 @@ async function startBot() {
         await Globals.loadAllAppearances();
         console.timeEnd("Load Appearances");
 
-        console.time("Bot login");
-        await bot.login(conf.discordbotkey);
-        console.timeEnd("Bot login");
-
         setTimeoutToRemoveInactiveUsers();
+
+        Globals.isLoading = false;
     } catch (error) {
         let errorDate = new Date();
         console.log("Error when connecting Shard. Restarting shard in 30 seconds...");
         console.log(errorDate.toUTCString());
         console.log(error);
-        setTimeout(startBot, 30000);
+        //setTimeout(startBot, 30000);
     }
 }
 
