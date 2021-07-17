@@ -309,6 +309,15 @@ class CharacterAppearance {
         //await this.loadAssets();
 
         const imageHeight = 1300, imageWidth = 1000;
+
+        if (this.shouldDisplayHelmet && this.helmet?.front) {
+            this.hair = {
+                back: null,
+                front: await this.getImage("https://cdn.fight-rpg.com/images/appearances/base/hairs/01.png")
+            }
+        }
+
+
         const positions = this.getPositions();
 
 
