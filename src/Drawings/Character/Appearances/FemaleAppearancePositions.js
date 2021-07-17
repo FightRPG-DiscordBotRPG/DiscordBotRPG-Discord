@@ -102,12 +102,12 @@ class FemaleAppearancePositions extends AppearancePositions {
 		this.boots = {
 			scale: 0.82,
 			lower_left: {
-				x: -238 + 25,
+				x: -238 + 22,
 				y: 800,
-				rotation: 7
+				rotation: 10
 			},
 			foot_left: {
-				x: 0 + 23,
+				x: 0 + 21,
 				y: 1050,
 				rotation: 0
 			},
