@@ -333,7 +333,7 @@ class CharacterAppearance {
         }
 
         // Right Shield (offhand)
-        this.drawImage(Utils.canvasRotateImage(this.weapon?.shield, positions.weapon.offhand.rotation, true), bodyX + positions.weapon.offhand.x, bodyY + positions.weapon.offhand.y);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.weapon?.shield, "weapon.shield") , positions.weapon.offhand.rotation, true), bodyX + positions.weapon.offhand.x, bodyY + positions.weapon.offhand.y);
 
 
         // Right Arm
@@ -347,10 +347,10 @@ class CharacterAppearance {
         this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.gloves?.right?.hand, "gloves.right.hand"), positions.gloves.right.hand.rotation), bodyX + positions.gloves.right.hand.x, bodyY + positions.gloves.right.hand.y, this.gloves?.right?.hand?.width * positions.gloves.scale, this.gloves?.right?.hand?.height * positions.gloves.scale);
 
         // Right weapon (offhand)
-        this.drawImage(Utils.canvasRotateImage(this.weapon?.offhand, positions.weapon.offhand.rotation, true), bodyX + positions.weapon.offhand.x, bodyY + positions.weapon.offhand.y);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.weapon?.offhand, "weapon.offhand"), positions.weapon.offhand.rotation, true), bodyX + positions.weapon.offhand.x, bodyY + positions.weapon.offhand.y);
 
         // Bow
-        this.drawImage(Utils.canvasRotateImage(this.weapon?.bow, positions.weapon.bow.rotation, true), bodyX + positions.weapon.bow.x, bodyY + positions.weapon.bow.y);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.weapon?.bow, "weapon.bow"), positions.weapon.bow.rotation, true), bodyX + positions.weapon.bow.x, bodyY + positions.weapon.bow.y);
 
 
 
@@ -415,7 +415,7 @@ class CharacterAppearance {
 
 
         // Left weapon (main)
-        this.drawImage(Utils.canvasRotateImage(this.weapon?.main, positions.weapon.main.rotation, true), bodyX + positions.weapon.main.x, bodyY + positions.weapon.main.y);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.weapon?.main, "weapon.main"), positions.weapon.main.rotation, true), bodyX + positions.weapon.main.x, bodyY + positions.weapon.main.y);
 
         // Left Arm
         this.drawImage(Utils.canvasTintImage(this.left, this.bodyColor), bodyX, bodyY);
