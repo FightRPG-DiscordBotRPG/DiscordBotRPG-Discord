@@ -375,12 +375,11 @@ class CharacterAppearance {
 
 
         // Boots
-        this.drawImage(Utils.canvasRotateImage(this.boots?.lower_left, positions.boots.lower_left.rotation, true), xDecal + positions.boots.lower_left.x, bodyY + positions.boots.lower_left.y, this.boots?.lower_left?.width * positions.boots.scale, this.boots?.lower_left?.height);
-        this.drawImage(Utils.canvasRotateImage(this.boots?.foot_left, positions.boots.foot_left.rotation, true), bodyX + positions.boots.foot_left.x, bodyY + positions.boots.foot_left.y, this.boots?.foot_left?.width * positions.boots.scale, this.boots?.foot_left?.height);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.boots?.lower_left, "boots.lower_left"), positions.boots.lower_left.rotation, true), xDecal + positions.boots.lower_left.x, bodyY + positions.boots.lower_left.y, this.boots?.lower_left?.width * positions.boots.scale, this.boots?.lower_left?.height);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.boots?.foot_left, "boots.foot_left"), positions.boots.foot_left.rotation, true), bodyX + positions.boots.foot_left.x, bodyY + positions.boots.foot_left.y, this.boots?.foot_left?.width * positions.boots.scale, this.boots?.foot_left?.height);
 
-
-        this.drawImage(Utils.canvasRotateImage(this.boots?.lower_right, positions.boots.lower_right.rotation, true), xDecal + positions.boots.lower_right.x, bodyY + positions.boots.lower_right.y, this.boots?.lower_right?.width * positions.boots.scale, this.boots?.lower_right?.height);
-        this.drawImage(Utils.canvasRotateImage(this.boots?.foot_right, positions.boots.foot_right.rotation, true), xDecal + positions.boots.foot_right.x, bodyY + positions.boots.foot_right.y, this.boots?.foot_right?.width * positions.boots.scale, this.boots?.foot_right?.height);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.boots?.lower_right, "boots.lower_right"), positions.boots.lower_right.rotation, true), xDecal + positions.boots.lower_right.x, bodyY + positions.boots.lower_right.y, this.boots?.lower_right?.width * positions.boots.scale, this.boots?.lower_right?.height);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.boots?.foot_right, "boots.foot_right"), positions.boots.foot_right.rotation, true), xDecal + positions.boots.foot_right.x, bodyY + positions.boots.foot_right.y, this.boots?.foot_right?.width * positions.boots.scale, this.boots?.foot_right?.height);
 
 
         // Body Armor
@@ -414,9 +413,6 @@ class CharacterAppearance {
         this.drawImage(Utils.canvasTintImage(this.ear, this.bodyColor), xDecal + positions.ear.x, bodyY + positions.ear.y);
         this.drawImage(Utils.canvasTintImage(this.nose, this.bodyColor), xDecal + positions.nose.x, bodyY + positions.nose.y);
 
-        // Hair
-        this.drawImage(Utils.canvasTintImage(this.hair?.front, this.hairColor), bodyX + positions.hair.x, bodyY + positions.hair.y);
-
 
         // Left weapon (main)
         this.drawImage(Utils.canvasRotateImage(this.weapon?.main, positions.weapon.main.rotation, true), bodyX + positions.weapon.main.x, bodyY + positions.weapon.main.y);
@@ -427,6 +423,9 @@ class CharacterAppearance {
 
         this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.armor?.upper_left, "armor.upper_left"), positions.armor.upper_left.rotation, true), bodyX + positions.armor.upper_left.x, bodyY + positions.armor.upper_left.y);
         this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.armor?.lower_left, "armor.lower_left"), positions.armor.lower_left.rotation, true), bodyX + positions.armor.lower_left.x, bodyY + positions.armor.lower_left.y);
+
+        // Hair
+        this.drawImage(Utils.canvasTintImage(this.hair?.front, this.hairColor), bodyX + positions.hair.x, bodyY + positions.hair.y);
 
         // Gloves left
         this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.gloves?.left?.wrist, "gloves.left.wrist"), positions.gloves.left.wrist.rotation), bodyX + positions.gloves.left.wrist.x, bodyY + positions.gloves.left.wrist.y, this.gloves?.left?.wrist?.width * positions.gloves.wristScale, this.gloves?.left?.wrist?.height * positions.gloves.wristScale);
