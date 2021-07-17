@@ -18,7 +18,7 @@ async function start() {
 
         let img = await Canvas.loadImage(path + "\\" + file);
 
-        let fileName = file.replace(".png", "");
+        let fileName = file.replace(".png", "").replace("mask", "Mask");
 
         const string = Utils.canvasCut(img, 0, 0, 64, 1024);
         const bow = Utils.canvasCut(img, 64, 0, 448, 1024);

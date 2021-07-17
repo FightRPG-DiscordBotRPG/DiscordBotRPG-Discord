@@ -18,7 +18,7 @@ async function start() {
 
         let img = await Canvas.loadImage(path + "\\" + file);
 
-        let fileName = file.replace(".png", "");
+        let fileName = file.replace(".png", "").replace("mask", "Mask");
 
         //console.log(Utils.canvasCut(img, 0, 0, 350, 512).toBuffer());
         fs.writeFileSync(`${path}/../${fileName}_back.png`, Utils.canvasCut(img, 0, 0, 512, 512).toBuffer());

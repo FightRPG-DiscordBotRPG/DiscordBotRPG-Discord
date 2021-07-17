@@ -4,7 +4,7 @@ const Utils = require("../src/Utils");
 
 async function start() {
 
-    let path = "W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\without masks";
+    let path = "W:\\DocumentsWndows\\FightRPG\\character\\Fantasy\\Boots\\base";
 
     //350x512
     // 190 x 335
@@ -19,7 +19,7 @@ async function start() {
 
         let img = await Canvas.loadImage(path + "\\" + file);
 
-        let fileName = file.replace(".png", "");
+        let fileName = file.replace(".png", "").replace("mask", "Mask");
 
         //console.log(Utils.canvasCut(img, 0, 0, 350, 512).toBuffer());
 
