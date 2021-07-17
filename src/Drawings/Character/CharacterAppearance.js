@@ -342,7 +342,7 @@ class CharacterAppearance {
         }
 
         // Right Shield (offhand)
-        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.weapon?.shield, "weapon.shield") , positions.weapon.offhand.rotation, true), bodyX + positions.weapon.offhand.x, bodyY + positions.weapon.offhand.y);
+        this.drawImage(Utils.canvasRotateImage(await this.applyColor(this.weapon?.shield, "weapon.shield"), positions.weapon.offhand.rotation, true), bodyX + positions.weapon.offhand.x, bodyY + positions.weapon.offhand.y);
 
 
         // Right Arm
@@ -565,7 +565,7 @@ class CharacterAppearance {
         let img = CharacterAppearance.cache[url];
         if (!img) {
             try {
-               img = await Canvas.loadImage(url)
+                img = await Canvas.loadImage(url)
             } catch { console.log("Unable to load image " + url); };
         }
         CharacterAppearance.updateCache(url, img);
@@ -742,6 +742,7 @@ class CharacterAppearance {
             case 6:
             case 7:
                 stringColors = this.getColorListDisplay(this.selectableHairColors, this.hairColor);
+                embed = embed.addField(Translator.getString(user.lang, "appearance", "helmet"), Translator.getString(user.lang, "general", this.shouldDisplayHelmet ? "yes" : "no"));
                 break;
             case 0:
                 stringColors = this.getColorListDisplay(this.selectableBodyColors, this.bodyColor);
@@ -834,6 +835,7 @@ class CharacterAppearance {
                     hairColor: this.hairColor,
                     eyeColor: this.eyeColor,
                     bodyType: this.bodyType,
+                    shouldDisplayHelmet : this.shouldDisplayHelmet,
                     selectedAppearances: Object.values(this.editionSelectedPerTypes).join(",")
                 })).data;
 
@@ -870,6 +872,7 @@ class CharacterAppearance {
                 colorsArrayRef = this.selectableHairColors;
                 selectedColor = this.hairColor;
                 emojisPossible.push(Emojis.general.rainbow);
+                emojisPossible.push(Emojis.general.helmet);
                 modifyFunc = (col) => this.hairColor = col;
                 break;
             case 0:
@@ -901,6 +904,11 @@ class CharacterAppearance {
                 case Emojis.general.g_vmark:
                     await this.handleEditionSelectType(user);
                     return;
+                case Emojis.general.helmet:
+                    {
+                        this.shouldDisplayHelmet = !this.shouldDisplayHelmet;
+                    }
+                    break;
                 case Emojis.general.rainbow:
                     {
                         const index = colorsArrayRef.indexOf(selectedColor);

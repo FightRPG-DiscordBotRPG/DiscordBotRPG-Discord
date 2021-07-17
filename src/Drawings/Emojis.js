@@ -564,7 +564,8 @@ Emojis.general = {
     "mouth": "👄",
     "humans_couple": "👫",
     "back_arrow": "🔙",
-    "rainbow": "🌈"
+    "rainbow": "🌈",
+    "helmet": "⛑️"
     };
 
 Emojis.entitiesTypes = {
