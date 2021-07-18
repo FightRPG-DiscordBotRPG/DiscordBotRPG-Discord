@@ -482,7 +482,7 @@ class CharacterAppearance {
         const itemData = this.typesMasks[maskType];
 
         if (!itemData) {
-            return;
+            return image;
         }
 
         const key = CharacterAppearance.itemAppearanceToHash(itemData);
