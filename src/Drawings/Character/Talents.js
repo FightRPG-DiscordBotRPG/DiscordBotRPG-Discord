@@ -4,6 +4,11 @@ const Emojis = require("../../Drawings/Emojis");
 const TextDrawings = require("../TextDrawings");
 const User = require("../../Users/User");
 const Canvas = require('canvas');
+const Utils = require("../../Utils");
+const CharacterAppearance = require("./CharacterAppearance");
+const conf = require("../../../conf/conf");
+const hash = require('object-hash');
+const { fontsize } = require("../../../conf/version");
 
 class Talents {
 
@@ -51,8 +56,7 @@ class Talents {
             embed = embed.addField(Translator.getString(lang, "inventory_equipment", "secondary_attributes"), TextDrawings.statsToString(data.secondaryStats, {}, TextDrawings.statCompareTypes.talents, user, lang));
         }
 
-
-        return embed;
+        return this.addCurrentImageToEmbed(embed, data);
     }
 
 
@@ -87,7 +91,7 @@ class Talents {
 
         this.isThereStats(data.node.secondaryStats);
 
-        let embed = new Discord.MessageEmbed() 
+        let embed = new Discord.MessageEmbed()
             .setColor(color)
             .setAuthor(`${data.node.id} - ${data.node.visuals.name} (${titleBonus})`, data.node.visuals.icon)
             .addField(Translator.getString(lang, "talents", "cost"), Emojis.general.target + " " + Translator.getString(lang, "talents", "x_point" + (data.node.realCost > 1 ? "_plural" : ""), [data.node.realCost]))
@@ -107,43 +111,148 @@ class Talents {
         return embed;
     }
 
-    async allToImage(data, message) {
+    /**
+     * 
+     * @param {Discord.MessageEmbed} embed
+     * @param {any} data
+     */
+    async addCurrentImageToEmbed(embed, data) {
 
-        console.log(data);
+        const hashFile = hash(
+            data
+        );
+        let cachedLink = CharacterAppearance.uploadedImagesCacheLinks[hashFile];
+
+        // Test Cache
+        if (cachedLink && hashFile) {
+            return embed.setImage(cachedLink.url);
+        }
+
+        const filename = hashFile + ".png";
+
+        // Test if cdn cache is configured
+        // If you use this and you try to edit and embed, the image is not updated /!\
+        if (!conf.cdnAppearanceCache || !hashFile || conf.env === "dev") {
+            return embed
+                .attachFiles(new Discord.MessageAttachment((await this.allToImage(data)).createPNGStream(), "talents.png"))
+                .setImage("attachment://talents.png");
+        }
+
+        // Test cache cdn and upload if needed
+        const reqData = (await CharacterAppearance.defaultAxios.get("get_cache.php?filename=" + filename)).reqData;
+        if (!reqData || !reqData.cached) {
+            await CharacterAppearance.setToCacheOnline(filename, (await this.allToImage(data)).createPNGStream());
+        }
+
+        return embed
+            .setImage(conf.cdnAppearanceCache + filename);
+    }
+
+    async allToImage(data) {
 
         let talentsByIds = {};
 
-        const nodesCanvas = Canvas.createCanvas(1024, 1024);
+        const nodesCanvas = Canvas.createCanvas(1536, 1536);
+        const ctxNodes = nodesCanvas.getContext("2d");
 
-        const ctx = nodesCanvas.getContext("2d");
+        const allCanvas = Canvas.createCanvas(1536, 1536);
+        const ctxLinks = allCanvas.getContext("2d");
 
-        ctx.beginPath();
-        ctx.rect(0, 0, 1024, 1024);
-        ctx.fillStyle = "gray";
-        ctx.fill();
+        ctxNodes.beginPath();
 
-        let size = 50;
+        let talentSize = 50;
+        let spacing = 75;
 
+        // Draws unlocked talents
         for (let talent of data.talents) {
-            let talentIcon = await Canvas.loadImage(talent.visuals.icon);
-            ctx.drawImage(talentIcon, (talent.x * size) + 500, (-talent.y * size) + 500, size, size);
-            console.log(talent.linkedNodes);
+
+            await this.drawTalent(ctxNodes, talent, talentSize, spacing, data.talentPoints, false);
             talentsByIds[talent.id] = talent;
         }
-        let decal = 500 + size / 2;
+
+        // Draws locked talents
         for (let talent of data.talents) {
-            for (let link of talent.linkedNodesIds) {
-                if (talentsByIds[link]) {
-                    ctx.moveTo((talent.x * size) + decal, (-talent.y * size) + decal);
-                    ctx.lineTo((talentsByIds[link].x * size) + decal, (-talentsByIds[link].y * size) + decal);
-                    ctx.stroke();
+            for (let linkedTalent of Object.values(talent.linkedNodesItems)) {
+                if (!talentsByIds[linkedTalent.id]) {
+                    await this.drawTalent(ctxNodes, linkedTalent, talentSize, spacing, data.talentPoints, true);
+                    talentsByIds[linkedTalent.id] = linkedTalent;
                 }
             }
         }
 
-        const attachment = new Discord.MessageAttachment(nodesCanvas.toBuffer(), 'talents.png');
 
-        message.channel.send("hey !", attachment);
+        let decal = nodesCanvas.width / 2 + spacing / 2;
+
+        ctxLinks.beginPath();
+        ctxLinks.rect(0, 0, 1536, 1536);
+        ctxLinks.fillStyle = "gray";
+        ctxLinks.lineWidth = 3;
+        ctxLinks.fill();
+
+        for (let talent of data.talents) {
+            for (let link of talent.linkedNodesIds) {
+                if (talentsByIds[link]) {
+                    ctxLinks.moveTo((talent.x * spacing) + decal, (-talent.y * spacing) + decal);
+                    ctxLinks.lineTo((talentsByIds[link].x * spacing) + decal, (-talentsByIds[link].y * spacing) + decal);
+                    ctxLinks.stroke();
+                }
+            }
+        }
+
+        ctxLinks.drawImage(nodesCanvas, 0, 0);
+
+        return allCanvas;
+
+
+    }
+
+    /**
+     * 
+     * @param {Canvas.CanvasRenderingContext2D} ctx
+     * @param {any} talent
+     * @param {number} size
+     */
+    async drawTalent(ctx, talent, size, spacing, pointsLeft, isLocked = false) {
+
+        /**
+         * @type {Canvas}
+         **/
+        let talentIcon;
+        if (isLocked) {
+            talentIcon = Utils.canvasRoundImage(Utils.canvasTintImage(await CharacterAppearance.getImage(talent.visuals.icon), "#000000", 0.7), { strokeSize: 10, strokeStyle: pointsLeft >= talent.realCost ? "Yellow" : "Red" });
+        } else {
+            talentIcon = Utils.canvasRoundImage(await CharacterAppearance.getImage(talent.visuals.icon), { strokeSize: 10 });
+        }
+
+
+        const x = (talent.x * spacing) + ctx.canvas.width / 2 + size / 4;
+        const y = (-talent.y * spacing) + ctx.canvas.height / 2 + size / 4;
+
+        ctx.drawImage(talentIcon, x, y, size, size);
+
+        // Draw Id
+        ctx.font = "29px Arial";
+        ctx.strokeStyle = "Black";
+        ctx.fillStyle = 'White';
+        ctx.textAlign = "center";
+
+        const decal = 0;
+        const decalY = decal
+
+        ctx.fillText(talent.id, x + decal, y + decalY);
+        ctx.strokeText(talent.id, x + decal, y + decalY);
+
+        if (isLocked) {
+            // Draw Cost
+            ctx.font = "24px Arial";
+            ctx.strokeStyle = "Black";
+            ctx.fillStyle = "Yellow";
+
+            ctx.fillText(talent.realCost, x + size / 2, y + size / 2 + 10);
+        }
+
+
+
     }
 
 }

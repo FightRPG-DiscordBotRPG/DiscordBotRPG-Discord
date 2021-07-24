@@ -180,6 +180,7 @@ class CharacterModule extends GModule {
                 break;
             case "talents":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents"), async (data) => {
+                    Talents.allToImage(data, message);
                     return Talents.toString(data, user);
                 });
                 

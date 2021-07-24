@@ -285,6 +285,45 @@ class Utils {
 
     /**
      * 
+     * @param {Canvas.Image} img
+     * Stroke size in percentage
+     * @param {{strokeStyle: string, strokeSize: number}} settings
+     * @returns {Canvas}
+     */
+    static canvasRoundImage(img, settings = null) {
+        let percentage = settings?.strokeSize ?? 0;
+        percentage = percentage > 0 && percentage <= 100 ? percentage : 1;
+
+
+
+        const width = img.width;
+        const height = img.height;
+
+        const size = width * (percentage / 100);
+        const color = settings?.strokeStyle ?? "#000000";
+
+
+
+        const canvas = Canvas.createCanvas(width, height);
+        const context = canvas.getContext("2d");
+
+
+
+        context.save();
+        context.beginPath();
+        context.arc(width / 2, height / 2, (width / 2) - size, 0, Math.PI * 2, false);
+        context.strokeStyle = color;
+        context.lineWidth = size;
+        context.stroke();
+        context.clip();
+        context.drawImage(img, 0, 0);
+        context.restore();
+
+        return context.canvas;
+    }
+
+    /**
+     * 
      * @param {Canvas.Image} image
      * @param {string[]} sourceColors
      * @param {string[]} targetColors
@@ -294,7 +333,7 @@ class Utils {
         const context = canvas.getContext("2d");
         context.drawImage(image, 0, 0);
 
-        
+
         let imgd = context.getImageData(0, 0, image.width, image.height),
             pix = imgd.data;
 
@@ -320,7 +359,7 @@ class Utils {
                 }
             }
 
-            
+
         }
         context.putImageData(imgd, 0, 0);
 

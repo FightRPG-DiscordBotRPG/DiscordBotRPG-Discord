@@ -2,11 +2,13 @@ const fs = require("fs");
 const CharacterAppearance = require("../src/Drawings/Character/CharacterAppearance");
 
 var open = require('open');
+const Utils = require("../src/Utils");
 
 async function start() {
-    let appearance = new CharacterAppearance();
-    await appearance.debugLoadAssets();
-    fs.writeFileSync("./test.png", await (await appearance.getCharacter()).toBuffer());
+    //let appearance = new CharacterAppearance();
+    //await appearance.debugLoadAssets();
+    //fs.writeFileSync("./test.png", await (await appearance.getCharacter()).toBuffer());
+    fs.writeFileSync("./test.png", Utils.canvasRoundImage(await CharacterAppearance.getImage("https://i.ibb.co/khGtk9w/Archer-lunge.png"), {strokeSize: 25}).toBuffer());
 
     open("./test.png");
 }
@@ -53,4 +55,4 @@ async function multipleTest() {
 }
 
 //start();
-multipleTest();
+start();
