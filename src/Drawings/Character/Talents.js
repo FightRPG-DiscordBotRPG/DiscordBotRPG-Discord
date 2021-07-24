@@ -185,13 +185,14 @@ class Talents {
 
         ctxLinks.beginPath();
         ctxLinks.rect(0, 0, 1536, 1536);
-        ctxLinks.fillStyle = "gray";
+        ctxLinks.fillStyle = "#101010";
         ctxLinks.lineWidth = 3;
         ctxLinks.fill();
 
         for (let talent of data.talents) {
             for (let link of talent.linkedNodesIds) {
                 if (talentsByIds[link]) {
+                    ctxLinks.strokeStyle = "#808080";
                     ctxLinks.moveTo((talent.x * spacing) + decal, (-talent.y * spacing) + decal);
                     ctxLinks.lineTo((talentsByIds[link].x * spacing) + decal, (-talentsByIds[link].y * spacing) + decal);
                     ctxLinks.stroke();
@@ -221,7 +222,7 @@ class Talents {
         if (isLocked) {
             talentIcon = Utils.canvasRoundImage(Utils.canvasTintImage(await CharacterAppearance.getImage(talent.visuals.icon), "#000000", 0.7), { strokeSize: 10, strokeStyle: pointsLeft >= talent.realCost ? "Yellow" : "Red" });
         } else {
-            talentIcon = Utils.canvasRoundImage(await CharacterAppearance.getImage(talent.visuals.icon), { strokeSize: 10 });
+            talentIcon = Utils.canvasRoundImage(await CharacterAppearance.getImage(talent.visuals.icon), { strokeSize: 10, strokeStyle: "#808080" });
         }
 
 
@@ -239,8 +240,8 @@ class Talents {
         const decal = 0;
         const decalY = decal
 
-        ctx.fillText(talent.id, x + decal, y + decalY);
         ctx.strokeText(talent.id, x + decal, y + decalY);
+        ctx.fillText(talent.id, x + decal, y + decalY);
 
         if (isLocked) {
             // Draw Cost
