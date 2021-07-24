@@ -40,10 +40,10 @@ class ItemShow {
     itemToStr(item, lang = "en") {
 
         let numberStr = item.number > 1 ? " [x" + Translator.getFormater(lang).format(item.number) + "]" : "";
-        let fields = ["**" + item.name + "**" + (item.isFavorite == true ? " ★" : "") + numberStr,
+        let fields = [
+            "**" + item.name + "**" + (item.isFavorite == true ? " ★" : "") + numberStr,
             Emojis.getItemTypeEmoji(item.type_shorthand) + " " + item.type + " (" + Emojis.getItemSubTypeEmoji(item.subtype_shorthand != null ? item.subtype_shorthand : item.subType_shorthand) + " " + item.subType + ")",
-            Emojis.emojisProd.level.string + " " + item.level,
-            Emojis.emojisProd.rebirth.string + " " + item.rebirthLevel,
+            Emojis.emojisProd.level.string + " " + item.level + " " + Emojis.emojisProd.rebirth.string + " " + item.rebirthLevel,
             Emojis.getRarityEmoji(item.rarity_shorthand) + " " + item.rarity,
         ];
 
@@ -52,6 +52,7 @@ class ItemShow {
         }
 
 
+        //return fields.join(" ");
         return fields.join(" - ");
     }
 }
