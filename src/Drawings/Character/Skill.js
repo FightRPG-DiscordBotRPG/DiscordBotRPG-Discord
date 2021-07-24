@@ -55,7 +55,7 @@ class Skill {
             embed = embed
                 .addField(Translator.getString(user.lang, "skills", "damage_information"), GenericMultipleEmbedList.getSeparator())
                 .addField(Emojis.general.bar_chart + " " + Translator.getString(user.lang, "skills", "formula"), data.skill.repeat > 1 ? `(${data.skill.damage.formula}) * ${data.skill.repeat}` : data.skill.damage.formula)
-                .addField(Emojis.general.bar_chart + " " + Translator.getString(user.lang, "skills", "formula_result"), data.skill.repeat > 1 ? `(${data.skill.formulaResultVersusSelf}) * ${data.skill.repeat}` : data.skill.formulaResultVersusSelf, true)
+                .addField(Emojis.general.bar_chart + " " + Translator.getString(user.lang, "skills", "formula_result"), data.skill.repeat > 1 ? `(${Math.round(data.skill.formulaResultVersusSelf)}) * ${data.skill.repeat}` : data.skill.formulaResultVersusSelf, true)
                 .addField(Emojis.emojisProd.nochange.string + " " + Translator.getString(user.lang, "skills", "variance"), data.skill.damage.variance + "%", true)
                 .addField(Emojis.general.crossed_swords + " " + Translator.getString(user.lang, "skills", "damage_type"), Emojis.damageTypes[data.skill.damage.damageTypeShorthand] + " " + Translator.getString(user.lang, "skills", data.skill.damage.damageTypeShorthand), true)
                 .addField(Emojis.emojisProd.elements.string + " " + Translator.getString(user.lang, "elements", "type"), Emojis.stats[data.skill.damage.elementTypeShorthand + "Resist"] + " " + Translator.getString(user.lang, "elements", data.skill.damage.elementTypeShorthand), true)
