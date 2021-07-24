@@ -175,6 +175,7 @@ var Globals = {
 
             Globals.helpPanel[lang][1][Translator.getString(lang, "help_panel", "character_title")] = {
                 "info/profile": Translator.getString(lang, "help_panel", "info"),
+                "appearance": Translator.getString(lang, "help_panel", "appearance"),
                 "attributes": Translator.getString(lang, "help_panel", "attributes"),
                 "up <statName> <number>": Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)",
                 "leaderboard <arg>": Translator.getString(lang, "help_panel", "leaderboard"),
@@ -188,7 +189,6 @@ var Globals = {
 
             Globals.helpPanel[lang][1][Translator.getString(lang, "help_panel", "fight_title")] = {
                 "fight <monsterID>": Translator.getString(lang, "help_panel", "fight"),
-                "grpfight <monsterID>": Translator.getString(lang, "help_panel", "grpfight"),
                 "arena @Someone": Translator.getString(lang, "help_panel", "arenaMention"),
                 "arena <playerID>": Translator.getString(lang, "help_panel", "arena"),
             }
@@ -270,6 +270,7 @@ var Globals = {
                 "grpswap \"<name#tag>\"": Translator.getString(lang, "help_panel", "grpswap"),
                 "grpmute": Translator.getString(lang, "help_panel", "grpmute"),
                 "grpunmute": Translator.getString(lang, "help_panel", "grpunmute"),
+                "grpfight <monsterID>": Translator.getString(lang, "help_panel", "grpfight"),
             }
 
             Globals.helpPanel[lang][5][Translator.getString(lang, "help_panel", "market_title")] = {
