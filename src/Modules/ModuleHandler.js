@@ -8,6 +8,7 @@ const Translator = require("../Translator/Translator");
 const version = require("../../conf/version");
 const Utils = require("../Utils");
 const conf = require("../../conf/conf");
+const Emojis = require("../Drawings/Emojis");
 
 class ModuleHandler extends GModule {
     constructor() {
@@ -60,6 +61,12 @@ class ModuleHandler extends GModule {
      * @param {Discord.Message} message
      */
     async run(message) {
+
+        if (Globals.isLoading) {
+            await this.sendMessage("The bot is still loading. Please wait. " + Emojis.general.hourglass_not_done)
+            return;
+        }
+
         let msg = "";
         let authorIdentifier = message.author.id;
         let prefix = this.getPrefix(message.channel.guild ? message.channel.guild.id : null);
@@ -117,7 +124,7 @@ class ModuleHandler extends GModule {
                 case "tutorial":
                 case "play":
                 case "start":
-                    msg = Translator.getString(user.lang, "help_panel", "tutorial", [Globals.tutorialLink]);
+                    await user.tutorial.start(message, user.lang);
                     break;
                 case "setmobile":
                     if (Globals.yesNoByLang[args[0]]) {
@@ -231,7 +238,7 @@ class ModuleHandler extends GModule {
                         .addField("Shard Uptime: ", "[ " + uptime + " ]", true).addField("Shard ID: ", `[ ${message.client.shard.ids} ]`)
                         .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + message.client.shard.count + " ]", true)
                         .addField("Server Version: ", "[ " + data.server + " ]", true).addField("Bot Version: ", "[ " + version + " ]", true)
-                        .addField("Memory Used: ", "[ " + `${totalMemoryMB} MB` + " ]", true).addField("Ping: ", "[ " + Math.round(message.client.ws.ping) + " ms ]", true)
+                        .addField("Memory Used: ", "[ " + `${Math.round(totalMemoryMB)} MB` + " ]", true).addField("Ping: ", "[ " + Math.round(message.client.ws.ping) + " ms ]", true)
                         .addField("Processor: ", "[ " + os.cpus()[0].model + " [x" + os.cpus().length + "] ]", true)
                     break;
                 }
@@ -382,11 +389,8 @@ class ModuleHandler extends GModule {
                     } catch (err) {
                         if (!this.devMode) {
                             if (err.constructor != Discord.DiscordAPIError) {
-                                let adminTell = "A module has crashed.\nCommand: " + command + "\nArgs: [" + args.toString() + "]\n" + "User that have crashed the command: " + message.author.username + "#" + message.author.discriminator;
-                                message.client.shard.broadcastEval(`let user = this.users.cache.get("241564725870198785");
-                            if(user != null) {
-                                user.send(\`${adminTell}\`).catch((e) => {null});
-                            }`);
+                                let adminTell = "A module has crashed.\nCommand: " + command + "\nArgs: [" + args.toString() + "]\n" + "User that have crashed the command: " + message.author.username + "#" + message.author.discriminator + "\n";
+                                await Utils.sendDMToSpecificUser("241564725870198785", Utils.prepareStackError(err, adminTell));
                             } else {
                                 console.log(err);
                                 message.channel.send(err.name).catch((e) => {
@@ -415,11 +419,8 @@ class ModuleHandler extends GModule {
             await user.load();
             if (user.token == null) {
                 await user.createUser();
-                message.author.send(Translator.getString("en", "help_panel", "tutorial", [Globals.tutorialLink])).catch((e) => {
-                    message.channel.send(Translator.getString("en", "help_panel", "tutorial", [Globals.tutorialLink])).catch((e) => {
-                        console.log(e);
-                    });
-                });
+                await this.sendMessage(message, Translator.getString("en", "help_panel", "tutorial", [Globals.tutorialLink]));
+                await user.tutorial.start(message, "en");
             }
             if (user.token != null) {
                 Globals.connectedUsers[message.author.id] = user;

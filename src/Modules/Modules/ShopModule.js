@@ -38,7 +38,7 @@ class ShopModule extends GModule {
                 break;
         }
 
-        this.sendMessage(message, msg);
+        this.sendMessage(message, msg, command);
     }
 }
 

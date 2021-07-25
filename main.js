@@ -4,16 +4,34 @@ const {
     ShardingManager,
     User
 } = require('discord.js');
+
+const Globals = require("./src/Globals");
 const manager = new ShardingManager(__dirname + '/bot.js', {
     token: conf.discordbotkey,
     totalShards: conf.env === "dev" ? 2 : "auto",
 });
 
-manager.spawn();
-manager.on('launch', shard => {
-    console.log(`Launched shard ${shard.id}`);
-});
+async function start() {
+    console.log("Preparing appearances for all shards, please wait");
+    console.time("Appearances Cache Loaded");
+    await Globals.loadAllAppearances();
+    console.timeEnd("Appearances Cache Loaded");
 
+
+    manager.spawn();
+    manager.on('launch', shard => {
+        console.log(`Launched shard ${shard.id}`);
+    });
+}
+
+
+
+
+/**
+ * 
+ * @param {string} idUser
+ * @param {string} message
+ */
 async function sendDMToSpecificUser(idUser, message) {
     let evalDyn = `this.users.cache.get("${idUser}");`;
     try {
@@ -21,11 +39,9 @@ async function sendDMToSpecificUser(idUser, message) {
          * @type {Array<User>}
          **/
         let users = await manager.broadcastEval(evalDyn);
-
         for (let i in users) {
             if (users[i]) {
-                //u.send(message).catch((e) => null);
-                await manager.shards.array()[i].eval(`this.users.cache.get("${idUser}").send(\`${message}\`).catch(e => null)`);
+                await manager.shards.array()[i].eval(`this.users.cache.get("${idUser}").send(\`${message.replace(/`/gi, "\\`")}\`).catch(e => null)`);
                 return true;
             }
         }
@@ -99,3 +115,5 @@ app.use("/wb", async (req, res) => {
         sended: false,
     });
 });
+
+start();

@@ -67,6 +67,9 @@ class InventoryModule extends GModule {
                         }
                     });
 
+                    // For tutorial
+                    await user.tutorial.reactOnCommand("item", message, user.lang);
+
                     reactWrapper.collector.on('collect', async (reaction) => {
                         let dataCollector = null;
                         let msgCollector = null;
@@ -141,14 +144,16 @@ class InventoryModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/inventory/show/" + searchFilters.page, {
                     params: searchFilters.params
                 }), async (data) => {
-                    await this.pageListener(data, message, Inventory.displayAsList(data, true), async (currPage) => {
+                    await this.pageListener(data, message, await Inventory.displayAsList(data, true, user), async (currPage) => {
                         let d = await axios.get("/game/inventory/show/" + currPage, {
                             params: searchFilters.params
                         });
                         return d.data;
                     }, async (newData) => {
-                        return Inventory.displayAsList(newData, true)
+                        return await Inventory.displayAsList(newData, true, user)
                     });
+                    // For tutorial
+                    await user.tutorial.reactOnCommand("inv", message, user.lang);
                 });
                 break;
 
@@ -192,7 +197,7 @@ class InventoryModule extends GModule {
                 break;
         }
 
-        this.sendMessage(message, msg);
+        this.sendMessage(message, msg, command);
     }
 }
 

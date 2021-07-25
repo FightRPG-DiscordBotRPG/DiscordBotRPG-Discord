@@ -14,11 +14,12 @@ const SkillBuild = require("../../Drawings/Character/SkillBuild");
 const Utils = require("../../Utils");
 const Rebirth = require("../../Drawings/Character/Rebirth");
 const State = require("../../Drawings/Fight/State");
+const CharacterAppearance = require("../../Drawings/Character/CharacterAppearance");
 
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile", "resettalents", "rebirth", "stateshow"];
+        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile", "resettalents", "rebirth", "stateshow", "appearance"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -120,6 +121,9 @@ class CharacterModule extends GModule {
                         }
                     });
 
+                    // For tutorial
+                    await user.tutorial.reactOnCommand("info", message, user.lang);
+
                     reactWrapper.collector.on('collect', async (reaction) => {
                         switch (reaction.emoji.name) {
                             case displayAttributesEmoji:
@@ -143,6 +147,7 @@ class CharacterModule extends GModule {
 
                         await reactWrapper.edit(user.infoPanel.toString(data, user), emojisList);
                     });
+
                 });
                 break;
 
@@ -174,9 +179,10 @@ class CharacterModule extends GModule {
                 });
                 break;
             case "talents":
-                msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents"), (data) => {
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents"), async (data) => {
                     return Talents.toString(data, user);
                 });
+                
                 break;
             case "talentsexport":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents/export"), (data) => {
@@ -204,6 +210,9 @@ class CharacterModule extends GModule {
                             max: 1,
                         }
                     });
+
+                    // For tutorial
+                    await user.tutorial.reactOnCommand("talentshow", message, user.lang);
 
                     reactWrapper.collector.on('collect', async (reaction) => {
                         switch (reaction.emoji.name) {
@@ -395,10 +404,25 @@ class CharacterModule extends GModule {
                     });
                 }
             } break;
+            case "appearance":
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/character/appearance"), async (data) => {
+                    if (!user.pendingAppearance) {
+                        user.pendingAppearance = new CharacterAppearance();
+                        user.pendingAppearance.requiredAppearancesTypeForCharacter = data.requiredAppearancesTypeForCharacter;
+                        user.pendingAppearance.selectableBodyColors = data.selectableBodyColors;
+                        user.pendingAppearance.selectableEyeColors = data.selectableEyeColors;
+                        user.pendingAppearance.selectableHairColors = data.selectableHairColors;
+                        await user.pendingAppearance.setupFromData(data.currentAppearance);
+                        await user.pendingAppearance.setupFromDataEdition(data.currentAppearance);
+                    }
+
+                    await user.pendingAppearance.handleEdition(message, user);
+                });
+                break;
 
         }
 
-        this.sendMessage(message, msg);
+        this.sendMessage(message, msg, command);
     }
 
     /**

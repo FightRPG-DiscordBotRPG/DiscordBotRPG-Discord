@@ -18,7 +18,7 @@ class NonameModule extends GModule {
 
         }
 
-        this.sendMessage(message, msg);
+        this.sendMessage(message, msg, command);
     }
 }
 

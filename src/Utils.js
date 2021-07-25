@@ -4,10 +4,17 @@ const GenericMultipleEmbedList = require("./Drawings/GenericMultipleEmbedList");
 const Emojis = require("./Drawings/Emojis");
 const Translator = require("./Translator/Translator");
 const User = require("./Users/User");
+const Canvas = require("canvas");
+const { default: axios } = require("axios");
+const Color = require("./Drawings/Color");
 
 class Utils {
     static emptyEmbedCharacter = "\u200b";
     static defaultSeparator = "--------------------------------------";
+
+    static axiosToUse = axios.create({
+        baseURL: "http://localhost:48921"
+    })
 
     /**
      * 
@@ -179,6 +186,361 @@ class Utils {
     static addBonusesToEmbed(bonuses, user, embed) {
         return embed.addField(Translator.getString(user.lang, "bonuses", "bonuses"), this.bonusesToStr(bonuses, user));
     }
+
+    static randRangeInteger(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    /**
+     * 
+     * @param {Canvas.Image} image
+     * @param {string} color
+     * @param {number} opacity
+     * @returns {Canvas.Canvas}
+     */
+    static canvasTintImage(image, color, opacity = 0.5) {
+
+        if (!image) { return null }
+
+        const canvas = Canvas.createCanvas(image.width, image.height);
+        const context = canvas.getContext("2d");
+
+        context.save();
+        context.fillStyle = color;
+        context.globalAlpha = opacity;
+        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+        context.globalCompositeOperation = "destination-atop";
+        context.globalAlpha = 1;
+        context.drawImage(image, 0, 0);
+        context.restore();
+
+        return context.canvas;
+    }
+
+    /**
+     * 
+     * @param {{
+        image: Canvas.Image,
+        mask: Canvas.Image,
+        colorsToReplace: [{source: string, target: string}]
+     }} settings
+     @returns {HTMLCanvasElement}
+     */
+    static canvasApplyMask(settings) {
+        const image = settings.image;
+
+        if (!image) {
+            return null;
+        }
+
+        if (!settings.mask || !Array.isArray(settings.colorsToReplace)) {
+            return image;
+        }
+
+        const canvas = Canvas.createCanvas(image.width, image.height);
+        const context = canvas.getContext("2d");
+
+        context.save();
+
+        // Multiply if mask drawned before
+
+        context.drawImage(image, 0, 0);
+
+        context.globalCompositeOperation = "overlay";
+        let updatedMask = settings.mask;
+
+        let sources = [];
+        let targets = [];
+        for (let colors of settings.colorsToReplace) {
+            sources.push(colors.source);
+            targets.push(colors.target);
+        }
+
+        updatedMask = Utils.canvasReplaceColor(updatedMask, sources, targets);
+
+        context.drawImage(Utils.canvasRemoveWithMask(image, updatedMask), 0, 0);
+
+        context.restore();
+
+        return context.canvas;
+    }
+
+    /**
+     * 
+     * @param {Canvas.Image} source
+     * @param {Canvas.Image} target
+     */
+    static canvasRemoveWithMask(source, target) {
+        const canvas = Canvas.createCanvas(source.width, source.height);
+        const context = canvas.getContext("2d");
+
+        context.save();
+        context.drawImage(target, 0, 0);
+        context.globalCompositeOperation = "destination-atop";
+        context.drawImage(source, 0, 0);
+        context.restore();
+
+        return context.canvas;
+    }
+
+    /**
+     * 
+     * @param {Canvas.Image} img
+     * Stroke size in percentage
+     * @param {{strokeStyle: string, strokeSize: number}} settings
+     * @returns {Canvas}
+     */
+    static canvasRoundImage(img, settings = null) {
+        let percentage = settings?.strokeSize ?? 0;
+        percentage = percentage > 0 && percentage <= 100 ? percentage : 1;
+
+
+
+        const width = img.width;
+        const height = img.height;
+
+        const size = width * (percentage / 100);
+        const color = settings?.strokeStyle ?? "#000000";
+
+
+
+        const canvas = Canvas.createCanvas(width, height);
+        const context = canvas.getContext("2d");
+
+
+
+        context.save();
+        context.beginPath();
+        context.arc(width / 2, height / 2, (width / 2) - size, 0, Math.PI * 2, false);
+        context.strokeStyle = color;
+        context.lineWidth = size;
+        context.stroke();
+        context.clip();
+        context.drawImage(img, 0, 0);
+        context.restore();
+
+        return context.canvas;
+    }
+
+    /**
+     * 
+     * @param {Canvas.Image} image
+     * @param {string[]} sourceColors
+     * @param {string[]} targetColors
+     */
+    static canvasReplaceColor(image, sourceColors, targetColors) {
+        const canvas = Canvas.createCanvas(image.width, image.height);
+        const context = canvas.getContext("2d");
+        context.drawImage(image, 0, 0);
+
+
+        let imgd = context.getImageData(0, 0, image.width, image.height),
+            pix = imgd.data;
+
+        for (let i = 0, n = pix.length; i < n; i += 4) {
+            const r = pix[i],
+                g = pix[i + 1],
+                b = pix[i + 2],
+                hexValue = Utils.rgbToHex(r, g, b);
+
+
+            for (let j in sourceColors) {
+                const sourceColor = sourceColors[j];
+                const sourceColorRgb = Utils.hexToRgb(sourceColor);
+                if (hexValue == sourceColor || Utils.colorDistance([r, g, b], [sourceColorRgb.r, sourceColorRgb.g, sourceColorRgb.b]) < 180) {
+                    const c = Utils.hexToRgb(targetColors[j]);
+                    pix[i] = c.r;
+                    pix[i + 1] = c.g;
+                    pix[i + 2] = c.b;
+                    break;
+                } else if (Utils.colorDistance([0, 0, 0], [sourceColorRgb.r, sourceColorRgb.g, sourceColorRgb.b]) < 100) {
+                    pix[i + 3] = 0;
+                    break;
+                }
+            }
+
+
+        }
+        context.putImageData(imgd, 0, 0);
+
+
+        return context.canvas;
+    }
+
+    /**
+     * 
+     * @param {number[]} colors1
+     * @param {number[]} colors2
+     */
+    static colorDistance(colors1, colors2) {
+        let d = 0;
+        for (let i = 0; i < colors1.length; i++) {
+            d += (colors1[i] - colors2[i]) * (colors1[i] - colors2[i]);
+        }
+        return Math.sqrt(d);
+    }
+
+    /**
+     * 
+     * @param {Canvas.Image} image
+     * @param {number} deg
+     * @returns {Canvas.Canvas}
+     */
+    static canvasRotateImage(image, deg, rescale = false) {
+
+        if (!image) { return null }
+
+        let width, height;
+        if (rescale) {
+            let projected = Utils.calcProjectedRectSizeOfRotatedRect(
+                image.width, image.height, deg * Math.PI / 180
+            );
+            width = projected.width;
+            height = projected.height;
+
+        } else {
+            width = image.width;
+            height = image.height;
+        }
+
+
+        const canvas = Canvas.createCanvas(width, height);
+        const context = canvas.getContext("2d");
+
+        context.save();
+        context.translate(width / 2, height / 2);
+        context.rotate(deg * Math.PI / 180);
+        context.translate(-width / 2, -height / 2);
+        context.drawImage(
+            image,
+            (width / 2) - (image.width / 2),
+            (height / 2) - (image.height / 2),
+            image.width,
+            image.height);
+
+        //context.restore();
+
+        return context.canvas;
+    }
+
+    /**
+     * 
+     * @param {Canvas.Image} image
+     * @param {number} dx
+     * @param {number} dy
+     * @param {number} width
+     * @param {number} height
+     * @returns {Canvas.Canvas}
+     */
+    static canvasCut(image, dx, dy, width, height) {
+        const canvas = Canvas.createCanvas(width, height);
+        const context = canvas.getContext("2d");
+
+        context.save();
+        context.drawImage(image, dx, dy, width, height, 0, 0, width, height);
+        context.restore();
+
+        return context.canvas;
+    }
+
+    static getRandomHexColor() {
+        return "#" + Math.floor(Math.random() * 16777215).toString(16);
+    }
+
+    static componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+
+    static rgbToHex(r, g, b) {
+        return "#" + Utils.componentToHex(r) + Utils.componentToHex(g) + Utils.componentToHex(b);
+    }
+
+    static hexToRgb(hex) {
+        let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+
+
+    static calcProjectedRectSizeOfRotatedRect(width, height, rotation) {
+        const {
+            cos,
+            sin,
+            abs,
+        } = Math;
+
+        /* eslint-disable max-len */
+        const widthAfterRotation = abs(width * sin(rotation)) + abs(height * cos(rotation));
+        const heightAfterRotation = abs(width * cos(rotation)) + abs(height * sin(rotation));
+        /* eslint-enable max-len */
+
+        return {
+            height: widthAfterRotation,
+            width: heightAfterRotation,
+        };
+    }
+
+    /**
+     * 
+     * @param {string} str
+     * @param {number} maxCharacters > 10
+     */
+    static cutAtLineBreaksIfMoreThan(str, maxCharacters) {
+        let arrOfCuttedText = [];
+
+        let cuttedAtLineBreaks = str.split("\n");
+
+        for (let i = 0; i < cuttedAtLineBreaks.length; i++) {
+            let cuttedText = cuttedAtLineBreaks[i];
+
+            while (cuttedText.length > maxCharacters) {
+                arrOfCuttedText.push(cuttedText.substring(0, maxCharacters - 1));
+                cuttedText = cuttedText.substring(maxCharacters - 1);
+            }
+
+            while (i < cuttedAtLineBreaks.length - 1 && (cuttedText.length + cuttedAtLineBreaks[i + 1].length + "\n".length) < maxCharacters) {
+                cuttedText += "\n" + cuttedAtLineBreaks[i + 1];
+                i++;
+            }
+
+            arrOfCuttedText.push(cuttedText);
+        }
+
+
+        return arrOfCuttedText;
+    }
+
+    static async sendDMToSpecificUser(idUser, message) {
+        return (await Utils.axiosToUse.post(`/usr`, {
+            id: idUser,
+            message: message,
+        })).data;
+    }
+
+    /**
+     * 
+     * @param {string} err
+     * @param {string} msgError
+     */
+    static prepareStackError(err, msgError) {
+        let errorsLines = err.stack.split("\n");
+        let nameAndLine = errorsLines[1].split(" ");
+        nameAndLine = nameAndLine[nameAndLine.length - 1].split("\\");
+        nameAndLine = nameAndLine[nameAndLine.length - 1].split(")")[0];
+
+        msgError += "```js\n" + errorsLines[0] + "\nat " + nameAndLine + "\n```";
+
+        let errorDate = new Date();
+        console.log(errorDate.toUTCString());
+        console.log(err);
+
+        return msgError;
+    }
+
 }
 
 

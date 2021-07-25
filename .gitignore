@@ -8,3 +8,4 @@ src/Translator/locale
 node_modules/
 conf/conf.js
 .zip
+scripts/*.png

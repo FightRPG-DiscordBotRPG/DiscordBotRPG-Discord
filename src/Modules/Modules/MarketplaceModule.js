@@ -70,7 +70,7 @@ class MarketplaceModule extends GModule {
                 break;
         }
 
-        this.sendMessage(message, msg);
+        this.sendMessage(message, msg, command);
     }
 }
 
