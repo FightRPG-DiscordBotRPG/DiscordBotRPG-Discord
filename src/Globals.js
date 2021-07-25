@@ -398,7 +398,7 @@ var Globals = {
                                         await CharacterAppearance.setToCacheOnline(filename, (await CharacterAppearance.applyColor(item)).createPNGStream());
                                     }
 
-                                    CharacterAppearance.itemsCache[hash] = await CharacterAppearance.getImage(conf.cdnAppearanceCache + filename);
+                                    CharacterAppearance.itemsCache[hash] = await CharacterAppearance.getImage(conf.cdnAppearanceCache + "images/" + filename);
                                 } catch {
                                     console.error("Retrying item: " + filename);
                                 }

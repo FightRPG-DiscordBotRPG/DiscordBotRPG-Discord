@@ -675,7 +675,7 @@ class CharacterAppearance {
         }
 
         return embed
-            .setImage(conf.cdnAppearanceCache + filename);
+            .setImage(conf.cdnAppearanceCache + "images/" + filename);
     }
 
     static async setToCacheOnline(filename, fileToCache) {

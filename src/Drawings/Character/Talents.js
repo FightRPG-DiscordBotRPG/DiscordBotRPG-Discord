@@ -145,7 +145,7 @@ class Talents {
         }
 
         return embed
-            .setImage(conf.cdnAppearanceCache + filename);
+            .setImage(conf.cdnAppearanceCache + "images/" + filename);
     }
 
     async allToImage(data) {
