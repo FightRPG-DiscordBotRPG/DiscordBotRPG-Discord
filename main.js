@@ -4,16 +4,27 @@ const {
     ShardingManager,
     User
 } = require('discord.js');
-const Utils = require("./src/Utils");
+
+const Globals = require("./src/Globals");
 const manager = new ShardingManager(__dirname + '/bot.js', {
     token: conf.discordbotkey,
     totalShards: conf.env === "dev" ? 2 : "auto",
 });
 
-manager.spawn();
-manager.on('launch', shard => {
-    console.log(`Launched shard ${shard.id}`);
-});
+async function start() {
+    console.log("Preparing appearances for all shards, please wait");
+    console.time("Appearances Cache Loaded");
+    await Globals.loadAllAppearances();
+    console.timeEnd("Appearances Cache Loaded");
+
+
+    manager.spawn();
+    manager.on('launch', shard => {
+        console.log(`Launched shard ${shard.id}`);
+    });
+}
+
+
 
 
 /**
@@ -104,3 +115,5 @@ app.use("/wb", async (req, res) => {
         sended: false,
     });
 });
+
+start();
