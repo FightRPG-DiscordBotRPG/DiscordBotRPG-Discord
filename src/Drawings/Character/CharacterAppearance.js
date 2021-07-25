@@ -516,7 +516,7 @@ class CharacterAppearance {
                     let refAsync = ref;
                     let prop = props[pIndex];
 
-                    let link = null;;
+                    let link = null;
                     if (typeof dict[i] === "string") {
                         link = dict[i];
                     } else if (dict[i] !== null) {
@@ -540,13 +540,6 @@ class CharacterAppearance {
         }
 
         await Promise.all(loadingImages);
-    }
-
-    async setImageToProperty(profRef, link) {
-        if (profRef === null || typeof link !== "string") {
-            return;
-        }
-        profRef = await this.getImage(link);
     }
 
     async setupFromData(appearance) {
@@ -584,16 +577,22 @@ class CharacterAppearance {
         return CharacterAppearance.getImage(url);
     }
 
+    /**
+     * 
+     * @param {string} url
+     * @param {boolean} retry
+     * @return {Promise<Canvas.Image>}
+     */
     static async getImage(url, retry = true) {
         let img = CharacterAppearance.cache[url];
         if (!img) {
             try {
-                img = await Canvas.loadImage(url)
+                img = await Canvas.loadImage(url);
             } catch (ex) {
                 if (!retry) {
                     console.log("Unable to load image " + url + "\n" + ex);
                 }
-            };
+            }
         }
 
         if (!img && retry) {
@@ -1075,6 +1074,7 @@ class CharacterAppearance {
             id: number,
          }} itemData
          @param {Canvas.Image | HTMLCanvasElement} image
+         @returns {Promise<HTMLCanvasElement>}
      */
     static async applyColor(itemData, image = null) {
         if (!image) {

@@ -393,8 +393,8 @@ var Globals = {
                                     }
 
                                     // Test cache cdn and upload if needed
-                                    const data = (await CharacterAppearance.defaultAxios.get("get_cache.php?filename=" + filename)).data;
-                                    if (!data.cached) {
+                                    const dataCache = (await CharacterAppearance.defaultAxios.get("get_cache.php?filename=" + filename)).data;
+                                    if (!dataCache.cached) {
                                         await CharacterAppearance.setToCacheOnline(filename, (await CharacterAppearance.applyColor(item)).createPNGStream());
                                     }
 
