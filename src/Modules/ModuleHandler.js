@@ -238,7 +238,7 @@ class ModuleHandler extends GModule {
                         .addField("Shard Uptime: ", "[ " + uptime + " ]", true).addField("Shard ID: ", `[ ${message.client.shard.ids} ]`)
                         .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + message.client.shard.count + " ]", true)
                         .addField("Server Version: ", "[ " + data.server + " ]", true).addField("Bot Version: ", "[ " + version + " ]", true)
-                        .addField("Memory Used: ", "[ " + `${totalMemoryMB} MB` + " ]", true).addField("Ping: ", "[ " + Math.round(message.client.ws.ping) + " ms ]", true)
+                        .addField("Memory Used: ", "[ " + `${Math.round(totalMemoryMB)} MB` + " ]", true).addField("Ping: ", "[ " + Math.round(message.client.ws.ping) + " ms ]", true)
                         .addField("Processor: ", "[ " + os.cpus()[0].model + " [x" + os.cpus().length + "] ]", true)
                     break;
                 }
