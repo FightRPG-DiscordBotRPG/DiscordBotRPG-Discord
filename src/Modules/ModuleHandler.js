@@ -97,7 +97,7 @@ class ModuleHandler extends GModule {
             command = command != null ? command.toLowerCase() : "";
             interact.args = args;
         } else {
-            command = interact.interaction.commandName;
+            command = interact.command;
             args = interact.args;
         }
 

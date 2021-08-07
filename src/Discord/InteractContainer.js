@@ -37,6 +37,11 @@ class InteractContainer {
 
         this.args = [];
 
+        /**
+         * @type {string}
+         **/
+        this.command = null;
+
     }
 
     async reply(data) {

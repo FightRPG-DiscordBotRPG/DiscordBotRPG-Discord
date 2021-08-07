@@ -193,7 +193,7 @@ startBot();
 
 bot.on("interactionCreate", async (interaction) => {
     if (interaction.isCommand()) {
-        console.log(interaction.options.data);
+        //console.log(interaction.options.data.length);
         //interaction.reply("Yes");
 
         const interact = new InteractContainer();
@@ -201,8 +201,11 @@ bot.on("interactionCreate", async (interaction) => {
         interact.channel = interaction.channel;
         interact.interaction = interaction;
         interact.guild = interaction.guild;
+        interact.command = interaction.commandName;
 
         await recursiveUpdateData(interaction.options.data, interact);
+
+        console.log(interact.command);
         interact.client = bot;
 
         await tryHandleMessage(interact);
@@ -226,7 +229,13 @@ async function recursiveUpdateData(interactions, interact) {
                 interact.args.push(i.value);
             }
         } else {
-            await recursiveUpdateData(i.options, interact);
+            if (i.type.toString().includes("SUB_COMMAND")) {
+                interact.command += i.name;
+            }
+
+            if (i.options) {
+                await recursiveUpdateData(i.options, interact);
+            }
         }
     }
 }
