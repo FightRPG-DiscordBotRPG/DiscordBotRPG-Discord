@@ -30,7 +30,6 @@ class MessageReactionsWrapper {
         }
 
         this.message = await interact.reply(content);
-        console.log(this.message);
 
         this.isDM = interact.channel.type == "DM";
         this.currentMessageReactions = [];

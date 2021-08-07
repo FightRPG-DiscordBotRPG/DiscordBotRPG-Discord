@@ -11,7 +11,7 @@ class InteractContainer {
          */
         this.author = null;
         /**
-         * @type {Discord.Channel}
+         * @type {Discord.TextChannel}
          */
         this.channel = null;
 
@@ -45,6 +45,11 @@ class InteractContainer {
         }
 
         if (this.interaction) {
+            if (typeof data == "object") {
+                data = { ...data, fetchReply: true };
+            } else {
+                data = { content: data, fetchReply: true };
+            }
             return await this.interaction.reply(data);
         }
     }
