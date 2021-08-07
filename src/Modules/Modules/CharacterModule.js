@@ -20,7 +20,7 @@ const InteractContainer = require("../../Discord/InteractContainer");
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile", "resettalents", "rebirth", "stateshow", "appearance"];
+        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile", "resettalents", "rebirth", "stateshow", "appearance", "talentsshow"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -180,6 +180,7 @@ class CharacterModule extends GModule {
                 });
                 break;
             case "talents":
+            case "talentsshow":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents"), async (data) => {
                     return Talents.toString(data, user);
                 });

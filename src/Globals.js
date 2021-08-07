@@ -1313,12 +1313,12 @@ var Globals = {
                         type: "SUB_COMMAND",
                     },
                     {
-                        name: "talentsexport",
+                        name: "export",
                         description: Translator.getString("en", "help_panel", "talentsexport"),
                         type: "SUB_COMMAND",
                     },
                     {
-                        name: "talentsimport",
+                        name: "import",
                         description: Translator.getString("en", "help_panel", "talentsimport"),
                         options: [
                             {

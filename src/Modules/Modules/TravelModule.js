@@ -13,7 +13,7 @@ const InteractContainer = require("../../Discord/InteractContainer");
 class TravelModule extends GModule {
     constructor() {
         super();
-        this.commands = ["area", "areas", "travel", "travelregion", "areaplayers", "region", "traveldirect"];
+        this.commands = ["area", "areas", "travel", "travelregion", "areaplayers", "region", "traveldirect", "areainfo", "travelarea"];
         this.startLoading("Travel");
         this.init();
         this.endLoading("Travel");
@@ -32,6 +32,7 @@ class TravelModule extends GModule {
 
         switch (command) {
             case "area":
+            case "areainfo":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/travel/area"), async (data) => {
 
                     let area = user.getAreaDisplay(data);
@@ -106,6 +107,7 @@ class TravelModule extends GModule {
                 break;
 
             case "travel":
+            case "travelarea":
                 msg = await this.travelSharedCommand(interact, args, axios, "area");
                 // For tutorial
                 await user.tutorial.reactOnCommand(command, interact, user.lang);

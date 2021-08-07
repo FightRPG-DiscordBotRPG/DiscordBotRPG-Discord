@@ -8,7 +8,7 @@ const InteractContainer = require("../../Discord/InteractContainer");
 class CraftingModule extends GModule {
     constructor() {
         super();
-        this.commands = ["craftlist", "craftshow", "craft", "collect", "resources"];
+        this.commands = ["craftlist", "craftshow", "craft", "collect", "resources", "craftmake"];
         this.startLoading("Crafting");
         this.init();
         this.endLoading("Crafting");
@@ -48,6 +48,7 @@ class CraftingModule extends GModule {
                 break;
 
             case "craft":
+            case "craftmake":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/crafting/craftshow/" + args[0]), async (data) => {
                     let craftMissing = Craft.craftToMissing(data);
                     if (craftMissing != null) {
