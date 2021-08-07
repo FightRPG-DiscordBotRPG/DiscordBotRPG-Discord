@@ -331,7 +331,9 @@ class CharacterAppearance {
 
         this.canvasContext = canvasCharacter.getContext("2d");
 
-        this.drawImage(this.background, 0, 0, canvasCharacter.height * (this.background.width / this.background.height), canvasCharacter.height);
+        if (this.background) {
+            this.drawImage(this.background, 0, 0, canvasCharacter.height * (this.background.width / this.background.height), canvasCharacter.height);
+        }
 
         /*console.time("Draw Images");*/
 
