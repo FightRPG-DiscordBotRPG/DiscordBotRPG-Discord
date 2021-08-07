@@ -49,7 +49,8 @@ class AdminModule extends GModule {
             case "updateslashcommands": {
                 await interact.client.application?.fetch();
                 console.log(Globals.commands);
-                const cmds = await interact.client.application?.commands.set(Globals.commands);
+                console.log(Globals.commands.length);
+                const cmds = await interact.client.application?.commands.set(Globals.commands, interact.channel.guildId);
                 console.log(cmds);
             } break;
 

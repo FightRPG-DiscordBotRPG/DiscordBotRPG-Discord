@@ -9,6 +9,183 @@ axios.defaults.validateStatus = function (status) {
     return status >= 200 && status < 300 || status >= 400 && status < 500; // default
 }
 
+const filters = ["rarity", "level", "level_down", "type", "subtype", "power", "power_down", "name", "rebirth", "rebirth_down"];
+const filtersChoices = filters.map((e) => { return { name: e.split("_").map(f => f.charAt(0).toUpperCase() + f.slice(1)).join(" "), value: e } });
+const itemsChoices = [
+    {
+        name: "Chest",
+        value: "chest"
+    },
+    {
+        name: "Helmet",
+        value: "head"
+    },
+    {
+        name: "Pants",
+        value: "legs"
+    },
+    {
+        name: "Weapon",
+        value: "weapon"
+    },
+    {
+        name: "Mount",
+        value: "mount"
+    },
+];
+const typeNameItemChoice = {
+    name: "name",
+    description: "Name of the equipped type",
+    type: "STRING",
+    choices: itemsChoices,
+    required: true,
+};
+
+const idCraftOption = {
+    name: "idcraft",
+    description: "Identifier of the craft",
+    type: "STRING",
+    required: true,
+};
+
+const idTalentOption = {
+    name: "idtalent",
+    description: "Identifier of the talent",
+    type: "STRING",
+    required: true,
+};
+
+const idSkillOption = {
+    name: "idskill",
+    description: "Identifier of the skill",
+    type: "STRING",
+    required: true,
+};
+
+const toFightMonsterOption = {
+    name: "tofight",
+    description: "Monster to fight",
+    type: "INTEGER",
+    required: true
+};
+
+const confirmOption = {
+    name: "confirm",
+    description: "Ignore the confirmation",
+    type: "STRING",
+    choices: [{
+        name: "Ignore Confirmation",
+        value: "confirm"
+    }],
+    required: false,
+};
+
+const nameOption = {
+    name: "name",
+    description: "Name",
+    type: "STRING",
+    required: true,
+}
+
+const idItemOption = {
+    name: "id",
+    description: "Item id",
+    type: "INTEGER",
+    required: true,
+};
+
+const idItemChoice = {
+    name: "id",
+    description: "Item id",
+    type: "SUB_COMMAND",
+    options: [
+        idItemOption
+    ]
+};
+const itemsSelectOptions = [
+    {
+        name: "type",
+        description: "Item type",
+        type: "SUB_COMMAND",
+        options: [
+            typeNameItemChoice,
+        ]
+    },
+    idItemChoice
+];
+
+const pageOption = {
+    name: "page",
+    description: "Page to go",
+    type: "INTEGER",
+    required: false
+};
+
+const filterSelectOptions = [
+    {
+        name: "filtername",
+        description: "Filter",
+        type: "STRING",
+        choices: filtersChoices,
+        required: false
+
+    },
+    {
+        name: "filtervalue",
+        description: "Filter value",
+        type: "STRING",
+        required: false
+    },
+    {
+        name: "filtername2",
+        description: "Filter",
+        type: "STRING",
+        choices: filtersChoices,
+        required: false
+
+    },
+    {
+        name: "filtervalue2",
+        description: "Filter value",
+        type: "STRING",
+        required: false
+    },
+    {
+        name: "filtername3",
+        description: "Filter",
+        type: "STRING",
+        choices: filtersChoices,
+        required: false
+
+    },
+    {
+        name: "filtervalue3",
+        description: "Filter value",
+        type: "STRING",
+        required: false
+    },
+];
+
+const filterSelectOptionsWithPage = [
+    ...filterSelectOptions,
+    pageOption
+];
+
+const playerOrIdOptions = [
+    {
+        name: "player",
+        description: "Player id or @someone",
+        type: "STRING",
+        required: true
+    }
+];
+
+const amountOption = {
+    name: "amount",
+    description: "Amount",
+    type: "INTEGER",
+    required: false
+};
 
 var Globals = {
     /**
@@ -160,62 +337,1097 @@ var Globals = {
      */
     commands: [],
     loadCommands: async function () {
+        const data = (await axios.get("/helpers/help")).data;
+
+        const languages = Translator.getAvailableLanguages("en");
+        const languagesChoices = [];
+        for (let i of Object.keys(languages)) {
+            languagesChoices.push(
+                {
+                    name: languages[i],
+                    value: i,
+                }
+            );
+        }
+
+
+
         // Load commands
         Globals.commands = [
             {
                 name: "equiplist",
-                description: Translator.getString("en", "help_panel", "equipment")
+                description: Translator.getString("en", "help_panel", "equipment"),
+                defaultPermission: true,
             },
             {
                 name: "equip",
                 description: Translator.getString("en", "help_panel", "equip"),
                 options: [{
                     name: "itemid",
-                    description: "?",
+                    description: "Item to equip",
                     type: "STRING",
                     required: true
-                }]
+                }],
+                defaultPermission: true,
             },
             {
                 name: "unequip",
                 description: Translator.getString("en", "help_panel", "equip"),
                 options: [{
                     name: "itemtype",
-                    description: "(chest, head, legs, weapon, mount)",
+                    description: "Item type to unequip",
+                    type: "STRING",
+                    choices: itemsChoices,
+                    required: true
+                }],
+                defaultPermission: true,
+            },
+            {
+                name: "use",
+                description: Translator.getString("en", "help_panel", "use"),
+                options: [
+                    {
+                        name: "itemid",
+                        description: "Item to use",
+                        type: "STRING",
+                        required: true
+                    },
+                    amountOption
+                ],
+                defaultPermission: true,
+            },
+            {
+                name: "info",
+                description: Translator.getString("en", "help_panel", "info"),
+                defaultPermission: true,
+            },
+            {
+                name: "appearance",
+                description: Translator.getString("en", "help_panel", "appearance"),
+                defaultPermission: true,
+            },
+            {
+                name: "attributes",
+                description: Translator.getString("en", "help_panel", "attributes"),
+                defaultPermission: true,
+            },
+            {
+                name: "up",
+                description: Translator.getString("en", "help_panel", "up"),
+                options: [
+                    {
+                        name: "statname",
+                        description: "Stat to distribute",
+                        type: "STRING",
+                        choices: [
+                            {
+                                name: Translator.getString("en", "stats", "strength"),
+                                value: "str"
+                            },
+                            {
+                                name: Translator.getString("en", "stats", "intellect"),
+                                value: "int"
+                            },
+                            {
+                                name: Translator.getString("en", "stats", "constitution"),
+                                value: "con"
+                            },
+                            {
+                                name: Translator.getString("en", "stats", "dexterity"),
+                                value: "dex"
+                            },
+                            {
+                                name: Translator.getString("en", "stats", "charisma"),
+                                value: "cha"
+                            },
+                            {
+                                name: Translator.getString("en", "stats", "will"),
+                                value: "will"
+                            },
+                            {
+                                name: Translator.getString("en", "stats", "luck"),
+                                value: "luck"
+                            },
+                            {
+                                name: Translator.getString("en", "stats", "wisdom"),
+                                value: "wis"
+                            },
+                            {
+                                name: Translator.getString("en", "stats", "perception"),
+                                value: "per"
+                            },
+
+                        ],
+                        required: true
+                    },
+                    amountOption
+                ],
+                defaultPermission: true,
+            },
+
+            {
+                name: "leaderboard",
+                description: Translator.getString("en", "help_panel", "leaderboard"),
+                options: [
+                    {
+                        name: "type",
+                        description: "Leaderboard type",
+                        type: "STRING",
+                        choices: [
+                            {
+                                name: "Arena",
+                                value: "arena"
+                            },
+                            {
+                                name: "Gold",
+                                value: "gold"
+                            },
+                            {
+                                name: "Characters Level",
+                                value: "level"
+                            },
+                            {
+                                name: "Characters craft level",
+                                value: "craftlevel"
+                            },
+                            {
+                                name: "Power",
+                                value: "power"
+                            },
+                            {
+                                name: "World Boss (Attacks)",
+                                value: "wbattacks"
+                            },
+                            {
+                                name: "World Boss (Damage)",
+                                value: "wbdamage"
+                            },
+                            {
+                                name: "Achievements",
+                                value: "achievements"
+                            },
+                        ],
+                        required: true
+                    },
+                    pageOption
+                ],
+                defaultPermission: true,
+            },
+            {
+                name: "reset",
+                description: Translator.getString("en", "help_panel", "reset"),
+                defaultPermission: true,
+            },
+            {
+                name: "resettalents",
+                description: Translator.getString("en", "help_panel", "resettalents"),
+                defaultPermission: true,
+            },
+            {
+                name: "achievements",
+                description: Translator.getString("en", "help_panel", "achievements"),
+                options: [
+                    pageOption
+                ],
+                defaultPermission: true,
+            },
+            {
+                name: "rebirth",
+                description: "Rebirth informations",
+                options: [
+                    {
+                        name: "torebirth",
+                        description: "Type to rebirth",
+                        type: "STRING",
+                        choices: [
+                            {
+                                name: "Level",
+                                value: "level"
+                            },
+                            {
+                                name: "Craft Level",
+                                value: "level"
+                            },
+                        ],
+                        required: false
+                    }
+                ],
+                defaultPermission: true,
+            },
+            {
+                name: "fight",
+                description: Translator.getString("en", "help_panel", "fight"),
+                options: [
+                    toFightMonsterOption
+                ],
+                defaultPermission: true,
+            },
+            {
+                name: "arena",
+                description: Translator.getString("en", "help_panel", "arena"),
+                options: playerOrIdOptions,
+                defaultPermission: true,
+            },
+            {
+                name: "inventory",
+                description: Translator.getString("en", "help_panel", "inv"),
+                options: filterSelectOptionsWithPage,
+                defaultPermission: true,
+            },
+            {
+                name: "item",
+                description: "Shows the information of the selected item",
+                options: itemsSelectOptions,
+                defaultPermission: true,
+            },
+            {
+                name: "itemfav",
+                description: Translator.getString("en", "help_panel", "itemfav"),
+                options: itemsSelectOptions,
+                defaultPermission: true,
+            },
+            {
+                name: "itemunfav",
+                description: Translator.getString("en", "help_panel", "itemunfav"),
+                options: itemsSelectOptions,
+                defaultPermission: true,
+            },
+            {
+                name: "sell",
+                description: Translator.getString("en", "help_panel", "sell"),
+                options: [idItemChoice],
+                defaultPermission: true,
+            },
+            {
+                name: "sellall",
+                description: Translator.getString("en", "help_panel", "sellall"),
+                options: filterSelectOptions,
+                defaultPermission: true,
+            },
+            {
+                name: "sendmoney",
+                description: Translator.getString("en", "help_panel", "sendmoney"),
+                options: [...playerOrIdOptions, amountOption],
+                defaultPermission: true,
+            },
+            {
+                name: "rarities",
+                description: Translator.getString("en", "help_panel", "rarities"),
+                defaultPermission: true,
+            },
+            {
+                name: "types",
+                description: Translator.getString("en", "help_panel", "types"),
+                defaultPermission: true,
+            },
+            {
+                name: "area",
+                description: "?",
+                defaultPermission: true,
+
+                options: [
+                    {
+                        name: "info",
+                        description: Translator.getString("en", "help_panel", "area"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "conquest",
+                        description: Translator.getString("en", "help_panel", "areaconquest"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "levelup",
+                        description: Translator.getString("en", "help_panel", "arealevelup"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "bonuseslist",
+                        description: Translator.getString("en", "help_panel", "areabonuseslist"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "players",
+                        description: Translator.getString("en", "help_panel", "areaplayers"),
+                        type: "SUB_COMMAND",
+                        options: [pageOption]
+                    },
+                    {
+                        name: "resetbonuses",
+                        description: Translator.getString("en", "help_panel", "arearesetbonuses"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "upbonus",
+                        description: Translator.getString("en", "help_panel", "areaupbonus"),
+                        type: "SUB_COMMAND",
+                        options: [
+                            {
+                                name: "bonus",
+                                description: "Bonus to upgrade",
+                                type: "STRING",
+                                choices: [
+                                    {
+                                        name: "Fight XP",
+                                        value: "xp_fight",
+                                    },
+                                    {
+                                        name: "Collect XP",
+                                        value: "xp_collect",
+                                    },
+                                    {
+                                        name: "Gold Drop",
+                                        value: "gold_drop",
+                                    },
+                                    {
+                                        name: "Item Drop",
+                                        value: "item_drop",
+                                    },
+                                    {
+                                        name: "Collect Drop",
+                                        value: "collect_drop",
+                                    },
+                                    {
+                                        name: "Craft XP",
+                                        value: "xp_craft",
+                                    },
+                                ],
+                                required: true,
+                            },
+                            amountOption
+                        ],
+                    },
+                ]
+
+            },
+            {
+                name: "region",
+                description: Translator.getString("en", "help_panel", "areas"),
+                defaultPermission: true,
+            },
+            {
+                name: "travel",
+                description: "?",
+                options: [
+                    {
+                        name: "area",
+                        description: Translator.getString("en", "help_panel", "travel"),
+                        type: "SUB_COMMAND",
+                        options: [
+                            {
+                                name: "idarea",
+                                description: "Id Area to travel",
+                                type: "INTEGER",
+                                required: true,
+                            },
+                            confirmOption
+                        ],
+                    },
+                    {
+                        name: "region",
+                        description: Translator.getString("en", "help_panel", "travelregion"),
+                        type: "SUB_COMMAND",
+                        options: [
+                            {
+                                name: "idregion",
+                                description: "Id region to travel",
+                                type: "INTEGER",
+                                required: true,
+                            },
+                            confirmOption
+                        ],
+                    },
+                    {
+                        name: "direct",
+                        description: Translator.getString("en", "help_panel", "traveldirect"),
+                        type: "SUB_COMMAND",
+                        options: [
+                            {
+                                name: "realidarea",
+                                description: "Real Id Area to travel",
+                                type: "INTEGER",
+                                required: true,
+                            },
+                            confirmOption
+                        ],
+                    },
+                ],
+                defaultPermission: true,
+            },
+
+            {
+                name: "guild",
+                description: "?",
+                options: [
+                    {
+                        name: "info",
+                        description: Translator.getString("en", "help_panel", "guild"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "list",
+                        description: Translator.getString("en", "help_panel", "guilds"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "create",
+                        description: Translator.getString("en", "help_panel", "gcreate"),
+                        type: "SUB_COMMAND",
+                        options: [nameOption]
+                    },
+                    {
+                        name: "disband",
+                        description: Translator.getString("en", "help_panel", "gdisband"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "apply",
+                        description: Translator.getString("en", "help_panel", "gapply"),
+                        options: [{
+                            name: "guildid",
+                            description: "Guild identifier",
+                            type: "INTEGER",
+                            required: true,
+                        }],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "accept",
+                        description: Translator.getString("en", "help_panel", "gaccept"),
+                        options: [{
+                            name: "playerid",
+                            description: "Player identifier",
+                            type: "INTEGER",
+                            required: true,
+                        }],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "applies",
+                        description: Translator.getString("en", "help_panel", "gapplies"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "applyremove",
+                        description: Translator.getString("en", "help_panel", "gapplyremove"),
+                        options: [{
+                            name: "applyid",
+                            description: "Appliance identifier",
+                            type: "INTEGER",
+                            required: true,
+                        }],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "appliesremove",
+                        description: Translator.getString("en", "help_panel", "gappliesremove"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "announce",
+                        description: Translator.getString("en", "help_panel", "gannounce"),
+                        options: [{
+                            name: "message",
+                            description: "Message",
+                            type: "STRING",
+                            required: true,
+                        }],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "addmoney",
+                        description: Translator.getString("en", "help_panel", "gaddmoney"),
+                        options: [amountOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "removemoney",
+                        description: Translator.getString("en", "help_panel", "gremovemoney"),
+                        options: [amountOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "levelup",
+                        description: Translator.getString("en", "help_panel", "glevelup"),
+                        options: [amountOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "enroll",
+                        description: Translator.getString("en", "help_panel", "genroll"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "unenroll",
+                        description: Translator.getString("en", "help_panel", "gunenroll"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "leave",
+                        description: Translator.getString("en", "help_panel", "gleave"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "mod",
+                        description: Translator.getString("en", "help_panel", "gmod"),
+                        options: [
+                            {
+                                name: "playerid",
+                                description: "Player identifier",
+                                type: "INTEGER",
+                                required: true,
+                            },
+                            {
+                                name: "rank",
+                                description: "Rank",
+                                choices: [
+                                    {
+                                        name: "Member",
+                                        value: 1
+                                    },
+                                    {
+                                        name: "Officer",
+                                        value: 2
+                                    }
+                                ],
+                                type: "INTEGER",
+                                required: true,
+                            }
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "leaderswitch",
+                        description: Translator.getString("en", "help_panel", "gleaderswitch"),
+                        options: [
+                            {
+                                name: "playerid",
+                                description: "Player identifier",
+                                type: "INTEGER",
+                                required: true,
+                            },
+                            {
+                                name: "rank",
+                                description: "Rank",
+                                choices: [
+                                    {
+                                        name: "Member",
+                                        value: 1
+                                    },
+                                    {
+                                        name: "Officer",
+                                        value: 2
+                                    }
+                                ],
+                                type: "INTEGER",
+                                required: true,
+                            }
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "rename",
+                        description: Translator.getString("en", "help_panel", "grename").split(".")[0] + "." + Translator.getString("en", "help_panel", "grename").split(".")[2],
+                        options: [
+                            {
+                                name: "newname",
+                                description: "New guild name",
+                                type: "STRING",
+                                required: true,
+                            },
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "territories",
+                        description: Translator.getString("en", "help_panel", "gterritories"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "kick",
+                        description: Translator.getString("en", "help_panel", "gkick"),
+                        options: [
+                            {
+                                name: "idcharacter",
+                                description: "Character Identifier",
+                                type: "INTEGER",
+                                required: true,
+                            },
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                ],
+                defaultPermission: true,
+            },
+            {
+                name: "group",
+                description: "?",
+                options: [
+                    {
+                        name: "info",
+                        description: Translator.getString("en", "help_panel", "grp"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "invite",
+                        description: Translator.getString("en", "help_panel", "grpinvite"),
+                        options: playerOrIdOptions,
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "leave",
+                        description: Translator.getString("en", "help_panel", "grpleave"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "accept",
+                        description: Translator.getString("en", "help_panel", "grpaccept"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "decline",
+                        description: Translator.getString("en", "help_panel", "grpdecline"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "kick",
+                        description: Translator.getString("en", "help_panel", "grpkick"),
+                        options: [
+                            {
+                                name: "nametag",
+                                description: "name#tag",
+                                type: "STRING",
+                                required: true,
+                            },
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "swap",
+                        description: Translator.getString("en", "help_panel", "grpswap"),
+                        options: [
+                            {
+                                name: "nametag",
+                                description: "name#tag",
+                                type: "STRING",
+                                required: true,
+                            },
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "mute",
+                        description: Translator.getString("en", "help_panel", "grpmute"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "unmute",
+                        description: Translator.getString("en", "help_panel", "grpunmute"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "fight",
+                        description: Translator.getString("en", "help_panel", "grpfight"),
+                        options: [toFightMonsterOption],
+                        type: "SUB_COMMAND",
+                    },
+
+                ],
+                defaultPermission: true,
+            },
+            {
+                name: "bot_info",
+                description: "?",
+                defaultPermission: true,
+            },
+            {
+                name: "marketplace",
+                description: "?",
+                options: [
+                    {
+                        name: "mylist",
+                        description: Translator.getString("en", "help_panel", "mkmylist"),
+                        options: [pageOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "place",
+                        description: Translator.getString("en", "help_panel", "mkplace"),
+                        options: [
+                            {
+                                name: "iditem",
+                                description: "Item in inventory",
+                                type: "INTEGER",
+                                required: true,
+                            },
+                            {
+                                name: "number",
+                                description: "Number to sell",
+                                type: "INTEGER",
+                                required: true,
+                            },
+                            {
+                                name: "price",
+                                description: "Price to sell",
+                                type: "INTEGER",
+                                required: true,
+                            },
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "cancel",
+                        description: Translator.getString("en", "help_panel", "mkcancel"),
+                        options: [idItemOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "buy",
+                        description: Translator.getString("en", "help_panel", "mkbuy"),
+                        options: [idItemOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "search",
+                        description: Translator.getString("en", "help_panel", "mksearch"),
+                        options: [...filterSelectOptions, pageOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "see",
+                        description: Translator.getString("en", "help_panel", "mksee"),
+                        options: [idItemOption],
+                        type: "SUB_COMMAND",
+                    },
+                ],
+                defaultPermission: true,
+            },
+            {
+                name: "craft",
+                description: "?",
+                options: [
+                    {
+                        name: "list",
+                        description: Translator.getString("en", "help_panel", "craftlist"),
+                        options: [pageOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "show",
+                        description: Translator.getString("en", "help_panel", "craftshow"),
+                        options: [idCraftOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "make",
+                        description: Translator.getString("en", "help_panel", "craft"),
+                        options: [
+                            idCraftOption,
+                            {
+                                name: "level",
+                                description: "Level to craft",
+                                type: "INTEGER",
+                                required: false,
+                            },
+                            {
+                                name: "rebirthlevel",
+                                description: "Rebirth Level to craft (to be valid you must set the level)",
+                                type: "INTEGER",
+                                required: false,
+                            },
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                ],
+                defaultPermission: true,
+            },
+            {
+                name: "collect",
+                description: Translator.getString("en", "help_panel", "collect", [data?.collectTriesOnce]),
+                options: [idCraftOption],
+                defaultPermission: true,
+            },
+            {
+                name: "shop",
+                description: "?",
+                options: [
+                    {
+                        name: "list",
+                        description: Translator.getString("en", "help_panel", "sitems"),
+                        options: [pageOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "buy",
+                        description: Translator.getString("en", "help_panel", "sbuy"),
+                        options: [idItemOption],
+                        type: "SUB_COMMAND",
+                    },
+                ],
+                defaultPermission: true,
+            },
+            {
+                name: "worldboss",
+                description: "?",
+                options: [
+                    {
+                        name: "fight",
+                        description: Translator.getString("en", "help_panel", "wbfight"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "showall",
+                        description: Translator.getString("en", "help_panel", "wbshowall"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "lastinfo",
+                        description: Translator.getString("en", "help_panel", "wblastinfo"),
+                        type: "SUB_COMMAND",
+                    },
+                ],
+                defaultPermission: true,
+            },
+            {
+                name: "trade",
+                description: "?",
+                options: [
+                    {
+                        name: "propose",
+                        description: Translator.getString("en", "help_panel", "tpropose"),
+                        options: playerOrIdOptions,
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "accept",
+                        description: Translator.getString("en", "help_panel", "taccept"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "cancel",
+                        description: Translator.getString("en", "help_panel", "tcancel"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "show",
+                        description: Translator.getString("en", "help_panel", "tshow"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "item",
+                        description: Translator.getString("en", "help_panel", "titem"),
+                        options: [idItemOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "add",
+                        description: Translator.getString("en", "help_panel", "tadd"),
+                        options: [idItemOption, amountOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "remove",
+                        description: Translator.getString("en", "help_panel", "tremove"),
+                        options: [idItemOption, amountOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "setmoney",
+                        description: Translator.getString("en", "help_panel", "tsetmoney"),
+                        options: [amountOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "validate",
+                        description: Translator.getString("en", "help_panel", "tvalidate").split(".")[0],
+                        type: "SUB_COMMAND",
+                    },
+                ],
+                defaultPermission: true,
+            },
+
+            {
+                name: "showevent",
+                description: Translator.getString("en", "help_panel", "event"),
+                options: [
+                    {
+                        name: "idevent",
+                        description: "Identifier of the event",
+                        type: "INTEGER",
+                        required: true,
+                    }
+                ],
+                defaultPermission: true,
+            },
+            {
+                name: "showongoingevents",
+                description: Translator.getString("en", "help_panel", "event_ongoing"),
+                defaultPermission: true,
+            },
+            {
+                name: "lang",
+                description: Translator.getString("en", "help_panel", "lang"),
+                options: [{
+                    name: "language",
+                    description: "Allows you to switch languages",
+                    type: "STRING",
+                    choices: languagesChoices,
+                    required: false,
+                }],
+                defaultPermission: true,
+            },
+            {
+                name: "settings",
+                description: Translator.getString("en", "help_panel", "settings"),
+                defaultPermission: true,
+            },
+            {
+                name: "setmobile",
+                description: Translator.getString("en", "help_panel", "setmobile"),
+                options: [{
+                    name: "mobiledisplay",
+                    description: "Allows you to switch languages",
                     type: "STRING",
                     choices: [
                         {
-                            name: "Chest",
-                            value: "chest"
+                            name: "Desktop",
+                            value: "false",
                         },
                         {
-                            name: "Helmet",
-                            value: "head"
-                        },
-                        {
-                            name: "Pants",
-                            value: "legs"
-                        },
-                        {
-                            name: "Weapon",
-                            value: "weapon"
-                        },
-                        {
-                            name: "Mount",
-                            value: "mount"
-                        },
+                            name: "Mobile",
+                            value: "true",
+                        }
                     ],
-                    required: true
-                }]
+                    required: true,
+                }],
+                defaultPermission: true,
+            },
+
+            {
+                name: "talents",
+                description: "?",
+                options: [
+                    {
+                        name: "show",
+                        description: Translator.getString("en", "help_panel", "talents"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "talentsexport",
+                        description: Translator.getString("en", "help_panel", "talentsexport"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "talentsimport",
+                        description: Translator.getString("en", "help_panel", "talentsimport"),
+                        options: [
+                            {
+                                name: "importstring",
+                                description: "Import string from talentsexport command",
+                                type: "STRING",
+                                required: true,
+                            }
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                ],
+                defaultPermission: true,
+            },
+
+            {
+                name: "talent",
+                description: "?",
+                options: [
+                    {
+                        name: "show",
+                        description: Translator.getString("en", "help_panel", "talentshow"),
+                        options: [idTalentOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "up",
+                        description: Translator.getString("en", "help_panel", "talentup"),
+                        options: [idTalentOption],
+                        type: "SUB_COMMAND",
+                    },
+                ],
+                defaultPermission: true,
+            },
+
+            {
+                name: "skill",
+                description: "?",
+                options: [
+                    {
+                        name: "show",
+                        description: Translator.getString("en", "help_panel", "skillshow"),
+                        options: [idSkillOption],
+                        type: "SUB_COMMAND",
+                    },
+                ],
+                defaultPermission: true,
+            },
+
+            {
+                name: "build",
+                description: "?",
+                options: [
+                    {
+                        name: "show",
+                        description: Translator.getString("en", "help_panel", "buildshow"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "add",
+                        description: Translator.getString("en", "help_panel", "buildadd"),
+                        options: [idSkillOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "remove",
+                        description: Translator.getString("en", "help_panel", "buildremove"),
+                        options: [idSkillOption],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "move",
+                        description: Translator.getString("en", "help_panel", "buildmove"),
+                        options: [
+                            idSkillOption,
+                            {
+                                name: "slotnumber",
+                                description: "Where to move the skill",
+                                type: "INTEGER",
+                                required: true,
+                                choices: [
+                                    { name: "Slot 1", value: 1 },
+                                    { name: "Slot 2", value: 2 },
+                                    { name: "Slot 3", value: 3 },
+                                    { name: "Slot 4", value: 4 },
+                                    { name: "Slot 5", value: 5 },
+                                ]
+                            }
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "clear",
+                        description: Translator.getString("en", "help_panel", "buildclear"),
+                        type: "SUB_COMMAND",
+                    },
+                ],
+                defaultPermission: true,
             },
 
 
+            
+
         ];
     },
+
     loadHelpPanel: async function () {
 
         let data = (await axios.get("/helpers/help")).data;
-        let filters = ["rarity", "level", "level_down", "type", "subtype", "power", "power_down", "name", "rebirth", "rebirth_down"];
         let filtersString = filters.join(",");
 
         this.loadCommands();
@@ -239,7 +1451,6 @@ var Globals = {
                 "up <statName> <number>": Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)",
                 "leaderboard <arg>": Translator.getString(lang, "help_panel", "leaderboard"),
                 "reset": Translator.getString(lang, "help_panel", "reset"),
-                "resettalents": Translator.getString(lang, "help_panel", "resettalents"),
                 "achievements <page>": Translator.getString(lang, "help_panel", "achievements"),
                 "rebirth": Translator.getString(lang, "help_panel", "rebirth"),
                 "rebirth level": Translator.getString(lang, "help_panel", "rebirth_level"),
@@ -263,7 +1474,7 @@ var Globals = {
                 "itemunfav <itemID or itemType>": Translator.getString(lang, "help_panel", "itemunfav"),
                 "sell <itemID>": Translator.getString(lang, "help_panel", "sell"),
                 "sellall": Translator.getString(lang, "help_panel", "sellall"),
-                "sellall <filter> <filterValue> <page>": Translator.getString(lang, "help_panel", "sellall_filter", [filtersString]),
+                "sellall <filter> <filterValue>": Translator.getString(lang, "help_panel", "sellall_filter", [filtersString]),
                 "sendmoney <@mention or idCharacter> <value>": Translator.getString(lang, "help_panel", "sendmoney"),
             }
 
@@ -277,7 +1488,7 @@ var Globals = {
 
             Globals.helpPanel[lang][3][Translator.getString(lang, "help_panel", "areas_title")] = {
                 "area": Translator.getString(lang, "help_panel", "area"),
-                "areas/regions": Translator.getString(lang, "help_panel", "areas"),
+                "areas/region": Translator.getString(lang, "help_panel", "areas"),
                 "areaconquest": Translator.getString(lang, "help_panel", "areaconquest"),
                 "arealevelup": Translator.getString(lang, "help_panel", "arealevelup"),
                 "areabonuseslist": Translator.getString(lang, "help_panel", "areabonuseslist"),
