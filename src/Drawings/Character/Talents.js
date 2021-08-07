@@ -133,9 +133,7 @@ class Talents {
         // Test if cdn cache is configured
         // If you use this and you try to edit and embed, the image is not updated /!\
         if (!conf.cdnAppearanceCache || !hashFile || conf.env === "dev") {
-            return embed
-                .attachFiles(new Discord.MessageAttachment((await this.allToImage(data)).createPNGStream(), "talents.png"))
-                .setImage("attachment://talents.png");
+            return { embeds: [embed.setImage("attachment://talents.png")], files: [new Discord.MessageAttachment((await this.allToImage(data)).createPNGStream(), "talents.png")] };
         }
 
         // Test cache cdn and upload if needed

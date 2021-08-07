@@ -83,7 +83,7 @@ class UserChallenge {
 
             });
         } else if (this.mustAnswer && !this.isTimeout()) {
-            message.channel.send(this.getEmbed(Translator.getString(lang, "antispam", "in_progress") + ( this.challengeMessageUrl != null ? "\n" + this.challengeMessageUrl : "")));
+            message.reply({ embeds: [this.getEmbed(Translator.getString(lang, "antispam", "in_progress") + (this.challengeMessageUrl != null ? "\n" + this.challengeMessageUrl : ""))]});
         }
         
     }

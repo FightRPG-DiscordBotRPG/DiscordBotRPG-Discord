@@ -127,7 +127,7 @@ class FightManager {
             this.swapArrayIndexes(textDecoration + " " + this.getSummaryText(summary.rounds[ind]), fight);
 
 
-            message.edit(this.embedFight(fight, null, lang, user, true))
+            message.edit({ embeds: [this.embedFight(fight, null, lang, user, true)]})
                 .then(() => {
                     fight.summaryIndex++;
                     let waitTime = 4000;
@@ -266,7 +266,7 @@ class FightManager {
                 color = [255, 0, 0];
             }
 
-            await message.edit(this.embedFight(fight, color, lang, user, false));
+            await message.edit({ embeds: [this.embedFight(fight, color, lang, user, false)]});
 
             try {
                 if (summary.type == "pve") {

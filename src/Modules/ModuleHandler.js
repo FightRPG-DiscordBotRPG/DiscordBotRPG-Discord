@@ -110,7 +110,7 @@ class ModuleHandler extends GModule {
 
             let user = Globals.connectedUsers[authorIdentifier];
             if (user.setMobileMode === "auto") {
-                user.setMobile(message.author.presence.clientStatus);
+                user.setMobile(message.author.presence?.clientStatus);
             }
 
             // exec module corresponding to command
@@ -309,8 +309,15 @@ class ModuleHandler extends GModule {
         }
     }
 
+    /**
+     * 
+     * @param {Discord.Message} message
+     * @param {string} command
+     * @param {any[]} args
+     * @param {string} lang
+     */
     prefixCommand(message, command, args, lang) {
-        if (message.guild && message.author.id === message.guild.ownerID) {
+        if (message.guild && message.author.id === message.guild.ownerId) {
             if (args[0]) {
                 if (args[0].length <= 10) {
                     let oldPrefix = this.getPrefix(message.guild.id);

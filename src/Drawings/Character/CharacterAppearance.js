@@ -663,9 +663,10 @@ class CharacterAppearance {
         // Test if cdn cache is configured
         // If you use this and you try to edit and embed, the image is not updated /!\
         if (!conf.cdnAppearanceCache || !hashFile) {
-            return embed
-                .attachFiles(new Discord.MessageAttachment((await this.getCharacter()).createPNGStream(), "character.png"))
-                .setImage("attachment://character.png");
+            return {
+                embeds: [embed.setImage("attachment://character.png")],
+                files: [new Discord.MessageAttachment((await this.getCharacter()).createPNGStream(), "character.png")]
+            };
         }
 
         // Test cache cdn and upload if needed
@@ -1064,7 +1065,7 @@ class CharacterAppearance {
          }} item
      */
     static itemAppearanceToHash(item) {
-        const colors = Array.isArray(item.maskColors) ? item.maskColors.map(e => e.source + e.target).join(",") :"none";
+        const colors = Array.isArray(item.maskColors) ? item.maskColors.map(e => e.source + e.target).join(",") : "none";
         return hash(item.id + colors);
     }
 

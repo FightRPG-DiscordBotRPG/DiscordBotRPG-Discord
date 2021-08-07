@@ -143,7 +143,7 @@ class Tutorial {
             arrOfMessages.forEach(async (val) => await message.author.send(val));
         } catch {
             try {
-                arrOfMessages.forEach(async (val) => await message.channel.send(val));
+                arrOfMessages.forEach(async (val) => await message.reply(val));
             } catch (e) {
                 console.log(e);
             }

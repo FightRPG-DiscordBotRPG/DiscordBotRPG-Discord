@@ -10,8 +10,18 @@ const Utils = require("./src/Utils");
 const Translator = require("./src/Translator/Translator");
 
 var bot = new Discord.Client({
-    messageCacheLifetime: 3600,
-    messageSweepInterval: 3600,
+    intents: [
+        Discord.Intents.FLAGS.DIRECT_MESSAGES,
+        Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+        Discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+        Discord.Intents.FLAGS.GUILDS,
+        Discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+        Discord.Intents.FLAGS.GUILD_INTEGRATIONS,
+        Discord.Intents.FLAGS.GUILD_MESSAGES,
+        Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    ],
+    partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
+    makeCache: Discord.Options.cacheWithLimits(),
 });
 
 process.on('unhandledRejection', err => {
@@ -118,9 +128,9 @@ bot.on("ready", async () => {
     console.log("Shard Connected");
 
     bot.user.setPresence({
-        activity: {
+        activities: [{
             name: "On " + await Utils.getTotalNumberOfGuilds(bot.shard) + " servers!"
-        }
+        }]
     });
     //console.log(`${bot.guilds.cache.size}\n${bot.shard.ids}\n${bot.shard.count}`);
     if (conf.env === "prod") {
@@ -148,7 +158,7 @@ startBot();
 
 
 
-bot.on('message', async (message) => {
+bot.on("messageCreate", async (message) => {
     try {
         await Globals.moduleHandler.run(message);
     } catch (err) {

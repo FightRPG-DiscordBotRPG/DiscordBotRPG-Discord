@@ -24,9 +24,13 @@ class MessageReactionsWrapper {
     * @param {SettingsMessageReact} settings
     */
     async load(messageDiscord, content, settings) {
-        this.message = await messageDiscord.channel.send(content);
+        if (content.fields) {
+            content = { embeds: [content] };
+        }
 
-        this.isDM = messageDiscord.channel.type == "dm";
+        this.message = await messageDiscord.reply(content);
+
+        this.isDM = messageDiscord.channel.type == "DM";
         this.currentMessageReactions = [];
 
         if (this.message == null) {
@@ -50,7 +54,7 @@ class MessageReactionsWrapper {
             return (user.id === messageDiscord.author.id && (this.currentEmojiReactList.includes(reaction.emoji.name) || this.currentEmojiReactList.includes(reaction.emoji.id) || this.currentEmojiReactList.find(e => e.id === reaction.emoji.id)));
         };
 
-        this.collector = this.message.createReactionCollector(filter, settings.collectorOptions);
+        this.collector = this.message.createReactionCollector({ filter, ...settings.collectorOptions });
 
         this.collector.on('end', async () => {
             await new Promise(res => setTimeout(res, 1000));
@@ -66,6 +70,10 @@ class MessageReactionsWrapper {
      */
     async edit(content, arrOfEmojis, clearEmojis=true) {
         if (content != null && !this.message.deleted) {
+            if (content.fields) {
+                content = { embeds: [content] };
+            }
+
             if (clearEmojis) {
                 await this.clearEmojis();
             }
@@ -89,7 +97,10 @@ class MessageReactionsWrapper {
     async deleteAndSend(content) {
         this.resetCollectListener();
         await this.message.delete();
-        this.message.channel.send(content);
+        if (content.fields) {
+            content = { fields: [content] };
+        }
+        this.message.reply(content);
     }
 
     /**
@@ -135,7 +146,7 @@ class MessageReactionsWrapper {
             //await Promise.all(this.currentMessageReactions);
         } else {
             if (!this.message.deleted) {
-                await this.message.reactions.removeAll();
+                try { await this.message.reactions.removeAll(); } catch { /* We don't care if not deleted */ };
             }
         }
 

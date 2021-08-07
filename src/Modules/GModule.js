@@ -58,11 +58,17 @@ class GModule {
             if (msg != null && msg != "") {
                 let msgCut = msg;
                 while (msgCut.length > 2000 && !msg.fields) {
-                    await message.channel.send(msgCut.substring(0, 1999));
+                    await message.reply(msgCut.substring(0, 1999));
                     msgCut = msgCut.substring(1999);
                 }
                 msg = msgCut;
-                let msgToReturn = await message.channel.send(msg);
+
+                // Discord js 13 fix
+                if (msg.fields) {
+                    msg = { embeds: [msg] };
+                }
+
+                let msgToReturn = await message.reply(msg);
 
                 // Handle tutorial
                 let user = Globals.connectedUsers[message.author.id];
