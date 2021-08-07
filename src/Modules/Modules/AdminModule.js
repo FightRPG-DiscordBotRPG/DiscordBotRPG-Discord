@@ -230,11 +230,12 @@ class AdminModule extends GModule {
             case "warn":
                 args[0] = decodeURIComponent(args[0]);
                 for (let idUser of args[0].split(",")) {
-                    evalDyn = `let user = this.users.cache.get("${idUser}");
-                    if(user != null) {
-                        user.send("Due to using macros, you got warned. Your FightRPG account got it's money set to zero. This is the last warning you'll get. Next punishment will result in a full reset instead.").catch((e) => {null});
+                    evalDyn = (client) => {
+                        let user = client.users.cache.get(idUser);
+                        if (user != null) {
+                            user.send("Due to using macros, you got warned. Your FightRPG account got it's money set to zero. This is the last warning you'll get. Next punishment will result in a full reset instead.").catch((e) => { null });
+                        }
                     }
-                    `;
                     interact.client.shard.broadcastEval(evalDyn);
                 }
                 msg = "Done";

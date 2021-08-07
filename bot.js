@@ -116,7 +116,7 @@ async function createDummyUsers() {
 }
 
 async function getMemory() {
-    let totalMemory = await bot.shard.broadcastEval("process.memoryUsage().heapUsed");
+    let totalMemory = await bot.shard.broadcastEval(() => process.memoryUsage().heapUsed);
     let totalMemoryMB = 0;
     for (let c of totalMemory) {
         totalMemoryMB += Math.round(c / 1048576);

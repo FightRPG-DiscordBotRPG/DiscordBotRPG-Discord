@@ -252,7 +252,7 @@ class ModuleHandler extends GModule {
                     let uptime = `${hours} hours, ${minutes} minutes and ${seconds} seconds`;
                     const os = require('os');
 
-                    let totalMemory = await interact.client.shard.broadcastEval("process.memoryUsage().heapUsed");
+                    let totalMemory = await interact.client.shard.broadcastEval(() => process.memoryUsage().heapUsed);
                     let totalMemoryMB = 0;
                     for (let c of totalMemory) {
                         totalMemoryMB += Math.round(c / 1024 / 1024 * 100) / 100;

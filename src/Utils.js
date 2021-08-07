@@ -22,7 +22,7 @@ class Utils {
      */
     static async getTotalNumberOfGuilds(shard) {
         try {
-            let allCounts = await shard.broadcastEval("this.guilds.cache.size");
+            let allCounts = await shard.broadcastEval((client) => client.guilds.cache.size);
             let total = 0;
             for (let count in allCounts) {
                 total += allCounts[count];
