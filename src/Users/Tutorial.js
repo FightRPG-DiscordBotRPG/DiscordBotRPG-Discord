@@ -1,4 +1,5 @@
 const Discord = require("discord.js");
+const InteractContainer = require("../Discord/InteractContainer");
 const Globals = require("../Globals");
 const Translator = require("../Translator/Translator");
 const Utils = require("../Utils");
@@ -75,16 +76,16 @@ class Tutorial {
     /**
      * 
      * @param {string} command
-     * @param {Discord.Message} message
+     * @param {InteractContainer} interact
      * @param {string} lang
      */
-    async reactOnCommand(command, message, lang = "en") {
+    async reactOnCommand(command, interact, lang = "en") {
         if (!this.hasStarted || this.currentStep.command !== command) {
             return;
         }
 
         try {
-            await this.sendMessage(message, Translator.getString(lang, "tutorial", this.currentStep.toDisplay));
+            await this.sendMessage(interact, Translator.getString(lang, "tutorial", this.currentStep.toDisplay));
 
             if (!this.isLastStep()) {
                 this.indexStep++;
@@ -97,7 +98,7 @@ class Tutorial {
 
             // Is Last Step
             this.reset();
-            await this.sendMessage(message, Translator.getString(lang, "tutorial", "end"));
+            await this.sendMessage(interact, Translator.getString(lang, "tutorial", "end"));
 
 
         } catch (ex) {
@@ -112,9 +113,9 @@ class Tutorial {
 
     /**
      * 
-     * @param {Discord.Message} message
+     * @param {InteractContainer} interact
      */
-    async start(message, lang = "en") {
+    async start(interact, lang = "en") {
         if (this.hasStarted) {
             return;
         }
@@ -122,7 +123,7 @@ class Tutorial {
         this.currentStep = Tutorial.Steps[0];
         this.nextStep = Tutorial.Steps[1];
         this.indexStep = 1;       
-        await this.sendMessage(message, Translator.getString(lang, "tutorial", "start"));
+        await this.sendMessage(interact, Translator.getString(lang, "tutorial", "start"));
     }
 
     reset() {
@@ -134,7 +135,7 @@ class Tutorial {
 
     /**
      * 
-     * @param {Discord.Message} message
+     * @param {InteractContainer} message
      * @param {string} content
      */
     async sendMessage(message, content) {

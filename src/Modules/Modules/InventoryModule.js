@@ -6,6 +6,7 @@ const Inventory = require("../../Drawings/Inventory");
 const Emojis = require("../../Drawings/Emojis");
 const Discord = require("discord.js");
 const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
+const InteractContainer = require("../../Discord/InteractContainer");
 
 
 class InventoryModule extends GModule {
@@ -18,16 +19,16 @@ class InventoryModule extends GModule {
     }
 
     /**
-     * 
-     * @param {Discord.Message} message
+     *
+     * @param {InteractContainer} interact
      * @param {string} command
      * @param {Array} args
      */
-    async run(message, command, args) {
+    async run(interact, command, args) {
         let msg = "";
-        let mentions = message.mentions.users;
+        let mentions = interact.mentions;
         let firstMention;
-        let user = Globals.connectedUsers[message.author.id];
+        let user = Globals.connectedUsers[interact.author.id];
         let axios = user.getAxios();
         let searchFilters;
 
@@ -54,7 +55,7 @@ class InventoryModule extends GModule {
 
                     let reactWrapper = new MessageReactionsWrapper();
 
-                    await reactWrapper.load(message, itemmsg, {
+                    await reactWrapper.load(interact, itemmsg, {
                         reactionsEmojis: [
                             data.item.isFavorite == true ? null : (isEquipped ? null : sellEmoji),
                             favoEmoji,
@@ -68,7 +69,7 @@ class InventoryModule extends GModule {
                     });
 
                     // For tutorial
-                    await user.tutorial.reactOnCommand("item", message, user.lang);
+                    await user.tutorial.reactOnCommand("item", interact, user.lang);
 
                     reactWrapper.collector.on('collect', async (reaction) => {
                         let dataCollector = null;
@@ -111,14 +112,14 @@ class InventoryModule extends GModule {
                                 break;
                             case addToTradeEmoji:
                                 if (this.allModulesReference["TradeModule"] != null) {
-                                    this.allModulesReference["TradeModule"].run(message, "tadd", [data.idInInventory, data.item.number]);
+                                    this.allModulesReference["TradeModule"].run(interact, "tadd", [data.idInInventory, data.item.number]);
                                 }
                                 break;
                         }
 
                         if (dataCollector != null) {
                             msgCollector = this.getBasicSuccessErrorMessage(dataCollector);
-                            await this.sendMessage(message, msgCollector);
+                            await this.sendMessage(interact, msgCollector);
                         }
                     });
                 });
@@ -144,7 +145,7 @@ class InventoryModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/inventory/show/" + searchFilters.page, {
                     params: searchFilters.params
                 }), async (data) => {
-                    await this.pageListener(data, message, await Inventory.displayAsList(data, true, user), async (currPage) => {
+                    await this.pageListener(data, interact, await Inventory.displayAsList(data, true, user), async (currPage) => {
                         let d = await axios.get("/game/inventory/show/" + currPage, {
                             params: searchFilters.params
                         });
@@ -153,7 +154,7 @@ class InventoryModule extends GModule {
                         return await Inventory.displayAsList(newData, true, user)
                     });
                     // For tutorial
-                    await user.tutorial.reactOnCommand("inv", message, user.lang);
+                    await user.tutorial.reactOnCommand("inv", interact, user.lang);
                 });
                 break;
 
@@ -169,7 +170,7 @@ class InventoryModule extends GModule {
 
                 msg = await this.getDisplayIfSuccess(await axios.post("/game/inventory/sellall/value", searchFilters.params), async (data) => {
                     if (data.value > 0) {
-                        this.confirmListener(message, Inventory.ciValueSellAllDisplay(data, searchFilters.params), async (validate) => {
+                        this.confirmListener(interact, Inventory.ciValueSellAllDisplay(data, searchFilters.params), async (validate) => {
                             if (validate) {
                                 return this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/sellall", searchFilters.params));
                             } else {
@@ -183,7 +184,7 @@ class InventoryModule extends GModule {
                 break;
 
             case "sendmoney":
-                firstMention = mentions.first();
+                firstMention = mentions?.first();
                 var isMention = false;
                 if (firstMention) {
                     args[0] = firstMention.id;
@@ -197,7 +198,7 @@ class InventoryModule extends GModule {
                 break;
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 }
 

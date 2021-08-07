@@ -1,4 +1,5 @@
 const Discord = require("discord.js");
+const InteractContainer = require("./Discord/InteractContainer");
 
 class MessageReactionsWrapper {
     /**
@@ -19,18 +20,19 @@ class MessageReactionsWrapper {
 
 
     /**
-    * @param {Discord.Message} messageDiscord
+    * @param {InteractContainer} interact
     * @param {string} content
     * @param {SettingsMessageReact} settings
     */
-    async load(messageDiscord, content, settings) {
+    async load(interact, content, settings) {
         if (content.fields) {
             content = { embeds: [content] };
         }
 
-        this.message = await messageDiscord.reply(content);
+        this.message = await interact.reply(content);
+        console.log(this.message);
 
-        this.isDM = messageDiscord.channel.type == "DM";
+        this.isDM = interact.channel.type == "DM";
         this.currentMessageReactions = [];
 
         if (this.message == null) {
@@ -51,7 +53,7 @@ class MessageReactionsWrapper {
          * @param {Discord.User} user
          */
         const filter = (reaction, user) => {
-            return (user.id === messageDiscord.author.id && (this.currentEmojiReactList.includes(reaction.emoji.name) || this.currentEmojiReactList.includes(reaction.emoji.id) || this.currentEmojiReactList.find(e => e.id === reaction.emoji.id)));
+            return (user.id === interact.author.id && (this.currentEmojiReactList.includes(reaction.emoji.name) || this.currentEmojiReactList.includes(reaction.emoji.id) || this.currentEmojiReactList.find(e => e.id === reaction.emoji.id)));
         };
 
         this.collector = this.message.createReactionCollector({ filter, ...settings.collectorOptions });
@@ -96,11 +98,12 @@ class MessageReactionsWrapper {
 
     async deleteAndSend(content) {
         this.resetCollectListener();
-        await this.message.delete();
         if (content.fields) {
             content = { fields: [content] };
         }
-        this.message.reply(content);
+        await this.message.reply(content);
+        await this.message.delete();
+
     }
 
     /**

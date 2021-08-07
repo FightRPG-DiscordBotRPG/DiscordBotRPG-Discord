@@ -3,6 +3,7 @@ const Globals = require("../../Globals");
 const Translator = require("../../Translator/Translator");
 const FightManager = require("../../Drawings/FightManager");
 const Group = require("../../Drawings/Group");
+const InteractContainer = require("../../Discord/InteractContainer");
 
 
 class GroupModule extends GModule {
@@ -14,12 +15,18 @@ class GroupModule extends GModule {
         this.endLoading("Group");
     }
 
-    async run(message, command, args) {
+    /**
+     *
+     * @param {InteractContainer} interact
+     * @param {string} command
+     * @param {Array} args
+     */
+    async run(interact, command, args) {
         let msg = "";
-        let mentions = message.mentions.users;
-        let axios = Globals.connectedUsers[message.author.id].getAxios();
+        let mentions = interact.mentions;
+        let axios = Globals.connectedUsers[interact.author.id].getAxios();
         let firstMention;
-        let usernameToDoSomething = mentions.first() != null ? mentions.first().tag : args[0];
+        let usernameToDoSomething = mentions?.first() != null ? mentions?.first().tag : args[0];
 
         switch (command) {
             case "grpmute":
@@ -45,7 +52,7 @@ class GroupModule extends GModule {
                 break;
 
             case "grpinvite":
-                firstMention = mentions.first();
+                firstMention = mentions?.first();
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/group/invite", {
                     mention: firstMention != null ? firstMention.id : null
                 }));
@@ -69,12 +76,12 @@ class GroupModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.post("/game/group/fight/monster", {
                     idMonster: args[0]
                 }), async (data) => {
-                    await FightManager.fight(data, message, Globals.connectedUsers[message.author.id]);
+                    await FightManager.fight(data, interact, Globals.connectedUsers[interact.author.id]);
                 });
                 break;
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
 
 
     }

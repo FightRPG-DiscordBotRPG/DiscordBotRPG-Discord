@@ -1,5 +1,6 @@
 const GModule = require("../GModule");
 const Globals = require("../../Globals");
+const InteractContainer = require("../../Discord/InteractContainer");
 
 
 class ConquestModule extends GModule {
@@ -11,10 +12,16 @@ class ConquestModule extends GModule {
         this.endLoading("Conquest");
     }
 
-    async run(message, command, args) {
+    /**
+     *
+     * @param {InteractContainer} interact
+     * @param {string} command
+     * @param {Array} args
+     */
+    async run(interact, command, args) {
         let msg = "";
-        let axios = Globals.connectedUsers[message.author.id].getAxios();
-        let user = Globals.connectedUsers[message.author.id];
+        let axios = Globals.connectedUsers[interact.author.id].getAxios();
+        let user = Globals.connectedUsers[interact.author.id];
         switch (command) {
             case "arealevelup":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/conquest/area/levelup/"))
@@ -26,7 +33,7 @@ class ConquestModule extends GModule {
                     number: args[1]
                 }));
                 break;
-                
+
             case "arearesetbonuses":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/conquest/area/bonus/resetbonuses"))
                 break;
@@ -40,7 +47,7 @@ class ConquestModule extends GModule {
                 break;
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 }
 

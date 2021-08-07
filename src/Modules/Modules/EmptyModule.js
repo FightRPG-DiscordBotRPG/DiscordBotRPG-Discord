@@ -10,15 +10,21 @@ class NonameModule extends GModule {
         this.endLoading("Noname");
     }
 
-    async run(message, command, args) {
+    /**
+     *
+     * @param {InteractContainer} interact
+     * @param {string} command
+     * @param {Array} args
+     */
+    async run(interact, command, args) {
         let msg = "";
-        let authorIdentifier = message.author.id;
+        let authorIdentifier = interact.author.id;
 
         switch (command) {
 
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 }
 

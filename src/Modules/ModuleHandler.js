@@ -9,6 +9,7 @@ const version = require("../../conf/version");
 const Utils = require("../Utils");
 const conf = require("../../conf/conf");
 const Emojis = require("../Drawings/Emojis");
+const InteractContainer = require("../Discord/InteractContainer");
 
 class ModuleHandler extends GModule {
     constructor() {
@@ -58,9 +59,47 @@ class ModuleHandler extends GModule {
 
     /**
      * 
-     * @param {Discord.Message} message
+     * @param {InteractContainer} interact
+     * @param {Discord.CommandInteraction} interact
+     * @param {Discord.Message} interact
      */
-    async run(message) {
+    async run(interact) {
+
+        /**
+         * @type {Discord.User}
+         **/
+        let author = interact.author;
+
+        /**
+         * @type {Discord.Channel}
+         **/
+        let channel = interact.channel;
+
+        /**
+         * @type {any[]}
+         **/
+        let args;
+
+        /**
+         * @type {string}
+         **/
+        let command;
+
+
+        let prefix = this.getPrefix(channel.guild ? channel.guild.id : null);
+
+        if (interact.message) {
+            args = [].concat.apply([], interact.message.content.slice(prefix.length).trim().split('"').map(function (v, i) {
+                return i % 2 ? v : v.split(' ')
+            })).filter(Boolean);
+
+            command = args.shift();
+            command = command != null ? command.toLowerCase() : "";
+            interact.args = args;
+        } else {
+            command = interact.interaction.commandName;
+            args = interact.args;
+        }
 
         if (Globals.isLoading) {
             await this.sendMessage("The bot is still loading. Please wait. " + Emojis.general.hourglass_not_done)
@@ -68,13 +107,12 @@ class ModuleHandler extends GModule {
         }
 
         let msg = "";
-        let authorIdentifier = message.author.id;
-        let prefix = this.getPrefix(message.channel.guild ? message.channel.guild.id : null);
+        let authorIdentifier = author.id;
         // If don't start by prefix 
-        if (!message.content.startsWith(prefix)) {
+        if (interact.message && !interact.message.content.startsWith(prefix)) {
             // If the bot is mention display prefix
-            if (!message.author.bot && message.mentions?.members?.first()?.id == message.client.user.id) {
-                await this.sendMessage(message,
+            if (!author.bot && interact.message.mentions?.members?.first()?.id == interact.client.user.id) {
+                await this.sendMessage(interact.message,
                     new Discord.MessageEmbed()
                         .setColor([0, 128, 128])
                         .addField(Translator.getString("en", "other", "prefix_title"), prefix)
@@ -82,23 +120,13 @@ class ModuleHandler extends GModule {
             }
             return;
         }
-        /**
-         * @type {any[]}
-         **/
-        let args = [].concat.apply([], message.content.slice(prefix.length).trim().split('"').map(function (v, i) {
-            return i % 2 ? v : v.split(' ')
-        })).filter(Boolean);
 
 
-        let command = args.shift();
-        command = command != null ? command.toLowerCase() : "";
-
-
-        if (!message.author.bot && command != null && this.allCommands[command]) {
+        if (!author.bot && command != null && this.allCommands[command]) {
             let isAdmin = Globals.admins.indexOf(authorIdentifier) > -1;
             let data;
             this.logCommand(authorIdentifier, command, Date.now());
-            await this.connectUser(message);
+            await this.connectUser(interact);
             let nonDiscordArgs = [];
             for (let i in args) {
                 nonDiscordArgs[i] = encodeURIComponent(args[i]);
@@ -110,21 +138,21 @@ class ModuleHandler extends GModule {
 
             let user = Globals.connectedUsers[authorIdentifier];
             if (user.setMobileMode === "auto") {
-                user.setMobile(message.author.presence?.clientStatus);
+                user.setMobile(author.presence?.clientStatus);
             }
 
             // exec module corresponding to command
-            await this.executeCommand(message, command, nonDiscordArgs, prefix);
+            await this.executeCommand(interact, command, nonDiscordArgs, prefix);
 
             let axios = Globals.connectedUsers[authorIdentifier].getAxios();
             switch (command) {
                 case "prefix":
-                    msg = this.prefixCommand(message, command, args, "en");
+                    msg = this.prefixCommand(interact, args, "en");
                     break;
                 case "tutorial":
                 case "play":
                 case "start":
-                    await user.tutorial.start(message, user.lang);
+                    await user.tutorial.start(interact, user.lang);
                     break;
                 case "setmobile":
                     if (Globals.yesNoByLang[args[0]]) {
@@ -139,7 +167,7 @@ class ModuleHandler extends GModule {
                         user.isOnMobile = false;
                     } else {
                         user.setMobileMode = "auto";
-                        user.setMobile(message.author.presence.clientStatus);
+                        user.setMobile(interact.author.presence?.clientStatus);
                     }
 
                     msg = Translator.getString(user.lang, "general", "mobile_set", [user.setMobileMode, Translator.getString(user.lang, "general", user.isOnMobile ? "yes" : "no")]);
@@ -214,9 +242,9 @@ class ModuleHandler extends GModule {
                     break;
                 case "bot_info": {
 
-                    let total = await Utils.getTotalNumberOfGuilds(message.client.shard);
+                    let total = await Utils.getTotalNumberOfGuilds(interact.client.shard);
 
-                    let totalSeconds = (message.client.uptime / 1000);
+                    let totalSeconds = (interact.client.uptime / 1000);
                     let hours = Math.floor(totalSeconds / 3600);
                     totalSeconds %= 3600;
                     let minutes = Math.floor(totalSeconds / 60);
@@ -224,7 +252,7 @@ class ModuleHandler extends GModule {
                     let uptime = `${hours} hours, ${minutes} minutes and ${seconds} seconds`;
                     const os = require('os');
 
-                    let totalMemory = await message.client.shard.broadcastEval("process.memoryUsage().heapUsed");
+                    let totalMemory = await interact.client.shard.broadcastEval("process.memoryUsage().heapUsed");
                     let totalMemoryMB = 0;
                     for (let c of totalMemory) {
                         totalMemoryMB += Math.round(c / 1024 / 1024 * 100) / 100;
@@ -235,17 +263,17 @@ class ModuleHandler extends GModule {
 
                     msg = new Discord.MessageEmbed()
                         .setAuthor("FightRPG")
-                        .addField("Shard Uptime: ", "[ " + uptime + " ]", true).addField("Shard ID: ", `[ ${message.client.shard.ids} ]`)
-                        .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + message.client.shard.count + " ]", true)
+                        .addField("Shard Uptime: ", "[ " + uptime + " ]", true).addField("Shard ID: ", `[ ${interact.client.shard.ids} ]`)
+                        .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + interact.client.shard.count + " ]", true)
                         .addField("Server Version: ", "[ " + data.server + " ]", true).addField("Bot Version: ", "[ " + version + " ]", true)
-                        .addField("Memory Used: ", "[ " + `${Math.round(totalMemoryMB)} MB` + " ]", true).addField("Ping: ", "[ " + Math.round(message.client.ws.ping) + " ms ]", true)
+                        .addField("Memory Used: ", "[ " + `${Math.round(totalMemoryMB)} MB` + " ]", true).addField("Ping: ", "[ " + Math.round(interact.client.ws.ping) + " ms ]", true)
                         .addField("Processor: ", "[ " + os.cpus()[0].model + " [x" + os.cpus().length + "] ]", true)
                     break;
                 }
 
             }
 
-            this.sendMessage(message, msg);
+            this.sendMessage(interact, msg);
             //console.log("Performing command, took: " + ((Date.now() - dt) / 1000) + " seconds");
         }
     }
@@ -311,22 +339,22 @@ class ModuleHandler extends GModule {
 
     /**
      * 
-     * @param {Discord.Message} message
+     * @param {InteractContainer} interact
      * @param {string} command
      * @param {any[]} args
      * @param {string} lang
      */
-    prefixCommand(message, command, args, lang) {
-        if (message.guild && message.author.id === message.guild.ownerId) {
+    prefixCommand(interact, args, lang) {
+        if (interact.guild && interact.author.id === interact.guild.ownerId) {
             if (args[0]) {
                 if (args[0].length <= 10) {
-                    let oldPrefix = this.getPrefix(message.guild.id);
-                    this.prefixChange(message.guild.id, args[0]); // async
+                    let oldPrefix = this.getPrefix(interact.guild.id);
+                    this.prefixChange(interact.guild.id, args[0]); // async
                     return new Discord.MessageEmbed()
                         .setColor([0, 128, 128])
                         .setAuthor(Translator.getString(lang, "other", "prefix_changed"))
                         .addField(Translator.getString(lang, "other", "old_prefix"), oldPrefix)
-                        .addField(Translator.getString(lang, "other", "new_prefix"), this.getPrefix(message.guild.id));
+                        .addField(Translator.getString(lang, "other", "new_prefix"), this.getPrefix(interact.guild.id));
                 } else {
                     return Translator.getString(lang, "errors", "prefix_max_length", [10]);
                 }
@@ -380,35 +408,42 @@ class ModuleHandler extends GModule {
         return false;
     }
 
-    async executeCommand(message, command, args, prefix) {
+    /**
+     * 
+     * @param {InteractContainer} interact
+     * @param {string} command
+     * @param {any[]} args
+     * @param {string} prefix
+     */
+    async executeCommand(interact, command, args, prefix) {
         let mod = this.commandsReact[command];
         if (mod != null) {
-            let user = Globals.connectedUsers[message.author.id];
+            let user = Globals.connectedUsers[interact.author.id];
 
             if (!user.isAdmin() || conf.env === "dev") {
-                await user.challenge.manageIncomingCommand(message, command);
+                await user.challenge.manageIncomingCommand(interact, command);
             }
             if (!user.challenge.mustAnswer && !user.challenge.isTimeout()) {
                 if (mod.isActive) {
                     try {
                         user.lastCommandUsed = Date.now();
-                        await mod.run(message, command, args, prefix);
+                        await mod.run(interact, command, args, prefix);
                     } catch (err) {
                         if (!this.devMode) {
                             if (err.constructor != Discord.DiscordAPIError) {
-                                let adminTell = "A module has crashed.\nCommand: " + command + "\nArgs: [" + args.toString() + "]\n" + "User that have crashed the command: " + message.author.username + "#" + message.author.discriminator + "\n";
+                                let adminTell = "A module has crashed.\nCommand: " + command + "\nArgs: [" + args.toString() + "]\n" + "User that have crashed the command: " + interact.author.username + "#" + interact.author.discriminator + "\n";
                                 await Utils.sendDMToSpecificUser("241564725870198785", Utils.prepareStackError(err, adminTell));
                             } else {
                                 console.log(err);
-                                message.channel.send(err.name).catch((e) => {
-                                    message.author.send(err.name).catch((e) => null);
+                                interact.channel.send(err.name).catch((e) => {
+                                    interact.author.send(err.name).catch((e) => null);
                                 });
                             }
                         }
                         throw err;
                     }
                 } else {
-                    message.channel.send("Due to an error, this module is currently deactivated. The following commands will be disabled: " + mod.commands.toString() + "\nSorry for the inconvenience.").catch((e) => null);
+                    interact.channel.send("Due to an error, this module is currently deactivated. The following commands will be disabled: " + mod.commands.toString() + "\nSorry for the inconvenience.").catch((e) => null);
                 }
             }
 
@@ -418,19 +453,20 @@ class ModuleHandler extends GModule {
 
     /**
      * 
-     * @param {Discord.Message} message
+     * @param {InteractContainer} interact
      */
-    async connectUser(message) {
-        if (Globals.connectedUsers[message.author.id] == null) {
-            let user = new User(message.author.id, message.author.tag, message.author.avatarURL({ dynamic: true }));
+    async connectUser(interact) {
+        if (Globals.connectedUsers[interact.author.id] == null) {
+
+            let user = new User(interact.author.id, interact.author.tag, interact.author.avatarURL({ dynamic: true }));
             await user.load();
             if (user.token == null) {
                 await user.createUser();
-                await this.sendMessage(message, Translator.getString("en", "help_panel", "tutorial", [Globals.tutorialLink]));
-                await user.tutorial.start(message, "en");
+                await this.sendMessage(interact, Translator.getString("en", "help_panel", "tutorial", [Globals.tutorialLink]));
+                await user.tutorial.start(interact, "en");
             }
             if (user.token != null) {
-                Globals.connectedUsers[message.author.id] = user;
+                Globals.connectedUsers[interact.author.id] = user;
             }
 
         }

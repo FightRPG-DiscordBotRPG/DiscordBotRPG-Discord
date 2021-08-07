@@ -13,6 +13,7 @@ const LeaderboardAchievements = require("../Drawings/Leaderboard/LeaderboardAchi
 const Emojis = require("../Drawings/Emojis");
 const MessageReactionsWrapper = require("../MessageReactionsWrapper");
 const User = require("../Users/User");
+const InteractContainer = require("../Discord/InteractContainer");
 
 class GModule {
     constructor() {
@@ -27,11 +28,11 @@ class GModule {
 
     /**
     *
-    * @param {Discord.Message} message
+    * @param {InteractContainer} interact
     * @param {string} command
     * @param {Array} args
     */
-    async run(message, command, args) { }
+    async run(interact, command, args) { }
 
     init() {
 
@@ -49,16 +50,16 @@ class GModule {
 
     /**
      * 
-     * @param {Discord.Message} message
+     * @param {InteractContainer} interact
      * @param {string | Discord.MessageEmbed} msg
      * @param {string} usedCommand
      */
-    async sendMessage(message, msg, usedCommand) {
+    async sendMessage(interact, msg, usedCommand) {
         try {
             if (msg != null && msg != "") {
                 let msgCut = msg;
                 while (msgCut.length > 2000 && !msg.fields) {
-                    await message.reply(msgCut.substring(0, 1999));
+                    await interact.reply(msgCut.substring(0, 1999));
                     msgCut = msgCut.substring(1999);
                 }
                 msg = msgCut;
@@ -68,19 +69,19 @@ class GModule {
                     msg = { embeds: [msg] };
                 }
 
-                let msgToReturn = await message.reply(msg);
+                let msgToReturn = await interact.reply(msg);
 
                 // Handle tutorial
-                let user = Globals.connectedUsers[message.author.id];
+                let user = Globals.connectedUsers[interact.author.id];
 
                 if (user) {
-                    await user.tutorial.reactOnCommand(usedCommand, message, user.lang);
+                    await user.tutorial.reactOnCommand(usedCommand, interact, user.lang);
                 }
 
                 return msgToReturn;
             }
         } catch (ex) {
-            message.author.send(ex.message).catch((e) => {
+            interact.author.send(ex.message).catch((e) => {
                 console.log(ex);
             });
         }
@@ -201,11 +202,11 @@ class GModule {
 
     /**
      * 
-     * @param {Discord.Message} message
+     * @param {InteractContainer} interact
      * @param {Array<any>} args
      * @param {boolean} defaultLeaderboard
      */
-    async drawLeaderboard(message, args, defaultLeaderboard) {
+    async drawLeaderboard(interact, args, defaultLeaderboard) {
         let leaderboardName = args[0];
         let page = args[1] != null ? args[1] : "";
 
@@ -215,7 +216,7 @@ class GModule {
             leaderboardName = defaultLeaderboard;
         }
 
-        let data = await this.getLeaderBoard(leaderboardName, page, Globals.connectedUsers[message.author.id].getAxios());
+        let data = await this.getLeaderBoard(leaderboardName, page, Globals.connectedUsers[interact.author.id].getAxios());
         /**
          *  @type {Leaderboard}
          **/
@@ -249,15 +250,15 @@ class GModule {
                     break;
             }
 
-            await this.pageListener(data, message, leaderboard.draw(), async (currPage) => {
-                return await this.getLeaderBoard(leaderboardName, currPage, Globals.connectedUsers[message.author.id].getAxios())
+            await this.pageListener(data, interact, leaderboard.draw(), async (currPage) => {
+                return await this.getLeaderBoard(leaderboardName, currPage, Globals.connectedUsers[interact.author.id].getAxios())
             }, async (newData) => {
                 leaderboard.load(newData);
                 return leaderboard.draw();
             });
 
         } else {
-            this.sendMessage(message, data.error);
+            this.sendMessage(interact, data.error);
         }
     }
 
@@ -332,12 +333,12 @@ class GModule {
     /**
      * 
      * @param {{page: number, maxPage: number}} initialData
-     * @param {Discord.Message} messageDiscord
+     * @param {InteractContainer} interact
      * @param {string | Discord.MessageEmbed} initialMessage
      * @param {dataCollectorCallback} dataCollectorCallback
      * @param {Function} afterCollectorCallback
      */
-    async pageListener(initialData, messageDiscord, initialMessage, dataCollectorCallback, afterCollectorCallback) {
+    async pageListener(initialData, interact, initialMessage, dataCollectorCallback, afterCollectorCallback) {
         var currentPage = initialData.page;
         let currentMessageReactions = [];
 
@@ -352,7 +353,7 @@ class GModule {
         }
 
         let messageReactWrapper = new MessageReactionsWrapper();
-        await messageReactWrapper.load(messageDiscord, initialMessage, { reactionsEmojis: currentMessageReactions, collectorOptions: { time: 60000 } });
+        await messageReactWrapper.load(interact, initialMessage, { reactionsEmojis: currentMessageReactions, collectorOptions: { time: 60000 } });
 
 
         if (messageReactWrapper.message == null) {
@@ -395,18 +396,18 @@ class GModule {
 
     /**
      * 
-     * @param {Discord.Message} messageDiscord
+     * @param {InteractContainer} interact
      * @param {string | Discord.MessageEmbed} initialMessage
      * @param {dataCollectorCallback} dataCollectorCallback
      * @param {Function} afterCollectorCallback
      */
-    async confirmListener(messageDiscord, initialMessage, dataCollectorCallback) {
+    async confirmListener(interact, initialMessage, dataCollectorCallback) {
         let vmark = Emojis.general.vmark, xmark = Emojis.general.xmark;
 
         let currentMessageReactions = [vmark, xmark];
 
         let messageReactWrapper = new MessageReactionsWrapper();
-        await messageReactWrapper.load(messageDiscord, initialMessage, { reactionsEmojis: currentMessageReactions, collectorOptions: { time: 30000, max: 1 } });
+        await messageReactWrapper.load(interact, initialMessage, { reactionsEmojis: currentMessageReactions, collectorOptions: { time: 30000, max: 1 } });
 
         if (messageReactWrapper.message == null) {
             return;

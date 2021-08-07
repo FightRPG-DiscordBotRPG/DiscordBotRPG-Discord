@@ -15,11 +15,17 @@ class OtherModule extends GModule {
         this.endLoading("Other");
     }
 
-    async run(message, command, args, prefix) {
+    /**
+     *
+     * @param {InteractContainer} interact
+     * @param {string} command
+     * @param {Array} args
+     */
+    async run(interact, command, args, prefix) {
         let msg = "";
-        let authorIdentifier = message.author.id;
-        let axios = Globals.connectedUsers[message.author.id].getAxios();
-        let user = Globals.connectedUsers[message.author.id];
+        let authorIdentifier = interact.author.id;
+        let axios = Globals.connectedUsers[interact.author.id].getAxios();
+        let user = Globals.connectedUsers[interact.author.id];
 
 
         switch (command) {
@@ -45,7 +51,7 @@ class OtherModule extends GModule {
                 break;
             case "help":
                 msg = await this.getDisplayIfSuccess(Utils.getHelpPanel(user.lang, args[0]), (data) => {
-                    this.pageListener(data, message, this.cmdToString(data, prefix), async (currPage) => {
+                    this.pageListener(data, interact, this.cmdToString(data, prefix), async (currPage) => {
                         return Utils.getHelpPanel(user.lang, currPage);
                     }, async (newData) => {
                             return this.cmdToString(newData, prefix);
@@ -74,7 +80,7 @@ class OtherModule extends GModule {
 
 
                     let reactWrapper = new MessageReactionsWrapper();
-                    await reactWrapper.load(message, tempMsgContent, {
+                    await reactWrapper.load(interact, tempMsgContent, {
                         reactionsEmojis: [one, two, three, four],
                         collectorOptions: {
                             max: 1,
@@ -112,7 +118,7 @@ class OtherModule extends GModule {
                         }
 
                         if (data != null) {
-                            await this.sendMessage(message, this.getBasicSuccessErrorMessage(data));
+                            await this.sendMessage(interact, this.getBasicSuccessErrorMessage(data));
                         }
                     });
 
@@ -144,7 +150,7 @@ class OtherModule extends GModule {
                 break;
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 }
 

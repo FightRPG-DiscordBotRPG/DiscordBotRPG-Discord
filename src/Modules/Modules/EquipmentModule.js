@@ -1,6 +1,7 @@
 const GModule = require("../GModule");
 const Inventory = require("../../Drawings/Inventory");
 const Globals = require("../../Globals");
+const InteractContainer = require("../../Discord/InteractContainer");
 
 
 class EquipmentModule extends GModule {
@@ -12,10 +13,16 @@ class EquipmentModule extends GModule {
         this.endLoading("Equipment");
     }
 
-    async run(message, command, args) {
+    /**
+     *
+     * @param {InteractContainer} interact
+     * @param {string} command
+     * @param {Array} args
+     */
+    async run(interact, command, args) {
         let msg = "";
-        let axios = Globals.connectedUsers[message.author.id].getAxios();
-        let user = Globals.connectedUsers[message.author.id];
+        let axios = Globals.connectedUsers[interact.author.id].getAxios();
+        let user = Globals.connectedUsers[interact.author.id];
 
 
         switch (command) {
@@ -47,7 +54,7 @@ class EquipmentModule extends GModule {
                 break;
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 }
 

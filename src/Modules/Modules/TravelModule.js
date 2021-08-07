@@ -6,6 +6,7 @@ const Emojis = require("../../Drawings/Emojis");
 const Axios = require("axios");
 const Region = require("../../Drawings/Areas/Region");
 const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
+const InteractContainer = require("../../Discord/InteractContainer");
 
 
 
@@ -19,15 +20,15 @@ class TravelModule extends GModule {
     }
 
     /**
-    *
-    * @param {Discord.Message} message
-    * @param {string} command
-    * @param {Array} args
-    */
-    async run(message, command, args) {
+     *
+     * @param {InteractContainer} interact
+     * @param {string} command
+     * @param {Array} args
+     */
+    async run(interact, command, args) {
         let msg = "";
-        let axios = Globals.connectedUsers[message.author.id].getAxios();
-        let user = Globals.connectedUsers[message.author.id];
+        let axios = Globals.connectedUsers[interact.author.id].getAxios();
+        let user = Globals.connectedUsers[interact.author.id];
 
         switch (command) {
             case "area":
@@ -54,14 +55,14 @@ class TravelModule extends GModule {
 
                     let reactWrapper = new MessageReactionsWrapper();
 
-                    await reactWrapper.load(message, area.toString(data, user), {
+                    await reactWrapper.load(interact, area.toString(data, user), {
                         reactionsEmojis: emojisList,
                         collectorOptions: {
                             time: 40000,
                         }
                     });
 
-                    await user.tutorial.reactOnCommand("area", message, user.lang);
+                    await user.tutorial.reactOnCommand("area", interact, user.lang);
 
 
                     reactWrapper.collector.on('collect', async (reaction) => {
@@ -105,19 +106,19 @@ class TravelModule extends GModule {
                 break;
 
             case "travel":
-                msg = await this.travelSharedCommand(message, args, axios, "area");
+                msg = await this.travelSharedCommand(interact, args, axios, "area");
                 // For tutorial
-                await user.tutorial.reactOnCommand(command, message, user.lang);
+                await user.tutorial.reactOnCommand(command, interact, user.lang);
                 break;
 
             case "travelregion":
-                msg = await this.travelSharedCommand(message, args, axios, "region");
+                msg = await this.travelSharedCommand(interact, args, axios, "region");
                 // For tutorial
-                await user.tutorial.reactOnCommand(command, message, user.lang);
+                await user.tutorial.reactOnCommand(command, interact, user.lang);
                 break;
 
             case "traveldirect":
-                msg = await this.travelSharedCommand(message, args, axios, "real");
+                msg = await this.travelSharedCommand(interact, args, axios, "real");
                 break;
 
             case "areaplayers":
@@ -136,7 +137,7 @@ class TravelModule extends GModule {
                 break;
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 
     getTravelMessage(data) {
@@ -174,17 +175,17 @@ class TravelModule extends GModule {
 
     /**
      * 
-     * @param {Discord.Message} message
+     * @param {InteractContainer} interact
      * @param {Array} args
      * @param {string} type
      */
-    async travelSharedCommand(message, args, axios, type = "area") {
+    async travelSharedCommand(interact, args, axios, type = "area") {
         let msg = "";
         if (args[1] === "confirm") {
             msg = await this.travelPost(args, axios, type);
         } else {
             msg = await this.getDisplayIfSuccess(await this.travelGet(args, axios, type), async (data) => {
-                await this.confirmListener(message, this.getTravelMessage(data), async (validate) => {
+                await this.confirmListener(interact, this.getTravelMessage(data), async (validate) => {
                     if (validate == true) {
                         return await this.travelPost(args, axios, type);
                     } else {

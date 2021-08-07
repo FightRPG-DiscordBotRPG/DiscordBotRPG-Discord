@@ -8,6 +8,7 @@ const conn = require("./conf/mysql");
 const Axios = require("axios").default;
 const Utils = require("./src/Utils");
 const Translator = require("./src/Translator/Translator");
+const InteractContainer = require("./src/Discord/InteractContainer");
 
 var bot = new Discord.Client({
     intents: [
@@ -82,7 +83,7 @@ async function removedInactiveUsers() {
     } catch (ex) { console.error(ex); }
     //createDummyUsers();
     setTimeoutToRemoveInactiveUsers();
-    
+
 }
 
 function setTimeoutToRemoveInactiveUsers() {
@@ -109,7 +110,7 @@ async function createDummyUsers() {
 
     console.time("Requesting");
     await Promise.all(totalRequests);
-    console.log(`Avg time per requests: ${Math.round((Date.now() - t) / totalRequests.length)}ms; Number of requests per minute: ${1000/Math.round((Date.now() - t) / totalRequests.length)}`);
+    console.log(`Avg time per requests: ${Math.round((Date.now() - t) / totalRequests.length)}ms; Number of requests per minute: ${1000 / Math.round((Date.now() - t) / totalRequests.length)}`);
     console.log(`Memory after requests: ${await getMemory()} MB`);
     console.timeEnd("Requesting");
 }
@@ -124,6 +125,26 @@ async function getMemory() {
 }
 
 
+/**
+ * 
+ * @param {InteractContainer} interact
+ */
+async function tryHandleMessage(interact) {
+    try {
+        await Globals.moduleHandler.run(interact);
+    } catch (err) {
+        let msgError = "";
+        if (err.constructor == Discord.DiscordAPIError) {
+            msgError = "It seems to have an api error, you should check if the bot have all permissions it needs\n";
+        } else {
+            msgError = "Oops something went wrong, report the issue here (https://github.com/FightRPG-DiscordBotRPG/FightRPG-Discord-BugTracker/issues)\n";
+        }
+        msgError = Utils.prepareStackError(err, msgError);
+        interact.channel.send(msgError).catch((e) => interact.author.send(msgError).catch((e) => null));
+    }
+}
+
+
 bot.on("ready", async () => {
     console.log("Shard Connected");
 
@@ -132,13 +153,28 @@ bot.on("ready", async () => {
             name: "On " + await Utils.getTotalNumberOfGuilds(bot.shard) + " servers!"
         }]
     });
+
+
+    //const cmds = await bot.application?.commands.set([
+    //    {
+    //        name: "test",
+    //        description: "test",
+    //        options: [{
+    //            name: "input",
+    //            type: "",
+    //            description: "ça sert à rien",
+    //            require: true
+    //        }],
+    //    }
+    //]);
+
     //console.log(`${bot.guilds.cache.size}\n${bot.shard.ids}\n${bot.shard.count}`);
     if (conf.env === "prod") {
         const api = new Topgg.Api(conf.topggkey);
         setInterval(async () => {
             console.log("Shards: " + bot.shard.ids);
             console.log("Shard: " + bot.shard.ids[0] + " => Sending stats to https://top.gg/ ...");
-            await api.postStats({ serverCount: bot.guilds.cache.size, shardId: bot.shard.ids[0], shardCount:bot.shard.count });
+            await api.postStats({ serverCount: bot.guilds.cache.size, shardId: bot.shard.ids[0], shardCount: bot.shard.count });
             console.log("Data sent");
         }, 1800000);
     }
@@ -155,25 +191,45 @@ Globals.moduleHandler = new ModuleHandler();
 startBot();
 
 
+bot.on("interactionCreate", async (interaction) => {
+    if (interaction.isCommand()) {
+        console.log(interaction.options.data);
+        //interaction.reply("Yes");
 
+        const interact = new InteractContainer();
+        interact.author = interaction.user;
+        interact.channel = interaction.channel;
+        interact.interaction = interaction;
+        interact.guild = interaction.guild;
+
+        for (var i of interaction.options.data) {
+            const val = i.value.toString();
+
+            if (val.startsWith("<@!")) {
+                const id = val.slice(3, val.length - 1);
+                interact.mentions.set(id, await bot.users.fetch(id))
+            } else {
+                interact.args.push(i.value);
+            }
+        }
+        interact.client = bot;
+
+        await tryHandleMessage(interact);
+    }
+});
 
 
 bot.on("messageCreate", async (message) => {
-    try {
-        await Globals.moduleHandler.run(message);
-    } catch (err) {
-        let msgError = "";
-        if (err.constructor == Discord.DiscordAPIError) {
-            msgError = "It seems to have an api error, you should check if the bot have all permissions it needs\n";
-        } else {
-            msgError = "Oops something went wrong, report the issue here (https://github.com/FightRPG-DiscordBotRPG/FightRPG-Discord-BugTracker/issues)\n";
-        }
-
-        msgError = Utils.prepareStackError(err, msgError);
-        message.channel.send(msgError).catch((e) => message.author.send(msgError).catch((e) => null));
-    }
-
+    const interact = new InteractContainer();
+    interact.author = message.author;
+    interact.channel = message.channel;
+    interact.message = message;
+    interact.guild = message.guild;
+    interact.client = bot;
+    interact.mentions = message.mentions.users;
+    await tryHandleMessage(interact);
 });
+
 
 bot.on('guildCreate', async (guild) => {
     bot.user.setPresence({

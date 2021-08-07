@@ -2,6 +2,7 @@ const GModule = require("../GModule");
 const ItemShow = require("../../Drawings/ItemShow");
 const Marketplace = require("../../Drawings/Marketplace");
 const Globals = require("../../Globals");
+const InteractContainer = require("../../Discord/InteractContainer");
 
 class MarketplaceModule extends GModule {
     constructor() {
@@ -12,15 +13,21 @@ class MarketplaceModule extends GModule {
         this.endLoading("Marketplace");
     }
 
-    async run(message, command, args) {
+    /**
+     *
+     * @param {InteractContainer} interact
+     * @param {string} command
+     * @param {Array} args
+     */
+    async run(interact, command, args) {
         let msg = "";
-        let user = Globals.connectedUsers[message.author.id];
+        let user = Globals.connectedUsers[interact.author.id];
         let axios = user.getAxios();
         let searchFilters = this.getSearchFilters(args);
         switch (command) {
             case "mkmylist":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/marketplace/mylist/" + args[0], { params: searchFilters.params }), async (data) => {
-                    await this.pageListener(data, message, Marketplace.toString(data), async (currPage) => {
+                    await this.pageListener(data, interact, Marketplace.toString(data), async (currPage) => {
                         let d = await axios.get("/game/marketplace/mylist/" + currPage, { params: searchFilters.params });
                         return d.data;
                     }, async (newData) => {
@@ -54,7 +61,7 @@ class MarketplaceModule extends GModule {
             case "mksearch":
             case "mkshow":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/marketplace/show/" + searchFilters.page, { params: searchFilters.params }), async (data) => {
-                    await this.pageListener(data, message, Marketplace.toString(data), async (currPage) => {
+                    await this.pageListener(data, interact, Marketplace.toString(data), async (currPage) => {
                         let d = await axios.get("/game/marketplace/show/" + currPage, { params: searchFilters.params });
                         return d.data;
                     }, async (newData) => {
@@ -70,7 +77,7 @@ class MarketplaceModule extends GModule {
                 break;
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 }
 

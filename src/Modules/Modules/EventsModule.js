@@ -2,6 +2,7 @@ const GModule = require("../GModule");
 const Globals = require("../../Globals");
 const Translator = require("../../Translator/Translator");
 const GameEvent = require("../../Drawings/Events/GameEvent");
+const InteractContainer = require("../../Discord/InteractContainer");
 
 
 class EventsModule extends GModule {
@@ -13,11 +14,15 @@ class EventsModule extends GModule {
         this.endLoading("EventsModule");
     }
 
-    async run(message, command, args) {
+    /**
+     *
+     * @param {InteractContainer} interact
+     * @param {string} command
+     * @param {Array} args
+     */
+    async run(interact, command, args) {
         let msg = "";
-        let authorIdentifier = message.author.id;
-        let mentions = message.mentions.users;
-        let user = Globals.connectedUsers[message.author.id];
+        let user = Globals.connectedUsers[interact.author.id];
         let axios = user.getAxios();
 
         switch (command) {
@@ -41,7 +46,7 @@ class EventsModule extends GModule {
                         if (data.events.length > 0) {
                             data.page = 1;
                             data.maxPage = data.events.length;
-                            await this.pageListener(data, message, new GameEvent(data.events[0]).toEmbed(user), async (currPage) => {
+                            await this.pageListener(data, interact, new GameEvent(data.events[0]).toEmbed(user), async (currPage) => {
                                 data.page = currPage;
                                 return data;
                             }, async (newData) => {
@@ -57,7 +62,7 @@ class EventsModule extends GModule {
 
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 }
 

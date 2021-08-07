@@ -12,6 +12,7 @@ const DamageAndHealLogger = require("./Fight/DamageAndHealLogger");
 const TextDrawings = require("./TextDrawings");
 const User = require("../Users/User");
 const MessageReactionsWrapper = require("../MessageReactionsWrapper");
+const InteractContainer = require("../Discord/InteractContainer");
 
 class FightManager {
     constructor() {
@@ -35,12 +36,12 @@ class FightManager {
     /**
      * 
      * @param {any} data
-     * @param {Discord.Message} message
+     * @param {InteractContainer} interact
      * @param {User} user
      */
-    async fight(data, message, user) {
+    async fight(data, interact, user) {
         let lang = data.lang;
-        let userid = message.author.id;
+        let userid = interact.author.id;
         let leftName = data.summary.rounds[0].roundEntitiesIndex == 0 ? data.summary.rounds[0].attacker.entity.identity.name : data.summary.rounds[0].defenders[0].entity.identity.name;
         let rightName = data.summary.rounds[0].roundEntitiesIndex == 1 ? data.summary.rounds[0].attacker.entity.identity.name : data.summary.rounds[0].defenders[0].entity.identity.name;
         let theFight = {
@@ -57,7 +58,7 @@ class FightManager {
 
         if (theFight.summary.type == "pve") {
             if (data.beingAttacked == true) {
-                message.channel.send(Translator.getString(lang, "fight_pve", "ganked_by_monster")).catch((e) => console.log(e));
+                interact.channel.send(Translator.getString(lang, "fight_pve", "ganked_by_monster")).catch((e) => console.log(e));
                 theFight.text[2] = Emojis.emojisProd.user.string + " " + Translator.getString(lang, "fight_pve", "user_get_attacked", [leftName, rightName]) + "\n";
             } else {
                 theFight.text[2] = Emojis.emojisProd.user.string + " " + Translator.getString(lang, "fight_pve", "user_attacked", [leftName, rightName]) + "\n";
@@ -78,7 +79,7 @@ class FightManager {
 
         let reactWrapper = new MessageReactionsWrapper();
 
-        await reactWrapper.load(message, this.embedFight(theFight, null, lang, user, true), {
+        await reactWrapper.load(interact, this.embedFight(theFight, null, lang, user, true), {
             reactionsEmojis: emojisList,
             collectorOptions: {
                 time: data.summary.rounds.length * 4000,
@@ -99,7 +100,7 @@ class FightManager {
 
     /**
      * 
-     * @param {any} message
+     * @param {Discord.Message} message
      * @param {any} userid
      * @param {any} fight
      * @param {any} lang

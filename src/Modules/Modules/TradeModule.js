@@ -5,6 +5,7 @@ const Translator = require("../../Translator/Translator");
 const Emojis = require("../../Drawings/Emojis");
 const ItemShow = require("../../Drawings/ItemShow");
 const Trade = require("../../Drawings/Trade");
+const InteractContainer = require("../../Discord/InteractContainer");
 
 class TradeModule extends GModule {
     constructor() {
@@ -15,13 +16,19 @@ class TradeModule extends GModule {
         this.endLoading("Trade");
     }
 
-    async run(message, command, args) {
+    /**
+     *
+     * @param {InteractContainer} interact
+     * @param {string} command
+     * @param {Array} args
+     */
+    async run(interact, command, args) {
         let msg = "";
-        let authorIdentifier = message.author.id;
-        let mentions = message.mentions.users;
-        let axios = Globals.connectedUsers[message.author.id].getAxios();
-        let user = Globals.connectedUsers[message.author.id];
-        let firstMention = mentions.first();
+        let authorIdentifier = interact.author.id;
+        let mentions = interact.mentions;
+        let axios = Globals.connectedUsers[interact.author.id].getAxios();
+        let user = Globals.connectedUsers[interact.author.id];
+        let firstMention = mentions?.first();
 
         switch (command) {
             case "tpropose":
@@ -64,11 +71,11 @@ class TradeModule extends GModule {
 
             case "tshow":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/trade/show"), (data) => {
-                    this.confirmListener(message, Trade.toString(data, Globals.connectedUsers[authorIdentifier]), async (validate) => {
+                    this.confirmListener(interact, Trade.toString(data, Globals.connectedUsers[authorIdentifier]), async (validate) => {
                         if (validate) {
-                            this.run(message, "tvalidate", args);
+                            this.run(interact, "tvalidate", args);
                         } else {
-                            this.run(message, "tcancel", args);
+                            this.run(interact, "tcancel", args);
                         }
                     });
                 });
@@ -82,7 +89,7 @@ class TradeModule extends GModule {
 
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 }
 

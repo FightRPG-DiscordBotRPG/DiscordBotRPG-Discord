@@ -108,41 +108,41 @@ var Globals = {
         23: "staff",
     },
     appearancesTypesToText: {
-    1:  "ear",
-    2:  "eyes.front",
-    3:  "eyes.back",
-    4:  "eyebrow",
-    5:  "nose",
-    6:  "facialHair",
-    7:  "hair.front",
-    8:  "hair.back",
-    9:  "mouth.teeths",
-    10: "mouth.lips",
-    11: "gloves.left.wrist",
-    12: "gloves.left.hand",
-    13: "gloves.right.wrist",
-    14: "gloves.right.hand",
-    15: "helmet.back",
-    16: "helmet.front",
-    17: "armor.body",
-    18: "armor.neck",
-    19: "armor.lower_left",
-    20: "armor.lower_right",
-    21: "armor.upper_left",
-    22: "armor.upper_right",
-    23: "pants.hip",
-    24: "pants.lower_left",
-    25: "pants.lower_right",
-    26: "pants.upper_left",
-    27: "pants.upper_right",
-    28: "boots.lower_left",
-    29: "boots.lower_right",
-    30: "boots.foot_left",
-    31: "boots.foot_right",
-    32: "weapon.main",
-    33: "weapon.offhand",
-    34: "weapon.shield",
-    35: "weapon.bow",
+        1: "ear",
+        2: "eyes.front",
+        3: "eyes.back",
+        4: "eyebrow",
+        5: "nose",
+        6: "facialHair",
+        7: "hair.front",
+        8: "hair.back",
+        9: "mouth.teeths",
+        10: "mouth.lips",
+        11: "gloves.left.wrist",
+        12: "gloves.left.hand",
+        13: "gloves.right.wrist",
+        14: "gloves.right.hand",
+        15: "helmet.back",
+        16: "helmet.front",
+        17: "armor.body",
+        18: "armor.neck",
+        19: "armor.lower_left",
+        20: "armor.lower_right",
+        21: "armor.upper_left",
+        22: "armor.upper_right",
+        23: "pants.hip",
+        24: "pants.lower_left",
+        25: "pants.lower_right",
+        26: "pants.upper_left",
+        27: "pants.upper_right",
+        28: "boots.lower_left",
+        29: "boots.lower_right",
+        30: "boots.foot_left",
+        31: "boots.foot_right",
+        32: "weapon.main",
+        33: "weapon.offhand",
+        34: "weapon.shield",
+        35: "weapon.bow",
     },
     /**
      * @type {ModuleHandler}
@@ -155,11 +155,70 @@ var Globals = {
     antiSpamNumberOfTries: 3,
     antiSpamMinutesOfBan: 30,
     helpPanel: {},
+    /***
+     * @type {import("discord.js").ApplicationCommandData[]}
+     */
+    commands: [],
+    loadCommands: async function () {
+        // Load commands
+        Globals.commands = [
+            {
+                name: "equiplist",
+                description: Translator.getString("en", "help_panel", "equipment")
+            },
+            {
+                name: "equip",
+                description: Translator.getString("en", "help_panel", "equip"),
+                options: [{
+                    name: "itemid",
+                    description: "?",
+                    type: "STRING",
+                    required: true
+                }]
+            },
+            {
+                name: "unequip",
+                description: Translator.getString("en", "help_panel", "equip"),
+                options: [{
+                    name: "itemtype",
+                    description: "(chest, head, legs, weapon, mount)",
+                    type: "STRING",
+                    choices: [
+                        {
+                            name: "Chest",
+                            value: "chest"
+                        },
+                        {
+                            name: "Helmet",
+                            value: "head"
+                        },
+                        {
+                            name: "Pants",
+                            value: "legs"
+                        },
+                        {
+                            name: "Weapon",
+                            value: "weapon"
+                        },
+                        {
+                            name: "Mount",
+                            value: "mount"
+                        },
+                    ],
+                    required: true
+                }]
+            },
+
+
+        ];
+    },
     loadHelpPanel: async function () {
 
         let data = (await axios.get("/helpers/help")).data;
         let filters = ["rarity", "level", "level_down", "type", "subtype", "power", "power_down", "name", "rebirth", "rebirth_down"];
         let filtersString = filters.join(",");
+
+        this.loadCommands();
 
         for (let lang in Translator.getAvailableLanguages()) {
 
@@ -169,7 +228,7 @@ var Globals = {
             Globals.helpPanel[lang][1][Translator.getString(lang, "help_panel", "equipment_title")] = {
                 "equipment/equiplist": Translator.getString(lang, "help_panel", "equipment"),
                 "equip <itemID>": Translator.getString(lang, "help_panel", "equip"),
-                "unequip <itemType>": Translator.getString(lang, "help_panel", "unequip") + " (chest, head, legs, weapon, horse)",
+                "unequip <itemType>": Translator.getString(lang, "help_panel", "unequip") + " (chest, head, legs, weapon, mount)",
                 "use <itemID> <amount>": Translator.getString(lang, "help_panel", "use"),
             };
 

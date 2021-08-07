@@ -1,4 +1,5 @@
 const { Message, MessageEmbed } = require("discord.js");
+const InteractContainer = require("../Discord/InteractContainer");
 const Emojis = require("../Drawings/Emojis");
 const Globals = require("../Globals");
 const MessageReactionsWrapper = require("../MessageReactionsWrapper");
@@ -32,10 +33,10 @@ class UserChallenge {
     }
     /**
      * 
-     * @param {Message} message
+     * @param {InteractContainer} interact
      * @param {Array<string>} command
      */
-    async manageIncomingCommand(message, command) {
+    async manageIncomingCommand(interact, command) {
         this.commands.push(new CommandLog(command, Date.now()));
         let lang = this.user.lang;
 
@@ -46,7 +47,7 @@ class UserChallenge {
 
             let wrapper = new MessageReactionsWrapper();
 
-            await wrapper.load(message, this.getEmbed(Translator.getString(lang, "antispam", "select_emoji", [this.answer])), { reactionsEmojis: answers, collectorOptions: { time: 60000 }, waitForEmojis: false });
+            await wrapper.load(interact, this.getEmbed(Translator.getString(lang, "antispam", "select_emoji", [this.answer])), { reactionsEmojis: answers, collectorOptions: { time: 60000 }, waitForEmojis: false });
 
             this.challengeMessageUrl = wrapper.message.url;
 
@@ -83,7 +84,7 @@ class UserChallenge {
 
             });
         } else if (this.mustAnswer && !this.isTimeout()) {
-            message.reply({ embeds: [this.getEmbed(Translator.getString(lang, "antispam", "in_progress") + (this.challengeMessageUrl != null ? "\n" + this.challengeMessageUrl : ""))]});
+            interact.reply({ embeds: [this.getEmbed(Translator.getString(lang, "antispam", "in_progress") + (this.challengeMessageUrl != null ? "\n" + this.challengeMessageUrl : ""))]});
         }
         
     }

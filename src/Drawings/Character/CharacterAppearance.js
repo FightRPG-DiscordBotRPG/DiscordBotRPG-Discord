@@ -13,6 +13,7 @@ const conf = require("../../../conf/conf");
 const FormData = require('form-data');
 const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
 const Globals = require("../../Globals");
+const InteractContainer = require("../../Discord/InteractContainer");
 
 class CharacterAppearance {
     /**
@@ -811,10 +812,10 @@ class CharacterAppearance {
 
     /**
      * 
-     * @param {Discord.Message} message
+     * @param {InteractContainer} interact
      * @param {User} user
      */
-    async handleEdition(message, user) {
+    async handleEdition(interact, user) {
 
         if (this.editionMessageWrapper?.collector) {
             this.editionMessageWrapper?.collector.stop();
@@ -823,7 +824,7 @@ class CharacterAppearance {
 
         this.editionMessageWrapper = new MessageReactionsWrapper();
 
-        await this.editionMessageWrapper.load(message, await user.pendingAppearance.getSelectEmbed(user), {
+        await this.editionMessageWrapper.load(interact, await user.pendingAppearance.getSelectEmbed(user), {
             reactionsEmojis: [Emojis.general.clipboard],
             collectorOptions: {
                 time: 600000,

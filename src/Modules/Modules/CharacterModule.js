@@ -15,6 +15,7 @@ const Utils = require("../../Utils");
 const Rebirth = require("../../Drawings/Character/Rebirth");
 const State = require("../../Drawings/Fight/State");
 const CharacterAppearance = require("../../Drawings/Character/CharacterAppearance");
+const InteractContainer = require("../../Discord/InteractContainer");
 
 class CharacterModule extends GModule {
     constructor() {
@@ -29,16 +30,16 @@ class CharacterModule extends GModule {
 
     /**
      * 
-     * @param {Discord.Message} message
+     * @param {InteractContainer} interact
      * @param {string} command
      * @param {Array} args
      */
-    async run(message, command, args) {
+    async run(interact, command, args) {
         let msg = "";
         /**
          * @type {User}
          **/
-        let user = Globals.connectedUsers[message.author.id];
+        let user = Globals.connectedUsers[interact.author.id];
         let axios = user.getAxios();
 
         switch (command) {
@@ -54,7 +55,7 @@ class CharacterModule extends GModule {
 
                             let embedMessage = this.getResetEmbed("", data);
 
-                            this.confirmListener(message, embedMessage, async (validation) => {
+                            this.confirmListener(interact, embedMessage, async (validation) => {
                                 if (validation == true) {
                                     return this.getBasicSuccessErrorMessage(await axios.get("/game/character/reset"));
                                 } else {
@@ -78,7 +79,7 @@ class CharacterModule extends GModule {
 
                             let embedMessage = this.getResetEmbed("talents", data);
 
-                            this.confirmListener(message, embedMessage, async (validation) => {
+                            this.confirmListener(interact, embedMessage, async (validation) => {
                                 if (validation == true) {
                                     return this.getBasicSuccessErrorMessage(await axios.get("/game/character/talents/reset"));
                                 } else {
@@ -92,7 +93,7 @@ class CharacterModule extends GModule {
                 break;
 
             case "leaderboard":
-                await this.drawLeaderboard(message, args);
+                await this.drawLeaderboard(interact, args);
                 break;
 
             case "info":
@@ -114,7 +115,7 @@ class CharacterModule extends GModule {
 
                     let reactWrapper = new MessageReactionsWrapper();
 
-                    await reactWrapper.load(message, user.infoPanel.toString(data, user), {
+                    await reactWrapper.load(interact, user.infoPanel.toString(data, user), {
                         reactionsEmojis: emojisList,
                         collectorOptions: {
                             time: 22000,
@@ -122,7 +123,7 @@ class CharacterModule extends GModule {
                     });
 
                     // For tutorial
-                    await user.tutorial.reactOnCommand("info", message, user.lang);
+                    await user.tutorial.reactOnCommand("info", interact, user.lang);
 
                     reactWrapper.collector.on('collect', async (reaction) => {
                         switch (reaction.emoji.name) {
@@ -142,7 +143,7 @@ class CharacterModule extends GModule {
                                 user.infoPanel.displayAdvancement = !user.infoPanel.displayAdvancement;
                                 break;
                             case rebirthEmoji.id:
-                                return this.run(message, "rebirth", []);
+                                return this.run(interact, "rebirth", []);
                         }
 
                         await reactWrapper.edit(user.infoPanel.toString(data, user), emojisList);
@@ -170,7 +171,7 @@ class CharacterModule extends GModule {
                 break;
             case "achievements":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/achievements/" + args[0]), async (data) => {
-                    await this.pageListener(data, message, Achievements.toString(data), async (currPage) => {
+                    await this.pageListener(data, interact, Achievements.toString(data), async (currPage) => {
                         let d = await axios.get("/game/character/achievements/" + currPage);
                         return d.data;
                     }, async (newData) => {
@@ -203,7 +204,7 @@ class CharacterModule extends GModule {
 
                     let reactWrapper = new MessageReactionsWrapper();
 
-                    await reactWrapper.load(message, Talents.showOne(data, user), {
+                    await reactWrapper.load(interact, Talents.showOne(data, user), {
                         reactionsEmojis: emojisList,
                         collectorOptions: {
                             time: 22000,
@@ -212,12 +213,12 @@ class CharacterModule extends GModule {
                     });
 
                     // For tutorial
-                    await user.tutorial.reactOnCommand("talentshow", message, user.lang);
+                    await user.tutorial.reactOnCommand("talentshow", interact, user.lang);
 
                     reactWrapper.collector.on('collect', async (reaction) => {
                         switch (reaction.emoji.name) {
                             case talentTakeEmoji:
-                                this.run(message, "talentup", [data.node.id]);
+                                this.run(interact, "talentup", [data.node.id]);
                                 break;
                         }
                     });
@@ -340,7 +341,7 @@ class CharacterModule extends GModule {
 
 
 
-                            this.confirmListener(message, confirmEmbed, async (validate) => {
+                            this.confirmListener(interact, confirmEmbed, async (validate) => {
                                 //return await this.travelPost(args, axios, type);
                                 if (validate) {
                                     return this.getBasicSuccessErrorMessage(await axios.post("/game/character/rebirth/", {
@@ -378,7 +379,7 @@ class CharacterModule extends GModule {
                             ${Emojis.general.hammer} ${Translator.getString(user.lang, "character", "craft_level")} - ${Rebirth.getRebirthAvailabilityString(canRebirthCraft)}`;
 
 
-                        await reactWrapper.load(message,
+                        await reactWrapper.load(interact,
                             new Discord.MessageEmbed()
                                 .setColor([0, 255, 0])
                                 .setAuthor(Translator.getString(user.lang, "character", "rebirth_title"))
@@ -394,9 +395,9 @@ class CharacterModule extends GModule {
 
                         reactWrapper.collector.on('collect', async (reaction) => {
                             if (reaction.emoji.id === rebirthLevelEmoji.id) {
-                                await this.run(message, "rebirth", ["level"]);
+                                await this.run(interact, "rebirth", ["level"]);
                             } else if (reaction.emoji.name === rebirthCraftLevelEmoji) {
-                                await this.run(message, "rebirth", ["craft_level"]);
+                                await this.run(interact, "rebirth", ["craft_level"]);
                             }
                         });
 
@@ -416,13 +417,13 @@ class CharacterModule extends GModule {
                         await user.pendingAppearance.setupFromDataEdition(data.currentAppearance);
                     }
 
-                    await user.pendingAppearance.handleEdition(message, user);
+                    await user.pendingAppearance.handleEdition(interact, user);
                 });
                 break;
 
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 
     /**

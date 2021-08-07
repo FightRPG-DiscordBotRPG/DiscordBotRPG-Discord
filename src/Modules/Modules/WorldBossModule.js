@@ -17,10 +17,16 @@ class WorldBossModule extends GModule {
         this.endLoading("World Boss");
     }
 
-    async run(message, command, args) {
+    /**
+     *
+     * @param {InteractContainer} interact
+     * @param {string} command
+     * @param {Array} args
+     */
+    async run(interact, command, args) {
         let msg = "";
-        let authorIdentifier = message.author.id;
-        let user = Globals.connectedUsers[message.author.id];
+        let authorIdentifier = interact.author.id;
+        let user = Globals.connectedUsers[interact.author.id];
         let axios = user.getAxios();
 
         switch (command) {
@@ -37,7 +43,7 @@ class WorldBossModule extends GModule {
 
                     let reactWrapper = new MessageReactionsWrapper();
 
-                    await reactWrapper.load(message, WorldBosses.listToDiscord(data, user, true), {
+                    await reactWrapper.load(interact, WorldBosses.listToDiscord(data, user, true), {
                         reactionsEmojis: emojisList,
                         collectorOptions: {
                             time: 22000,
@@ -53,7 +59,7 @@ class WorldBossModule extends GModule {
 
                         if (reaction.emoji.name === displayTravelEmoji) {
                             let travelModule = Globals.moduleHandler.modules["TravelModule"];
-                            travelModule.run(message, "traveldirect", [data.bosses[0].idArea]);
+                            travelModule.run(interact, "traveldirect", [data.bosses[0].idArea]);
                         }
 
                     });
@@ -70,7 +76,7 @@ class WorldBossModule extends GModule {
                     });
                 }, async (d1) => {
                     if (d1.error == Translator.getString(d1.lang, "world_bosses", "no_world_boss")) {
-                        this.run(message, "wbshowall", []);
+                        this.run(interact, "wbshowall", []);
                         return d1.error;
                     } else {
                         return d1.error;
@@ -89,11 +95,11 @@ class WorldBossModule extends GModule {
                 } else {
                     args[0] = "wbdamage";
                 }
-                this.drawLeaderboard(message, args, "damage")
+                this.drawLeaderboard(interact, args, "damage")
                 break;
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 }
 
