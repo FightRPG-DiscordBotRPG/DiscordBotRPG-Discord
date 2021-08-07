@@ -202,7 +202,21 @@ bot.on("interactionCreate", async (interaction) => {
         interact.interaction = interaction;
         interact.guild = interaction.guild;
 
-        for (var i of interaction.options.data) {
+        await recursiveUpdateData(interaction.options.data, interact);
+        interact.client = bot;
+
+        await tryHandleMessage(interact);
+    }
+});
+
+/**
+ * 
+ * @param {import("discord.js").CommandInteractionOption[]} interactions
+ * @param {InteractContainer} interact
+ */
+async function recursiveUpdateData(interactions, interact) {
+    for (let i of interactions) {
+        if (i.value) {
             const val = i.value.toString();
 
             if (val.startsWith("<@!")) {
@@ -211,12 +225,11 @@ bot.on("interactionCreate", async (interaction) => {
             } else {
                 interact.args.push(i.value);
             }
+        } else {
+            await recursiveUpdateData(i.options, interact);
         }
-        interact.client = bot;
-
-        await tryHandleMessage(interact);
     }
-});
+}
 
 
 bot.on("messageCreate", async (message) => {
