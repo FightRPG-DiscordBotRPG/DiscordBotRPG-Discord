@@ -35,7 +35,7 @@ class Talents {
         // Used when empty (mostly)
         for (let link of data.initialTalents) {
             if (!reachableNodes.includes(link) && !data.talents.find(e => e.id == link)) {
-                reachableNodes.push(link);
+                reachableNodes.push(link.id + " (" + link.visuals.name + ")");
             }
         }
 
@@ -147,24 +147,58 @@ class Talents {
     }
 
     async allToImage(data) {
-
         let talentsByIds = {};
 
-        const nodesCanvas = Canvas.createCanvas(1536, 1536);
-        const ctxNodes = nodesCanvas.getContext("2d");
 
-        const allCanvas = Canvas.createCanvas(1536, 1536);
-        const ctxLinks = allCanvas.getContext("2d");
-
-        ctxNodes.beginPath();
 
         let talentSize = 50;
         let spacing = 75;
 
+        let xMaximum = 0;
+        let xMinimum = 0;
+        let yMaximum = 0;
+        let yMinimum = 0;
+
+        console.log(data);
+
+        if (data.talents.length == 0) {
+            data.talents = data.initialTalents.map(e => { return { ...e, asLocked: true } });
+        }
+
+        for (let talent of data.talents) {
+            xMaximum = Math.max(xMaximum, talent.x);
+            yMaximum = Math.max(yMaximum, talent.y);
+
+            xMinimum = Math.min(xMinimum, talent.x);
+            yMinimum = Math.min(yMinimum, talent.y);
+
+            for (let linkedTalent of Object.values(talent.linkedNodesItems)) {
+                xMaximum = Math.max(xMaximum, linkedTalent.x);
+                yMaximum = Math.max(yMaximum, linkedTalent.y);
+
+                xMinimum = Math.min(xMinimum, linkedTalent.x);
+                yMinimum = Math.min(yMinimum, linkedTalent.y);
+
+            }
+        }
+
+        const diffX = xMaximum - xMinimum;
+        const diffY = yMaximum - yMinimum;
+
+        let width = (diffX * (spacing + talentSize  + 20)) || (spacing + talentSize );
+        let heigth = (diffY * (spacing + talentSize + 20)) || (spacing + talentSize);
+
+        width = Math.max(width, heigth);
+        heigth = width;
+
+        const nodesCanvas = Canvas.createCanvas(width, heigth);
+        const ctxNodes = nodesCanvas.getContext("2d");
+        ctxNodes.translate(width / 2, heigth / 2);
+        ctxNodes.beginPath();
+
         // Draws unlocked talents
         for (let talent of data.talents) {
-
-            await this.drawTalent(ctxNodes, talent, talentSize, spacing, data.talentPoints, false);
+            await this.drawTalent(ctxNodes, talent, talentSize, spacing, data.talentPoints, talent.asLocked);
             talentsByIds[talent.id] = talent;
         }
 
@@ -172,33 +206,39 @@ class Talents {
         for (let talent of data.talents) {
             for (let linkedTalent of Object.values(talent.linkedNodesItems)) {
                 if (!talentsByIds[linkedTalent.id]) {
-                    await this.drawTalent(ctxNodes, linkedTalent, talentSize, spacing, data.talentPoints, true);
+                    await this.drawTalent(ctxNodes, linkedTalent, talentSize, spacing, talent.asLocked ? 0 : data.talentPoints, true);
                     talentsByIds[linkedTalent.id] = linkedTalent;
                 }
             }
         }
 
+        const allCanvas = Canvas.createCanvas(width, heigth);
+        const ctxLinks = allCanvas.getContext("2d");
 
-        let decal = nodesCanvas.width / 2 + spacing / 2;
+        let decalX = 0;
+        let decalY =  spacing + talentSize;
 
         ctxLinks.beginPath();
-        ctxLinks.rect(0, 0, 1536, 1536);
+        ctxLinks.rect(0, 0, width, heigth);
         ctxLinks.fillStyle = "#101010";
         ctxLinks.lineWidth = 3;
         ctxLinks.fill();
+
+        ctxLinks.translate(width / 2, heigth / 2);
 
         for (let talent of data.talents) {
             for (let link of talent.linkedNodesIds) {
                 if (talentsByIds[link]) {
                     ctxLinks.strokeStyle = "#808080";
-                    ctxLinks.moveTo((talent.x * spacing) + decal, (-talent.y * spacing) + decal);
-                    ctxLinks.lineTo((talentsByIds[link].x * spacing) + decal, (-talentsByIds[link].y * spacing) + decal);
+                    ctxLinks.moveTo((talent.x * spacing) + decalX, (-talent.y * spacing) + decalY);
+                    ctxLinks.lineTo((talentsByIds[link].x * spacing) + decalX, (-talentsByIds[link].y * spacing) + decalY);
                     ctxLinks.stroke();
                 }
             }
         }
 
-        ctxLinks.drawImage(nodesCanvas, 0, 0);
+
+        ctxLinks.drawImage(nodesCanvas, -(width / 2), -(heigth / 2));
 
         return allCanvas;
 
@@ -212,7 +252,6 @@ class Talents {
      * @param {number} size
      */
     async drawTalent(ctx, talent, size, spacing, pointsLeft, isLocked = false) {
-
         /**
          * @type {Canvas}
          **/
@@ -223,9 +262,8 @@ class Talents {
             talentIcon = Utils.canvasRoundImage(await CharacterAppearance.getImage(talent.visuals.icon), { strokeSize: 10, strokeStyle: "#808080" });
         }
 
-
-        const x = (talent.x * spacing) + ctx.canvas.width / 2 + size / 4;
-        const y = (-talent.y * spacing) + ctx.canvas.height / 2 + size / 4;
+        const x = (talent.x * spacing) - size / 2;
+        const y = (-talent.y * spacing)  + size * 2;
 
         ctx.drawImage(talentIcon, x, y, size, size);
 
@@ -238,8 +276,8 @@ class Talents {
         const decal = 0;
         const decalY = decal
 
-        ctx.strokeText(talent.id, x + decal, y + decalY);
-        ctx.fillText(talent.id, x + decal, y + decalY);
+        ctx.strokeText(talent.id, x, y);
+        ctx.fillText(talent.id, x, y);
 
         if (isLocked) {
             // Draw Cost
