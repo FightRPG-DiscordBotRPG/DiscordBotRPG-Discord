@@ -14,6 +14,7 @@ const FormData = require('form-data');
 const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
 const Globals = require("../../Globals");
 const InteractContainer = require("../../Discord/InteractContainer");
+const MenusAndButtons = require("../MenusAndButtons");
 
 class CharacterAppearance {
     /**
@@ -103,6 +104,7 @@ class CharacterAppearance {
     };
 
     static emojisForTypes = Object.keys(CharacterAppearance.emojisTypesWithValues);
+    static emojisForTypesByValues = Object.values(CharacterAppearance.emojisTypesWithValues);
 
     constructor() {
         this.reset();
@@ -819,13 +821,25 @@ class CharacterAppearance {
 
         if (this.editionMessageWrapper?.collector) {
             this.editionMessageWrapper?.collector.stop();
-            await this.editionMessageWrapper.edit(Translator.getString(user.lang, "appearance", "modifying_elsewhere"), null, true);
+            await this.editionMessageWrapper.edit(Translator.getString(user.lang, "appearance", "modifying_elsewhere"), interact, null, true);
         }
 
         this.editionMessageWrapper = new MessageReactionsWrapper();
 
-        await this.editionMessageWrapper.load(interact, await user.pendingAppearance.getSelectEmbed(user), {
-            reactionsEmojis: [Emojis.general.clipboard],
+        const options = InteractContainer.getReplyOptions(await user.pendingAppearance.getSelectEmbed(user));
+        options.components.push(
+            new Discord.MessageActionRow()
+                .addComponents(
+                    new Discord.MessageButton()
+                        .setCustomId("clipboard")
+                        .setLabel(Translator.getString(user.lang, "general", "edit"))
+                        .setStyle("PRIMARY")
+                        .setEmoji(Emojis.general.clipboard)
+                )
+        );
+
+        await this.editionMessageWrapper.load(interact, options, {
+            reactionsEmojis: ["clipboard"],
             collectorOptions: {
                 time: 600000,
             }
@@ -834,55 +848,94 @@ class CharacterAppearance {
         // For tutorial
         //await user.tutorial.reactOnCommand("info", message, user.lang);
         this.editionMessageWrapper.resetCollectListener();
-        this.editionMessageWrapper.collector.on('collect', async (reaction) => {
-            if (reaction.emoji.name == Emojis.general.clipboard) {
-                await this.handleEditionSelectType(user);
-            }
-        });
+        this.editionMessageWrapper.collector.on('collect',
+            /**
+             * 
+             * @param {Discord.ButtonInteraction} reaction
+             */
+            async (reaction) => {
+                if (reaction.customId == "clipboard") {
+                    await this.handleEditionSelectType(user, reaction);
+                }
+            });
     }
 
     /**
      * 
      * @param {User} user
+     * @param {Discord.Interaction} interaction
      */
-    async handleEditionSelectType(user) {
+    async handleEditionSelectType(user, interaction) {
+
+        const options = InteractContainer.getReplyOptions(await this.getEditGeneralEmbed(user));
+        options.components.push(
+            new Discord.MessageActionRow()
+                .addComponents(
+                    new Discord.MessageSelectMenu()
+                        .setCustomId("select")
+                        .setPlaceholder(Translator.getString(user.lang, "appearance", "choose_modify"))
+                        .setMinValues(1)
+                        .setMaxValues(1)
+                        .addOptions([1, 3, 4, 5, 6, 7, 10, 0]
+                            .map(e => {
+                                return {
+                                    label: this.getTypeDisplay(e, user.lang),
+                                    value: e.toString()
+                                }
+                            })
+                        )
+            )
+        );
+
+        options.components.push(new Discord.MessageActionRow().addComponents(MenusAndButtons.getValidateButton(user.lang)));
 
         this.editionMessageWrapper.resetCollectListener();
-        await this.editionMessageWrapper.edit(await this.getEditGeneralEmbed(user), [...CharacterAppearance.emojisForTypes, Emojis.general.g_vmark]);
+        this.editionMessageWrapper.collector.on('collect',
+            /**
+             * 
+             * @param {Discord.SelectMenuInteraction} reaction
+             */
+            async (reaction) => {
+                console.log("new");
+                if (CharacterAppearance.emojisForTypesByValues.includes(Number.parseInt(reaction?.values[0]))) {
+                    this.editionSelectedType = Number.parseInt(reaction.values[0]);
 
-        this.editionMessageWrapper.collector.on('collect', async (reaction) => {
-            if (CharacterAppearance.emojisForTypes.includes(reaction.emoji.name)) {
-                this.editionSelectedType = CharacterAppearance.emojisTypesWithValues[reaction.emoji.name];
+                    const isBodyType = this.editionSelectedType > 0;
 
-                const isBodyType = this.editionSelectedType > 0;
+                    if (isBodyType) {
+                        this.editionPossibleValues = Object.values(CharacterAppearance.appearancesPerTypes[this.editionSelectedType]).filter(i => i.idBodyType === null || i.idBodyType == this.bodyType);
+                        this.editionSelectedIndex = this.editionPossibleValues.findIndex(item => item.id == this.editionSelectedPerTypes[item.appearanceType]);
+                    } else {
+                        this.editionPossibleValues = [1, 2];
+                        this.editionSelectedIndex = this.editionPossibleValues.findIndex(item => item == this.bodyType);
+                    }
 
-                if (isBodyType) {
-                    this.editionPossibleValues = Object.values(CharacterAppearance.appearancesPerTypes[this.editionSelectedType]).filter(i => i.idBodyType === null || i.idBodyType == this.bodyType);
-                    this.editionSelectedIndex = this.editionPossibleValues.findIndex(item => item.id == this.editionSelectedPerTypes[item.appearanceType]);
+                    await this.handleEditionSelectOne(user);
+                } else if (reaction.customId === "confirm") {
+                    const data = (await user.axios.post("/game/character/appearance", {
+                        bodyColor: this.bodyColor,
+                        hairColor: this.hairColor,
+                        eyeColor: this.eyeColor,
+                        bodyType: this.bodyType,
+                        shouldDisplayHelmet: this.shouldDisplayHelmet,
+                        selectedAppearances: Object.values(this.editionSelectedPerTypes).join(",")
+                    })).data;
+
+                    if (data.error) {
+                        await this.editionMessageWrapper.message.channel.send(data.error);
+                    } else {
+                        await this.editionMessageWrapper.deleteAndSend(data.success);
+                    }
+
                 } else {
-                    this.editionPossibleValues = [1, 2];
-                    this.editionSelectedIndex = this.editionPossibleValues.findIndex(item => item == this.bodyType);
+                    await this.editionMessageWrapper.edit(this.editionMessageWrapper.message, reaction, this.editionMessageWrapper.currentIdentifiersReactList);
                 }
+            });
 
-                await this.handleEditionSelectOne(user);
-            } else if (reaction.emoji.name === Emojis.general.g_vmark) {
-                const data = (await user.axios.post("/game/character/appearance", {
-                    bodyColor: this.bodyColor,
-                    hairColor: this.hairColor,
-                    eyeColor: this.eyeColor,
-                    bodyType: this.bodyType,
-                    shouldDisplayHelmet: this.shouldDisplayHelmet,
-                    selectedAppearances: Object.values(this.editionSelectedPerTypes).join(",")
-                })).data;
+        // Mus edit after setting the listener
+        await this.editionMessageWrapper.edit(options, interaction, ["select", "confirm"]);
 
-                if (data.error) {
-                    await this.editionMessageWrapper.message.channel.send(data.error);
-                } else {
-                    await this.editionMessageWrapper.deleteAndSend(data.success);
-                }
 
-            }
-        });
 
     }
 
@@ -890,6 +943,7 @@ class CharacterAppearance {
 
 
         let emojisPossible = [Emojis.general.left_arrow, Emojis.general.right_arrow];
+
         let colorsArrayRef = null;
         let selectedColor = null;
         let modifyFunc = null;
