@@ -69,7 +69,6 @@ class Emojis {
 
 }
 
-
 Emojis.weather = {
     "sunny": "sun",
     "cloudy": "cloud",
@@ -664,8 +663,16 @@ Emojis.damageTypes = {
     "manaSteal": Emojis.general.water_droplet,
     "healHp": Emojis.stats.regenHp,
     "healMp": Emojis.stats.regenMp,
-
 }
+
+Emojis.appearanceButtons = {
+    "color": Emojis.general.rainbow,
+    "helmet": Emojis.general.helmet,
+    "left": Emojis.general.left_arrow,
+    "right": Emojis.general.right_arrow,
+    "confirm": Emojis.general.g_vmark
+}
+
 
 function configureAliases() {
     Emojis.emojisProd.normal = Emojis.emojisProd.monster;
