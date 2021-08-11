@@ -69,28 +69,25 @@ class MessageReactionsWrapper {
 
     /**
      * 
-     * @param {string} content
+     * @param {Discord.MessageOptions} content
      * @param {Discord.ButtonInteraction} interaction
      * @param {Array<string>=} arrOfEmojis
      * @param {boolean=} clearEmojis
      */
     async edit(content, interaction, arrOfEmojis) {
         if (content != null && !this.message.deleted) {
-            if (content.fields) {
-                content = { embeds: [content] };
-            }
-
             //if (clearEmojis) {
             //    await this.clearEmojis();
             //}
+            await this.setReactionsEmojis(arrOfEmojis != null ? arrOfEmojis : []);
+
 
             const options = InteractContainer.getReplyOptions(content);
-            if (interaction.update) {
+            if (interaction?.update) {
                 this.message = await interaction.update(options);
             } else {
                 this.message.edit(options);
             }
-            await this.setReactionsEmojis(arrOfEmojis != null ? arrOfEmojis : []);
         }
     }
 
