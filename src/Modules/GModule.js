@@ -419,7 +419,7 @@ class GModule {
                 const replyOptions = InteractContainer.getReplyOptions(msgCollector);
                 replyOptions.components.push(buttonActionRow);
 
-                await messageReactWrapper.edit(replyOptions, currentMessageReactions, reaction);
+                await messageReactWrapper.edit(replyOptions, reaction, currentMessageReactions);
             });
     }
 
