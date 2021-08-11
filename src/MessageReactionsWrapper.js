@@ -84,7 +84,11 @@ class MessageReactionsWrapper {
 
             const options = InteractContainer.getReplyOptions(content);
             if (interaction?.update) {
-                this.message = await interaction.update(options);
+                if (interaction.replied) {
+                    await interaction.editReply(options);
+                } else {
+                    this.message = await interaction.update(options);
+                }
             } else {
                 this.message.edit(options);
             }
