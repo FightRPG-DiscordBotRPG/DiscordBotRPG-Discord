@@ -62,7 +62,7 @@ class GuildModule extends GModule {
                     } else {
                         return Translator.getString(lang, "guild", "disband_cancelled");
                     }
-                });
+                }, lang);
                 break;
 
 

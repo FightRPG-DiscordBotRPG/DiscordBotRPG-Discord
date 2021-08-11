@@ -312,7 +312,7 @@ class GModule {
                         value = this.tryParseYesNo(value);
                         break;
                 }
-                
+
                 toReturn.params[type] = value;
             }
 
@@ -337,60 +337,90 @@ class GModule {
      * @param {string | Discord.MessageEmbed} initialMessage
      * @param {dataCollectorCallback} dataCollectorCallback
      * @param {Function} afterCollectorCallback
+     * @param {string} lang
      */
-    async pageListener(initialData, interact, initialMessage, dataCollectorCallback, afterCollectorCallback) {
+    async pageListener(initialData, interact, initialMessage, dataCollectorCallback, afterCollectorCallback, lang = "en") {
         var currentPage = initialData.page;
         let currentMessageReactions = [];
 
-        let nextEmoji = Emojis.getString("right_arrow");
-        let backEmoji = Emojis.getString("left_arrow");
+        let backEmoji = "back";
+        let nextEmoji = "next";
+
+        const buttonBack = new Discord.MessageButton()
+            .setCustomId("back")
+            .setLabel(Translator.getString(lang, "general", "back"))
+            .setStyle("PRIMARY")
+            .setEmoji(Emojis.getString("left_arrow"));
+
+        const buttonNext = new Discord.MessageButton()
+            .setCustomId("next")
+            .setLabel(Translator.getString(lang, "general", "next"))
+            .setStyle("PRIMARY")
+            .setEmoji(Emojis.getString("right_arrow"));
+
+        const buttonActionRow = new Discord.MessageActionRow();
 
         if (initialData.page > 1) {
             currentMessageReactions.push(backEmoji);
+            buttonActionRow.addComponents(buttonBack);
         }
         if (initialData.page < initialData.maxPage) {
             currentMessageReactions.push(nextEmoji);
+            buttonActionRow.addComponents(buttonNext);
         }
 
-        let messageReactWrapper = new MessageReactionsWrapper();
-        await messageReactWrapper.load(interact, initialMessage, { reactionsEmojis: currentMessageReactions, collectorOptions: { time: 60000 } });
+        const replyOptions = interact.getReplyOptions(initialMessage);
+        replyOptions.components.push(buttonActionRow);
 
+        let messageReactWrapper = new MessageReactionsWrapper();
+        await messageReactWrapper.load(interact, replyOptions, { reactionsEmojis: currentMessageReactions, collectorOptions: { time: 60000 } });
 
         if (messageReactWrapper.message == null) {
             return;
         }
 
-        messageReactWrapper.collector.on('collect', async (reaction, user) => {
-            let dataCollector;
-            let msgCollector = "";
-            switch (reaction.emoji.name) {
-                case nextEmoji:
-                    currentPage++;
-                    break;
-                case backEmoji:
-                    currentPage--;
-                    break;
-            }
-
-            dataCollector = await dataCollectorCallback(currentPage);
-
-            if (dataCollector.error == null) {
-                msgCollector = await afterCollectorCallback(dataCollector)
-
-                currentMessageReactions = [];
-                if (dataCollector.page > 1) {
-                    currentMessageReactions.push(backEmoji);
-                }
-                if (dataCollector.page < dataCollector.maxPage) {
-                    currentMessageReactions.push(nextEmoji);
+        messageReactWrapper.collector.on('collect',
+            /**
+             *
+             * @param {Discord.ButtonInteraction} reaction
+             */
+            async (reaction, user) => {
+                let dataCollector;
+                let msgCollector = "";
+                switch (reaction.customId) {
+                    case nextEmoji:
+                        currentPage++;
+                        break;
+                    case backEmoji:
+                        currentPage--;
+                        break;
                 }
 
-            } else {
-                msgCollector = dataCollector.error;
-            }
+                dataCollector = await dataCollectorCallback(currentPage);                
+                const buttonActionRow = new Discord.MessageActionRow();
 
-            await messageReactWrapper.edit(msgCollector, currentMessageReactions);
-        });
+
+                if (dataCollector.error == null) {
+                    msgCollector = await afterCollectorCallback(dataCollector);
+                    currentMessageReactions = [];
+                    if (dataCollector.page > 1) {
+                        currentMessageReactions.push(backEmoji);
+                        buttonActionRow.addComponents(buttonBack);
+                    }
+                    if (dataCollector.page < dataCollector.maxPage) {
+                        currentMessageReactions.push(nextEmoji);
+                        buttonActionRow.addComponents(buttonNext);
+                    }
+
+                } else {
+                    msgCollector = dataCollector.error;
+                }
+
+                const replyOptions = InteractContainer.getReplyOptions(msgCollector);
+                replyOptions.components.push(buttonActionRow);
+
+                await messageReactWrapper.edit(replyOptions, currentMessageReactions, reaction);
+            });
     }
 
 
@@ -399,26 +429,48 @@ class GModule {
      * @param {InteractContainer} interact
      * @param {string | Discord.MessageEmbed} initialMessage
      * @param {dataCollectorCallback} dataCollectorCallback
-     * @param {Function} afterCollectorCallback
+     * @param {string} lang
      */
-    async confirmListener(interact, initialMessage, dataCollectorCallback) {
-        let vmark = Emojis.general.vmark, xmark = Emojis.general.xmark;
+    async confirmListener(interact, initialMessage, dataCollectorCallback, lang = "en") {
+        const replyOptions = interact.getReplyOptions(initialMessage);
 
-        let currentMessageReactions = [vmark, xmark];
+        replyOptions.components.push(new Discord.MessageActionRow()
+            .addComponents(
+                new Discord.MessageButton()
+                    .setCustomId("confirm")
+                    .setLabel(Translator.getString(lang, "general", "yes"))
+                    .setStyle("PRIMARY")
+                    .setEmoji(Emojis.general.vmark),
+                new Discord.MessageButton()
+                    .setCustomId("cancel")
+                    .setLabel(Translator.getString(lang, "general", "no"))
+                    .setStyle("DANGER")
+                    .setEmoji(Emojis.general.xmark)
+            )
+        );
 
         let messageReactWrapper = new MessageReactionsWrapper();
-        await messageReactWrapper.load(interact, initialMessage, { reactionsEmojis: currentMessageReactions, collectorOptions: { time: 30000, max: 1 } });
+        await messageReactWrapper.load(interact, replyOptions, { reactionsEmojis: ["confirm", "cancel"], collectorOptions: { time: 30000, max: 1 } });
 
         if (messageReactWrapper.message == null) {
             return;
         }
 
-        messageReactWrapper.collector.on('collect', async (reaction) => {
-            let content = await dataCollectorCallback(reaction.emoji.name == vmark ? true : false);
-            if (content != null && content != "") {
-                await messageReactWrapper.deleteAndSend(content);
+        messageReactWrapper.collector.on('collect',
+            /**
+             * 
+             * @param {Discord.ButtonInteraction} reaction
+             */
+            async (reaction) => {
+                let content = await dataCollectorCallback(reaction.customId == "confirm" ? true : false);
+                if (content != null && content != "") {
+                    await messageReactWrapper.deleteAndSend(content, reaction);
+                }
             }
-        });
+        );
+
+
+
     }
 
     getBasicSuccessErrorMessage(axiosQueryResult) {

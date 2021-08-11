@@ -61,7 +61,7 @@ class CharacterModule extends GModule {
                                 } else {
                                     return Translator.getString(data.lang, "character", "reset_cancel");
                                 }
-                            });
+                            }, user.lang);
                         }
                     });
 
@@ -85,7 +85,7 @@ class CharacterModule extends GModule {
                                 } else {
                                     return Translator.getString(data.lang, "character", "reset_talents_cancel");
                                 }
-                            });
+                            }, user.lang);
                         }
                     });
 
@@ -351,7 +351,7 @@ class CharacterModule extends GModule {
                                 } else {
                                     return Translator.getString(user.lang, "character", "rebirth_cancelled");
                                 }
-                            });
+                            }, user.lang);
                         } else {
                             return Utils.addToEmbedRequiredItems(confirmEmbed, requiredItems, user.lang)
                                 .addField(titleType, canRebirthData.reason);

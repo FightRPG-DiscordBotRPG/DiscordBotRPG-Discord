@@ -44,18 +44,43 @@ class InteractContainer {
 
     }
 
+    /**
+     * 
+     * @param {Discord.ReplyMessageOptions} data
+     * @returns {Discord.Message}
+     */
     async reply(data) {
         if (this.message) {
             return await this.message.reply(data);
         }
 
         if (this.interaction) {
-            if (typeof data == "object") {
-                data = { ...data, fetchReply: true };
+            return await this.interaction.reply(InteractContainer.getReplyOptions(data));
+        }
+    }
+
+    /**
+     * 
+     * @returns {Discord.ReplyMessageOptions}
+     */
+    getReplyOptions(data) {
+        return InteractContainer.getReplyOptions(data);
+    }
+
+    /**
+     *
+     * @returns {Discord.ReplyMessageOptions}
+     */
+    static getReplyOptions(data) {
+        if (typeof data == "object") {
+            if (data.fields) {
+                return { fetchReply: true, components: [], embeds: [data] };
             } else {
-                data = { content: data, fetchReply: true };
+
+                return { components: [], embeds: [], ...data, fetchReply: true };
             }
-            return await this.interaction.reply(data);
+        } else {
+            return { content: data, fetchReply: true, components: [], embeds: [] };
         }
     }
 }

@@ -86,7 +86,7 @@ class TradeModule extends GModule {
                         } else {
                             this.run(interact, "tcancel", args);
                         }
-                    });
+                    }, user.lang);
                 });
                 break;
 

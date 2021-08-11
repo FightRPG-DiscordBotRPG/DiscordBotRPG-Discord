@@ -197,7 +197,7 @@ class TravelModule extends GModule {
                         }
                         return Translator.getString(data.lang, "travel", "travel_cancel" + easterEgg);
                     }
-                });
+                }, data.lang);
             });
         }
         return msg;
