@@ -77,10 +77,10 @@ class InteractContainer {
                 return { fetchReply: true, components: [], embeds: [data] };
             } else {
 
-                return { components: [], embeds: [], ...data, fetchReply: true };
+                return { components: [], embeds: [], fetchReply: true, ...data, };
             }
         } else {
-            return { content: data, fetchReply: true, components: [], embeds: [] };
+            return { fetchReply: true, components: [], embeds: [], content: data, };
         }
     }
 }
