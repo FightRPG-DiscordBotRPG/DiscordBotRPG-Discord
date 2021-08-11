@@ -8,7 +8,7 @@ const {
 const Globals = require("./src/Globals");
 const manager = new ShardingManager(__dirname + '/bot.js', {
     token: conf.discordbotkey,
-    totalShards: conf.env === "dev" ? 2 : "auto",
+    //totalShards: conf.env === "dev" ? 2 : "auto",
 });
 
 async function start() {
@@ -37,7 +37,7 @@ async function sendDMToSpecificUser(idUser, message) {
         /**
          * @type {Array<User>}
          **/
-        let users = await manager.broadcastEval(client => client.users.cache.get(idUser));
+        let users = await manager.broadcastEval((client, context) => client.users.cache.get(context.idUser), { context: {idUser: idUser}});
         for (let i in users) {
             if (users[i]) {
                 await [...manager.shards.values()][i].eval(`this.users.cache.get("${idUser}").send(\`${message.replace(/`/gi, "\\`")}\`).catch(e => null)`);
