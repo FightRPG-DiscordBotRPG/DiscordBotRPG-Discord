@@ -14,6 +14,7 @@ const Emojis = require("../Drawings/Emojis");
 const MessageReactionsWrapper = require("../MessageReactionsWrapper");
 const User = require("../Users/User");
 const InteractContainer = require("../Discord/InteractContainer");
+const MenusAndButtons = require("../Drawings/MenusAndButtons");
 
 class GModule {
     constructor() {
@@ -434,18 +435,11 @@ class GModule {
     async confirmListener(interact, initialMessage, dataCollectorCallback, lang = "en") {
         const replyOptions = interact.getReplyOptions(initialMessage);
 
+
         replyOptions.components.push(new Discord.MessageActionRow()
             .addComponents(
-                new Discord.MessageButton()
-                    .setCustomId("confirm")
-                    .setLabel(Translator.getString(lang, "general", "yes"))
-                    .setStyle("PRIMARY")
-                    .setEmoji(Emojis.general.vmark),
-                new Discord.MessageButton()
-                    .setCustomId("cancel")
-                    .setLabel(Translator.getString(lang, "general", "no"))
-                    .setStyle("DANGER")
-                    .setEmoji(Emojis.general.xmark)
+                MenusAndButtons.getConfirmButton(lang),
+                MenusAndButtons.getCancelButton(lang)
             )
         );
 
