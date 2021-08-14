@@ -7,7 +7,7 @@ class MenusAndButtons {
         return new Discord.MessageButton()
             .setCustomId("confirm")
             .setLabel(Translator.getString(lang, "general", "yes"))
-            .setStyle("PRIMARY")
+            .setStyle("SUCCESS")
             .setEmoji(Emojis.general.vmark);
     }
 
@@ -15,7 +15,7 @@ class MenusAndButtons {
         return new Discord.MessageButton()
             .setCustomId("confirm")
             .setLabel(Translator.getString(lang, "general", "validate"))
-            .setStyle("PRIMARY")
+            .setStyle("SUCCESS")
             .setEmoji(Emojis.general.vmark);
     }
 
