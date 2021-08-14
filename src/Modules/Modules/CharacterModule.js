@@ -107,10 +107,10 @@ class CharacterModule extends GModule {
 
                     let emojisList = [
                         displayAttributesEmoji,
-                        displayAdvancementsEmoji,
+                        displayAdvancementsEmoji.id,
                         displayResourcesEmoji,
                         displayOtherEmoji,
-                        rebirthEmoji
+                        rebirthEmoji.id
                     ];
 
                     let reactWrapper = new MessageReactionsWrapper();
@@ -125,29 +125,32 @@ class CharacterModule extends GModule {
                     // For tutorial
                     await user.tutorial.reactOnCommand("info", interact, user.lang);
 
-                    reactWrapper.collector.on('collect', async (reaction) => {
-                        switch (reaction.emoji.name) {
-                            case displayAttributesEmoji:
-                                user.infoPanel.displayAttributes = !user.infoPanel.displayAttributes;
-                                break;
-                            case displayResourcesEmoji:
-                                user.infoPanel.displayResources = !user.infoPanel.displayResources;
-                                break;
-                            case displayOtherEmoji:
-                                user.infoPanel.displayOther = !user.infoPanel.displayOther;
-                                break;
-                        }
+                    reactWrapper.collector.on('collect',
+                        /**
+                         * 
+                         * @param {Discord.ButtonInteraction} reaction
+                         */
+                        async (reaction) => {
+                            switch (reaction.customId) {
+                                case displayAttributesEmoji:
+                                    user.infoPanel.displayAttributes = !user.infoPanel.displayAttributes;
+                                    break;
+                                case displayResourcesEmoji:
+                                    user.infoPanel.displayResources = !user.infoPanel.displayResources;
+                                    break;
+                                case displayOtherEmoji:
+                                    user.infoPanel.displayOther = !user.infoPanel.displayOther;
+                                    break;
+                                case displayAdvancementsEmoji.id:
+                                    user.infoPanel.displayAdvancement = !user.infoPanel.displayAdvancement;
+                                    break;
+                                case rebirthEmoji.id:
+                                    interact.interaction = reaction;
+                                    return this.run(interact, "rebirth", []);
+                            }
 
-                        switch (reaction.emoji.id) {
-                            case displayAdvancementsEmoji.id:
-                                user.infoPanel.displayAdvancement = !user.infoPanel.displayAdvancement;
-                                break;
-                            case rebirthEmoji.id:
-                                return this.run(interact, "rebirth", []);
-                        }
-
-                        await reactWrapper.edit(user.infoPanel.toString(data, user), emojisList);
-                    });
+                            await reactWrapper.edit(user.infoPanel.toString(data, user), reaction, emojisList);
+                        });
 
                 });
                 break;
@@ -184,7 +187,7 @@ class CharacterModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents"), async (data) => {
                     return Talents.toString(data, user);
                 });
-                
+
                 break;
             case "talentsexport":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents/export"), (data) => {

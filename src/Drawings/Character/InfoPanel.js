@@ -7,6 +7,7 @@ const User = require("../../Users/User");
 const TextDrawings = require("../TextDrawings");
 const Rebirth = require("./Rebirth");
 const Canvas = require('canvas');
+const InteractContainer = require("../../Discord/InteractContainer");
 
 class InfoPanel {
     constructor() {
@@ -45,7 +46,50 @@ class InfoPanel {
         //.addField(Emojis.getString("shield") + " " + Translator.getString(data.lang, "character", "damage_reduction"), Translator.getFormater(data.lang).format(Math.round((data.stats.armor + data.statsEquipment.armor) / ((8 * (Math.pow(data.level, 2))) / 7 + 5) * .5 * 10000) / 100) + "%", true)
         //.addField(Emojis.getString("critical") + " " + Translator.getString(data.lang, "character", "critical_chance"), Translator.getFormater(data.lang).format(criticalChance) + "%", true)
         //.addField(Emojis.getString("stun") + " " + Translator.getString(data.lang, "character", "maximum_stun_chance"), Translator.getFormater(data.lang).format(maximumStunChance) + "%", true)
-        return embed;
+
+        const options = InteractContainer.getReplyOptions(embed);
+
+        let displayAttributesEmoji = Emojis.general.clipboard;
+        let displayAdvancementsEmoji = Emojis.emojisProd.exp;
+        let displayResourcesEmoji = Emojis.general.bar_chart;
+        let displayOtherEmoji = Emojis.general.q_mark;
+        let rebirthEmoji = Emojis.emojisProd.rebirth;
+
+        options.components.push(
+            new Discord.MessageActionRow()
+                .addComponents(
+                    new Discord.MessageButton()
+                        .setCustomId(displayAttributesEmoji)
+                        .setLabel(Translator.getString(user.lang, "inventory_equipment", "attributes"))
+                        .setStyle(user.infoPanel.displayAttributes ? "PRIMARY" : "SECONDARY")
+                        .setEmoji(displayAttributesEmoji),
+                    new Discord.MessageButton()
+                        .setCustomId(displayAdvancementsEmoji.id)
+                        .setLabel(Translator.getString(user.lang, "character", "character_advancement"))
+                        .setStyle(user.infoPanel.displayAdvancement ? "PRIMARY" : "SECONDARY")
+                        .setEmoji(displayAdvancementsEmoji.string),
+                    new Discord.MessageButton()
+                        .setCustomId(displayResourcesEmoji)
+                        .setLabel(Translator.getString(user.lang, "character", "character_resources"))
+                        .setStyle(user.infoPanel.displayResources ? "PRIMARY" : "SECONDARY")
+                        .setEmoji(displayResourcesEmoji),
+                    new Discord.MessageButton()
+                        .setCustomId(displayOtherEmoji)
+                        .setLabel(Translator.getString(user.lang, "help_panel", "other_title"))
+                        .setStyle(user.infoPanel.displayOther ? "PRIMARY" : "SECONDARY")
+                        .setEmoji(displayOtherEmoji),
+                    new Discord.MessageButton()
+                        .setCustomId(rebirthEmoji.id)
+                        .setLabel(Translator.getString(user.lang, "character", "rebirth_title"))
+                        .setStyle("PRIMARY")
+                        .setEmoji(rebirthEmoji.string),
+                )
+        );
+
+
+
+
+        return options;
     }
 
     /**
