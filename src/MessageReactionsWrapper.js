@@ -11,6 +11,9 @@ class MessageReactionsWrapper {
     */
 
     constructor() {
+        /**
+         * @type Discord.Message
+         **/
         this.message = null;
         /**
          * @type {Discord.InteractionCollector}
@@ -24,7 +27,7 @@ class MessageReactionsWrapper {
 
     /**
     * @param {InteractContainer} interact
-    * @param {string} content
+    * @param {Discord.MessageOptions | string} content
     * @param {SettingsMessageReact} settings
     */
     async load(interact, content, settings) {
