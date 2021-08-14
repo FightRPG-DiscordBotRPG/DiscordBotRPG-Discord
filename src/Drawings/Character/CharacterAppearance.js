@@ -149,6 +149,8 @@ class CharacterAppearance {
          >}
          **/
         this.typesMasks = {};
+
+        this.allLinks = {};
     }
 
     reset() {
@@ -193,7 +195,8 @@ class CharacterAppearance {
 
         this.weapon = null;
         this.typesMasks = {};
-        this.allLinks = ""
+
+        this.allLinks = {};
     }
 
     async debugLoadAssets() {
@@ -504,6 +507,7 @@ class CharacterAppearance {
      * @param {Object<string, {link: string}>} dict
      */
     async mapProperties(dict) {
+        //console.log(dict);
 
         if (dict == null) {
             return;
@@ -522,10 +526,12 @@ class CharacterAppearance {
                     let prop = props[pIndex];
 
                     let link = null;
+                    let maskColors = null;
                     if (typeof dict[i] === "string") {
                         link = dict[i];
                     } else if (dict[i] !== null) {
                         link = dict[i].link;
+                        maskColors = dict[i].maskColors;
                     }
 
                     loadingImages.push((async () => {
@@ -533,6 +539,7 @@ class CharacterAppearance {
                             return;
                         }
                         //console.log(prop + " & " + link);
+                        this.allLinks[prop] = { link: link, colors: maskColors };
                         refAsync[prop] = await this.getImage(link);
                     })());
                 } else {
@@ -578,7 +585,6 @@ class CharacterAppearance {
             return null;
         }
 
-        this.allLinks += url;
         return CharacterAppearance.getImage(url);
     }
 
@@ -639,7 +645,7 @@ class CharacterAppearance {
         }
 
         return hash(
-            this.allLinks +
+            hash(this.allLinks) +
             this.hairColor +
             this.bodyColor +
             this.eyeColor +
@@ -1065,7 +1071,6 @@ class CharacterAppearance {
                         await this.mapProperties(appearanceToReload);
                         await this.mapProperties(CharacterAppearance.bodyAppearances[this.bodyType]);
                     } else {
-
                         // Clear value before
                         if (this.editionPossibleValues[oldIndex]) {
                             let appearanceToReload = {
