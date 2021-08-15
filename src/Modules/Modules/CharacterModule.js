@@ -395,8 +395,6 @@ class CharacterModule extends GModule {
                         let canRebirthCraft = data.craft.rebirthLevel < data.maxRebirthLevel && data.craft.level == data.maxLevel;
 
                         let emojisList = [
-                            canRebirthLevel ? rebirthLevelEmoji : null,
-                            canRebirthCraft ? rebirthCraftLevelEmoji : null
                         ];
 
 
@@ -405,12 +403,44 @@ class CharacterModule extends GModule {
                             ${Emojis.general.hammer} ${Translator.getString(user.lang, "character", "craft_level")} - ${Rebirth.getRebirthAvailabilityString(canRebirthCraft)}`;
 
 
+                        let options = InteractContainer.getReplyOptions(new Discord.MessageEmbed()
+                            .setColor([0, 255, 0])
+                            .setAuthor(Translator.getString(user.lang, "character", "rebirth_title"))
+                            .addField(Emojis.emojisProd.rebirth.string + " " + Translator.getString(user.lang, "character", "current_bonuses"), Rebirth.getRebirthBonuses(data, user, Rebirth.rebirthsBonusesTypes.all, true) + "\n")
+                            .addField(Emojis.general.scroll + " " + Translator.getString(data.lang, "character", "rebirth_do_you_want"), description));
+
+
+                        let actionRow = new Discord.MessageActionRow();
+
+
+                        if (canRebirthLevel) {
+                            emojisList.push(rebirthLevelEmoji.id);
+                            actionRow = actionRow.addComponents(
+                                new Discord.MessageButton()
+                                    .setCustomId(rebirthLevelEmoji.id)
+                                    .setLabel(Translator.getString(user.lang, "character", "rebirth_level"))
+                                    .setStyle("PRIMARY")
+                                    .setEmoji(rebirthLevelEmoji.string)
+                            )
+                        }
+
+                        if (canRebirthCraft) {
+                            emojisList.push(rebirthCraftLevelEmoji);
+                            actionRow = actionRow.addComponents(
+                                new Discord.MessageButton()
+                                    .setCustomId(rebirthCraftLevelEmoji)
+                                    .setLabel(Translator.getString(user.lang, "character", "rebirth_craft_level"))
+                                    .setStyle("PRIMARY")
+                                    .setEmoji(rebirthCraftLevelEmoji)
+                            )
+                        }
+
+                        options.components.push(actionRow);
+
+
+
                         await reactWrapper.load(interact,
-                            new Discord.MessageEmbed()
-                                .setColor([0, 255, 0])
-                                .setAuthor(Translator.getString(user.lang, "character", "rebirth_title"))
-                                .addField(Emojis.emojisProd.rebirth.string + " " + Translator.getString(user.lang, "character", "current_bonuses"), Rebirth.getRebirthBonuses(data, user, Rebirth.rebirthsBonusesTypes.all, true) + "\n")
-                                .addField(Emojis.general.scroll + " " + Translator.getString(data.lang, "character", "rebirth_do_you_want"), description)
+                            options
                             , {
                                 reactionsEmojis: emojisList,
                                 collectorOptions: {
@@ -419,13 +449,19 @@ class CharacterModule extends GModule {
                                 }
                             });
 
-                        reactWrapper.collector.on('collect', async (reaction) => {
-                            if (reaction.emoji.id === rebirthLevelEmoji.id) {
-                                await this.run(interact, "rebirth", ["level"]);
-                            } else if (reaction.emoji.name === rebirthCraftLevelEmoji) {
-                                await this.run(interact, "rebirth", ["craft_level"]);
-                            }
-                        });
+                        reactWrapper.collector.on('collect',
+                            /**
+                             * 
+                             * @param {Discord.ButtonInteraction} reaction
+                             */
+                            async (reaction) => {
+                                interact.interaction = reaction;
+                                if (reaction.customId === rebirthLevelEmoji.id) {
+                                    await this.run(interact, "rebirth", ["level"]);
+                                } else if (reaction.customId === rebirthCraftLevelEmoji) {
+                                    await this.run(interact, "rebirth", ["craft_level"]);
+                                }
+                            });
 
 
                     });
