@@ -6,12 +6,13 @@ const LeaderboardWBDamage = require("../../Drawings/Leaderboard/LeaderboardWBDam
 const Translator = require("../../Translator/Translator");
 const Emojis = require("../../Drawings/Emojis");
 const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
-
+const InteractContainer = require("../../Discord/InteractContainer");
+const Discord = require("discord.js");
 
 class WorldBossModule extends GModule {
     constructor() {
         super();
-        this.commands = ["wbshowall", "wbfight", "wbattack", "wblastinfo", "wbleaderboard", "wbs", "worldbossfight", "worldshowall", "worldbosslastinfo"];
+        this.commands = ["wbshowall", "wbfight", "wbattack", "wblastinfo", "wbleaderboard", "wbs", "worldbossfight", "worldbossshowall", "worldbosslastinfo"];
         this.startLoading("World Boss");
         this.init();
         this.endLoading("World Boss");
@@ -42,9 +43,24 @@ class WorldBossModule extends GModule {
                         displayTravelEmoji
                     ];
 
+                    const options = InteractContainer.getReplyOptions(WorldBosses.listToDiscord(data, user, true));
+
+                    if (data.bosses.length > 0) {
+                        options.components.push(
+                            new Discord.MessageActionRow()
+                                .addComponents(
+                                    new Discord.MessageButton()
+                                        .setCustomId(displayTravelEmoji)
+                                        .setLabel(Translator.getString(user.lang, "world_bosses", "travel"))
+                                        .setStyle("PRIMARY")
+                                        .setEmoji(displayTravelEmoji)
+                                )
+                        );
+                    }
+
                     let reactWrapper = new MessageReactionsWrapper();
 
-                    await reactWrapper.load(interact, WorldBosses.listToDiscord(data, user, true), {
+                    await reactWrapper.load(interact, options, {
                         reactionsEmojis: emojisList,
                         collectorOptions: {
                             time: 22000,
@@ -52,18 +68,19 @@ class WorldBossModule extends GModule {
                         }
                     });
 
-                    reactWrapper.collector.on('collect', async (reaction) => {
+                    reactWrapper.collector.on('collect',
+                        /**
+                         * 
+                         * @param {Discord.ButtonInteraction} reaction
+                         */
+                        async (reaction) => {
+                            if (reaction.customId === displayTravelEmoji) {
+                                interact.interaction = reaction;
+                                let travelModule = Globals.moduleHandler.modules["TravelModule"];
+                                travelModule.run(interact, "traveldirect", [data.bosses[0].idArea]);
+                            }
 
-                        if (data.bosses.length === 0) {
-                            return;
-                        }
-
-                        if (reaction.emoji.name === displayTravelEmoji) {
-                            let travelModule = Globals.moduleHandler.modules["TravelModule"];
-                            travelModule.run(interact, "traveldirect", [data.bosses[0].idArea]);
-                        }
-
-                    });
+                        });
                 });
                 break;
 
