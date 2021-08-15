@@ -43,25 +43,49 @@ class InventoryModule extends GModule {
                     }
 
                     let isEquipped = (isNaN(parseInt(args[0])) && args[0] !== "last");
-                    let sellEmoji = Emojis.general.money_bag;
-                    let equipUnequipEmoji = isEquipped ? Emojis.general.backpack : Emojis.general.shield;
-                    let favoEmoji = data.item.isFavorite == false ? Emojis.general.star : Emojis.general.eight_pointed_black_star;
-                    let addToTradeEmoji = Emojis.general.baggage_claim;
+                    let sellEmoji = "money_bag";
+                    let equipUnequipEmoji = isEquipped ? "backpack" : "shield";
+                    let favoEmoji = data.item.isFavorite == false ? "star" : "eight_pointed_black_star";
+                    let addToTradeEmoji = "baggage_claim";
 
                     // See if he is trading
                     let isTrading = await axios.get("/game/character/isTrading");
                     isTrading = isTrading.data;
                     isTrading = isTrading.error == null ? isTrading.isTrading : false;
 
+
+                    const emojisList = [
+                        data.item.isFavorite == true ? null : (isEquipped ? null : sellEmoji),
+                        favoEmoji,
+                        data.item.equipable == true ? equipUnequipEmoji : null,
+                        isTrading == true ? addToTradeEmoji : null
+                    ];
+
+                    const options = InteractContainer.getReplyOptions(itemmsg);
+
+                    const actionRow = new Discord.MessageActionRow();
+
+
+                    for (let emojiName of emojisList) {
+                        if (emojiName !== null) {
+                            actionRow.addComponents(
+                                new Discord.MessageButton()
+                                    .setCustomId(emojiName)
+                                    .setLabel(Translator.getString(user.lang, "inventory_equipment", emojiName))
+                                    .setStyle("PRIMARY")
+                                    .setEmoji(Emojis.general[emojiName])
+                            );
+                        }
+                    }
+
+                    options.components.push(
+                        actionRow
+                    );
+
                     let reactWrapper = new MessageReactionsWrapper();
 
-                    await reactWrapper.load(interact, itemmsg, {
-                        reactionsEmojis: [
-                            data.item.isFavorite == true ? null : (isEquipped ? null : sellEmoji),
-                            favoEmoji,
-                            data.item.equipable == true ? equipUnequipEmoji : null,
-                            isTrading == true ? addToTradeEmoji : null
-                        ],
+                    await reactWrapper.load(interact, options, {
+                        reactionsEmojis: emojisList,
                         collectorOptions: {
                             time: 22000,
                             max: 3,
@@ -71,57 +95,63 @@ class InventoryModule extends GModule {
                     // For tutorial
                     await user.tutorial.reactOnCommand("item", interact, user.lang);
 
-                    reactWrapper.collector.on('collect', async (reaction) => {
-                        let dataCollector = null;
-                        let msgCollector = null;
+                    reactWrapper.collector.on('collect',
+                        /**
+                         * 
+                         * @param {Discord.ButtonInteraction} reaction
+                         */
+                        async (reaction) => {
+                            let dataCollector = null;
+                            let msgCollector = null;
+                            interact.interaction = reaction;
 
-                        switch (reaction.emoji.name) {
-                            case equipUnequipEmoji:
-                                if (isEquipped) {
-                                    dataCollector = await axios.post("/game/equipment/unequip", {
+                            switch (reaction.customId) {
+                                case equipUnequipEmoji:
+                                    if (isEquipped) {
+                                        dataCollector = await axios.post("/game/equipment/unequip", {
+                                            idItem: data.item.id,
+                                            isRealID: true,
+                                        });
+                                    } else {
+                                        dataCollector = await axios.post("/game/equipment/equip", {
+                                            idItem: data.item.id,
+                                            isRealID: true,
+                                        });
+                                    }
+                                    break;
+                                case sellEmoji:
+                                    dataCollector = await axios.post("/game/inventory/sell", {
                                         idItem: data.item.id,
+                                        number: 1,
                                         isRealID: true,
                                     });
-                                } else {
-                                    dataCollector = await axios.post("/game/equipment/equip", {
-                                        idItem: data.item.id,
-                                        isRealID: true,
-                                    });
-                                }
-                                break;
-                            case sellEmoji:
-                                dataCollector = await axios.post("/game/inventory/sell", {
-                                    idItem: data.item.id,
-                                    number: 1,
-                                    isRealID: true,
-                                });
-                                break;
+                                    break;
 
-                            case favoEmoji:
-                                if (data.item.isFavorite == false) {
-                                    dataCollector = await axios.post("/game/inventory/itemfav", {
-                                        idItem: data.item.id,
-                                        isRealID: true,
-                                    });
-                                } else {
-                                    dataCollector = await axios.post("/game/inventory/itemunfav", {
-                                        idItem: data.item.id,
-                                        isRealID: true,
-                                    });
-                                }
-                                break;
-                            case addToTradeEmoji:
-                                if (this.allModulesReference["TradeModule"] != null) {
-                                    this.allModulesReference["TradeModule"].run(interact, "tadd", [data.idInInventory, data.item.number]);
-                                }
-                                break;
-                        }
+                                case favoEmoji:
+                                    if (data.item.isFavorite == false) {
+                                        dataCollector = await axios.post("/game/inventory/itemfav", {
+                                            idItem: data.item.id,
+                                            isRealID: true,
+                                        });
+                                    } else {
+                                        dataCollector = await axios.post("/game/inventory/itemunfav", {
+                                            idItem: data.item.id,
+                                            isRealID: true,
+                                        });
+                                    }
+                                    break;
+                                case addToTradeEmoji:
+                                    if (this.allModulesReference["TradeModule"] != null) {
+                                        this.allModulesReference["TradeModule"].run(interact, "tadd", [data.idInInventory, data.item.number]);
+                                    }
+                                    break;
+                            }
 
-                        if (dataCollector != null) {
-                            msgCollector = this.getBasicSuccessErrorMessage(dataCollector);
-                            await this.sendMessage(interact, msgCollector);
-                        }
-                    });
+                            if (dataCollector != null) {
+                                msgCollector = this.getBasicSuccessErrorMessage(dataCollector);
+                                await this.sendMessage(interact, msgCollector);
+                            }
+                        });
                 });
                 break;
 
