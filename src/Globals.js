@@ -970,7 +970,7 @@ var Globals = {
                     },
                     {
                         name: "invite",
-                        description: Translator.getString("en", "help_panel", "grpinvite"),
+                        description: Translator.getString("en", "help_panel", "grpinvite_mention"),
                         options: playerOrIdOptions,
                         type: "SUB_COMMAND",
                     },
@@ -1314,12 +1314,12 @@ var Globals = {
                     },
                     {
                         name: "export",
-                        description: Translator.getString("en", "help_panel", "talentsexport"),
+                        description: Translator.getString("en", "help_panel", "talentexport"),
                         type: "SUB_COMMAND",
                     },
                     {
                         name: "import",
-                        description: Translator.getString("en", "help_panel", "talentsimport"),
+                        description: Translator.getString("en", "help_panel", "talentimport"),
                         options: [
                             {
                                 name: "importstring",
