@@ -50,12 +50,13 @@ class InteractContainer {
      * @returns {Discord.Message}
      */
     async reply(data) {
-        if (this.message) {
-            return await this.message.reply(data);
+
+        if (this.interaction && !this.interaction.replied) {
+            return await this.interaction.reply(InteractContainer.getReplyOptions(data));
         }
 
-        if (this.interaction) {
-            return await this.interaction.reply(InteractContainer.getReplyOptions(data));
+        if (this.message) {
+            return await this.message.reply(data);
         }
     }
 
