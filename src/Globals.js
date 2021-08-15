@@ -9,183 +9,7 @@ axios.defaults.validateStatus = function (status) {
     return status >= 200 && status < 300 || status >= 400 && status < 500; // default
 }
 
-const filters = ["rarity", "level", "level_down", "type", "subtype", "power", "power_down", "name", "rebirth", "rebirth_down"];
-const filtersChoices = filters.map((e) => { return { name: e.split("_").map(f => f.charAt(0).toUpperCase() + f.slice(1)).join(" "), value: e } });
-const itemsChoices = [
-    {
-        name: "Chest",
-        value: "chest"
-    },
-    {
-        name: "Helmet",
-        value: "head"
-    },
-    {
-        name: "Pants",
-        value: "legs"
-    },
-    {
-        name: "Weapon",
-        value: "weapon"
-    },
-    {
-        name: "Mount",
-        value: "mount"
-    },
-];
-const typeNameItemChoice = {
-    name: "name",
-    description: "Name of the equipped type",
-    type: "STRING",
-    choices: itemsChoices,
-    required: true,
-};
-
-const idCraftOption = {
-    name: "idcraft",
-    description: "Identifier of the craft",
-    type: "STRING",
-    required: true,
-};
-
-const idTalentOption = {
-    name: "idtalent",
-    description: "Identifier of the talent",
-    type: "STRING",
-    required: true,
-};
-
-const idSkillOption = {
-    name: "idskill",
-    description: "Identifier of the skill",
-    type: "STRING",
-    required: true,
-};
-
-const toFightMonsterOption = {
-    name: "tofight",
-    description: "Monster to fight",
-    type: "INTEGER",
-    required: true
-};
-
-const confirmOption = {
-    name: "confirm",
-    description: "Ignore the confirmation",
-    type: "STRING",
-    choices: [{
-        name: "Ignore Confirmation",
-        value: "confirm"
-    }],
-    required: false,
-};
-
-const nameOption = {
-    name: "name",
-    description: "Name",
-    type: "STRING",
-    required: true,
-}
-
-const idItemOption = {
-    name: "id",
-    description: "Item id",
-    type: "INTEGER",
-    required: true,
-};
-
-const idItemChoice = {
-    name: "id",
-    description: "Item id",
-    type: "SUB_COMMAND",
-    options: [
-        idItemOption
-    ]
-};
-const itemsSelectOptions = [
-    {
-        name: "type",
-        description: "Item type",
-        type: "SUB_COMMAND",
-        options: [
-            typeNameItemChoice,
-        ]
-    },
-    idItemChoice
-];
-
-const pageOption = {
-    name: "page",
-    description: "Page to go",
-    type: "INTEGER",
-    required: false
-};
-
-const filterSelectOptions = [
-    {
-        name: "filtername",
-        description: "Filter",
-        type: "STRING",
-        choices: filtersChoices,
-        required: false
-
-    },
-    {
-        name: "filtervalue",
-        description: "Filter value",
-        type: "STRING",
-        required: false
-    },
-    {
-        name: "filtername2",
-        description: "Filter",
-        type: "STRING",
-        choices: filtersChoices,
-        required: false
-
-    },
-    {
-        name: "filtervalue2",
-        description: "Filter value",
-        type: "STRING",
-        required: false
-    },
-    {
-        name: "filtername3",
-        description: "Filter",
-        type: "STRING",
-        choices: filtersChoices,
-        required: false
-
-    },
-    {
-        name: "filtervalue3",
-        description: "Filter value",
-        type: "STRING",
-        required: false
-    },
-];
-
-const filterSelectOptionsWithPage = [
-    ...filterSelectOptions,
-    pageOption
-];
-
-const playerOrIdOptions = [
-    {
-        name: "player",
-        description: "Player id or @someone",
-        type: "STRING",
-        required: true
-    }
-];
-
-const amountOption = {
-    name: "amount",
-    description: "Amount",
-    type: "INTEGER",
-    required: false
-};
+const filters = ["rarity", "level_up", "level_down", "type", "subtype", "power_up", "power_down", "name", "rebirth_up", "rebirth_down", "favorite"];
 
 var Globals = {
     /**
@@ -350,6 +174,191 @@ var Globals = {
             );
         }
 
+        //#region Constants
+
+        const filtersChoices = filters.map((e) => {
+            return {
+                name: Translator.getString("en", "filters", e),
+                value: e
+            }
+        });
+        const itemsChoices = [
+            {
+                name: "Chest",
+                value: "chest"
+            },
+            {
+                name: "Helmet",
+                value: "head"
+            },
+            {
+                name: "Pants",
+                value: "legs"
+            },
+            {
+                name: "Weapon",
+                value: "weapon"
+            },
+            {
+                name: "Mount",
+                value: "mount"
+            },
+        ];
+        const typeNameItemChoice = {
+            name: "name",
+            description: "Name of the equipped type",
+            type: "STRING",
+            choices: itemsChoices,
+            required: true,
+        };
+
+        const idCraftOption = {
+            name: "idcraft",
+            description: "Identifier of the craft",
+            type: "STRING",
+            required: true,
+        };
+
+        const idTalentOption = {
+            name: "idtalent",
+            description: "Identifier of the talent",
+            type: "STRING",
+            required: true,
+        };
+
+        const idSkillOption = {
+            name: "idskill",
+            description: "Identifier of the skill",
+            type: "STRING",
+            required: true,
+        };
+
+        const toFightMonsterOption = {
+            name: "tofight",
+            description: "Monster to fight",
+            type: "INTEGER",
+            required: true
+        };
+
+        const confirmOption = {
+            name: "confirm",
+            description: "Ignore the confirmation",
+            type: "STRING",
+            choices: [{
+                name: "Ignore Confirmation",
+                value: "confirm"
+            }],
+            required: false,
+        };
+
+        const nameOption = {
+            name: "name",
+            description: "Name",
+            type: "STRING",
+            required: true,
+        }
+
+        const idItemOption = {
+            name: "id",
+            description: "Item id",
+            type: "INTEGER",
+            required: true,
+        };
+
+        const idItemChoice = {
+            name: "id",
+            description: "Item id",
+            type: "SUB_COMMAND",
+            options: [
+                idItemOption
+            ]
+        };
+        const itemsSelectOptions = [
+            {
+                name: "type",
+                description: "Item type",
+                type: "SUB_COMMAND",
+                options: [
+                    typeNameItemChoice,
+                ]
+            },
+            idItemChoice
+        ];
+
+        const pageOption = {
+            name: "page",
+            description: "Page to go",
+            type: "INTEGER",
+            required: false
+        };
+
+        const filterSelectOptions = [
+            {
+                name: "filtername",
+                description: "Filter",
+                type: "STRING",
+                choices: filtersChoices,
+                required: false
+
+            },
+            {
+                name: "filtervalue",
+                description: "Filter value",
+                type: "STRING",
+                required: false
+            },
+            {
+                name: "filtername2",
+                description: "Filter",
+                type: "STRING",
+                choices: filtersChoices,
+                required: false
+
+            },
+            {
+                name: "filtervalue2",
+                description: "Filter value",
+                type: "STRING",
+                required: false
+            },
+            {
+                name: "filtername3",
+                description: "Filter",
+                type: "STRING",
+                choices: filtersChoices,
+                required: false
+
+            },
+            {
+                name: "filtervalue3",
+                description: "Filter value",
+                type: "STRING",
+                required: false
+            },
+        ];
+
+        const filterSelectOptionsWithPage = [
+            ...filterSelectOptions,
+            pageOption
+        ];
+
+        const playerOrIdOptions = [
+            {
+                name: "player",
+                description: "Player id or @someone",
+                type: "STRING",
+                required: true
+            }
+        ];
+
+        const amountOption = {
+            name: "amount",
+            description: "Amount",
+            type: "INTEGER",
+            required: false
+        };
+
+        //#endregion Constants
 
 
         // Load commands
