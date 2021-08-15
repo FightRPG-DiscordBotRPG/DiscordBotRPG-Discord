@@ -477,6 +477,9 @@ class CharacterModule extends GModule {
                         user.pendingAppearance.selectableBodyColors = data.selectableBodyColors;
                         user.pendingAppearance.selectableEyeColors = data.selectableEyeColors;
                         user.pendingAppearance.selectableHairColors = data.selectableHairColors;
+
+                        data.currentAppearance.areaImage = "https://cdn.fight-rpg.com/images/appearances/background_creation.png";
+
                         await user.pendingAppearance.setupFromData(data.currentAppearance);
                         await user.pendingAppearance.setupFromDataEdition(data.currentAppearance);
                     }
