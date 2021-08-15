@@ -309,7 +309,7 @@ class TravelModule extends GModule {
                 new Discord.MessageButton()
                     .setCustomId(emojiName)
                     .setLabel(Translator.getString(user.lang, areasEmojis[emojiName].key, areasEmojis[emojiName].val))
-                    .setStyle(activationStatus[emojiName] ? "SECONDARY" : "PRIMARY")
+                    .setStyle(activationStatus[emojiName] ? "PRIMARY" : "SECONDARY")
                     .setEmoji(Emojis.getString(emojiName))
             );
         }
