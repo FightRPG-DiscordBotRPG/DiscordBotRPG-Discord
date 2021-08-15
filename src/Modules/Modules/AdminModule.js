@@ -11,7 +11,7 @@ const InteractContainer = require("../../Discord/InteractContainer");
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info", "eval", "show_all_emojis", "updateslashcommands"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info", "eval", "show_all_emojis", "updateslashcommands", "testslashcommands"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -47,11 +47,19 @@ class AdminModule extends GModule {
                 break;
 
             case "updateslashcommands": {
-                await interact.client.application?.fetch();
-                console.log(Globals.commands);
-                console.log(Globals.commands.length);
-                const cmds = await interact.client.application?.commands.set(Globals.commands, interact.channel.guildId);
-                console.log(cmds);
+                //await interact.client.application?.fetch();
+                //console.log(Globals.commands);
+                //console.log(Globals.commands.length);
+                //const cmds = await interact.client.application?.commands.set(Globals.commands, interact.channel.guildId);
+                //console.log(cmds);
+                console.log();
+            } break;
+            case "testslashcommands": {
+                msg = this.testCommands(Globals.commands);
+                if (msg.length === 0) {
+                    msg = "OK";
+                }
+               
             } break;
 
             case "giveme":
@@ -283,6 +291,24 @@ class AdminModule extends GModule {
         }
 
         this.sendMessage(interact, msg);
+    }
+
+    /**
+     * 
+     * @param {{name:string, description:string, options:options[]}[]} options
+     */
+    testCommands(options) {
+        let text = "";
+        for (let item of options) {
+            if (item.description.includes("en |")) {
+                text += item.name + " => " + item.description + "\n";
+            }
+            if (item.options) {
+                text += this.testCommands(item.options);
+            }
+        }
+
+        return text;
     }
 }
 
