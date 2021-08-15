@@ -24,6 +24,9 @@ class GModule {
         this.isLoaded = false;
         this.isActive = true;
         this.commands = [];
+        /**
+         * @type {Object<string, GModule>}
+         **/
         this.allModulesReference = {};
     }
 
@@ -456,9 +459,10 @@ class GModule {
              * @param {Discord.ButtonInteraction} reaction
              */
             async (reaction) => {
+                interact.interaction = reaction;
                 let content = await dataCollectorCallback(reaction.customId == "confirm" ? true : false);
                 if (content != null && content != "") {
-                    await messageReactWrapper.deleteAndSend(content, reaction);
+                    await messageReactWrapper.deleteAndSend(content, interact);
                 }
             }
         );
