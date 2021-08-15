@@ -7,11 +7,12 @@ const Utils = require("../../Utils");
 const Emojis = require("../../Drawings/Emojis");
 const GenericMultipleEmbedList = require("../../Drawings/GenericMultipleEmbedList");
 const InteractContainer = require("../../Discord/InteractContainer");
+const conf = require("../../../conf/conf");
 
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info", "eval", "show_all_emojis", "updateslashcommands", "testslashcommands"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info", "eval", "show_all_emojis", "updateslashcommands", "testslashcommands", "clearslashcommands"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -47,12 +48,16 @@ class AdminModule extends GModule {
                 break;
 
             case "updateslashcommands": {
-                //await interact.client.application?.fetch();
+                await interact.client.application?.fetch();
                 //console.log(Globals.commands);
                 //console.log(Globals.commands.length);
-                //const cmds = await interact.client.application?.commands.set(Globals.commands, interact.channel.guildId);
-                //console.log(cmds);
-                console.log();
+                const cmds = await interact.client.application?.commands.set(Globals.commands, conf.env === "dev" ? interact.channel.guildId : null);
+                msg = "Added : " + cmds.size + " commands.";
+            } break;
+            case "clearslashcommands": {
+                await interact.client.application?.fetch();
+                await interact.client.application?.commands.set([], conf.env === "dev" ? interact.channel.guildId : null);
+                msg = "Cleared : all commands.";
             } break;
             case "testslashcommands": {
                 msg = this.testCommands(Globals.commands);
