@@ -435,7 +435,9 @@ class CharacterModule extends GModule {
                             )
                         }
 
-                        options.components.push(actionRow);
+                        if (actionRow.components.length > 0) {
+                            options.components.push(actionRow);
+                        }
 
 
 
