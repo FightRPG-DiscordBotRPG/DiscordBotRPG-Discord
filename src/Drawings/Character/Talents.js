@@ -159,8 +159,6 @@ class Talents {
         let yMaximum = 0;
         let yMinimum = 0;
 
-        console.log(data);
-
         if (data.talents.length == 0) {
             data.talents = data.initialTalents.map(e => { return { ...e, asLocked: true } });
         }
