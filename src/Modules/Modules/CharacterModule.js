@@ -202,13 +202,29 @@ class CharacterModule extends GModule {
 
                     let talentTakeEmoji = Emojis.general.raised_hand;
 
-                    let emojisList = [
-                        data.unlockable ? talentTakeEmoji : null
-                    ];
+                    let emojisList = [];
 
                     let reactWrapper = new MessageReactionsWrapper();
 
-                    await reactWrapper.load(interact, Talents.showOne(data, user), {
+                    let options = InteractContainer.getReplyOptions(Talents.showOne(data, user));
+
+                    if (data.unlockable) {
+                        emojisList.push(talentTakeEmoji);
+                        options.components.push(
+                            new Discord.MessageActionRow()
+                                .addComponents(
+                                    new Discord.MessageButton()
+                                        .setCustomId(talentTakeEmoji)
+                                        .setLabel(Translator.getString(user.lang, "general", "take"))
+                                        .setStyle("PRIMARY")
+                                        .setEmoji(talentTakeEmoji)
+                                )
+                        );
+                    }
+
+
+
+                    await reactWrapper.load(interact, options, {
                         reactionsEmojis: emojisList,
                         collectorOptions: {
                             time: 22000,
@@ -219,13 +235,19 @@ class CharacterModule extends GModule {
                     // For tutorial
                     await user.tutorial.reactOnCommand("talentshow", interact, user.lang);
 
-                    reactWrapper.collector.on('collect', async (reaction) => {
-                        switch (reaction.emoji.name) {
-                            case talentTakeEmoji:
-                                this.run(interact, "talentup", [data.node.id]);
-                                break;
-                        }
-                    });
+                    reactWrapper.collector.on('collect',
+                        /**
+                         * 
+                         * @param {Discord.ButtonInteraction} reaction
+                         */
+                        async (reaction) => {
+                            interact.interaction = reaction;
+                            switch (reaction.customId) {
+                                case talentTakeEmoji:
+                                    this.run(interact, "talentup", [data.node.id]);
+                                    break;
+                            }
+                        });
                 });
                 break;
             case "talentup":
