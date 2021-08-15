@@ -7,6 +7,48 @@ const Axios = require("axios");
 const Region = require("../../Drawings/Areas/Region");
 const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
 const InteractContainer = require("../../Discord/InteractContainer");
+const CityArea = require("../../Drawings/Areas/CityArea");
+const WildArea = require("../../Drawings/Areas/WildArea");
+const User = require("../../Users/User");
+
+/**
+ * @type    
+    {Object<string, 
+        {
+            key:string,
+            val:string
+        }
+    >}
+ **/
+const areasEmojis = {
+    "cloud": {
+        key: "weather",
+        val: "weather"
+    },
+    "monster": {
+        key: "general",
+        val: "monsters"
+    },
+    "item_type_resource": {
+        key: "general",
+        val: "resources"
+    },
+    "framed_picture": {
+        key: "general",
+        val: "image"
+    },
+    "counterclockwise_arrows_button": {
+        key: "general",
+        val: "reset"
+    }
+
+}
+
+const displayWeatherEmoji = "cloud";
+const displayMonstersEmoji = "monster";
+const displayResourcesEmoji = "item_type_resource";
+const displayImageEmoji = "framed_picture";
+const resetDisplaysEmoji = "counterclockwise_arrows_button";
 
 
 
@@ -37,27 +79,12 @@ class TravelModule extends GModule {
 
                     let area = user.getAreaDisplay(data);
 
-                    let displayWeatherEmoji = Emojis.general.cloud;
-                    let displayMonstersEmoji = Emojis.emojisProd.monster;
-                    let displayResourcesEmoji = Emojis.emojisProd.item_type_resource;
-                    let displayImageEmoji = Emojis.general.framed_picture;
-                    let resetDisplaysEmoji = Emojis.general.counterclockwise_arrows_button;
-
-                    let emojisList = [displayWeatherEmoji, displayImageEmoji];
-
-                    let isWildArea = area.type === "WildArea";
-
-                    if (isWildArea) {
-                        emojisList = [...emojisList, ...[displayMonstersEmoji, displayResourcesEmoji]];
-                    }
-
-                    // It's here because i want it to be at the end of the array
-                    emojisList.push(resetDisplaysEmoji);
+                    let displayInfo = this.getDisplayInfoForArea(area, data, user);
 
                     let reactWrapper = new MessageReactionsWrapper();
 
-                    await reactWrapper.load(interact, area.toString(data, user), {
-                        reactionsEmojis: emojisList,
+                    await reactWrapper.load(interact, displayInfo.options, {
+                        reactionsEmojis: displayInfo.emojisList,
                         collectorOptions: {
                             time: 40000,
                         }
@@ -66,35 +93,34 @@ class TravelModule extends GModule {
                     await user.tutorial.reactOnCommand("area", interact, user.lang);
 
 
-                    reactWrapper.collector.on('collect', async (reaction) => {
-                        switch (reaction.emoji.name) {
-                            case displayWeatherEmoji:
-                                area.displayWeather = !area.displayWeather;
-                                break;
-                            case displayImageEmoji:
-                                area.displayImage = !area.displayImage;
-                                break;
-                            case resetDisplaysEmoji:
-                                area.enableAll();
-                                break;
-                        }
-
-
-                        if (isWildArea) {
-                            switch (reaction.emoji.id) {
-                                case displayMonstersEmoji.id:
+                    reactWrapper.collector.on('collect',
+                        /**
+                         * 
+                         * @param {Discord.ButtonInteraction} reaction
+                         */
+                        async (reaction) => {
+                            switch (reaction.customId) {
+                                case displayWeatherEmoji:
+                                    area.displayWeather = !area.displayWeather;
+                                    break;
+                                case displayImageEmoji:
+                                    area.displayImage = !area.displayImage;
+                                    break;
+                                case resetDisplaysEmoji:
+                                    area.enableAll();
+                                    break;
+                                case displayMonstersEmoji:
                                     area.displayMonsters = !area.displayMonsters;
                                     break;
-                                case displayResourcesEmoji.id:
+                                case displayResourcesEmoji:
                                     area.displayResources = !area.displayResources;
                                     break;
                             }
 
-                        }
+                            displayInfo = this.getDisplayInfoForArea(area, data, user);
 
-
-                        await reactWrapper.edit(area.toString(data, user), emojisList);
-                    });
+                            await reactWrapper.edit(displayInfo.options, reaction, displayInfo.emojisList);
+                        });
 
                 });
                 break;
@@ -247,6 +273,52 @@ class TravelModule extends GModule {
         }
         return this.getBasicSuccessErrorMessage(data);
     }
+
+    /**
+     * 
+     * @param {CityArea | WildArea} area
+     * @param {} data
+     * @param {User} user
+     */
+    getDisplayInfoForArea(area, data, user) {
+        const activationStatus = {
+            [displayWeatherEmoji]: area.displayWeather,
+            [displayMonstersEmoji]: area.displayMonsters,
+            [displayResourcesEmoji]: area.displayResources,
+            [displayImageEmoji]: area.displayImage,
+            [resetDisplaysEmoji]: false,
+        }
+
+        let emojisList = [displayWeatherEmoji, displayImageEmoji];
+
+        let isWildArea = area.type === "WildArea";
+
+        if (isWildArea) {
+            emojisList = [...emojisList, ...[displayMonstersEmoji, displayResourcesEmoji]];
+        }
+
+        // It's here because i want it to be at the end of the array
+        emojisList.push(resetDisplaysEmoji);
+
+        let options = InteractContainer.getReplyOptions(area.toString(data, user));
+
+        const actionRow = new Discord.MessageActionRow();
+
+        for (let emojiName of emojisList) {
+            actionRow.addComponents(
+                new Discord.MessageButton()
+                    .setCustomId(emojiName)
+                    .setLabel(Translator.getString(user.lang, areasEmojis[emojiName].key, areasEmojis[emojiName].val))
+                    .setStyle(activationStatus[emojiName] ? "SECONDARY" : "PRIMARY")
+                    .setEmoji(Emojis.getString(emojiName))
+            );
+        }
+
+        options.components.push(actionRow);
+
+        return { options: options, emojisList: emojisList };
+    }
+
 
 }
 
