@@ -22,6 +22,7 @@ class MessageReactionsWrapper {
         this.isDM = true;
         this.currentMessageReactions = [];
         this.currentIdentifiersReactList = [];
+        this.willBeDeleted = false;
     }
 
 
@@ -116,6 +117,7 @@ class MessageReactionsWrapper {
      * @param {Discord.ButtonInteraction} interaction
      */
     async deleteAndSend(content, interaction) {
+        this.willBeDeleted = true;
         this.resetCollectListener();
         if (content.fields) {
             content = { fields: [content] };
@@ -158,7 +160,7 @@ class MessageReactionsWrapper {
     }
 
     async clearEmojis() {
-        if (!this.message.deleted) {
+        if (!this.message.deleted && !this.willBeDeleted) {
             try {
                 await this.message.edit({
                     content: this.message.content != "" ? this.message.content : null,
