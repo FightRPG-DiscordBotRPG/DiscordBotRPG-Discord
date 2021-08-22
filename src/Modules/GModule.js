@@ -374,7 +374,9 @@ class GModule {
         }
 
         const replyOptions = interact.getReplyOptions(initialMessage);
-        replyOptions.components.push(buttonActionRow);
+        if (buttonActionRow.components.length > 0) {
+            replyOptions.components.push(buttonActionRow);
+        }
 
         let messageReactWrapper = new MessageReactionsWrapper();
         await messageReactWrapper.load(interact, replyOptions, { reactionsEmojis: currentMessageReactions, collectorOptions: { time: 60000 } });
@@ -421,7 +423,9 @@ class GModule {
                 }
 
                 const replyOptions = InteractContainer.getReplyOptions(msgCollector);
-                replyOptions.components.push(buttonActionRow);
+                if (replyOptions.components.length > 0) {
+                    replyOptions.components.push(buttonActionRow);
+                }
 
                 await messageReactWrapper.edit(replyOptions, reaction, currentMessageReactions);
             });
