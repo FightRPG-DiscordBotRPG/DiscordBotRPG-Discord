@@ -6,25 +6,33 @@ const LeaderboardWBDamage = require("../../Drawings/Leaderboard/LeaderboardWBDam
 const Translator = require("../../Translator/Translator");
 const Emojis = require("../../Drawings/Emojis");
 const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
-
+const InteractContainer = require("../../Discord/InteractContainer");
+const Discord = require("discord.js");
 
 class WorldBossModule extends GModule {
     constructor() {
         super();
-        this.commands = ["wbshowall", "wbfight", "wbattack", "wblastinfo", "wbleaderboard", "wbs"];
+        this.commands = ["wbshowall", "wbfight", "wbattack", "wblastinfo", "wbleaderboard", "wbs", "worldbossfight", "worldbossshowall", "worldbosslastinfo"];
         this.startLoading("World Boss");
         this.init();
         this.endLoading("World Boss");
     }
 
-    async run(message, command, args) {
+    /**
+     *
+     * @param {InteractContainer} interact
+     * @param {string} command
+     * @param {Array} args
+     */
+    async run(interact, command, args) {
         let msg = "";
-        let authorIdentifier = message.author.id;
-        let user = Globals.connectedUsers[message.author.id];
+        let authorIdentifier = interact.author.id;
+        let user = Globals.connectedUsers[interact.author.id];
         let axios = user.getAxios();
 
         switch (command) {
             case "wbshowall":
+            case "worldbossshowall":
             case "wbs":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/worldbosses/display/all"), async (data) => {
                     //return WorldBosses.listToDiscord(data, Globals.connectedUsers[authorIdentifier], true);
@@ -35,9 +43,24 @@ class WorldBossModule extends GModule {
                         displayTravelEmoji
                     ];
 
+                    const options = InteractContainer.getReplyOptions(WorldBosses.listToDiscord(data, user, true));
+
+                    if (data.bosses.length > 0) {
+                        options.components.push(
+                            new Discord.MessageActionRow()
+                                .addComponents(
+                                    new Discord.MessageButton()
+                                        .setCustomId(displayTravelEmoji)
+                                        .setLabel(Translator.getString(user.lang, "world_bosses", "travel"))
+                                        .setStyle("PRIMARY")
+                                        .setEmoji(displayTravelEmoji)
+                                )
+                        );
+                    }
+
                     let reactWrapper = new MessageReactionsWrapper();
 
-                    await reactWrapper.load(message, WorldBosses.listToDiscord(data, user, true), {
+                    await reactWrapper.load(interact, options, {
                         reactionsEmojis: emojisList,
                         collectorOptions: {
                             time: 22000,
@@ -45,22 +68,24 @@ class WorldBossModule extends GModule {
                         }
                     });
 
-                    reactWrapper.collector.on('collect', async (reaction) => {
+                    reactWrapper.collector.on('collect',
+                        /**
+                         * 
+                         * @param {Discord.ButtonInteraction} reaction
+                         */
+                        async (reaction) => {
+                            if (reaction.customId === displayTravelEmoji) {
+                                interact.interaction = reaction;
+                                let travelModule = Globals.moduleHandler.modules["TravelModule"];
+                                travelModule.run(interact, "traveldirect", [data.bosses[0].idArea]);
+                            }
 
-                        if (data.bosses.length === 0) {
-                            return;
-                        }
-
-                        if (reaction.emoji.name === displayTravelEmoji) {
-                            let travelModule = Globals.moduleHandler.modules["TravelModule"];
-                            travelModule.run(message, "traveldirect", [data.bosses[0].idArea]);
-                        }
-
-                    });
+                        });
                 });
                 break;
 
             case "wbfight":
+            case "worldbossfight":
             case "wbattack":
                 msg = await this.getDisplayIfSuccess(await axios.post("/game/worldbosses/fight"), async (d1) => {
                     return await this.getDisplayIfSuccess(await axios.get("/game/worldbosses/display/lastboss"), async (d2) => {
@@ -70,7 +95,7 @@ class WorldBossModule extends GModule {
                     });
                 }, async (d1) => {
                     if (d1.error == Translator.getString(d1.lang, "world_bosses", "no_world_boss")) {
-                        this.run(message, "wbshowall", []);
+                        this.run(interact, "wbshowall", []);
                         return d1.error;
                     } else {
                         return d1.error;
@@ -79,6 +104,7 @@ class WorldBossModule extends GModule {
                 break;
 
             case "wblastinfo":
+            case "worldbosslastinfo":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/worldbosses/display/lastboss"), (data) => {
                     return WorldBosses.lastBossStats(data);
                 });
@@ -89,11 +115,11 @@ class WorldBossModule extends GModule {
                 } else {
                     args[0] = "wbdamage";
                 }
-                this.drawLeaderboard(message, args, "damage")
+                this.drawLeaderboard(interact, args, "damage")
                 break;
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 }
 

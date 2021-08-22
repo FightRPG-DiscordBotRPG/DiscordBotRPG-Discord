@@ -8,7 +8,7 @@ const {
 const Globals = require("./src/Globals");
 const manager = new ShardingManager(__dirname + '/bot.js', {
     token: conf.discordbotkey,
-    totalShards: conf.env === "dev" ? 2 : "auto",
+    //totalShards: conf.env === "dev" ? 2 : "auto",
 });
 
 async function start() {
@@ -33,15 +33,14 @@ async function start() {
  * @param {string} message
  */
 async function sendDMToSpecificUser(idUser, message) {
-    let evalDyn = `this.users.cache.get("${idUser}");`;
     try {
         /**
          * @type {Array<User>}
          **/
-        let users = await manager.broadcastEval(evalDyn);
+        let users = await manager.broadcastEval((client, context) => client.users.cache.get(context.idUser), { context: {idUser: idUser}});
         for (let i in users) {
             if (users[i]) {
-                await manager.shards.array()[i].eval(`this.users.cache.get("${idUser}").send(\`${message.replace(/`/gi, "\\`")}\`).catch(e => null)`);
+                await [...manager.shards.values()][i].eval(`this.users.cache.get("${idUser}").send(\`${message.replace(/`/gi, "\\`")}\`).catch(e => null)`);
                 return true;
             }
         }
@@ -56,17 +55,19 @@ async function sendWorldBossMessage(message) {
     let evalDyn;
 
     if (conf.env == "dev") {
-        evalDyn = `let channel = this.channels.cache.get("456119917943717888");
-    if(channel != null) {
-        channel.send(\`${message}\`).catch((e) => {null});
-    }
-    `;
+        evalDyn = (client) => {
+            let channel = client.channels.cache.get("456119917943717888");
+            if (channel != null) {
+                channel.send(message).catch((e) => { null });
+            }
+        }
     } else {
-        evalDyn = `let channel = this.channels.cache.get("520585589612085258");
-    if(channel != null) {
-        channel.send(\`${message}\`).catch((e) => {null});
-    }
-    `;
+        evalDyn = (client) => {
+            let channel = client.channels.cache.get("520585589612085258");
+            if (channel != null) {
+                channel.send(message).catch((e) => { null });
+            }
+        };
     }
 
     try {

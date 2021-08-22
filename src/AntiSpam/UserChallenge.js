@@ -1,4 +1,5 @@
-const { Message, MessageEmbed } = require("discord.js");
+const { Message, MessageEmbed, MessageActionRow, MessageButton, ButtonInteraction, Emoji } = require("discord.js");
+const InteractContainer = require("../Discord/InteractContainer");
 const Emojis = require("../Drawings/Emojis");
 const Globals = require("../Globals");
 const MessageReactionsWrapper = require("../MessageReactionsWrapper");
@@ -32,38 +33,67 @@ class UserChallenge {
     }
     /**
      * 
-     * @param {Message} message
+     * @param {InteractContainer} interact
      * @param {Array<string>} command
      */
-    async manageIncomingCommand(message, command) {
+    async manageIncomingCommand(interact, command) {
         this.commands.push(new CommandLog(command, Date.now()));
         let lang = this.user.lang;
 
         if (this.commands.length >= this.lengthToCheck && !this.mustAnswer && !this.isTimeout()) {
             this.mustAnswer = true;
-            let answers = Utils.getRandomItemsInArray(Object.values(Emojis.general), 4);
-            this.answer = Utils.getRandomItemsInArray(answers, 1)[0];
+            let answersNames = Utils.getRandomItemsInArray(Object.keys(Emojis.general), 4);
+            this.answer = Utils.getRandomItemsInArray(answersNames, 1)[0];
+
+
+
+            const options = InteractContainer.getReplyOptions(this.getEmbed(Translator.getString(lang, "antispam", "select_emoji", [Emojis.general[this.answer] + " (" + this.answer + ")"])));
+
+            const actionRow = new MessageActionRow();
+
+
+            for (let emojiName of answersNames) {
+                actionRow.addComponents(
+                    new MessageButton()
+                        .setCustomId(emojiName)
+                        .setLabel(emojiName)
+                        .setStyle(this.answer === emojiName ? "SUCCESS" : "DANGER")
+                        .setEmoji(Emojis.general[emojiName])
+                )
+            }
+
+
+            options.components.push(
+                actionRow
+            );
 
             let wrapper = new MessageReactionsWrapper();
 
-            await wrapper.load(message, this.getEmbed(Translator.getString(lang, "antispam", "select_emoji", [this.answer])), { reactionsEmojis: answers, collectorOptions: { time: 60000 }, waitForEmojis: false });
+            await wrapper.load(interact, options, { reactionsEmojis: answersNames, collectorOptions: { time: 60000 }, waitForEmojis: false });
 
             this.challengeMessageUrl = wrapper.message.url;
 
-            wrapper.collector.on("collect", (reaction, user) => {
-                switch (reaction.emoji.name) {
-                    case this.answer:
-                        this.mustAnswer = false;
-                        this.commands = [];
-                        this.updateLengthCheck();
-                        this.missedChallenges = 0;
-                        wrapper.collector.stop("end");
-                        break;
-                }
-            });
+            wrapper.collector.on("collect",
+                /**
+                 * 
+                 * @param {ButtonInteraction} reaction
+                 */
+                async (reaction) => {
+                    switch (reaction.customId) {
+                        case this.answer:
+                            this.mustAnswer = false;
+                            this.commands = [];
+                            this.updateLengthCheck();
+                            this.missedChallenges = 0;
+                            wrapper.collector.stop("end");
+                            break;
+                        default:
+                            await reaction.reply(Translator.getString(this.user.lang, "general", "no"));
+                            break;
+                    }
+                });
 
             wrapper.collector.on("end", async (collected, reason) => {
-
                 if (this.mustAnswer) {
                     this.missedChallenges++;
 
@@ -83,9 +113,9 @@ class UserChallenge {
 
             });
         } else if (this.mustAnswer && !this.isTimeout()) {
-            message.channel.send(this.getEmbed(Translator.getString(lang, "antispam", "in_progress") + ( this.challengeMessageUrl != null ? "\n" + this.challengeMessageUrl : "")));
+            interact.reply({ embeds: [this.getEmbed(Translator.getString(lang, "antispam", "in_progress") + (this.challengeMessageUrl != null ? "\n" + this.challengeMessageUrl : ""))] });
         }
-        
+
     }
 
     getEmbed(content) {

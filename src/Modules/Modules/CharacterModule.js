@@ -15,11 +15,12 @@ const Utils = require("../../Utils");
 const Rebirth = require("../../Drawings/Character/Rebirth");
 const State = require("../../Drawings/Fight/State");
 const CharacterAppearance = require("../../Drawings/Character/CharacterAppearance");
+const InteractContainer = require("../../Discord/InteractContainer");
 
 class CharacterModule extends GModule {
     constructor() {
         super();
-        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile", "resettalents", "rebirth", "stateshow", "appearance"];
+        this.commands = ["reset", "leaderboard", "info", "attributes", "up", "achievements", "talents", "talentshow", "talentup", "skillshow", "buildshow", "buildadd", "buildremove", "buildmove", "buildclear", "talentsexport", "talentsimport", "profile", "resettalents", "rebirth", "stateshow", "appearance", "talentsshow"];
         this.startLoading("Character");
         this.init();
         this.endLoading("Character");
@@ -29,16 +30,16 @@ class CharacterModule extends GModule {
 
     /**
      * 
-     * @param {Discord.Message} message
+     * @param {InteractContainer} interact
      * @param {string} command
      * @param {Array} args
      */
-    async run(message, command, args) {
+    async run(interact, command, args) {
         let msg = "";
         /**
          * @type {User}
          **/
-        let user = Globals.connectedUsers[message.author.id];
+        let user = Globals.connectedUsers[interact.author.id];
         let axios = user.getAxios();
 
         switch (command) {
@@ -54,13 +55,13 @@ class CharacterModule extends GModule {
 
                             let embedMessage = this.getResetEmbed("", data);
 
-                            this.confirmListener(message, embedMessage, async (validation) => {
+                            this.confirmListener(interact, embedMessage, async (validation) => {
                                 if (validation == true) {
                                     return this.getBasicSuccessErrorMessage(await axios.get("/game/character/reset"));
                                 } else {
                                     return Translator.getString(data.lang, "character", "reset_cancel");
                                 }
-                            });
+                            }, user.lang);
                         }
                     });
 
@@ -78,13 +79,13 @@ class CharacterModule extends GModule {
 
                             let embedMessage = this.getResetEmbed("talents", data);
 
-                            this.confirmListener(message, embedMessage, async (validation) => {
+                            this.confirmListener(interact, embedMessage, async (validation) => {
                                 if (validation == true) {
                                     return this.getBasicSuccessErrorMessage(await axios.get("/game/character/talents/reset"));
                                 } else {
                                     return Translator.getString(data.lang, "character", "reset_talents_cancel");
                                 }
-                            });
+                            }, user.lang);
                         }
                     });
 
@@ -92,7 +93,7 @@ class CharacterModule extends GModule {
                 break;
 
             case "leaderboard":
-                await this.drawLeaderboard(message, args);
+                await this.drawLeaderboard(interact, args);
                 break;
 
             case "info":
@@ -106,15 +107,15 @@ class CharacterModule extends GModule {
 
                     let emojisList = [
                         displayAttributesEmoji,
-                        displayAdvancementsEmoji,
+                        displayAdvancementsEmoji.id,
                         displayResourcesEmoji,
                         displayOtherEmoji,
-                        rebirthEmoji
+                        rebirthEmoji.id
                     ];
 
                     let reactWrapper = new MessageReactionsWrapper();
 
-                    await reactWrapper.load(message, user.infoPanel.toString(data, user), {
+                    await reactWrapper.load(interact, user.infoPanel.toString(data, user), {
                         reactionsEmojis: emojisList,
                         collectorOptions: {
                             time: 22000,
@@ -122,31 +123,34 @@ class CharacterModule extends GModule {
                     });
 
                     // For tutorial
-                    await user.tutorial.reactOnCommand("info", message, user.lang);
+                    await user.tutorial.reactOnCommand("info", interact, user.lang);
 
-                    reactWrapper.collector.on('collect', async (reaction) => {
-                        switch (reaction.emoji.name) {
-                            case displayAttributesEmoji:
-                                user.infoPanel.displayAttributes = !user.infoPanel.displayAttributes;
-                                break;
-                            case displayResourcesEmoji:
-                                user.infoPanel.displayResources = !user.infoPanel.displayResources;
-                                break;
-                            case displayOtherEmoji:
-                                user.infoPanel.displayOther = !user.infoPanel.displayOther;
-                                break;
-                        }
+                    reactWrapper.collector.on('collect',
+                        /**
+                         * 
+                         * @param {Discord.ButtonInteraction} reaction
+                         */
+                        async (reaction) => {
+                            switch (reaction.customId) {
+                                case displayAttributesEmoji:
+                                    user.infoPanel.displayAttributes = !user.infoPanel.displayAttributes;
+                                    break;
+                                case displayResourcesEmoji:
+                                    user.infoPanel.displayResources = !user.infoPanel.displayResources;
+                                    break;
+                                case displayOtherEmoji:
+                                    user.infoPanel.displayOther = !user.infoPanel.displayOther;
+                                    break;
+                                case displayAdvancementsEmoji.id:
+                                    user.infoPanel.displayAdvancement = !user.infoPanel.displayAdvancement;
+                                    break;
+                                case rebirthEmoji.id:
+                                    interact.interaction = reaction;
+                                    return this.run(interact, "rebirth", []);
+                            }
 
-                        switch (reaction.emoji.id) {
-                            case displayAdvancementsEmoji.id:
-                                user.infoPanel.displayAdvancement = !user.infoPanel.displayAdvancement;
-                                break;
-                            case rebirthEmoji.id:
-                                return this.run(message, "rebirth", []);
-                        }
-
-                        await reactWrapper.edit(user.infoPanel.toString(data, user), emojisList);
-                    });
+                            await reactWrapper.edit(user.infoPanel.toString(data, user), reaction, emojisList);
+                        });
 
                 });
                 break;
@@ -170,7 +174,7 @@ class CharacterModule extends GModule {
                 break;
             case "achievements":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/achievements/" + args[0]), async (data) => {
-                    await this.pageListener(data, message, Achievements.toString(data), async (currPage) => {
+                    await this.pageListener(data, interact, Achievements.toString(data), async (currPage) => {
                         let d = await axios.get("/game/character/achievements/" + currPage);
                         return d.data;
                     }, async (newData) => {
@@ -179,10 +183,11 @@ class CharacterModule extends GModule {
                 });
                 break;
             case "talents":
+            case "talentsshow":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents"), async (data) => {
                     return Talents.toString(data, user);
                 });
-                
+
                 break;
             case "talentsexport":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents/export"), (data) => {
@@ -197,13 +202,29 @@ class CharacterModule extends GModule {
 
                     let talentTakeEmoji = Emojis.general.raised_hand;
 
-                    let emojisList = [
-                        data.unlockable ? talentTakeEmoji : null
-                    ];
+                    let emojisList = [];
 
                     let reactWrapper = new MessageReactionsWrapper();
 
-                    await reactWrapper.load(message, Talents.showOne(data, user), {
+                    let options = InteractContainer.getReplyOptions(Talents.showOne(data, user));
+
+                    if (data.unlockable) {
+                        emojisList.push(talentTakeEmoji);
+                        options.components.push(
+                            new Discord.MessageActionRow()
+                                .addComponents(
+                                    new Discord.MessageButton()
+                                        .setCustomId(talentTakeEmoji)
+                                        .setLabel(Translator.getString(user.lang, "general", "take"))
+                                        .setStyle("PRIMARY")
+                                        .setEmoji(talentTakeEmoji)
+                                )
+                        );
+                    }
+
+
+
+                    await reactWrapper.load(interact, options, {
                         reactionsEmojis: emojisList,
                         collectorOptions: {
                             time: 22000,
@@ -212,15 +233,21 @@ class CharacterModule extends GModule {
                     });
 
                     // For tutorial
-                    await user.tutorial.reactOnCommand("talentshow", message, user.lang);
+                    await user.tutorial.reactOnCommand("talentshow", interact, user.lang);
 
-                    reactWrapper.collector.on('collect', async (reaction) => {
-                        switch (reaction.emoji.name) {
-                            case talentTakeEmoji:
-                                this.run(message, "talentup", [data.node.id]);
-                                break;
-                        }
-                    });
+                    reactWrapper.collector.on('collect',
+                        /**
+                         * 
+                         * @param {Discord.ButtonInteraction} reaction
+                         */
+                        async (reaction) => {
+                            interact.interaction = reaction;
+                            switch (reaction.customId) {
+                                case talentTakeEmoji:
+                                    this.run(interact, "talentup", [data.node.id]);
+                                    break;
+                            }
+                        });
                 });
                 break;
             case "talentup":
@@ -340,7 +367,7 @@ class CharacterModule extends GModule {
 
 
 
-                            this.confirmListener(message, confirmEmbed, async (validate) => {
+                            this.confirmListener(interact, confirmEmbed, async (validate) => {
                                 //return await this.travelPost(args, axios, type);
                                 if (validate) {
                                     return this.getBasicSuccessErrorMessage(await axios.post("/game/character/rebirth/", {
@@ -349,7 +376,7 @@ class CharacterModule extends GModule {
                                 } else {
                                     return Translator.getString(user.lang, "character", "rebirth_cancelled");
                                 }
-                            });
+                            }, user.lang);
                         } else {
                             return Utils.addToEmbedRequiredItems(confirmEmbed, requiredItems, user.lang)
                                 .addField(titleType, canRebirthData.reason);
@@ -368,8 +395,6 @@ class CharacterModule extends GModule {
                         let canRebirthCraft = data.craft.rebirthLevel < data.maxRebirthLevel && data.craft.level == data.maxLevel;
 
                         let emojisList = [
-                            canRebirthLevel ? rebirthLevelEmoji : null,
-                            canRebirthCraft ? rebirthCraftLevelEmoji : null
                         ];
 
 
@@ -378,12 +403,46 @@ class CharacterModule extends GModule {
                             ${Emojis.general.hammer} ${Translator.getString(user.lang, "character", "craft_level")} - ${Rebirth.getRebirthAvailabilityString(canRebirthCraft)}`;
 
 
-                        await reactWrapper.load(message,
-                            new Discord.MessageEmbed()
-                                .setColor([0, 255, 0])
-                                .setAuthor(Translator.getString(user.lang, "character", "rebirth_title"))
-                                .addField(Emojis.emojisProd.rebirth.string + " " + Translator.getString(user.lang, "character", "current_bonuses"), Rebirth.getRebirthBonuses(data, user, Rebirth.rebirthsBonusesTypes.all, true) + "\n")
-                                .addField(Emojis.general.scroll + " " + Translator.getString(data.lang, "character", "rebirth_do_you_want"), description)
+                        let options = InteractContainer.getReplyOptions(new Discord.MessageEmbed()
+                            .setColor([0, 255, 0])
+                            .setAuthor(Translator.getString(user.lang, "character", "rebirth_title"))
+                            .addField(Emojis.emojisProd.rebirth.string + " " + Translator.getString(user.lang, "character", "current_bonuses"), Rebirth.getRebirthBonuses(data, user, Rebirth.rebirthsBonusesTypes.all, true) + "\n")
+                            .addField(Emojis.general.scroll + " " + Translator.getString(data.lang, "character", "rebirth_do_you_want"), description));
+
+
+                        let actionRow = new Discord.MessageActionRow();
+
+
+                        if (canRebirthLevel) {
+                            emojisList.push(rebirthLevelEmoji.id);
+                            actionRow = actionRow.addComponents(
+                                new Discord.MessageButton()
+                                    .setCustomId(rebirthLevelEmoji.id)
+                                    .setLabel(Translator.getString(user.lang, "character", "rebirth_level"))
+                                    .setStyle("PRIMARY")
+                                    .setEmoji(rebirthLevelEmoji.string)
+                            )
+                        }
+
+                        if (canRebirthCraft) {
+                            emojisList.push(rebirthCraftLevelEmoji);
+                            actionRow = actionRow.addComponents(
+                                new Discord.MessageButton()
+                                    .setCustomId(rebirthCraftLevelEmoji)
+                                    .setLabel(Translator.getString(user.lang, "character", "rebirth_craft_level"))
+                                    .setStyle("PRIMARY")
+                                    .setEmoji(rebirthCraftLevelEmoji)
+                            )
+                        }
+
+                        if (actionRow.components.length > 0) {
+                            options.components.push(actionRow);
+                        }
+
+
+
+                        await reactWrapper.load(interact,
+                            options
                             , {
                                 reactionsEmojis: emojisList,
                                 collectorOptions: {
@@ -392,13 +451,19 @@ class CharacterModule extends GModule {
                                 }
                             });
 
-                        reactWrapper.collector.on('collect', async (reaction) => {
-                            if (reaction.emoji.id === rebirthLevelEmoji.id) {
-                                await this.run(message, "rebirth", ["level"]);
-                            } else if (reaction.emoji.name === rebirthCraftLevelEmoji) {
-                                await this.run(message, "rebirth", ["craft_level"]);
-                            }
-                        });
+                        reactWrapper.collector.on('collect',
+                            /**
+                             * 
+                             * @param {Discord.ButtonInteraction} reaction
+                             */
+                            async (reaction) => {
+                                interact.interaction = reaction;
+                                if (reaction.customId === rebirthLevelEmoji.id) {
+                                    await this.run(interact, "rebirth", ["level"]);
+                                } else if (reaction.customId === rebirthCraftLevelEmoji) {
+                                    await this.run(interact, "rebirth", ["craft_level"]);
+                                }
+                            });
 
 
                     });
@@ -412,17 +477,20 @@ class CharacterModule extends GModule {
                         user.pendingAppearance.selectableBodyColors = data.selectableBodyColors;
                         user.pendingAppearance.selectableEyeColors = data.selectableEyeColors;
                         user.pendingAppearance.selectableHairColors = data.selectableHairColors;
+
+                        data.currentAppearance.areaImage = "https://cdn.fight-rpg.com/images/appearances/background_creation.png";
+
                         await user.pendingAppearance.setupFromData(data.currentAppearance);
                         await user.pendingAppearance.setupFromDataEdition(data.currentAppearance);
                     }
 
-                    await user.pendingAppearance.handleEdition(message, user);
+                    await user.pendingAppearance.handleEdition(interact, user);
                 });
                 break;
 
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 
     /**

@@ -12,6 +12,7 @@ const DamageAndHealLogger = require("./Fight/DamageAndHealLogger");
 const TextDrawings = require("./TextDrawings");
 const User = require("../Users/User");
 const MessageReactionsWrapper = require("../MessageReactionsWrapper");
+const InteractContainer = require("../Discord/InteractContainer");
 
 class FightManager {
     constructor() {
@@ -35,12 +36,12 @@ class FightManager {
     /**
      * 
      * @param {any} data
-     * @param {Discord.Message} message
+     * @param {InteractContainer} interact
      * @param {User} user
      */
-    async fight(data, message, user) {
+    async fight(data, interact, user) {
         let lang = data.lang;
-        let userid = message.author.id;
+        let userid = interact.author.id;
         let leftName = data.summary.rounds[0].roundEntitiesIndex == 0 ? data.summary.rounds[0].attacker.entity.identity.name : data.summary.rounds[0].defenders[0].entity.identity.name;
         let rightName = data.summary.rounds[0].roundEntitiesIndex == 1 ? data.summary.rounds[0].attacker.entity.identity.name : data.summary.rounds[0].defenders[0].entity.identity.name;
         let theFight = {
@@ -57,7 +58,7 @@ class FightManager {
 
         if (theFight.summary.type == "pve") {
             if (data.beingAttacked == true) {
-                message.channel.send(Translator.getString(lang, "fight_pve", "ganked_by_monster")).catch((e) => console.log(e));
+                interact.channel.send(Translator.getString(lang, "fight_pve", "ganked_by_monster")).catch((e) => console.log(e));
                 theFight.text[2] = Emojis.emojisProd.user.string + " " + Translator.getString(lang, "fight_pve", "user_get_attacked", [leftName, rightName]) + "\n";
             } else {
                 theFight.text[2] = Emojis.emojisProd.user.string + " " + Translator.getString(lang, "fight_pve", "user_attacked", [leftName, rightName]) + "\n";
@@ -76,9 +77,24 @@ class FightManager {
             displaySkipFight
         ];
 
+
+        const options = InteractContainer.getReplyOptions(this.embedFight(theFight, null, lang, user, true));
+
+        options.components.push(
+            new Discord.MessageActionRow()
+                .addComponents(
+                    new Discord.MessageButton()
+                        .setCustomId(displaySkipFight)
+                        .setLabel(Translator.getString(user.lang, "general", "skip"))
+                        .setStyle("PRIMARY")
+                        .setEmoji(displaySkipFight)
+                )
+        );
+
+
         let reactWrapper = new MessageReactionsWrapper();
 
-        await reactWrapper.load(message, this.embedFight(theFight, null, lang, user, true), {
+        await reactWrapper.load(interact, options, {
             reactionsEmojis: emojisList,
             collectorOptions: {
                 time: data.summary.rounds.length * 4000,
@@ -86,20 +102,24 @@ class FightManager {
             }
         });
 
-        reactWrapper.collector.on('collect', async (reaction) => {
-
-            if (reaction.emoji.name === displaySkipFight) {
-                theFight.skip = true;
-            }
-
-        });
+        reactWrapper.collector.on('collect',
+            /**
+             * 
+             * @param {Discord.ButtonInteraction} reaction
+             */
+            async (reaction) => {
+                if (reaction.customId === displaySkipFight) {
+                    theFight.skip = true;
+                    //reaction.reply(Translator.getString(user.lang, "fight", "skipping"));
+                }
+            });
 
         await this.discordFight(reactWrapper.message, userid, theFight, lang, user);
     }
 
     /**
      * 
-     * @param {any} message
+     * @param {Discord.Message} message
      * @param {any} userid
      * @param {any} fight
      * @param {any} lang
@@ -127,7 +147,7 @@ class FightManager {
             this.swapArrayIndexes(textDecoration + " " + this.getSummaryText(summary.rounds[ind]), fight);
 
 
-            message.edit(this.embedFight(fight, null, lang, user, true))
+            message.edit({ embeds: [this.embedFight(fight, null, lang, user, true)] })
                 .then(() => {
                     fight.summaryIndex++;
                     let waitTime = 4000;
@@ -266,7 +286,7 @@ class FightManager {
                 color = [255, 0, 0];
             }
 
-            await message.edit(this.embedFight(fight, color, lang, user, false));
+            await message.edit({ embeds: [this.embedFight(fight, color, lang, user, false)] });
 
             try {
                 if (summary.type == "pve") {

@@ -3,19 +3,26 @@ const conn = require("../../../conf/mysql");
 const Globals = require("../../Globals");
 const Translator = require("../../Translator/Translator");
 const Craft = require("../../Drawings/Craft");
+const InteractContainer = require("../../Discord/InteractContainer");
 
 class CraftingModule extends GModule {
     constructor() {
         super();
-        this.commands = ["craftlist", "craftshow", "craft", "collect", "resources"];
+        this.commands = ["craftlist", "craftshow", "craft", "collect", "resources", "craftmake"];
         this.startLoading("Crafting");
         this.init();
         this.endLoading("Crafting");
     }
 
-    async run(message, command, args) {
+    /**
+     *
+     * @param {InteractContainer} interact
+     * @param {string} command
+     * @param {Array} args
+     */
+    async run(interact, command, args) {
         let msg = "";
-        let axios = Globals.connectedUsers[message.author.id].getAxios();
+        let axios = Globals.connectedUsers[interact.author.id].getAxios();
 
         switch (command) {
             case "craftlist": {
@@ -23,7 +30,7 @@ class CraftingModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/crafting/craftlist/" + searchFilters.page, {
                     params: searchFilters.params
                 }), async (data) => {
-                    await this.pageListener(data, message, Craft.getCraftList(data), async (currPage) => {
+                    await this.pageListener(data, interact, Craft.getCraftList(data), async (currPage) => {
                         let d = await axios.get("/game/crafting/craftlist/" + currPage, {
                             params: searchFilters.params
                         });
@@ -41,6 +48,7 @@ class CraftingModule extends GModule {
                 break;
 
             case "craft":
+            case "craftmake":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/crafting/craftshow/" + args[0]), async (data) => {
                     let craftMissing = Craft.craftToMissing(data);
                     if (craftMissing != null) {
@@ -65,7 +73,7 @@ class CraftingModule extends GModule {
                 msg = this.getBasicSuccessErrorMessage(await axios.get("/game/crafting/resources"));
                 break;
         }
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 }
 

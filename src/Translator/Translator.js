@@ -96,7 +96,7 @@ class Translator {
     /**
      * 
      * @param {string} lang 
-     * @returns {string} List of available language Localized
+     * @returns {Object<string, string>} List of available language Localized
      */
     static getAvailableLanguages(lang) {
         let data = {};

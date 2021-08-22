@@ -18,7 +18,7 @@ class LeaderboardWBDamage extends LeaderboardWB {
             });
         }
         else {
-            return Translator.getString(lang, "leaderboards", "wb_have_not_participate");
+            return Translator.getString(this.lang, "leaderboards", "wb_have_not_participate");
         }
     }
 

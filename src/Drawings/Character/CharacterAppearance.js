@@ -13,6 +13,8 @@ const conf = require("../../../conf/conf");
 const FormData = require('form-data');
 const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
 const Globals = require("../../Globals");
+const InteractContainer = require("../../Discord/InteractContainer");
+const MenusAndButtons = require("../MenusAndButtons");
 
 class CharacterAppearance {
     /**
@@ -102,6 +104,7 @@ class CharacterAppearance {
     };
 
     static emojisForTypes = Object.keys(CharacterAppearance.emojisTypesWithValues);
+    static emojisForTypesByValues = Object.values(CharacterAppearance.emojisTypesWithValues);
 
     constructor() {
         this.reset();
@@ -146,6 +149,8 @@ class CharacterAppearance {
          >}
          **/
         this.typesMasks = {};
+
+        this.allLinks = {};
     }
 
     reset() {
@@ -190,7 +195,8 @@ class CharacterAppearance {
 
         this.weapon = null;
         this.typesMasks = {};
-        this.allLinks = ""
+
+        this.allLinks = {};
     }
 
     async debugLoadAssets() {
@@ -501,6 +507,7 @@ class CharacterAppearance {
      * @param {Object<string, {link: string}>} dict
      */
     async mapProperties(dict) {
+        //console.log(dict);
 
         if (dict == null) {
             return;
@@ -519,10 +526,12 @@ class CharacterAppearance {
                     let prop = props[pIndex];
 
                     let link = null;
+                    let maskColors = null;
                     if (typeof dict[i] === "string") {
                         link = dict[i];
                     } else if (dict[i] !== null) {
                         link = dict[i].link;
+                        maskColors = dict[i].maskColors;
                     }
 
                     loadingImages.push((async () => {
@@ -530,6 +539,7 @@ class CharacterAppearance {
                             return;
                         }
                         //console.log(prop + " & " + link);
+                        this.allLinks[prop] = { link: link, colors: maskColors };
                         refAsync[prop] = await this.getImage(link);
                     })());
                 } else {
@@ -575,7 +585,6 @@ class CharacterAppearance {
             return null;
         }
 
-        this.allLinks += url;
         return CharacterAppearance.getImage(url);
     }
 
@@ -636,7 +645,7 @@ class CharacterAppearance {
         }
 
         return hash(
-            this.allLinks +
+            hash(this.allLinks) +
             this.hairColor +
             this.bodyColor +
             this.eyeColor +
@@ -663,9 +672,10 @@ class CharacterAppearance {
         // Test if cdn cache is configured
         // If you use this and you try to edit and embed, the image is not updated /!\
         if (!conf.cdnAppearanceCache || !hashFile) {
-            return embed
-                .attachFiles(new Discord.MessageAttachment((await this.getCharacter()).createPNGStream(), "character.png"))
-                .setImage("attachment://character.png");
+            return {
+                embeds: [embed.setImage("attachment://character.png")],
+                files: [new Discord.MessageAttachment((await this.getCharacter()).createPNGStream(), "character.png")]
+            };
         }
 
         // Test cache cdn and upload if needed
@@ -810,20 +820,32 @@ class CharacterAppearance {
 
     /**
      * 
-     * @param {Discord.Message} message
+     * @param {InteractContainer} interact
      * @param {User} user
      */
-    async handleEdition(message, user) {
+    async handleEdition(interact, user) {
 
         if (this.editionMessageWrapper?.collector) {
             this.editionMessageWrapper?.collector.stop();
-            await this.editionMessageWrapper.edit(Translator.getString(user.lang, "appearance", "modifying_elsewhere"), null, true);
+            await this.editionMessageWrapper.edit(Translator.getString(user.lang, "appearance", "modifying_elsewhere"), interact, null, true);
         }
 
         this.editionMessageWrapper = new MessageReactionsWrapper();
 
-        await this.editionMessageWrapper.load(message, await user.pendingAppearance.getSelectEmbed(user), {
-            reactionsEmojis: [Emojis.general.clipboard],
+        const options = InteractContainer.getReplyOptions(await user.pendingAppearance.getSelectEmbed(user));
+        options.components.push(
+            new Discord.MessageActionRow()
+                .addComponents(
+                    new Discord.MessageButton()
+                        .setCustomId("clipboard")
+                        .setLabel(Translator.getString(user.lang, "general", "edit"))
+                        .setStyle("PRIMARY")
+                        .setEmoji(Emojis.general.clipboard)
+                )
+        );
+
+        await this.editionMessageWrapper.load(interact, options, {
+            reactionsEmojis: ["clipboard"],
             collectorOptions: {
                 time: 600000,
             }
@@ -832,62 +854,126 @@ class CharacterAppearance {
         // For tutorial
         //await user.tutorial.reactOnCommand("info", message, user.lang);
         this.editionMessageWrapper.resetCollectListener();
-        this.editionMessageWrapper.collector.on('collect', async (reaction) => {
-            if (reaction.emoji.name == Emojis.general.clipboard) {
-                await this.handleEditionSelectType(user);
-            }
-        });
+        this.editionMessageWrapper.collector.on('collect',
+            /**
+             * 
+             * @param {Discord.ButtonInteraction} reaction
+             */
+            async (reaction) => {
+                if (reaction.customId == "clipboard") {
+                    await this.handleEditionSelectType(user, reaction);
+                }
+            });
     }
 
     /**
      * 
      * @param {User} user
+     * @param {Discord.Interaction} interaction
      */
-    async handleEditionSelectType(user) {
+    async handleEditionSelectType(user, interaction) {
+
+        const options = InteractContainer.getReplyOptions(await this.getEditGeneralEmbed(user));
+        options.components.push(
+            new Discord.MessageActionRow()
+                .addComponents(
+                    new Discord.MessageSelectMenu()
+                        .setCustomId("select")
+                        .setPlaceholder(Translator.getString(user.lang, "appearance", "choose_modify"))
+                        .setMinValues(1)
+                        .setMaxValues(1)
+                        .addOptions([1, 3, 4, 5, 6, 7, 10, 0]
+                            .map(e => {
+                                return {
+                                    label: this.getTypeDisplay(e, user.lang),
+                                    value: e.toString()
+                                }
+                            })
+                        )
+                )
+        );
+
+        options.components.push(new Discord.MessageActionRow().addComponents(MenusAndButtons.getValidateButton(user.lang)));
 
         this.editionMessageWrapper.resetCollectListener();
-        await this.editionMessageWrapper.edit(await this.getEditGeneralEmbed(user), [...CharacterAppearance.emojisForTypes, Emojis.general.g_vmark]);
+        this.editionMessageWrapper.collector.on('collect',
+            /**
+             * 
+             * @param {Discord.SelectMenuInteraction} reaction
+             */
+            async (reaction) => {
+                if (reaction?.values && CharacterAppearance.emojisForTypesByValues.includes(Number.parseInt(reaction?.values[0]))) {
+                    this.editionSelectedType = Number.parseInt(reaction.values[0]);
 
-        this.editionMessageWrapper.collector.on('collect', async (reaction) => {
-            if (CharacterAppearance.emojisForTypes.includes(reaction.emoji.name)) {
-                this.editionSelectedType = CharacterAppearance.emojisTypesWithValues[reaction.emoji.name];
+                    const isBodyType = this.editionSelectedType > 0;
 
-                const isBodyType = this.editionSelectedType > 0;
+                    if (isBodyType) {
+                        this.editionPossibleValues = Object.values(CharacterAppearance.appearancesPerTypes[this.editionSelectedType]).filter(i => i.idBodyType === null || i.idBodyType == this.bodyType);
+                        this.editionSelectedIndex = this.editionPossibleValues.findIndex(item => item.id == this.editionSelectedPerTypes[item.appearanceType]);
+                    } else {
+                        this.editionPossibleValues = [1, 2];
+                        this.editionSelectedIndex = this.editionPossibleValues.findIndex(item => item == this.bodyType);
+                    }
 
-                if (isBodyType) {
-                    this.editionPossibleValues = Object.values(CharacterAppearance.appearancesPerTypes[this.editionSelectedType]).filter(i => i.idBodyType === null || i.idBodyType == this.bodyType);
-                    this.editionSelectedIndex = this.editionPossibleValues.findIndex(item => item.id == this.editionSelectedPerTypes[item.appearanceType]);
-                } else {
-                    this.editionPossibleValues = [1, 2];
-                    this.editionSelectedIndex = this.editionPossibleValues.findIndex(item => item == this.bodyType);
+                    await this.handleEditionSelectOne(user, reaction);
+                } else if (reaction.customId === "confirm") {
+                    const data = (await user.axios.post("/game/character/appearance", {
+                        bodyColor: this.bodyColor,
+                        hairColor: this.hairColor,
+                        eyeColor: this.eyeColor,
+                        bodyType: this.bodyType,
+                        shouldDisplayHelmet: this.shouldDisplayHelmet,
+                        selectedAppearances: Object.values(this.editionSelectedPerTypes).join(",")
+                    })).data;
+
+                    if (data.error) {
+                        await this.editionMessageWrapper.message.channel.send(data.error);
+                    } else {
+                        await this.editionMessageWrapper.deleteAndSend(data.success, reaction);
+                    }
+
                 }
+            });
 
-                await this.handleEditionSelectOne(user);
-            } else if (reaction.emoji.name === Emojis.general.g_vmark) {
-                const data = (await user.axios.post("/game/character/appearance", {
-                    bodyColor: this.bodyColor,
-                    hairColor: this.hairColor,
-                    eyeColor: this.eyeColor,
-                    bodyType: this.bodyType,
-                    shouldDisplayHelmet: this.shouldDisplayHelmet,
-                    selectedAppearances: Object.values(this.editionSelectedPerTypes).join(",")
-                })).data;
+        // Mus edit after setting the listener
+        await this.editionMessageWrapper.edit(options, interaction, ["select", "confirm"]);
 
-                if (data.error) {
-                    await this.editionMessageWrapper.message.channel.send(data.error);
-                } else {
-                    await this.editionMessageWrapper.deleteAndSend(data.success);
-                }
 
-            }
-        });
 
     }
 
-    async handleEditionSelectOne(user) {
+    /**
+     * 
+     * @param {string[]} buttonsToAdd
+     * @param {User} user
+     */
+    async handleEditionSelectOneGetMessage(buttonsToAdd, user) {
+        const options = InteractContainer.getReplyOptions(await this.getEditSelectOneEmbed(user));
+        const row = new Discord.MessageActionRow();
+
+        for (let item of buttonsToAdd) {
+            row.addComponents(new Discord.MessageButton()
+                .setCustomId(item)
+                .setLabel(Translator.getString(user.lang, "appearance", item))
+                .setStyle("PRIMARY")
+                .setEmoji(Emojis.appearanceButtons[item]));
+        }
+
+        options.components.push(row);
+
+        return options;
+    }
+
+    /**
+     * 
+     * @param {User} user
+     * @param {Discord.Interaction} interaction
+     */
+    async handleEditionSelectOne(user, interaction) {
 
 
-        let emojisPossible = [Emojis.general.left_arrow, Emojis.general.right_arrow];
+        let emojisPossible = ["left", "right"];
+
         let colorsArrayRef = null;
         let selectedColor = null;
         let modifyFunc = null;
@@ -897,7 +983,7 @@ class CharacterAppearance {
             case 3:
                 colorsArrayRef = this.selectableEyeColors;
                 selectedColor = this.eyeColor;
-                emojisPossible.push(Emojis.general.rainbow);
+                emojisPossible.push("color");
                 modifyFunc = (col) => this.eyeColor = col;
                 break;
             case 4:
@@ -905,126 +991,129 @@ class CharacterAppearance {
             case 7:
                 colorsArrayRef = this.selectableHairColors;
                 selectedColor = this.hairColor;
-                emojisPossible.push(Emojis.general.rainbow);
-                emojisPossible.push(Emojis.general.helmet);
+                emojisPossible.push("color");
+                emojisPossible.push("helmet");
                 modifyFunc = (col) => this.hairColor = col;
                 break;
             case 0:
                 colorsArrayRef = this.selectableBodyColors;
                 selectedColor = this.bodyColor;
-                emojisPossible.push(Emojis.general.rainbow);
+                emojisPossible.push("color");
                 modifyFunc = (col) => this.bodyColor = col;
                 break;
         }
 
         // Add at the end the validate
-        emojisPossible.push(Emojis.general.g_vmark);
-
-
-        await this.editionMessageWrapper.edit(await this.getEditSelectOneEmbed(user), emojisPossible);
+        emojisPossible.push("confirm");        
 
         const canBeNull = this.isSelectedEditionTypeCanBeNull();
 
         this.editionMessageWrapper.resetCollectListener();
-        this.editionMessageWrapper.collector.on('collect', async (reaction) => {
-            const oldIndex = this.editionSelectedIndex;
-            switch (reaction.emoji.name) {
-                case Emojis.general.left_arrow:
-                    this.editionSelectedIndex = this.editionSelectedIndex === null ? this.editionPossibleValues.length - 1 : this.editionSelectedIndex - 1;
-                    break;
-                case Emojis.general.right_arrow:
-                    this.editionSelectedIndex = this.editionSelectedIndex === null ? 0 : this.editionSelectedIndex + 1;
-                    break;
-                case Emojis.general.g_vmark:
-                    await this.handleEditionSelectType(user);
-                    return;
-                case Emojis.general.helmet:
-                    {
-                        this.shouldDisplayHelmet = !this.shouldDisplayHelmet;
-                    }
-                    break;
-                case Emojis.general.rainbow:
-                    {
-                        const index = colorsArrayRef.indexOf(selectedColor);
-                        // Must update selected color since the collect is based on it's value
-                        selectedColor = colorsArrayRef[index >= colorsArrayRef.length - 1 ? 0 : index + 1]
-                        modifyFunc(selectedColor);
-                    }
-                    break;
-            }
-
-
-            if (this.editionSelectedIndex < 0) {
-                this.editionSelectedIndex = canBeNull ? null : this.editionPossibleValues.length - 1;
-            } else if (this.editionSelectedIndex >= this.editionPossibleValues.length) {
-                this.editionSelectedIndex = canBeNull ? null : 0;
-            }
-
-            if (oldIndex !== this.editionSelectedIndex) {
-                // Redraw
-                const itemSelected = this.editionPossibleValues[this.editionSelectedIndex];
-
-                // Body
-                if (this.editionSelectedType === 0) {
-                    this.bodyType = itemSelected;
-
-                    let appearanceToReload = {};
-
-                    for (let i of Object.values(this.editionSelectedPerTypes)) {
-                        const appearance = CharacterAppearance.possibleAppearances[i];
-                        if (appearance.idBodyType !== null && appearance.idBodyType !== this.bodyType) {
-                            // TODO: Fix when can't be null
-                            appearanceToReload[Globals.appearancesTypesToText[appearance.appearanceType]] = null;
+        this.editionMessageWrapper.collector.on('collect',
+            /**
+             * 
+             * @param {Discord.ButtonInteraction} reaction
+             */
+            async (reaction) => {
+                const oldIndex = this.editionSelectedIndex;
+                switch (reaction.customId) {
+                    case "left":
+                        this.editionSelectedIndex = this.editionSelectedIndex === null ? this.editionPossibleValues.length - 1 : this.editionSelectedIndex - 1;
+                        break;
+                    case "right":
+                        this.editionSelectedIndex = this.editionSelectedIndex === null ? 0 : this.editionSelectedIndex + 1;
+                        break;
+                    case "confirm":
+                        await this.handleEditionSelectType(user, reaction);
+                        return;
+                    case "helmet":
+                        {
+                            this.shouldDisplayHelmet = !this.shouldDisplayHelmet;
                         }
-                    }
-
-                    await this.loadBaseArmor();
-                    await this.loadBasePants();
-                    await this.mapProperties(appearanceToReload);
-                    await this.mapProperties(CharacterAppearance.bodyAppearances[this.bodyType]);
-                } else {
-
-                    // Clear value before
-                    if (this.editionPossibleValues[oldIndex]) {
-                        let appearanceToReload = {
-                            [Globals.appearancesTypesToText[this.editionPossibleValues[oldIndex].appearanceType]]: null,
-                        };
+                        break;
+                    case "color":
+                        {
+                            const index = colorsArrayRef.indexOf(selectedColor);
+                            // Must update selected color since the collect is based on it's value
+                            selectedColor = colorsArrayRef[index >= colorsArrayRef.length - 1 ? 0 : index + 1]
+                            modifyFunc(selectedColor);
+                        }
+                        break;
+                }
 
 
-                        for (let item of this.editionPossibleValues[oldIndex].linkedTo) {
-                            const appearance = CharacterAppearance.possibleAppearances[item];
-                            appearanceToReload[Globals.appearancesTypesToText[appearance.appearanceType]] = null;
+                if (this.editionSelectedIndex < 0) {
+                    this.editionSelectedIndex = canBeNull ? null : this.editionPossibleValues.length - 1;
+                } else if (this.editionSelectedIndex >= this.editionPossibleValues.length) {
+                    this.editionSelectedIndex = canBeNull ? null : 0;
+                }
+
+                if (oldIndex !== this.editionSelectedIndex) {
+                    // Redraw
+                    const itemSelected = this.editionPossibleValues[this.editionSelectedIndex];
+
+                    // Body
+                    if (this.editionSelectedType === 0) {
+                        this.bodyType = itemSelected;
+
+                        let appearanceToReload = {};
+
+                        for (let i of Object.values(this.editionSelectedPerTypes)) {
+                            const appearance = CharacterAppearance.possibleAppearances[i];
+                            if (appearance.idBodyType !== null && appearance.idBodyType !== this.bodyType) {
+                                // TODO: Fix when can't be null
+                                appearanceToReload[Globals.appearancesTypesToText[appearance.appearanceType]] = null;
+                            }
                         }
 
+                        await this.loadBaseArmor();
+                        await this.loadBasePants();
                         await this.mapProperties(appearanceToReload);
-                    }
+                        await this.mapProperties(CharacterAppearance.bodyAppearances[this.bodyType]);
+                    } else {
+                        // Clear value before
+                        if (this.editionPossibleValues[oldIndex]) {
+                            let appearanceToReload = {
+                                [Globals.appearancesTypesToText[this.editionPossibleValues[oldIndex].appearanceType]]: null,
+                            };
 
 
-                    if (itemSelected) {
-                        //this.editionSelectedPerTypes
-                        this.editionSelectedPerTypes[this.editionSelectedType] = itemSelected.id;
+                            for (let item of this.editionPossibleValues[oldIndex].linkedTo) {
+                                const appearance = CharacterAppearance.possibleAppearances[item];
+                                appearanceToReload[Globals.appearancesTypesToText[appearance.appearanceType]] = null;
+                            }
 
-                        let appearanceToReload = {
-                            [Globals.appearancesTypesToText[itemSelected.appearanceType]]: itemSelected
-                        };
-
-                        for (let item of itemSelected?.linkedTo) {
-                            const appearance = CharacterAppearance.possibleAppearances[item];
-                            appearanceToReload[Globals.appearancesTypesToText[appearance.appearanceType]] = appearance;
+                            await this.mapProperties(appearanceToReload);
                         }
 
-                        await this.mapProperties(appearanceToReload);
+
+                        if (itemSelected) {
+                            //this.editionSelectedPerTypes
+                            this.editionSelectedPerTypes[this.editionSelectedType] = itemSelected.id;
+
+                            let appearanceToReload = {
+                                [Globals.appearancesTypesToText[itemSelected.appearanceType]]: itemSelected
+                            };
+
+                            for (let item of itemSelected?.linkedTo) {
+                                const appearance = CharacterAppearance.possibleAppearances[item];
+                                appearanceToReload[Globals.appearancesTypesToText[appearance.appearanceType]] = appearance;
+                            }
+
+                            await this.mapProperties(appearanceToReload);
+                        }
+
+
+
                     }
-
-
 
                 }
 
-            }
+                await this.editionMessageWrapper.edit(await this.handleEditionSelectOneGetMessage(emojisPossible, user), reaction, emojisPossible, false);
 
-            await this.editionMessageWrapper.edit(await this.getEditSelectOneEmbed(user), emojisPossible, false);
+            });
 
-        });
+        await this.editionMessageWrapper.edit(await this.handleEditionSelectOneGetMessage(emojisPossible, user), interaction, emojisPossible);
 
     }
 
@@ -1064,7 +1153,7 @@ class CharacterAppearance {
          }} item
      */
     static itemAppearanceToHash(item) {
-        const colors = Array.isArray(item.maskColors) ? item.maskColors.map(e => e.source + e.target).join(",") :"none";
+        const colors = Array.isArray(item.maskColors) ? item.maskColors.map(e => e.source + e.target).join(",") : "none";
         return hash(item.id + colors);
     }
 

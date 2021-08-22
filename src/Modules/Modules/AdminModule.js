@@ -6,11 +6,13 @@ const Discord = require("discord.js");
 const Utils = require("../../Utils");
 const Emojis = require("../../Drawings/Emojis");
 const GenericMultipleEmbedList = require("../../Drawings/GenericMultipleEmbedList");
+const InteractContainer = require("../../Discord/InteractContainer");
+const conf = require("../../../conf/conf");
 
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info", "eval", "show_all_emojis"];
+        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info", "eval", "show_all_emojis", "updateslashcommands", "testslashcommands", "clearslashcommands"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -18,15 +20,15 @@ class AdminModule extends GModule {
 
     /**
      * 
-     * @param {Discord.Message} message
+     * @param {InteractContainer} interact
      * @param {any} command
      * @param {any} args
      */
-    async run(message, command, args) {
-        let isAdmin = Globals.admins.indexOf(message.author.id) > -1;
+    async run(interact, command, args) {
+        let isAdmin = Globals.admins.indexOf(interact.author.id) > -1;
         let msg = "";
-        let authorIdentifier = message.author.id;
-        let axios = Globals.connectedUsers[message.author.id].getAxios();
+        let authorIdentifier = interact.author.id;
+        let axios = Globals.connectedUsers[interact.author.id].getAxios();
         let data;
         let evalDyn;
         if (!isAdmin) return;
@@ -34,9 +36,9 @@ class AdminModule extends GModule {
         switch (command) {
             case "updatepresence":
                 try {
-                    await message.client.user.setPresence({
+                    await interact.client.user.setPresence({
                         activity: {
-                            name: "On " + await Utils.getTotalNumberOfGuilds(message.client.shard) + " servers!"
+                            name: "On " + await Utils.getTotalNumberOfGuilds(interact.client.shard) + " servers!"
                         }
                     });
                     msg = "Présence mise à jour.";
@@ -44,6 +46,57 @@ class AdminModule extends GModule {
                     msg = e;
                 }
                 break;
+
+            case "updateslashcommands": {
+                await interact.client.application?.fetch();
+                //console.log(Globals.commands);
+                //console.log(Globals.commands.length);
+                const cmds = await interact.client.application?.commands.set(Globals.commands, conf.env === "dev" ? interact.channel.guildId : null);
+                msg = "Added : " + cmds.size + " commands.";
+            } break;
+            case "clearslashcommands": {
+                await interact.client.application?.fetch();
+                await interact.client.application?.commands.set([], conf.env === "dev" ? interact.channel.guildId : null);
+                msg = "Cleared : all commands.";
+            } break;
+            case "testslashcommands": {
+                msg = this.testCommands(Globals.commands);
+                if (msg.length === 0) {
+                    msg = "Test Languages: OK";
+
+                    let testCommands = [];
+                    for (let command of Globals.commands) {
+                        const commandNames = this.getCommandNames(command);
+                        for (let commandName of commandNames) {
+                            let isValid = false;
+                            for (let module of Object.values(this.allModulesReference)) {
+                                if (module.commands.includes(commandName)) {
+                                    isValid = true;
+                                    break;
+                                }
+                            }
+
+                            if (!isValid) {
+                                testCommands.push(commandName);
+                            }
+                        }
+
+                    }
+
+                    if (testCommands.length == 0) {
+                        msg += "\nTest Modules and Commands: OK";
+                    } else {
+                        msg += "\nTest Modules and Command: BAD\n" + testCommands.join(",");
+                    }
+                    
+
+                } else {
+                    msg = "Test Languages: BAD\n" + msg;
+                }
+
+
+               
+            } break;
 
             case "giveme":
                 data = await axios.post("/game/admin/give/item/me", {
@@ -210,7 +263,7 @@ class AdminModule extends GModule {
                 genericList.load({ collection: emojis.slice(perPage * (page - 1), perPage * page), listType: 0, pageRelated: { page: page, maxPage: maxPage } }, "en", (i, str) => str);
 
 
-                await this.pageListener({page: page, maxPage: maxPage}, message, genericList.getEmbed(new Discord.MessageEmbed().setAuthor("Emojis").setTitle("All Bot Emojis")), async (currPage) => {
+                await this.pageListener({ page: page, maxPage: maxPage }, interact, genericList.getEmbed(new Discord.MessageEmbed().setAuthor("Emojis").setTitle("All Bot Emojis")), async (currPage) => {
                     genericList.load({ collection: emojis.slice(perPage * (currPage - 1), perPage * currPage), listType: 0, pageRelated: { page: currPage, maxPage: maxPage } }, "en", (i, str) => str);
                     return { page: currPage, maxPage: maxPage, text: genericList.getEmbed(new Discord.MessageEmbed().setAuthor("Emojis").setTitle("All Bot Emojis")) }
                 }, async (newData) => {
@@ -222,17 +275,18 @@ class AdminModule extends GModule {
             case "warn":
                 args[0] = decodeURIComponent(args[0]);
                 for (let idUser of args[0].split(",")) {
-                    evalDyn = `let user = this.users.cache.get("${idUser}");
-                    if(user != null) {
-                        user.send("Due to using macros, you got warned. Your FightRPG account got it's money set to zero. This is the last warning you'll get. Next punishment will result in a full reset instead.").catch((e) => {null});
+                    evalDyn = (client) => {
+                        let user = client.users.cache.get(idUser);
+                        if (user != null) {
+                            user.send("Due to using macros, you got warned. Your FightRPG account got it's money set to zero. This is the last warning you'll get. Next punishment will result in a full reset instead.").catch((e) => { null });
+                        }
                     }
-                    `;
-                    message.client.shard.broadcastEval(evalDyn);
+                    interact.client.shard.broadcastEval(evalDyn);
                 }
                 msg = "Done";
                 break;
             case "eval":
-                if (message.author.id !== Globals.ownerID) break;
+                if (interact.author.id !== Globals.ownerID) break;
                 try {
                     const code = args.join(" ");
                     let evaled = eval(`(async () => {${decodeURIComponent(code)}})()`);
@@ -248,7 +302,7 @@ class AdminModule extends GModule {
                 msg = msg.length > 2000 ? msg.substring(0, 2000) : msg;
                 break;
             case "update_commands_channel": {
-                let actualMessages = await message.channel.messages.fetch({
+                let actualMessages = await interact.channel.messages.fetch({
                     limit: 20
                 });
 
@@ -260,19 +314,54 @@ class AdminModule extends GModule {
                 data = Utils.getHelpPanel("en", 1);
                 let maxPage = data.maxPage;
                 if (data.error == null) {
-                    await message.channel.send(this.cmdToString(data)).catch(e => null);
+                    await interact.channel.send(this.cmdToString(data)).catch(e => null);
                 }
                 for (let i = 2; i <= maxPage; i++) {
                     data = Utils.getHelpPanel("en", i);
                     if (data.error == null) {
-                        await message.channel.send(this.cmdToString(data)).catch(e => null);
+                        await interact.channel.send(this.cmdToString(data)).catch(e => null);
                     }
                 }
                 break;
             }
         }
 
-        this.sendMessage(message, msg);
+        this.sendMessage(interact, msg);
+    }
+
+    /**
+     * 
+     * @param {{name:string, description:string, options:options[]}[]} options
+     */
+    testCommands(options) {
+        let text = "";
+        for (let item of options) {
+            if (item.description.includes("en |")) {
+                text += item.name + " => " + item.description + "\n";
+            }
+            if (item.options) {
+                text += this.testCommands(item.options);
+            }
+        }
+
+        return text;
+    }
+
+    getCommandNames(command) {
+        let commandsNames = [];
+        if (command.options) {
+            for (let item of command.options) {
+                if (item.type == "SUB_COMMAND") {
+                    for (let commandName of this.getCommandNames(item)) {
+                        commandsNames.push(command.name + commandName);
+                    }
+                }
+            }
+        } else {
+            commandsNames.push(command.name);
+        }
+
+        return commandsNames;
     }
 }
 

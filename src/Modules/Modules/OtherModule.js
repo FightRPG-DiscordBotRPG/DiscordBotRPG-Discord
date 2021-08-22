@@ -4,6 +4,8 @@ const Translator = require("../../Translator/Translator");
 const Emojis = require("../../Drawings/Emojis");
 const MessageReactionsWrapper = require("../../MessageReactionsWrapper");
 const Utils = require("../../Utils");
+const InteractContainer = require("../../Discord/InteractContainer");
+const Discord = require("discord.js");
 
 
 class OtherModule extends GModule {
@@ -15,11 +17,17 @@ class OtherModule extends GModule {
         this.endLoading("Other");
     }
 
-    async run(message, command, args, prefix) {
+    /**
+     *
+     * @param {InteractContainer} interact
+     * @param {string} command
+     * @param {Array} args
+     */
+    async run(interact, command, args, prefix) {
         let msg = "";
-        let authorIdentifier = message.author.id;
-        let axios = Globals.connectedUsers[message.author.id].getAxios();
-        let user = Globals.connectedUsers[message.author.id];
+        let authorIdentifier = interact.author.id;
+        let axios = Globals.connectedUsers[interact.author.id].getAxios();
+        let user = Globals.connectedUsers[interact.author.id];
 
 
         switch (command) {
@@ -45,14 +53,14 @@ class OtherModule extends GModule {
                 break;
             case "help":
                 msg = await this.getDisplayIfSuccess(Utils.getHelpPanel(user.lang, args[0]), (data) => {
-                    this.pageListener(data, message, this.cmdToString(data, prefix), async (currPage) => {
+                    this.pageListener(data, interact, this.cmdToString(data, prefix), async (currPage) => {
                         return Utils.getHelpPanel(user.lang, currPage);
                     }, async (newData) => {
-                            return this.cmdToString(newData, prefix);
+                        return this.cmdToString(newData, prefix);
                     });
                 });
                 break;
-            case "settings": 
+            case "settings":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/other/settings"), async (data) => {
 
                     let one = Emojis.general.one;
@@ -60,6 +68,7 @@ class OtherModule extends GModule {
                     let three = Emojis.general.three;
                     let four = Emojis.general.four;
                     //let five = Emojis.general.five;
+                    const list = [one, two, three, four];
 
                     let tempMsgContent = "**" + Translator.getString(data.lang, "settings_menu", "title") + "**\n\n" +
                         one + " : " + "`"
@@ -72,49 +81,67 @@ class OtherModule extends GModule {
                         four + " : " + "`" + Translator.getString(data.lang, "world_bosses", "settings_menu_mute", [(data.isWorldBossesMuted ? Translator.getString(data.lang, "general", "enable") : Translator.getString(data.lang, "general", "disable"))])
                         + "`\n\n";
 
+                    let options = InteractContainer.getReplyOptions(tempMsgContent);
+                    let actionRow = new Discord.MessageActionRow();
+                    for (let emoji of list) {
+                        actionRow.addComponents(
+                            new Discord.MessageButton()
+                                .setCustomId(emoji)
+                                .setLabel("")
+                                .setStyle("SECONDARY")
+                                .setEmoji(emoji)
+                        );
+                    }
+
+                    options.components.push(actionRow);
 
                     let reactWrapper = new MessageReactionsWrapper();
-                    await reactWrapper.load(message, tempMsgContent, {
-                        reactionsEmojis: [one, two, three, four],
+                    await reactWrapper.load(interact, options, {
+                        reactionsEmojis: list,
                         collectorOptions: {
                             max: 1,
                             time: 20000
                         }
                     });
 
-                    reactWrapper.collector.on("collect", async (reaction) => {
-                        switch (reaction.emoji.id || reaction.emoji.name) {
-                            case one:
-                                data = await axios.post("/game/other/settings", {
-                                    mGroup: true,
-                                });
-                                break;
-                            case two:
-                                data = await axios.post("/game/other/settings", {
-                                    mMarket: true,
-                                });
-                                break;
-                            case three:
-                                data = await axios.post("/game/other/settings", {
-                                    mFight: true,
-                                });
-                                break;
-                            case four:
-                                data = await axios.post("/game/other/settings", {
-                                    mWorldBoss: true,
-                                });
-                                break;
-                            case five:
-                                data = await axios.post("/game/other/settings", {
-                                    mTrade: true,
-                                });
-                                break;
-                        }
+                    reactWrapper.collector.on("collect",
+                        /**
+                         * 
+                         * @param {Discord.ButtonInteraction} reaction
+                         */
+                        async (reaction) => {
+                            switch (reaction.customId) {
+                                case one:
+                                    data = await axios.post("/game/other/settings", {
+                                        mGroup: true,
+                                    });
+                                    break;
+                                case two:
+                                    data = await axios.post("/game/other/settings", {
+                                        mMarket: true,
+                                    });
+                                    break;
+                                case three:
+                                    data = await axios.post("/game/other/settings", {
+                                        mFight: true,
+                                    });
+                                    break;
+                                case four:
+                                    data = await axios.post("/game/other/settings", {
+                                        mWorldBoss: true,
+                                    });
+                                    break;
+                                    //case five:
+                                    //    data = await axios.post("/game/other/settings", {
+                                    //        mTrade: true,
+                                    //    });
+                            }
 
-                        if (data != null) {
-                            await this.sendMessage(message, this.getBasicSuccessErrorMessage(data));
-                        }
-                    });
+                            if (data != null) {
+                                interact.interaction = reaction;
+                                await this.sendMessage(interact, this.getBasicSuccessErrorMessage(data));
+                            }
+                        });
 
                 });
 
@@ -144,7 +171,7 @@ class OtherModule extends GModule {
                 break;
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 }
 

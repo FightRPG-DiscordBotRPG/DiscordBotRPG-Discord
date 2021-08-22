@@ -57,7 +57,11 @@ class Area {
     }
 
     getWeatherTimeLeft(date) {
-        return Emojis.general.stopwatch + " " + (Moment(date).diff(Moment(Date.now()), "hours") % 24).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: false }) + ":" + (Moment(date).diff(Moment(Date.now()), "minutes") % 60).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: false }) + ":" + (Moment(date).diff(Moment(Date.now()), "seconds") % 60).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: false });
+        if (Moment(date).diff(Moment(Date.now())) > 0) {
+            return Emojis.general.stopwatch + " " + (Moment(date).diff(Moment(Date.now()), "hours") % 24).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: false }) + ":" + (Moment(date).diff(Moment(Date.now()), "minutes") % 60).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: false }) + ":" + (Moment(date).diff(Moment(Date.now()), "seconds") % 60).toLocaleString("en-US", { minimumIntegerDigits: 2, useGrouping: false });
+
+        }
+        return Emojis.general.stopwatch + " 00:00:00";
     }
 
     getWeatherBonusesPenalties(weather, lang = "en") {

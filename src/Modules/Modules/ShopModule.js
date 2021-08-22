@@ -1,26 +1,34 @@
 const GModule = require("../GModule");
 const Shop = require("../../Drawings/Shop");
 const Globals = require("../../Globals");
+const InteractContainer = require("../../Discord/InteractContainer");
 
 
 class ShopModule extends GModule {
     constructor() {
         super();
-        this.commands = ["sitems", "sbuy", "shop"];
+        this.commands = ["sitems", "sbuy", "shop", "shoplist", "shopbuy" ];
         this.startLoading("Shop");
         this.init();
         this.endLoading("Shop");
     }
 
-    async run(message, command, args) {
+    /**
+     *
+     * @param {InteractContainer} interact
+     * @param {string} command
+     * @param {Array} args
+     */
+    async run(interact, command, args) {
         let msg = "";
-        let axios = Globals.connectedUsers[message.author.id].getAxios();
+        let axios = Globals.connectedUsers[interact.author.id].getAxios();
 
         switch (command) {
             case "sitems":
             case "shop":
+            case "shoplist":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/shop/items/" + args[0]), async (data) => {
-                    await this.pageListener(data, message, Shop.displayItems(data), async (currPage) => {
+                    await this.pageListener(data, interact, Shop.displayItems(data), async (currPage) => {
                         let d = await axios.get("/game/shop/items/" + currPage);
                         return d.data;
                     }, async (newData) => {
@@ -31,6 +39,7 @@ class ShopModule extends GModule {
 
 
             case "sbuy":
+            case "shopbuy":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/shop/buy", {
                     idItem: args[0],
                     amount: args[1],
@@ -38,7 +47,7 @@ class ShopModule extends GModule {
                 break;
         }
 
-        this.sendMessage(message, msg, command);
+        this.sendMessage(interact, msg, command);
     }
 }
 
