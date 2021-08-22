@@ -62,8 +62,39 @@ class AdminModule extends GModule {
             case "testslashcommands": {
                 msg = this.testCommands(Globals.commands);
                 if (msg.length === 0) {
-                    msg = "OK";
+                    msg = "Test Languages: OK";
+
+                    let testCommands = [];
+                    for (let command of Globals.commands) {
+                        const commandNames = this.getCommandNames(command);
+                        for (let commandName of commandNames) {
+                            let isValid = false;
+                            for (let module of Object.values(this.allModulesReference)) {
+                                if (module.commands.includes(commandName)) {
+                                    isValid = true;
+                                    break;
+                                }
+                            }
+
+                            if (!isValid) {
+                                testCommands.push(commandName);
+                            }
+                        }
+
+                    }
+
+                    if (testCommands.length == 0) {
+                        msg += "\nTest Modules and Commands: OK";
+                    } else {
+                        msg += "\nTest Modules and Command: BAD\n" + testCommands.join(",");
+                    }
+                    
+
+                } else {
+                    msg = "Test Languages: BAD\n" + msg;
                 }
+
+
                
             } break;
 
@@ -314,6 +345,23 @@ class AdminModule extends GModule {
         }
 
         return text;
+    }
+
+    getCommandNames(command) {
+        let commandsNames = [];
+        if (command.options) {
+            for (let item of command.options) {
+                if (item.type == "SUB_COMMAND") {
+                    for (let commandName of this.getCommandNames(item)) {
+                        commandsNames.push(command.name + commandName);
+                    }
+                }
+            }
+        } else {
+            commandsNames.push(command.name);
+        }
+
+        return commandsNames;
     }
 }
 
