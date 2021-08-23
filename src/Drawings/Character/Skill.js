@@ -15,7 +15,7 @@ class Skill {
     toString(data, user) {
         let lang = data.lang;
         let titleBonus, color;
-        
+
         if (data.skill.isEquipped) {
             titleBonus = Translator.getString(lang, "inventory_equipment", "currently_equipped");
             color = [128, 128, 128];
@@ -26,15 +26,13 @@ class Skill {
             titleBonus = Translator.getString(lang, "general", "locked");
             color = [255, 0, 0];
         }
-
         let embed = new Discord.MessageEmbed()
             .setColor(color)
             .setAuthor(`${data.skill.id} - ${data.skill.name} (${titleBonus})`)
             .setDescription(data.skill.desc != null ? data.skill.desc : Translator.getString(lang, "skills", "no_desc"))
-            .addField(Emojis.general.target + " " +Translator.getString(user.lang, "skills", "number_of_targets"), data.skill.numberOfTargets, true)
-            .addField(Emojis.emojisProd.win.string + " " +Translator.getString(user.lang, "skills", "success_rate"), data.skill.successRate + "%", true)
-            .addField(Emojis.general.hourglass_not_done + " " +Translator.getString(user.lang, "skills", "required_preparation_points"), Math.ceil((data.skill.timeToCast) / data.skill.timeToCastPerTurn), true);
-
+            .addField(Emojis.general.target + " " + Translator.getString(user.lang, "skills", "number_of_targets"), data.skill.numberOfTargets.toString(), true)
+            .addField(Emojis.emojisProd.win.string + " " + Translator.getString(user.lang, "skills", "success_rate"), data.skill.successRate + "%", true)
+            .addField(Emojis.general.hourglass_not_done + " " + Translator.getString(user.lang, "skills", "required_preparation_points"), Math.ceil((data.skill.timeToCast) / data.skill.timeToCastPerTurn).toString(), true);
         embed = this.getFieldsCosts(data, user, embed);
         embed = this.getFieldsDamage(data, user, embed);
         embed = this.getFieldsEffects(data, user, embed);
@@ -55,7 +53,7 @@ class Skill {
             embed = embed
                 .addField(Translator.getString(user.lang, "skills", "damage_information"), GenericMultipleEmbedList.getSeparator())
                 .addField(Emojis.general.bar_chart + " " + Translator.getString(user.lang, "skills", "formula"), data.skill.repeat > 1 ? `(${data.skill.damage.formula}) * ${data.skill.repeat}` : data.skill.damage.formula)
-                .addField(Emojis.general.bar_chart + " " + Translator.getString(user.lang, "skills", "formula_result"), data.skill.repeat > 1 ? `(${Math.round(data.skill.formulaResultVersusSelf)}) * ${data.skill.repeat}` : data.skill.formulaResultVersusSelf, true)
+                .addField(Emojis.general.bar_chart + " " + Translator.getString(user.lang, "skills", "formula_result"), data.skill.repeat > 1 ? `(${Math.round(data.skill.formulaResultVersusSelf)}) * ${data.skill.repeat}` : data.skill.formulaResultVersusSelf.toString(), true)
                 .addField(Emojis.emojisProd.nochange.string + " " + Translator.getString(user.lang, "skills", "variance"), data.skill.damage.variance + "%", true)
                 .addField(Emojis.general.crossed_swords + " " + Translator.getString(user.lang, "skills", "damage_type"), Emojis.damageTypes[data.skill.damage.damageTypeShorthand] + " " + Translator.getString(user.lang, "skills", data.skill.damage.damageTypeShorthand), true)
                 .addField(Emojis.emojisProd.elements.string + " " + Translator.getString(user.lang, "elements", "type"), Emojis.stats[data.skill.damage.elementTypeShorthand + "Resist"] + " " + Translator.getString(user.lang, "elements", data.skill.damage.elementTypeShorthand), true)
@@ -78,8 +76,8 @@ class Skill {
     */
     getFieldsCosts(data, user, embed) {
         return embed
-            .addField(Emojis.stats.skillManaCost + " " + Translator.getString(user.lang, "stats", "skillManaCost"), data.skill.mpCost, true)
-            .addField(Emojis.stats.skillEnergyCost + " " + Translator.getString(user.lang, "stats", "skillEnergyCost"), data.skill.energyCost, true);
+            .addField(Emojis.stats.skillManaCost + " " + Translator.getString(user.lang, "stats", "skillManaCost"), data.skill.mpCost.toString(), true)
+            .addField(Emojis.stats.skillEnergyCost + " " + Translator.getString(user.lang, "stats", "skillEnergyCost"), data.skill.energyCost.toString(), true);
     }
 
     /**
@@ -131,7 +129,7 @@ class Skill {
         }
 
         return "";
-        
+
     }
 
 
