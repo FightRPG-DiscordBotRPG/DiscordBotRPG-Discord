@@ -362,15 +362,15 @@ class GModule {
             .setStyle("PRIMARY")
             .setEmoji(Emojis.getString("right_arrow"));
 
-        const buttonActionRow = new Discord.MessageActionRow();
+        let buttonActionRow = new Discord.MessageActionRow();
 
         if (initialData.page > 1) {
             currentMessageReactions.push(backEmoji);
-            buttonActionRow.addComponents(buttonBack);
+            buttonActionRow = buttonActionRow.addComponents(buttonBack);
         }
         if (initialData.page < initialData.maxPage) {
             currentMessageReactions.push(nextEmoji);
-            buttonActionRow.addComponents(buttonNext);
+            buttonActionRow= buttonActionRow.addComponents(buttonNext);
         }
 
         const replyOptions = interact.getReplyOptions(initialMessage);
@@ -403,7 +403,7 @@ class GModule {
                 }
 
                 dataCollector = await dataCollectorCallback(currentPage);                
-                const buttonActionRow = new Discord.MessageActionRow();
+                let buttonActionRow = new Discord.MessageActionRow();
 
 
                 if (dataCollector.error == null) {
@@ -411,11 +411,11 @@ class GModule {
                     currentMessageReactions = [];
                     if (dataCollector.page > 1) {
                         currentMessageReactions.push(backEmoji);
-                        buttonActionRow.addComponents(buttonBack);
+                        buttonActionRow = buttonActionRow.addComponents(buttonBack);
                     }
                     if (dataCollector.page < dataCollector.maxPage) {
                         currentMessageReactions.push(nextEmoji);
-                        buttonActionRow.addComponents(buttonNext);
+                        buttonActionRow = buttonActionRow.addComponents(buttonNext);
                     }
 
                 } else {
@@ -423,7 +423,7 @@ class GModule {
                 }
 
                 const replyOptions = InteractContainer.getReplyOptions(msgCollector);
-                if (replyOptions.components.length > 0) {
+                if (buttonActionRow.components.length > 0) {
                     replyOptions.components.push(buttonActionRow);
                 }
 
