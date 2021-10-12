@@ -320,7 +320,6 @@ class GModule {
                 toReturn.params[type] = value;
             }
 
-
         }
 
         return toReturn;
@@ -363,6 +362,8 @@ class GModule {
             .setEmoji(Emojis.getString("right_arrow"));
 
         let buttonActionRow = new Discord.MessageActionRow();
+
+        console.log(initialData);
 
         if (initialData.page > 1) {
             currentMessageReactions.push(backEmoji);

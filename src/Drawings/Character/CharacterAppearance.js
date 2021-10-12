@@ -673,8 +673,8 @@ class CharacterAppearance {
         // If you use this and you try to edit and embed, the image is not updated /!\
         if (!conf.cdnAppearanceCache || !hashFile) {
             return {
-                embeds: [embed.setImage("attachment://character.png")],
-                files: [new Discord.MessageAttachment((await this.getCharacter()).createPNGStream(), "character.png")]
+                embeds: [embed.setImage("attachment://" + filename)],
+                files: [new Discord.MessageAttachment((await this.getCharacter()).createPNGStream(), filename)]
             };
         }
 
@@ -786,7 +786,7 @@ class CharacterAppearance {
             case 6:
             case 7:
                 stringColors = this.getColorListDisplay(this.selectableHairColors, this.hairColor);
-                embed = embed.addField(Translator.getString(user.lang, "appearance", "helmet"), Translator.getString(user.lang, "general", this.shouldDisplayHelmet ? "yes" : "no"));
+                embed = Utils.embedsAddField(embed, Translator.getString(user.lang, "appearance", "helmet"), Translator.getString(user.lang, "general", this.shouldDisplayHelmet ? "yes" : "no"));
                 break;
             case 0:
                 stringColors = this.getColorListDisplay(this.selectableBodyColors, this.bodyColor);
@@ -794,11 +794,23 @@ class CharacterAppearance {
         }
 
         if (stringColors !== null) {
-            embed = embed.addField(Translator.getString(user.lang, "appearance", "list_of_possible_color"), stringColors);
+            embed = Utils.embedsAddField(embed, Translator.getString(user.lang, "appearance", "list_of_possible_color"), stringColors);
         }
 
 
         return embed;
+    }
+
+    embedsAddField(objEmbeds, title, content) {
+        if (objEmbeds.embeds) {
+            for (let i in objEmbeds.embeds) {
+                objEmbeds.embeds[i] = objEmbeds.embeds[i].addField(title, content);
+            }
+        } else {
+            objEmbeds.addField(title, content);
+        }
+
+        return objEmbeds;
     }
 
     /**

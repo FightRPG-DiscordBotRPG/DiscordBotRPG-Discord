@@ -62,6 +62,24 @@ class Utils {
     }
 
     /**
+     * 
+     * @param {discord.MessageEmbed | {embeds: discord.MessageEmbed[]}} objEmbeds
+     * @param {string} title
+     * @param {string} content
+     */
+    static embedsAddField(objEmbeds, title, content) {
+        if (objEmbeds.embeds) {
+            for (let i in objEmbeds.embeds) {
+                objEmbeds.embeds[i] = objEmbeds.embeds[i].addField(title, content);
+            }
+        } else {
+            objEmbeds.addField(title, content);
+        }
+
+        return objEmbeds;
+    }
+
+    /**
     * 
     * @param {Array} pool
     * @param {number} k
