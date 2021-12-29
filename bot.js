@@ -162,7 +162,7 @@ bot.on("ready", async () => {
     //        options: [{
     //            name: "input",
     //            type: "",
-    //            description: "ça sert à rien",
+    //            description: "ï¿½a sert ï¿½ rien",
     //            require: true
     //        }],
     //    }
@@ -203,7 +203,9 @@ bot.on("interactionCreate", async (interaction) => {
         interact.guild = interaction.guild;
         interact.command = interaction.commandName;
 
-        await recursiveUpdateData(interaction.options.data, interact);
+        console.log(interaction.commandName);
+        await Utils.recursiveUpdateData(interaction.options.data, interact);
+        console.log(interact.command);
 
         console.log(interact.command);
         interact.client = bot;
@@ -212,33 +214,6 @@ bot.on("interactionCreate", async (interaction) => {
     }
 });
 
-/**
- * 
- * @param {import("discord.js").CommandInteractionOption[]} interactions
- * @param {InteractContainer} interact
- */
-async function recursiveUpdateData(interactions, interact) {
-    for (let i of interactions) {
-        if (i.value) {
-            const val = i.value.toString();
-
-            if (val.startsWith("<@!")) {
-                const id = val.slice(3, val.length - 1);
-                interact.mentions.set(id, await bot.users.fetch(id))
-            } else {
-                interact.args.push(i.value);
-            }
-        } else {
-            if (i.type.toString().includes("SUB_COMMAND")) {
-                interact.command += i.name;
-            }
-
-            if (i.options) {
-                await recursiveUpdateData(i.options, interact);
-            }
-        }
-    }
-}
 
 
 bot.on("messageCreate", async (message) => {

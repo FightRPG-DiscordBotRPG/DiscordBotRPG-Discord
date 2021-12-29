@@ -7,7 +7,7 @@ const InteractContainer = require("../../Discord/InteractContainer");
 class ShopModule extends GModule {
     constructor() {
         super();
-        this.commands = ["sitems", "sbuy", "shop", "shoplist", "shopbuy" ];
+        this.commands = ["shoplist", "shopbuy"];
         this.startLoading("Shop");
         this.init();
         this.endLoading("Shop");
@@ -24,8 +24,6 @@ class ShopModule extends GModule {
         let axios = Globals.connectedUsers[interact.author.id].getAxios();
 
         switch (command) {
-            case "sitems":
-            case "shop":
             case "shoplist":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/shop/items/" + args[0]), async (data) => {
                     await this.pageListener(data, interact, Shop.displayItems(data), async (currPage) => {
@@ -37,8 +35,6 @@ class ShopModule extends GModule {
                 });
                 break;
 
-
-            case "sbuy":
             case "shopbuy":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/shop/buy", {
                     idItem: args[0],

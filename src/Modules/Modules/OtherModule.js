@@ -11,7 +11,7 @@ const Discord = require("discord.js");
 class OtherModule extends GModule {
     constructor() {
         super();
-        this.commands = ["lang", "help", "settings", "rarities", "types", "vote"];
+        this.commands = ["otherlang", "otherhelp", "othersettings", "otherrarities", "othertypes", "othervote"];
         this.startLoading("Other");
         this.init();
         this.endLoading("Other");
@@ -31,7 +31,7 @@ class OtherModule extends GModule {
 
 
         switch (command) {
-            case "lang":
+            case "otherlang":
                 if (args[0]) {
                     msg = await this.getDisplayIfSuccess(await axios.post("/game/other/lang", {
                         lang: args[0],
@@ -51,7 +51,7 @@ class OtherModule extends GModule {
                     });
                 }
                 break;
-            case "help":
+            case "otherhelp":
                 msg = await this.getDisplayIfSuccess(Utils.getHelpPanel(user.lang, args[0]), (data) => {
                     this.pageListener(data, interact, this.cmdToString(data, prefix), async (currPage) => {
                         return Utils.getHelpPanel(user.lang, currPage);
@@ -60,7 +60,7 @@ class OtherModule extends GModule {
                     });
                 });
                 break;
-            case "settings":
+            case "othersettings":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/other/settings"), async (data) => {
 
                     let one = Emojis.general.one;
@@ -131,10 +131,10 @@ class OtherModule extends GModule {
                                         mWorldBoss: true,
                                     });
                                     break;
-                                    //case five:
-                                    //    data = await axios.post("/game/other/settings", {
-                                    //        mTrade: true,
-                                    //    });
+                                //case five:
+                                //    data = await axios.post("/game/other/settings", {
+                                //        mTrade: true,
+                                //    });
                             }
 
                             if (data != null) {
@@ -146,7 +146,7 @@ class OtherModule extends GModule {
                 });
 
                 break;
-            case "rarities":
+            case "otherrarities":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/other/rarities"), (data) => {
                     let str = "";
                     for (let i of data.rarities) {
@@ -156,7 +156,7 @@ class OtherModule extends GModule {
                 });
                 break;
 
-            case "types":
+            case "othertypes":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/other/types"), (data) => {
                     let str = "";
                     for (let i of data.types) {
@@ -166,7 +166,7 @@ class OtherModule extends GModule {
                 });
                 break;
 
-            case "vote":
+            case "othervote":
                 msg = "https://discordbots.org/bot/401421644968624129/vote"
                 break;
         }

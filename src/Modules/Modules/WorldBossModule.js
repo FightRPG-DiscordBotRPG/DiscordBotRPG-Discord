@@ -12,7 +12,7 @@ const Discord = require("discord.js");
 class WorldBossModule extends GModule {
     constructor() {
         super();
-        this.commands = ["wbshowall", "wbfight", "wbattack", "wblastinfo", "wbleaderboard", "wbs", "worldbossfight", "worldbossshowall", "worldbosslastinfo"];
+        this.commands = ["wbleaderboard", "worldbossfight", "worldbossshowall", "worldbosslastinfo"];
         this.startLoading("World Boss");
         this.init();
         this.endLoading("World Boss");
@@ -31,9 +31,7 @@ class WorldBossModule extends GModule {
         let axios = user.getAxios();
 
         switch (command) {
-            case "wbshowall":
             case "worldbossshowall":
-            case "wbs":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/worldbosses/display/all"), async (data) => {
                     //return WorldBosses.listToDiscord(data, Globals.connectedUsers[authorIdentifier], true);
 
@@ -84,9 +82,7 @@ class WorldBossModule extends GModule {
                 });
                 break;
 
-            case "wbfight":
             case "worldbossfight":
-            case "wbattack":
                 msg = await this.getDisplayIfSuccess(await axios.post("/game/worldbosses/fight"), async (d1) => {
                     return await this.getDisplayIfSuccess(await axios.get("/game/worldbosses/display/lastboss"), async (d2) => {
                         return await this.getDisplayIfSuccess(await axios.get("/game/worldbosses/display/all"), async (d3) => {
@@ -103,7 +99,6 @@ class WorldBossModule extends GModule {
                 });
                 break;
 
-            case "wblastinfo":
             case "worldbosslastinfo":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/worldbosses/display/lastboss"), (data) => {
                     return WorldBosses.lastBossStats(data);

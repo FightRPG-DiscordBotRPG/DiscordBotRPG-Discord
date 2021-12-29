@@ -12,7 +12,7 @@ const conf = require("../../../conf/conf");
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["updatepresence", "giveme", "active", "mutefor", "xp", "gold", "resetfight", "reload_translations", "reload_emojis", "ldadmin", "reload_leaderboard", "debug", "last_command", "giveto", "active_players", "update_commands_channel", "bot_info", "eval", "show_all_emojis", "updateslashcommands", "testslashcommands", "clearslashcommands"];
+        this.commands = ["adminupdatepresence", "admingiveme", "adminactive", "adminmutefor", "adminxp", "admingold", "adminresetfight", "adminreload_translations", "adminreload_emojis", "adminldadmin", "adminreload_leaderboard", "admindebug", "adminlast_command", "admingiveto", "adminactive_players", "adminupdate_commands_channel", "adminbot_info", "admineval", "adminshow_all_emojis", "adminupdateslashcommands", "admintestslashcommands", "adminclearslashcommands"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -34,7 +34,7 @@ class AdminModule extends GModule {
         if (!isAdmin) return;
 
         switch (command) {
-            case "updatepresence":
+            case "adminupdatepresence":
                 try {
                     await interact.client.user.setPresence({
                         activity: {
@@ -47,19 +47,19 @@ class AdminModule extends GModule {
                 }
                 break;
 
-            case "updateslashcommands": {
+            case "adminupdateslashcommands": {
                 await interact.client.application?.fetch();
                 //console.log(Globals.commands);
                 //console.log(Globals.commands.length);
                 const cmds = await interact.client.application?.commands.set(Globals.commands, conf.env === "dev" ? interact.channel.guildId : null);
                 msg = "Added : " + cmds.size + " commands.";
             } break;
-            case "clearslashcommands": {
+            case "adminclearslashcommands": {
                 await interact.client.application?.fetch();
                 await interact.client.application?.commands.set([], conf.env === "dev" ? interact.channel.guildId : null);
                 msg = "Cleared : all commands.";
             } break;
-            case "testslashcommands": {
+            case "admintestslashcommands": {
                 msg = this.testCommands(Globals.commands);
                 if (msg.length === 0) {
                     msg = "Test Languages: OK";
@@ -88,17 +88,17 @@ class AdminModule extends GModule {
                     } else {
                         msg += "\nTest Modules and Command: BAD\n" + testCommands.join(",");
                     }
-                    
+
 
                 } else {
                     msg = "Test Languages: BAD\n" + msg;
                 }
 
 
-               
+
             } break;
 
-            case "giveme":
+            case "admingiveme":
                 data = await axios.post("/game/admin/give/item/me", {
                     idItem: args[0],
                     number: args[1],
@@ -112,7 +112,7 @@ class AdminModule extends GModule {
                 }
                 break;
 
-            case "giveto":
+            case "admingiveto":
                 data = await axios.post("/game/admin/give/item/to", {
                     idUser: args[0],
                     idItem: args[1],
@@ -127,7 +127,7 @@ class AdminModule extends GModule {
                 }
                 break;
 
-            case "active_players":
+            case "adminactive_players":
                 data = await axios.get("/game/admin/active_players/" + args[0]);
                 data = data.data;
                 if (data.error == null) {
@@ -152,7 +152,7 @@ class AdminModule extends GModule {
 
                 break;
 
-            case "active":
+            case "adminactive":
                 data = await axios.post("/game/admin/bot/activate", {
                     active: args[0],
                     reason: args[1],
@@ -165,7 +165,7 @@ class AdminModule extends GModule {
                 }
                 break;
 
-            case "mutefor":
+            case "adminmutefor":
                 data = await axios.post("/game/admin/user/mute", {
                     idUser: args[0],
                     time: args[1]
@@ -178,7 +178,7 @@ class AdminModule extends GModule {
                 }
                 break;
 
-            case "xp":
+            case "adminxp":
                 data = await axios.post("/game/admin/give/xp", {
                     xp: args[0]
                 });
@@ -190,7 +190,7 @@ class AdminModule extends GModule {
                 }
                 break;
 
-            case "gold":
+            case "admingold":
                 data = await axios.post("/game/admin/give/gold", {
                     amount: args[0],
                     idUser: args[1]
@@ -203,7 +203,7 @@ class AdminModule extends GModule {
                 }
                 break;
 
-            case "resetfight":
+            case "adminresetfight":
                 data = await axios.post("/game/admin/resetfight");
                 data = data.data;
                 if (data.error == null) {
@@ -212,7 +212,7 @@ class AdminModule extends GModule {
                     msg = data.error;
                 }
                 break;
-            case "reload_translations":
+            case "adminreload_translations":
                 data = await axios.post("/game/admin/translations/reload");
                 data = data.data;
                 if (data.error == null) {
@@ -227,7 +227,7 @@ class AdminModule extends GModule {
                     msg = data.error;
                 }
                 break;
-            case "debug":
+            case "admindebug":
                 await axios.get("/game/admin/debug", {
                     params: {
                         p1: args[0],
@@ -236,7 +236,7 @@ class AdminModule extends GModule {
                 });
                 msg = "Success"
                 break;
-            case "last_command":
+            case "adminlast_command":
                 data = await axios.get("/game/admin/last_command");
                 data = data.data;
                 if (data.error == null) {
@@ -245,7 +245,7 @@ class AdminModule extends GModule {
                     msg = data.error;
                 }
                 break;
-            case "show_all_emojis": {
+            case "adminshow_all_emojis": {
                 let emojis = [];
                 let page = args[0] > 0 ? args[0] : 1;
                 let perPage = 10;
@@ -272,7 +272,7 @@ class AdminModule extends GModule {
 
             }
                 break;
-            case "warn":
+            case "adminwarn":
                 args[0] = decodeURIComponent(args[0]);
                 for (let idUser of args[0].split(",")) {
                     evalDyn = (client) => {
@@ -285,7 +285,7 @@ class AdminModule extends GModule {
                 }
                 msg = "Done";
                 break;
-            case "eval":
+            case "admineval":
                 if (interact.author.id !== Globals.ownerID) break;
                 try {
                     const code = args.join(" ");
@@ -301,7 +301,7 @@ class AdminModule extends GModule {
 
                 msg = msg.length > 2000 ? msg.substring(0, 2000) : msg;
                 break;
-            case "update_commands_channel": {
+            case "adminupdate_commands_channel": {
                 let actualMessages = await interact.channel.messages.fetch({
                     limit: 20
                 });

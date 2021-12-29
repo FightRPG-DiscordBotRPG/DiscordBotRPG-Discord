@@ -7,8 +7,7 @@ const InteractContainer = require("../../Discord/InteractContainer");
 class MarketplaceModule extends GModule {
     constructor() {
         super();
-        this.commands = ["mkmylist", "mkplace", "mkcancel", "mkbuy", "mksearch", "mkshow", "mksee",
-            "marketplacemylist", "marketplaceplace", "marketplacecancel", "marketplacebuy", "marketplacesearch", "marketplaceshow", "marketplacesee"
+        this.commands = ["marketplacemylist", "marketplaceplace", "marketplacecancel", "marketplacebuy", "marketplacesearch", "marketplacesee"
         ];
         this.startLoading("Marketplace");
         this.init();
@@ -27,7 +26,6 @@ class MarketplaceModule extends GModule {
         let axios = user.getAxios();
         let searchFilters = this.getSearchFilters(args);
         switch (command) {
-            case "mkmylist":
             case "marketplacemylist":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/marketplace/mylist/" + args[0], { params: searchFilters.params }), async (data) => {
                     await this.pageListener(data, interact, Marketplace.toString(data), async (currPage) => {
@@ -39,7 +37,6 @@ class MarketplaceModule extends GModule {
                 });
                 break;
 
-            case "mkplace":
             case "marketplaceplace":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/marketplace/place", {
                     idItem: args[0],
@@ -49,14 +46,12 @@ class MarketplaceModule extends GModule {
                 }));
                 break;
 
-            case "mkcancel":
             case "marketplacecancel":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/marketplace/cancel", {
                     idItem: args[0]
                 }));
                 break;
 
-            case "mkbuy":
             case "marketplacebuy":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/marketplace/buy", {
                     idItem: args[0],
@@ -64,9 +59,7 @@ class MarketplaceModule extends GModule {
                 }));
                 break;
 
-            case "mksearch":
             case "marketplacesearch":
-            case "mkshow":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/marketplace/show/" + searchFilters.page, { params: searchFilters.params }), async (data) => {
                     await this.pageListener(data, interact, Marketplace.toString(data), async (currPage) => {
                         let d = await axios.get("/game/marketplace/show/" + currPage, { params: searchFilters.params });
@@ -77,7 +70,6 @@ class MarketplaceModule extends GModule {
                 });
                 break;
 
-            case "mksee":
             case "marketplacesee":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/marketplace/show/item/" + args[0]), (data) => {
                     return ItemShow.showItem(data, user);

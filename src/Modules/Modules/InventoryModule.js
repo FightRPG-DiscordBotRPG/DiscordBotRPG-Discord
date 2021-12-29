@@ -12,7 +12,7 @@ const InteractContainer = require("../../Discord/InteractContainer");
 class InventoryModule extends GModule {
     constructor() {
         super();
-        this.commands = ["item", "itemid", "itemtype", "itemfav", "itemunfav", "inv", "inventory", "sell", "sellall", "sendmoney"];
+        this.commands = ["itemid", "itemtype", "itemfavid", "itemfavtype", "itemunfavid", "itemunfavtype", "inventory", "sellid", "sellall", "sendmoney"];
         this.startLoading("Inventory");
         this.init();
         this.endLoading("Inventory");
@@ -33,7 +33,6 @@ class InventoryModule extends GModule {
         let searchFilters;
 
         switch (command) {
-            case "item":
             case "itemid":
             case "itemtype":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/inventory/item/" + args[0]), async (data) => {
@@ -157,8 +156,10 @@ class InventoryModule extends GModule {
                 });
                 break;
 
-            case "itemfav":
-            case "itemunfav": {
+            case "itemfavid":
+            case "itemfavtype":
+            case "itemunfavid":
+            case "itemunfavtype": {
                 searchFilters = this.getSearchFilters(args);
                 let body = {};
                 if (Object.values(searchFilters.params).length > 0) {
@@ -171,7 +172,6 @@ class InventoryModule extends GModule {
             }
                 break;
 
-            case "inv":
             case "inventory":
                 searchFilters = this.getSearchFilters(args);
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/inventory/show/" + searchFilters.page, {
@@ -190,7 +190,7 @@ class InventoryModule extends GModule {
                 });
                 break;
 
-            case "sell":
+            case "sellid":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/sell", {
                     idItem: args[0],
                     number: args[1],

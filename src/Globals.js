@@ -620,16 +620,6 @@ var Globals = {
                 defaultPermission: true,
             },
             {
-                name: "rarities",
-                description: Translator.getString("en", "help_panel", "rarities"),
-                defaultPermission: true,
-            },
-            {
-                name: "types",
-                description: Translator.getString("en", "help_panel", "types"),
-                defaultPermission: true,
-            },
-            {
                 name: "area",
                 description: "?",
                 defaultPermission: true,
@@ -1045,11 +1035,6 @@ var Globals = {
                 defaultPermission: true,
             },
             {
-                name: "bot_info",
-                description: "?",
-                defaultPermission: true,
-            },
-            {
                 name: "marketplace",
                 description: "?",
                 options: [
@@ -1254,7 +1239,6 @@ var Globals = {
                 ],
                 defaultPermission: true,
             },
-
             {
                 name: "showevent",
                 description: Translator.getString("en", "help_panel", "event"),
@@ -1273,45 +1257,6 @@ var Globals = {
                 description: Translator.getString("en", "help_panel", "event_ongoing"),
                 defaultPermission: true,
             },
-            {
-                name: "lang",
-                description: Translator.getString("en", "help_panel", "lang"),
-                options: [{
-                    name: "language",
-                    description: "Allows you to switch languages",
-                    type: "STRING",
-                    choices: languagesChoices,
-                    required: false,
-                }],
-                defaultPermission: true,
-            },
-            {
-                name: "settings",
-                description: Translator.getString("en", "help_panel", "settings"),
-                defaultPermission: true,
-            },
-            {
-                name: "setmobile",
-                description: Translator.getString("en", "help_panel", "setmobile"),
-                options: [{
-                    name: "mobiledisplay",
-                    description: "Allows you to switch languages",
-                    type: "STRING",
-                    choices: [
-                        {
-                            name: "Desktop",
-                            value: "false",
-                        },
-                        {
-                            name: "Mobile",
-                            value: "true",
-                        }
-                    ],
-                    required: true,
-                }],
-                defaultPermission: true,
-            },
-
             {
                 name: "talents",
                 description: "?",
@@ -1427,11 +1372,205 @@ var Globals = {
                 ],
                 defaultPermission: true,
             },
+            {
+                name: "other",
+                description: "Other commands",
+                options: [
+                    {
+                        name: "help",
+                        description: "Show Help",
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "botinfo",
+                        description: "Show Bot Info",
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "lang",
+                        description: Translator.getString("en", "help_panel", "lang"),
+                        type: "SUB_COMMAND",
+                        options: [{
+                            name: "language",
+                            description: "Allows you to switch languages",
+                            type: "STRING",
+                            choices: languagesChoices,
+                            required: false,
+                        }],
+                    },
+                    {
+                        name: "settings",
+                        description: Translator.getString("en", "help_panel", "settings"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "setmobile",
+                        description: Translator.getString("en", "help_panel", "setmobile"),
+                        type: "SUB_COMMAND",
+                        options: [{
+                            name: "mobiledisplay",
+                            description: "Allows you to switch languages",
+                            type: "STRING",
+                            choices: [
+                                {
+                                    name: "Desktop",
+                                    value: "false",
+                                },
+                                {
+                                    name: "Mobile",
+                                    value: "true",
+                                }
+                            ],
+                            required: true,
+                        }],
+                    },
+                    {
+                        name: "rarities",
+                        description: Translator.getString("en", "help_panel", "rarities"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "types",
+                        description: Translator.getString("en", "help_panel", "types"),
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "vote",
+                        description: "Show the vote link",
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "resources",
+                        description: Translator.getString("en", "help_panel", "resources"),
+                        type: "SUB_COMMAND",
+                    }
+
+                ],
+                defaultPermission: true,
+            },
+            {
+                name: "admin",
+                description: "Admin commands",
+                // Todo after discord js update
+                // permissions: Globals.admins.map(id => {
+                //     return {
+                //         id: id,
+                //         type: "USER",
+                //         permission: true,
+                //     }
+                // }),
+                options: [
+                    {
+                        name: "load_module",
+                        description: "Load a module",
+                        options: [
+                            {
+                                name: "module",
+                                description: "Module to load",
+                                type: "STRING",
+                                required: true,
+                            }
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "disable_module",
+                        description: "Disable a module",
+                        options: [
+                            {
+                                name: "module",
+                                description: "Module to disable",
+                                type: "STRING",
+                                required: true,
+                            }
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "enable_module",
+                        description: "Enable a module",
+                        options: [
+                            {
+                                name: "module",
+                                description: "Module to enable",
+                                type: "STRING",
+                                required: true,
+                            }
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "load_all_modules",
+                        description: "Load all modules",
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "disabled_modules",
+                        description: "List disabled modules",
+                        type: "SUB_COMMAND",
+                    },
+
+                    {
+                        name: "updatepresence",
+                        description: "Update presence",
+                        type: "SUB_COMMAND",
+                    },
+
+                    {
+                        name: "active",
+                        description: "Set bot active or not",
+                        options: [
+                            {
+                                name: "value",
+                                description: "Value to set",
+                                type: "BOOLEAN",
+                                required: true,
+                            }
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "reload_translations",
+                        description: "Reload translations",
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "active_players",
+                        description: "List active players over x hours",
+                        options: [
+                            {
+                                name: "hours",
+                                description: "Hours to check",
+                                type: "INTEGER",
+                                required: true,
+                            }
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "updateslashcommands",
+                        description: "Update slash commands",
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "testslashcommands",
+                        description: "Test slash commands",
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "clearslashcommands",
+                        description: "Clear slash commands",
+                        type: "SUB_COMMAND",
+                    }
+                ],
+                defaultPermission: true,
+            }
 
 
-            
 
         ];
+
+        //  console.log(Globals.commands[40].options[6]);
     },
 
     loadHelpPanel: async function () {

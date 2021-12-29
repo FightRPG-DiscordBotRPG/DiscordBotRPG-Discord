@@ -29,16 +29,14 @@ class ModuleHandler extends GModule {
         this.commandsReact = {};
         this.commands = [
             "prefix",
-            "tutorial",
-            "play",
-            "start",
-            "setmobile",
-            "load_module",
-            "disable_module",
-            "enable_module",
-            "load_all_modules",
-            "disabled_modules",
-            "bot_info",
+            "othertutorial",
+            "othersetmobile",
+            "adminload_module",
+            "admindisable_module",
+            "adminenable_module",
+            "adminload_all_modules",
+            "admindisabled_modules",
+            "otherbotinfo",
         ]
         this.startLoading("ModuleHandler");
         this.init();
@@ -149,12 +147,10 @@ class ModuleHandler extends GModule {
                 case "prefix":
                     msg = this.prefixCommand(interact, args, "en");
                     break;
-                case "tutorial":
-                case "play":
-                case "start":
+                case "othertutorial":
                     await user.tutorial.start(interact, user.lang);
                     break;
-                case "setmobile":
+                case "othersetmobile":
                     if (Globals.yesNoByLang[args[0]]) {
                         args[0] = Globals.yesNoByLang[args[0]];
                     }
@@ -172,7 +168,7 @@ class ModuleHandler extends GModule {
 
                     msg = Translator.getString(user.lang, "general", "mobile_set", [user.setMobileMode, Translator.getString(user.lang, "general", user.isOnMobile ? "yes" : "no")]);
                     break;
-                case "load_module":
+                case "adminload_module":
                     if (isAdmin) {
                         if (this.loadModule(args[0])) {
                             msg = "Discord: Module " + args[0] + " loaded successfully !\n";
@@ -191,7 +187,7 @@ class ModuleHandler extends GModule {
                         }
                     }
                     break;
-                case "disable_module":
+                case "admindisable_module":
                     if (isAdmin) {
                         if (this.disableModule(args[0])) {
                             msg = "Discord: Module " + args[0] + " disabled successfully !\n";
@@ -210,7 +206,7 @@ class ModuleHandler extends GModule {
                         }
                     }
                     break;
-                case "enable_module":
+                case "adminenable_module":
                     if (isAdmin) {
                         if (this.enableModule(args[0])) {
                             msg = "Discord: Module " + args[0] + " enabled successfully !\n";
@@ -229,18 +225,19 @@ class ModuleHandler extends GModule {
                         }
                     }
                     break;
-                case "load_all_modules":
+                case "adminload_all_modules":
                     /*if (isAdmin) {
                         this.loadAllModules();
                         msg = "Done, check console for errors / warning";
                     }*/
                     break;
-                case "disabled_modules":
-                     if (isAdmin) {
-                         msg = this.getDisabledModules();
-                     }
+                case "admindisabled_modules":
+                    if (isAdmin) {
+                        //msg = this.getDisabledModules();
+                        msg = await this.showNotImplementedCommands();
+                    }
                     break;
-                case "bot_info": {
+                case "botinfo": {
 
                     let total = await Utils.getTotalNumberOfGuilds(interact.client.shard);
 
@@ -485,7 +482,76 @@ class ModuleHandler extends GModule {
         await conn.query("INSERT INTO commandslogs VALUES(NULL, ?, ?, ?);", [userid, command == null || command == "" ? "unknown" : command.substring(0, 64), timestamp]);
     }
 
+    /**
+     * 
+     * @param {GModule} module 
+     * @param {any[]} commandsList 
+     */
+    pushCommandsOfThatModule(module, moduleName, commandsList) {
+        for (let command of module.commands) {
+            commandsList.push({
+                command: command,
+                module: moduleName
+            });
+        }
+    }
 
+    showNotImplementedCommands() {
+        // List all commands from the modules
+        let commandsData = [];
+        for (let mod in this.modules) {
+            this.pushCommandsOfThatModule(this.modules[mod], mod, commandsData);
+        }
+        this.pushCommandsOfThatModule(this, "MainModule", commandsData);
+
+
+        console.log(Globals.admins.map(id => {
+            return {
+                id: id,
+                type: "USER",
+                permission: true,
+            }
+        }));
+
+        /**
+         * @type {string[]}
+         */
+        let implementedCommands = [];
+
+        for (let command of Globals.commands) {
+            Utils.recursiveGetCommandName(command, "", implementedCommands);
+        }
+
+        // Return missing commands as string separated by comma
+        let missing = "";
+
+        console.log("\n\nImplemented commands in modules but not in slash commands:\n");
+        // Commands from modules not implemented
+
+        let lastModuleName = "";
+        for (let commandData of commandsData) {
+
+            if (implementedCommands.indexOf(commandData.command) == -1) {
+                if (lastModuleName != commandData.module) {
+                    console.log("\n" + commandData.module + ":");
+                    lastModuleName = commandData.module;
+                }
+                //missing += command + ", ";
+                console.log("- " + commandData.command);
+            }
+        }
+
+        console.log("\n\nImplemented commands in slash commands but not in modules:\n");
+        // Commands from implemented not implemented in modules
+        for (let command of implementedCommands) {
+            if (commandsData.findIndex(c => c.command == command) == -1) {
+                console.log("- " + command);
+            }
+        }
+
+        return missing;
+
+    }
 
 
 }

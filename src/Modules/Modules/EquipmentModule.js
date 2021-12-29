@@ -7,7 +7,7 @@ const InteractContainer = require("../../Discord/InteractContainer");
 class EquipmentModule extends GModule {
     constructor() {
         super();
-        this.commands = ["equip", "unequip", "equiplist", "equipment", "equips", "use"];
+        this.commands = ["equip", "unequip", "equiplist", "use"];
         this.startLoading("Equipment");
         this.init();
         this.endLoading("Equipment");
@@ -39,9 +39,7 @@ class EquipmentModule extends GModule {
                 break;
 
             case "equiplist":
-            case "equipment":
-            case "equips":
-                msg = await this.getDisplayIfSuccess(await axios.get("/game/equipment/show"),  async (data) => {
+                msg = await this.getDisplayIfSuccess(await axios.get("/game/equipment/show"), async (data) => {
                     return await Inventory.displayAsList(data, false, user);
                 });
                 break;

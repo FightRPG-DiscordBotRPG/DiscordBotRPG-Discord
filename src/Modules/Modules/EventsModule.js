@@ -8,7 +8,7 @@ const InteractContainer = require("../../Discord/InteractContainer");
 class EventsModule extends GModule {
     constructor() {
         super();
-        this.commands = ["showevent", "showongoingevents", "sevt", "sogevts"];
+        this.commands = ["showevent", "showongoingevents"];
         this.startLoading("EventsModule");
         this.init();
         this.endLoading("EventsModule");
@@ -27,7 +27,6 @@ class EventsModule extends GModule {
 
         switch (command) {
             case "showevent":
-            case "sevt":
                 msg = await this.getDisplayIfSuccess(
                     await axios.get("/game/events/show/" + args[0]),
                     async (data) => {
@@ -36,7 +35,6 @@ class EventsModule extends GModule {
                 )
                 break;
             case "showongoingevents":
-            case "sogevts":
                 msg = await this.getDisplayIfSuccess(
                     await axios.get("/game/events/ongoing"),
                     async (data) => {

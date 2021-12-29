@@ -10,8 +10,7 @@ const InteractContainer = require("../../Discord/InteractContainer");
 class TradeModule extends GModule {
     constructor() {
         super();
-        this.commands = ["tpropose", "tcancel", "taccept", "tshow", "titem", "tadd", "tremove", "tsetmoney", "tvalidate",
-            "tradepropose", "tradecancel", "tradeaccept", "tradeshow", "tradeitem", "tradeadd", "traderemove", "tradesetmoney", "tradevalidate"];
+        this.commands = ["tradepropose", "tradecancel", "tradeaccept", "tradeshow", "tradeitem", "tradeadd", "traderemove", "tradesetmoney", "tradevalidate"];
         this.startLoading("Trade");
         this.init();
         this.endLoading("Trade");
@@ -32,24 +31,20 @@ class TradeModule extends GModule {
         let firstMention = mentions?.first();
 
         switch (command) {
-            case "tpropose":
             case "tradepropose":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/trade/propose", {
                     mention: firstMention != null ? firstMention.id : null
                 }));
                 break;
 
-            case "taccept":
             case "tradeaccept":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/trade/accept"));
                 break;
 
-            case "tcancel":
             case "tradecancel":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/trade/cancel"));
                 break;
 
-            case "tadd":
             case "tradeadd":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/trade/item/add", {
                     idEmplacement: args[0],
@@ -57,7 +52,6 @@ class TradeModule extends GModule {
                 }));
                 break;
 
-            case "tremove":
             case "traderemove":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/trade/item/remove", {
                     idEmplacement: args[0],
@@ -65,19 +59,16 @@ class TradeModule extends GModule {
                 }));
                 break;
 
-            case "tvalidate":
             case "tradevalidate":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/trade/validate"));
                 break;
 
-            case "tsetmoney":
             case "tradesetmoney":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/trade/money/set", {
                     number: args[0],
                 }));
                 break;
 
-            case "tshow":
             case "tradeshow":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/trade/show"), (data) => {
                     this.confirmListener(interact, Trade.toString(data, Globals.connectedUsers[authorIdentifier]), async (validate) => {
@@ -90,7 +81,6 @@ class TradeModule extends GModule {
                 });
                 break;
 
-            case "titem":
             case "tradeitem":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/trade/item/show/" + args[0]), (data) => {
                     return ItemShow.showItem(data, user);

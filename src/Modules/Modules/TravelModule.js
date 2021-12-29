@@ -55,7 +55,7 @@ const resetDisplaysEmoji = "counterclockwise_arrows_button";
 class TravelModule extends GModule {
     constructor() {
         super();
-        this.commands = ["area", "areas", "travel", "travelregion", "areaplayers", "region", "traveldirect", "areainfo", "travelarea"];
+        this.commands = ["travelregion", "areaplayers", "region", "traveldirect", "areainfo", "travelarea"];
         this.startLoading("Travel");
         this.init();
         this.endLoading("Travel");
@@ -73,7 +73,6 @@ class TravelModule extends GModule {
         let user = Globals.connectedUsers[interact.author.id];
 
         switch (command) {
-            case "area":
             case "areainfo":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/travel/area"), async (data) => {
 
@@ -125,14 +124,12 @@ class TravelModule extends GModule {
                 });
                 break;
 
-            case "areas":
             case "region":
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/travel/region"), (data) => {
                     return Region.toString(data);
                 });
                 break;
 
-            case "travel":
             case "travelarea":
                 msg = await this.travelSharedCommand(interact, args, axios, "area");
                 // For tutorial

@@ -559,6 +559,62 @@ class Utils {
         return msgError;
     }
 
+    /**
+     * 
+     * @param {import("discord.js").CommandInteractionOption[]} interactions
+     * @param {InteractContainer} interact
+     */
+    static async recursiveUpdateData(interactions, interact) {
+        for (let i of interactions) {
+            if (i.value) {
+                const val = i.value.toString();
+
+                if (val.startsWith("<@!")) {
+                    const id = val.slice(3, val.length - 1);
+                    interact.mentions.set(id, await bot.users.fetch(id))
+                } else {
+                    interact.args.push(i.value);
+                }
+            } else {
+                if (i.type.toString().includes("SUB_COMMAND")) {
+                    interact.command += i.name;
+                }
+
+                if (i.options) {
+                    await Utils.recursiveUpdateData(i.options, interact);
+                }
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param {import("discord.js").ApplicationCommandData} appCommandData 
+     * @param {string[]} commands
+     */
+    static recursiveGetCommandName(appCommandData, commandPrefix, commands) {
+        let command = commandPrefix + appCommandData.name;
+
+        // if there are options
+        // for each option that is a sub-command
+        // add the sub-command to the commands list
+        if (appCommandData.options) {
+            let hasSubCommand = false;
+            for (let i of appCommandData.options) {
+                if (i.type?.toString().includes("SUB_COMMAND")) {
+                    Utils.recursiveGetCommandName(i, command, commands);
+                    hasSubCommand = true;
+                }
+            }
+
+            if (!hasSubCommand) {
+                commands.push(command);
+            }
+        } else {
+            commands.push(command);
+        }
+    }
+
 }
 
 
