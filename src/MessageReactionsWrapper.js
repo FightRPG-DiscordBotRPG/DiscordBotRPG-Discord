@@ -45,7 +45,7 @@ class MessageReactionsWrapper {
             return;
         }
 
-        if (!this.message.deleted && settings.reactionsEmojis != null) {
+        if (this.message.deletable && settings.reactionsEmojis != null) {
             await this.setReactionsEmojis(settings.reactionsEmojis);
         }
 
@@ -66,7 +66,7 @@ class MessageReactionsWrapper {
         //console.log(this.collector);
 
         this.collector.on('end', async () => {
-            await new Promise(res => setTimeout(res, 1000));            
+            await new Promise(res => setTimeout(res, 1000));
             await this.clearEmojis();
         });
     }
@@ -79,7 +79,7 @@ class MessageReactionsWrapper {
      * @param {boolean=} clearEmojis
      */
     async edit(content, interaction, arrOfEmojis) {
-        if (content != null && !this.message.deleted) {
+        if (content != null && this.message.deletable) {
             //if (clearEmojis) {
             //    await this.clearEmojis();
             //}
@@ -150,7 +150,7 @@ class MessageReactionsWrapper {
      * @param {string | {id: number, string: string}} emojiIdentifier
      */
     async addEmoji(emojiIdentifier) {
-        if (this.message.deleted) {
+        if (!this.message.deletable) {
             return;
         }
         try {
@@ -160,7 +160,7 @@ class MessageReactionsWrapper {
     }
 
     async clearEmojis() {
-        if (!this.message.deleted && !this.willBeDeleted) {
+        if (this.message.deletable && !this.willBeDeleted) {
             try {
                 await this.message.edit({
                     content: this.message.content != "" ? this.message.content : null,
