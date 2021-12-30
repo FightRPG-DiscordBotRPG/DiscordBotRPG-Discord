@@ -498,7 +498,7 @@ class FightManager {
                 this.getBarsDisplay(leftEntity, lang), true)
             .addField(`${monsterTitle} ${this.getEntityTitleDisplay(rightEntity, user)}`,
                 this.getBarsDisplay(rightEntity, lang), true)
-            .setFooter((ind + 1) + " / " + ((ind + 1) / fight.summary.rounds.length >= 0.9 ? fight.summary.rounds.length : "?"));
+            .setFooter({ text: (ind + 1) + " / " + ((ind + 1) / fight.summary.rounds.length >= 0.9 ? fight.summary.rounds.length : "?") });
 
         return embed;
     }
