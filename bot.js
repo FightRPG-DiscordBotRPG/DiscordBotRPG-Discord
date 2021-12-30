@@ -144,7 +144,6 @@ async function tryHandleMessage(interact) {
     }
 }
 
-
 /**
  * 
  * @param {import("discord.js").CommandInteractionOption[]} interactions
@@ -220,10 +219,12 @@ Globals.moduleHandler = new ModuleHandler();
 startBot();
 
 
-bot.on("interactionCreate", async (interaction) => {
-    if (interaction.isCommand()) {
-        //console.log(interaction.options.data.length);
-        //interaction.reply("Yes");
+bot.on("interactionCreate",
+    /**
+     * 
+     * @param {Discord.Interaction} interaction 
+     */
+    async (interaction) => {
 
         const interact = new InteractContainer();
         interact.author = interaction.user;
@@ -231,32 +232,24 @@ bot.on("interactionCreate", async (interaction) => {
         interact.interaction = interaction;
         interact.guild = interaction.guild;
         interact.command = interaction.commandName;
-
-        await recursiveUpdateData(interaction.options.data, interact, bot);
-
         interact.client = bot;
 
-        await tryHandleMessage(interact);
-    } else if (interaction.isContextMenu()) {
-        const interact = new InteractContainer();
-        interact.author = interaction.user;
+        let shouldHandleHere = false;
 
-        /**
-         * @type {Discord.ContextMenuInteraction}
-         */
-        interact.author = interaction.user;
-        interact.channel = interaction.channel;
-        interact.interaction = interaction;
-        interact.guild = interaction.guild;
-        interact.command = interaction.commandName;
-        interact.mentions.set(interaction.targetId, await bot.users.fetch(interaction.targetId), bot);
+        if (interaction.isCommand() || interaction.isAutocomplete()) {
+            await recursiveUpdateData(interaction.options.data, interact, bot);
+            shouldHandleHere = true;
+        } else if (interaction.isContextMenu()) {
+            interact.mentions.set(interaction.targetId, await bot.users.fetch(interaction.targetId), bot);
+            shouldHandleHere = true;
+        }
 
-        interact.client = bot;
+        if (shouldHandleHere) {
+            await tryHandleMessage(interact);
+        }
 
-        await tryHandleMessage(interact);
-    }
 
-});
+    });
 
 
 

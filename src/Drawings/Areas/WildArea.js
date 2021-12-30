@@ -46,17 +46,28 @@ class WildArea extends Area {
     monstersToString(monsters, lang = "en") {
         let str = "";
         for (let i in monsters) {
-            let id = parseInt(i) + 1;
-            str += Emojis.getString(monsters[i].type_shorthand);
-            if (monsters[i].number > 1) {
-                str += "`" + Translator.getString(lang, "area", "monster_group", [id, monsters[i].name, monsters[i].number - 1, monsters[i].level, monsters[i].type]) + "`\n";
-            } else {
-                str += "`" + Translator.getString(lang, "area", "monster", [id, monsters[i].name, monsters[i].level, monsters[i].type]) + "`\n";
-            }
+            str += WildArea.monsterToString(monsters[i], i, true, lang) + "\n";
+        }
+        return str;
+    }
+
+    static monsterToString(monster, id, decoration, lang = "en") {
+        let str = "";
+        id = parseInt(id) + 1;
+        if (decoration) {
+            str += Emojis.getString(monster.type_shorthand) + "`";
         }
 
+        if (monster.number > 1) {
+            str += Translator.getString(lang, "area", "monster_group", [id, monster.name, monster.number - 1, monster.level, monster.type]);
+        } else {
+            str += Translator.getString(lang, "area", "monster", [id, monster.name, monster.level, monster.type]);
+        }
 
-        str += "";
+        if (decoration) {
+            str += "`";
+        }
+
         return str;
     }
 
@@ -105,7 +116,7 @@ class WildArea extends Area {
                     case "animals":
                         strAnimals += tempString;
                         break;
-                    case "fabrics": 
+                    case "fabrics":
                         strFabrics += tempString;
                         break;
 

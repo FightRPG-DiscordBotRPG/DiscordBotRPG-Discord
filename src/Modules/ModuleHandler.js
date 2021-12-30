@@ -120,7 +120,7 @@ class ModuleHandler extends GModule {
         }
 
 
-        if (!author.bot && command != null && this.allCommands[command]) {
+        if (!author.bot && command != null && (this.allCommands[command] || interact.interaction.isAutocomplete())) {
             let isAdmin = Globals.admins.indexOf(authorIdentifier) > -1;
             let data;
             this.logCommand(authorIdentifier, command, Date.now());
@@ -139,139 +139,144 @@ class ModuleHandler extends GModule {
                 user.setMobile(author.presence?.clientStatus);
             }
 
-            // exec module corresponding to command
-            await this.executeCommand(interact, command, nonDiscordArgs, prefix);
+            if (!interact.interaction.isAutocomplete()) {
+                await this.executeCommand(interact, command, nonDiscordArgs, prefix);
 
-            let axios = Globals.connectedUsers[authorIdentifier].getAxios();
-            switch (command) {
-                case "prefix":
-                    msg = this.prefixCommand(interact, args, "en");
-                    break;
-                case "othertutorial":
-                    await user.tutorial.start(interact, user.lang);
-                    break;
-                case "othersetmobile":
-                    if (Globals.yesNoByLang[args[0]]) {
-                        args[0] = Globals.yesNoByLang[args[0]];
-                    }
-
-                    if (args[0] == true) {
-                        user.setMobileMode = "manual";
-                        user.isOnMobile = true;
-                    } else if (args[0] == false) {
-                        user.setMobileMode = "manual";
-                        user.isOnMobile = false;
-                    } else {
-                        user.setMobileMode = "auto";
-                        user.setMobile(interact.author.presence?.clientStatus);
-                    }
-
-                    msg = Translator.getString(user.lang, "general", "mobile_set", [user.setMobileMode, Translator.getString(user.lang, "general", user.isOnMobile ? "yes" : "no")]);
-                    break;
-                case "adminload_module":
-                    if (isAdmin) {
-                        if (this.loadModule(args[0])) {
-                            msg = "Discord: Module " + args[0] + " loaded successfully !\n";
-                        } else {
-                            msg = "Discord: An error occured when loading the module, module may not exist or can't be reloaded\n";
+                let axios = Globals.connectedUsers[authorIdentifier].getAxios();
+                switch (command) {
+                    case "prefix":
+                        msg = this.prefixCommand(interact, args, "en");
+                        break;
+                    case "othertutorial":
+                        await user.tutorial.start(interact, user.lang);
+                        break;
+                    case "othersetmobile":
+                        if (Globals.yesNoByLang[args[0]]) {
+                            args[0] = Globals.yesNoByLang[args[0]];
                         }
 
-                        data = await axios.post("/handler/load_module", {
-                            moduleName: args[0],
-                        });
+                        if (args[0] == true) {
+                            user.setMobileMode = "manual";
+                            user.isOnMobile = true;
+                        } else if (args[0] == false) {
+                            user.setMobileMode = "manual";
+                            user.isOnMobile = false;
+                        } else {
+                            user.setMobileMode = "auto";
+                            user.setMobile(interact.author.presence?.clientStatus);
+                        }
+
+                        msg = Translator.getString(user.lang, "general", "mobile_set", [user.setMobileMode, Translator.getString(user.lang, "general", user.isOnMobile ? "yes" : "no")]);
+                        break;
+                    case "adminload_module":
+                        if (isAdmin) {
+                            if (this.loadModule(args[0])) {
+                                msg = "Discord: Module " + args[0] + " loaded successfully !\n";
+                            } else {
+                                msg = "Discord: An error occured when loading the module, module may not exist or can't be reloaded\n";
+                            }
+
+                            data = await axios.post("/handler/load_module", {
+                                moduleName: args[0],
+                            });
+                            data = data.data;
+                            if (data.error == null) {
+                                msg += data.success;
+                            } else {
+                                msg += data.error;
+                            }
+                        }
+                        break;
+                    case "admindisable_module":
+                        if (isAdmin) {
+                            if (this.disableModule(args[0])) {
+                                msg = "Discord: Module " + args[0] + " disabled successfully !\n";
+                            } else {
+                                msg = "Discord: This module doesn't exist\n";
+                            }
+
+                            data = await axios.post("/handler/disable_module", {
+                                moduleName: args[0],
+                            });
+                            data = data.data;
+                            if (data.error == null) {
+                                msg += data.success;
+                            } else {
+                                msg += data.error;
+                            }
+                        }
+                        break;
+                    case "adminenable_module":
+                        if (isAdmin) {
+                            if (this.enableModule(args[0])) {
+                                msg = "Discord: Module " + args[0] + " enabled successfully !\n";
+                            } else {
+                                msg = "Discord: This module doesn't exist\n";
+                            }
+
+                            data = await axios.post("/handler/enable_module", {
+                                moduleName: args[0],
+                            });
+                            data = data.data;
+                            if (data.error == null) {
+                                msg += data.success;
+                            } else {
+                                msg += data.error;
+                            }
+                        }
+                        break;
+                    case "adminload_all_modules":
+                        /*if (isAdmin) {
+                            this.loadAllModules();
+                            msg = "Done, check console for errors / warning";
+                        }*/
+                        break;
+                    case "admindisabled_modules":
+                        if (isAdmin) {
+                            //msg = this.getDisabledModules();
+                            msg = await this.showNotImplementedCommands();
+                        }
+                        break;
+                    case "botinfo": {
+
+                        let total = await Utils.getTotalNumberOfGuilds(interact.client.shard);
+
+                        let totalSeconds = (interact.client.uptime / 1000);
+                        let hours = Math.floor(totalSeconds / 3600);
+                        totalSeconds %= 3600;
+                        let minutes = Math.floor(totalSeconds / 60);
+                        let seconds = Math.floor(totalSeconds % 60);
+                        let uptime = `${hours} hours, ${minutes} minutes and ${seconds} seconds`;
+                        const os = require('os');
+
+                        let totalMemory = await interact.client.shard.broadcastEval(() => process.memoryUsage().heapUsed);
+                        let totalMemoryMB = 0;
+                        for (let c of totalMemory) {
+                            totalMemoryMB += Math.round(c / 1024 / 1024 * 100) / 100;
+                        }
+
+                        data = await axios.get("/helpers/versions");
                         data = data.data;
-                        if (data.error == null) {
-                            msg += data.success;
-                        } else {
-                            msg += data.error;
-                        }
-                    }
-                    break;
-                case "admindisable_module":
-                    if (isAdmin) {
-                        if (this.disableModule(args[0])) {
-                            msg = "Discord: Module " + args[0] + " disabled successfully !\n";
-                        } else {
-                            msg = "Discord: This module doesn't exist\n";
-                        }
 
-                        data = await axios.post("/handler/disable_module", {
-                            moduleName: args[0],
-                        });
-                        data = data.data;
-                        if (data.error == null) {
-                            msg += data.success;
-                        } else {
-                            msg += data.error;
-                        }
-                    }
-                    break;
-                case "adminenable_module":
-                    if (isAdmin) {
-                        if (this.enableModule(args[0])) {
-                            msg = "Discord: Module " + args[0] + " enabled successfully !\n";
-                        } else {
-                            msg = "Discord: This module doesn't exist\n";
-                        }
-
-                        data = await axios.post("/handler/enable_module", {
-                            moduleName: args[0],
-                        });
-                        data = data.data;
-                        if (data.error == null) {
-                            msg += data.success;
-                        } else {
-                            msg += data.error;
-                        }
-                    }
-                    break;
-                case "adminload_all_modules":
-                    /*if (isAdmin) {
-                        this.loadAllModules();
-                        msg = "Done, check console for errors / warning";
-                    }*/
-                    break;
-                case "admindisabled_modules":
-                    if (isAdmin) {
-                        //msg = this.getDisabledModules();
-                        msg = await this.showNotImplementedCommands();
-                    }
-                    break;
-                case "botinfo": {
-
-                    let total = await Utils.getTotalNumberOfGuilds(interact.client.shard);
-
-                    let totalSeconds = (interact.client.uptime / 1000);
-                    let hours = Math.floor(totalSeconds / 3600);
-                    totalSeconds %= 3600;
-                    let minutes = Math.floor(totalSeconds / 60);
-                    let seconds = Math.floor(totalSeconds % 60);
-                    let uptime = `${hours} hours, ${minutes} minutes and ${seconds} seconds`;
-                    const os = require('os');
-
-                    let totalMemory = await interact.client.shard.broadcastEval(() => process.memoryUsage().heapUsed);
-                    let totalMemoryMB = 0;
-                    for (let c of totalMemory) {
-                        totalMemoryMB += Math.round(c / 1024 / 1024 * 100) / 100;
+                        msg = new Discord.MessageEmbed()
+                            .setAuthor({ name: "FightRPG" })
+                            .addField("Shard Uptime: ", "[ " + uptime + " ]", true).addField("Shard ID: ", `[ ${interact.client.shard.ids} ]`)
+                            .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + interact.client.shard.count + " ]", true)
+                            .addField("Server Version: ", "[ " + data.server + " ]", true).addField("Bot Version: ", "[ " + version + " ]", true)
+                            .addField("Memory Used: ", "[ " + `${Math.round(totalMemoryMB)} MB` + " ]", true).addField("Ping: ", "[ " + Math.round(interact.client.ws.ping) + " ms ]", true)
+                            .addField("Processor: ", "[ " + os.cpus()[0].model + " [x" + os.cpus().length + "] ]", true)
+                        break;
                     }
 
-                    data = await axios.get("/helpers/versions");
-                    data = data.data;
-
-                    msg = new Discord.MessageEmbed()
-                        .setAuthor({ name: "FightRPG" })
-                        .addField("Shard Uptime: ", "[ " + uptime + " ]", true).addField("Shard ID: ", `[ ${interact.client.shard.ids} ]`)
-                        .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + interact.client.shard.count + " ]", true)
-                        .addField("Server Version: ", "[ " + data.server + " ]", true).addField("Bot Version: ", "[ " + version + " ]", true)
-                        .addField("Memory Used: ", "[ " + `${Math.round(totalMemoryMB)} MB` + " ]", true).addField("Ping: ", "[ " + Math.round(interact.client.ws.ping) + " ms ]", true)
-                        .addField("Processor: ", "[ " + os.cpus()[0].model + " [x" + os.cpus().length + "] ]", true)
-                    break;
                 }
 
+                this.sendMessage(interact, msg);
+                //console.log("Performing command, took: " + ((Date.now() - dt) / 1000) + " seconds");
+            } else {
+                await this.modules["AutocompleteInteractionsModule"].run(interact, command, args, prefix);
             }
 
-            this.sendMessage(interact, msg);
-            //console.log("Performing command, took: " + ((Date.now() - dt) / 1000) + " seconds");
+
         }
     }
 

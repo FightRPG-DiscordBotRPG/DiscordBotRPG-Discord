@@ -20,26 +20,7 @@ class Talents {
     toString(data, user) {
         let lang = data.lang;
 
-        let reachableNodes = [];
-
-
-        for (let item of data.talents) {
-            for (let i in item.linkedNodesIds) {
-                let link = item.linkedNodesIds[i];
-                if (!reachableNodes.includes(link) && !data.talents.find(e => e.id == link)) {
-                    reachableNodes.push(item.linkedNodes[i]);
-                }
-            }
-        }
-
-        // Used when empty (mostly)
-        for (let link of data.initialTalents) {
-            if (!reachableNodes.includes(link) && !data.talents.find(e => e.id == link)) {
-                reachableNodes.push(link.id + " (" + link.visuals.name + ")");
-            }
-        }
-
-        reachableNodes = [...new Set(reachableNodes)];
+        let reachableNodes = this.getReachableNodes(data).map(e => e.name);
 
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
@@ -57,6 +38,41 @@ class Talents {
         }
 
         return this.addCurrentImageToEmbed(embed, data);
+    }
+
+    getReachableNodes(data) {
+        return this.getAllNodes(data);
+    }
+
+    getAllNodes(data, withUnlocked = false, addCostError = false) {
+        let reachableNodes = [];
+        let alreadyDone = {};
+
+        for (let item of data.talents) {
+            for (let i in item.linkedNodesIds) {
+                let link = item.linkedNodesIds[i];
+                if (!alreadyDone[link] && (withUnlocked || !data.talents.find(e => e.id == link))) {
+                    alreadyDone[link] = true;
+                    reachableNodes.push({ name: item.linkedNodes[i] + (addCostError ? this.addCostError(item.linkedNodesItems[i].realCost, data.talentPoints) : ""), value: item.linkedNodes[i].split(" ")[0].toString() });
+                }
+            }
+        }
+
+        // Used when empty (mostly)
+        for (let link of data.initialTalents) {
+            if (!alreadyDone[link.id] && (withUnlocked || !data.talents.find(e => e.id == link))) {
+                alreadyDone[link.id] = true;
+                reachableNodes.push({
+                    name: link.id + " (" + link.visuals.name + ")" + (addCostError ? this.addCostError(link.realCost, data.talentPoints) : ""), value: link.id.toString()
+                });
+            }
+        }
+
+        return reachableNodes;
+    }
+
+    addCostError(cost, availablePoints, lang = "en") {
+        return cost > availablePoints ? " - " + Translator.getString(lang, "errors", "talents_not_enough_points") : "";
     }
 
 

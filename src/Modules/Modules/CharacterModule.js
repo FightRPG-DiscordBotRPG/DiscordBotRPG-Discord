@@ -182,6 +182,7 @@ class CharacterModule extends GModule {
                 });
                 break;
             case "talentsshow":
+                await interact.interaction.deferReply();
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/character/talents"), async (data) => {
                     return Talents.toString(data, user);
                 });

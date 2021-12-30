@@ -219,11 +219,20 @@ var Globals = {
             required: true,
         };
 
+        const idCollectOption = {
+            name: "resource",
+            description: "Resource to collect",
+            type: "STRING",
+            required: true,
+            autocomplete: true,
+        };
+
         const idTalentOption = {
             name: "idtalent",
             description: "Identifier of the talent",
             type: "STRING",
             required: true,
+            autocomplete: true,
         };
 
         const idSkillOption = {
@@ -231,13 +240,15 @@ var Globals = {
             description: "Identifier of the skill",
             type: "STRING",
             required: true,
+            autocomplete: true
         };
 
         const toFightMonsterOption = {
             name: "tofight",
             description: "Monster to fight",
-            type: "INTEGER",
-            required: true
+            type: "STRING",
+            required: true,
+            autocomplete: true,
         };
 
         const confirmOption = {
@@ -744,8 +755,9 @@ var Globals = {
                             {
                                 name: "idarea",
                                 description: "Id Area to travel",
-                                type: "INTEGER",
+                                type: "STRING",
                                 required: true,
+                                autocomplete: true,
                             },
                             confirmOption
                         ],
@@ -758,8 +770,9 @@ var Globals = {
                             {
                                 name: "idregion",
                                 description: "Id region to travel",
-                                type: "INTEGER",
+                                type: "STRING",
                                 required: true,
+                                autocomplete: true,
                             },
                             confirmOption
                         ],
@@ -1170,7 +1183,7 @@ var Globals = {
             {
                 name: "collect",
                 description: Translator.getString("en", "help_panel", "collect", [data?.collectTriesOnce]),
-                options: [idCraftOption],
+                options: [idCollectOption],
                 defaultPermission: true,
             },
             {
