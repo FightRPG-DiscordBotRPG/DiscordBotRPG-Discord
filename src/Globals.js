@@ -601,6 +601,11 @@ var Globals = {
                 defaultPermission: true,
             },
             {
+                name: "Fight in Arena",
+                type: "USER",
+                defaultPermission: true,
+            },
+            {
                 name: "inventory",
                 description: Translator.getString("en", "help_panel", "inv"),
                 options: filterSelectOptionsWithPage,
@@ -1058,6 +1063,10 @@ var Globals = {
                 defaultPermission: true,
             },
             {
+                name: "Invite in Group",
+                type: "USER",
+            },
+            {
                 name: "marketplace",
                 description: "?",
                 options: [
@@ -1203,6 +1212,11 @@ var Globals = {
                         type: "SUB_COMMAND",
                     },
                 ],
+                defaultPermission: true,
+            },
+            {
+                name: "Propose a Trade",
+                type: "USER",
                 defaultPermission: true,
             },
             {
@@ -1721,7 +1735,7 @@ var Globals = {
             }
         ];
 
-        //  console.log(Globals.commands[40].options[6]);
+        //  console.log(Globals.commands[33].options[1]);
     },
 
     loadHelpPanel: async function () {

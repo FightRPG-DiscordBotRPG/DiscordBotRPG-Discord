@@ -9,7 +9,7 @@ const { default: Collection } = require("@discordjs/collection");
 class FightModule extends GModule {
     constructor() {
         super();
-        this.commands = ["fight", "arena"];
+        this.commands = ["fight", "arena", "Fight in Arena"];
         this.startLoading("Fight");
         this.init();
         this.endLoading("Fight");
@@ -42,6 +42,7 @@ class FightModule extends GModule {
                 break;
 
             case "arena":
+            case "Fight in Arena":
                 firstMention = mentions?.first();
                 msg = await this.getDisplayIfSuccess(await axios.post("/game/fight/arena", {
                     idCharacter: args[0],

@@ -10,7 +10,7 @@ class GroupModule extends GModule {
     constructor() {
         super();
         this.commands = [
-            "groupmute", "groupunmute", "groupkick", "groupleave", "groupinvite", "groupaccept", "groupdecline", "groupinfo", "groupfight", "groupswap"
+            "groupmute", "groupunmute", "groupkick", "groupleave", "groupinvite", "groupaccept", "groupdecline", "groupinfo", "groupfight", "groupswap", "Invite in Group"
         ];
         this.startLoading("Group");
         this.init();
@@ -54,6 +54,7 @@ class GroupModule extends GModule {
                 break;
 
             case "groupinvite":
+            case "Invite in Group":
                 firstMention = mentions?.first();
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/group/invite", {
                     mention: firstMention != null ? firstMention.id : null

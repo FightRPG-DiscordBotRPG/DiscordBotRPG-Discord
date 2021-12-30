@@ -10,7 +10,7 @@ const InteractContainer = require("../../Discord/InteractContainer");
 class TradeModule extends GModule {
     constructor() {
         super();
-        this.commands = ["tradepropose", "tradecancel", "tradeaccept", "tradeshow", "tradeitem", "tradeadd", "traderemove", "tradesetmoney", "tradevalidate"];
+        this.commands = ["tradepropose", "tradecancel", "tradeaccept", "tradeshow", "tradeitem", "tradeadd", "traderemove", "tradesetmoney", "tradevalidate", "Propose a Trade"];
         this.startLoading("Trade");
         this.init();
         this.endLoading("Trade");
@@ -32,6 +32,7 @@ class TradeModule extends GModule {
 
         switch (command) {
             case "tradepropose":
+            case "Propose a Trade":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/trade/propose", {
                     mention: firstMention != null ? firstMention.id : null
                 }));

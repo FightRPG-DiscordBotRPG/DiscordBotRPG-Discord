@@ -145,6 +145,35 @@ async function tryHandleMessage(interact) {
 }
 
 
+/**
+ * 
+ * @param {import("discord.js").CommandInteractionOption[]} interactions
+ * @param {InteractContainer} interact
+ */
+async function recursiveUpdateData(interactions, interact) {
+    for (let i of interactions) {
+        if (i.value !== undefined) {
+            const val = i.value.toString();
+
+            if (val.startsWith("<@!")) {
+                const id = val.slice(3, val.length - 1);
+                interact.mentions.set(id, await bot.users.fetch(id))
+            } else {
+                interact.args.push(i.value);
+            }
+        } else {
+            if (i.type.toString().includes("SUB_COMMAND")) {
+                interact.command += i.name;
+            }
+
+            if (i.options) {
+                await recursiveUpdateData(i.options, interact);
+            }
+        }
+    }
+}
+
+
 bot.on("ready", async () => {
     console.log("Shard Connected");
 
@@ -203,12 +232,30 @@ bot.on("interactionCreate", async (interaction) => {
         interact.guild = interaction.guild;
         interact.command = interaction.commandName;
 
-        await Utils.recursiveUpdateData(interaction.options.data, interact);
+        await recursiveUpdateData(interaction.options.data, interact, bot);
+
+        interact.client = bot;
+
+        await tryHandleMessage(interact);
+    } else if (interaction.isContextMenu()) {
+        const interact = new InteractContainer();
+        interact.author = interaction.user;
+
+        /**
+         * @type {Discord.ContextMenuInteraction}
+         */
+        interact.author = interaction.user;
+        interact.channel = interaction.channel;
+        interact.interaction = interaction;
+        interact.guild = interaction.guild;
+        interact.command = interaction.commandName;
+        interact.mentions.set(interaction.targetId, await bot.users.fetch(interaction.targetId), bot);
 
         interact.client = bot;
 
         await tryHandleMessage(interact);
     }
+
 });
 
 

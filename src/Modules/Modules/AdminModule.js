@@ -335,7 +335,7 @@ class AdminModule extends GModule {
     testCommands(options) {
         let text = "";
         for (let item of options) {
-            if (item.description.includes("en |")) {
+            if (item.description?.includes("en |")) {
                 text += item.name + " => " + item.description + "\n";
             }
             if (item.options) {
