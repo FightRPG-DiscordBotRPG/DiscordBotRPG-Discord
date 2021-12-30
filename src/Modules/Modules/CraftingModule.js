@@ -8,7 +8,7 @@ const InteractContainer = require("../../Discord/InteractContainer");
 class CraftingModule extends GModule {
     constructor() {
         super();
-        this.commands = ["craftlist", "craftshow", "collect", "resources", "craftmake"];
+        this.commands = ["craftlist", "craftshow", "collect", "craftmake", "otherresources"];
         this.startLoading("Crafting");
         this.init();
         this.endLoading("Crafting");

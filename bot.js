@@ -162,7 +162,7 @@ bot.on("ready", async () => {
     //        options: [{
     //            name: "input",
     //            type: "",
-    //            description: "�a sert � rien",
+    //            description: "ça sert à rien",
     //            require: true
     //        }],
     //    }
@@ -203,11 +203,8 @@ bot.on("interactionCreate", async (interaction) => {
         interact.guild = interaction.guild;
         interact.command = interaction.commandName;
 
-        console.log(interaction.commandName);
         await Utils.recursiveUpdateData(interaction.options.data, interact);
-        console.log(interact.command);
 
-        console.log(interact.command);
         interact.client = bot;
 
         await tryHandleMessage(interact);

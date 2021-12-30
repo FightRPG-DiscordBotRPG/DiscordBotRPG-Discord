@@ -128,7 +128,7 @@ Emojis.emojisProd = {
     },
     "bar_white": {
         id: "704023285586722837",
-        string:"<:bar_white:704023285586722837>"
+        string: "<:bar_white:704023285586722837>"
     },
     "bar_white_empty": {
         id: "704023285897363486",
@@ -430,6 +430,10 @@ Emojis.emojisProd = {
         id: "842695739238121473",
         string: "<:fabric_mythic:842695739238121473>"
     },
+    "loading": {
+        id: "926073161861173269",
+        string: "<a:loading:926073161861173269>"
+    },
 
 };
 
@@ -565,7 +569,7 @@ Emojis.general = {
     "back_arrow": "🔙",
     "rainbow": "🌈",
     "helmet": "⛑️"
-    };
+};
 
 Emojis.entitiesTypes = {
     "Character": Emojis.emojisProd.user.string,

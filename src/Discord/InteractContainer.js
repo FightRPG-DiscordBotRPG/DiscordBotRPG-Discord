@@ -51,8 +51,12 @@ class InteractContainer {
      */
     async reply(data) {
 
-        if (this.interaction && !this.interaction.replied) {
-            return await this.interaction.reply(InteractContainer.getReplyOptions(data));
+        if (this.interaction) {
+            if (!this.interaction.replied) {
+                return await this.interaction.reply(InteractContainer.getReplyOptions(data));
+            } else {
+                return await this.interaction.editReply(InteractContainer.getReplyOptions(data));
+            }
         }
 
         if (this.message) {

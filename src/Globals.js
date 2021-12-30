@@ -342,13 +342,15 @@ var Globals = {
             pageOption
         ];
 
+        const playerOrIdOption = {
+            name: "player",
+            description: "Player id or @someone",
+            type: "STRING",
+            required: true
+        }
+
         const playerOrIdOptions = [
-            {
-                name: "player",
-                description: "Player id or @someone",
-                type: "STRING",
-                required: true
-            }
+            playerOrIdOption
         ];
 
         const amountOption = {
@@ -357,6 +359,27 @@ var Globals = {
             type: "INTEGER",
             required: false
         };
+
+        const levelOption = {
+            name: "level",
+            description: "Level",
+            type: "INTEGER",
+            required: false
+        }
+
+        const rebirthLevelOption = {
+            name: "rebirthlevel",
+            description: "Rebirth level",
+            type: "INTEGER",
+            required: false
+        }
+
+        const secondsOption = {
+            name: "seconds",
+            description: "Seconds",
+            type: "INTEGER",
+            required: true,
+        }
 
         //#endregion Constants
 
@@ -1443,6 +1466,11 @@ var Globals = {
                         name: "resources",
                         description: Translator.getString("en", "help_panel", "resources"),
                         type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "tutorial",
+                        description: "Start the tutorial",
+                        type: "SUB_COMMAND",
                     }
 
                 ],
@@ -1561,13 +1589,136 @@ var Globals = {
                         name: "clearslashcommands",
                         description: "Clear slash commands",
                         type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "giveme",
+                        description: "Give yourself a specific item",
+                        options: [
+                            idItemOption,
+                            amountOption,
+                            rebirthLevelOption
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "giveto",
+                        description: "Give a specific user a specific item",
+                        options: [
+                            playerOrIdOption,
+                            idItemOption,
+                            levelOption,
+                            amountOption,
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "mutefor",
+                        description: "Mute a user for x seconds",
+                        options: [
+                            playerOrIdOption,
+                            secondsOption,
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "xp",
+                        description: "Give self x amount of xp",
+                        options: [
+                            amountOption,
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "gold",
+                        description: "Give self x amount of gold",
+                        options: [
+                            amountOption,
+                            { ...playerOrIdOption, required: false },
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "resetfight",
+                        description: "Reset fatigue for self",
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "debug",
+                        description: "Debug command",
+                        options: [
+                            {
+                                name: "value1",
+                                description: "Value 1",
+                                type: "STRING",
+                                required: false
+                            },
+                            {
+                                name: "value2",
+                                description: "Value 2",
+                                type: "STRING",
+                                required: false
+                            },
+                            {
+                                name: "value3",
+                                description: "Value 3",
+                                type: "STRING",
+                                required: false
+                            },
+                            {
+                                name: "value4",
+                                description: "Value 4",
+                                type: "STRING",
+                                required: false
+                            },
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "last_command",
+                        description: "Get last command",
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "show_all_emojis",
+                        description: "Show all emojis",
+                        options: [
+                            pageOption
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "warn",
+                        description: "Warn a user",
+                        options: [
+                            {
+                                name: "players",
+                                description: "Players to warn, separated by comma",
+                                type: "STRING",
+                            }
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "eval",
+                        description: "Evaluate a string",
+                        options: [
+                            {
+                                name: "string",
+                                description: "String to evaluate",
+                                type: "STRING",
+                                required: true,
+                            }
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "update_commands_channel",
+                        description: "Update commands channel",
+                        type: "SUB_COMMAND",
                     }
                 ],
                 defaultPermission: true,
             }
-
-
-
         ];
 
         //  console.log(Globals.commands[40].options[6]);

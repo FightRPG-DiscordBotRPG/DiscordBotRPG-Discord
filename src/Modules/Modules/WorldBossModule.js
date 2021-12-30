@@ -12,7 +12,7 @@ const Discord = require("discord.js");
 class WorldBossModule extends GModule {
     constructor() {
         super();
-        this.commands = ["wbleaderboard", "worldbossfight", "worldbossshowall", "worldbosslastinfo"];
+        this.commands = ["worldbossfight", "worldbossshowall", "worldbosslastinfo"];
         this.startLoading("World Boss");
         this.init();
         this.endLoading("World Boss");
@@ -103,14 +103,6 @@ class WorldBossModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/worldbosses/display/lastboss"), (data) => {
                     return WorldBosses.lastBossStats(data);
                 });
-                break;
-            case "wbleaderboard":
-                if ((args[0] && !Number.isInteger(Number.parseInt(args[0]))) || (args[0] && args[1])) {
-                    args[0] = "wb" + args[0];
-                } else {
-                    args[0] = "wbdamage";
-                }
-                this.drawLeaderboard(interact, args, "damage")
                 break;
         }
 

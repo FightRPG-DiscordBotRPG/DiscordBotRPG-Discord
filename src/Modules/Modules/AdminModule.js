@@ -12,7 +12,7 @@ const conf = require("../../../conf/conf");
 class AdminModule extends GModule {
     constructor() {
         super();
-        this.commands = ["adminupdatepresence", "admingiveme", "adminactive", "adminmutefor", "adminxp", "admingold", "adminresetfight", "adminreload_translations", "adminreload_emojis", "adminldadmin", "adminreload_leaderboard", "admindebug", "adminlast_command", "admingiveto", "adminactive_players", "adminupdate_commands_channel", "adminbot_info", "admineval", "adminshow_all_emojis", "adminupdateslashcommands", "admintestslashcommands", "adminclearslashcommands"];
+        this.commands = ["adminupdatepresence", "admingiveme", "adminactive", "adminmutefor", "adminxp", "admingold", "adminresetfight", "adminreload_translations", "admindebug", "adminlast_command", "admingiveto", "adminactive_players", "adminupdate_commands_channel", "admineval", "adminshow_all_emojis", "adminupdateslashcommands", "admintestslashcommands", "adminclearslashcommands", "adminwarn"];
         this.startLoading("Admin");
         this.init();
         this.endLoading("Admin");
@@ -128,6 +128,7 @@ class AdminModule extends GModule {
                 break;
 
             case "adminactive_players":
+                interact.reply(Emojis.emojisProd.loading.string);
                 data = await axios.get("/game/admin/active_players/" + args[0]);
                 data = data.data;
                 if (data.error == null) {
@@ -148,8 +149,6 @@ class AdminModule extends GModule {
                 } else {
                     msg = data.error;
                 }
-
-
                 break;
 
             case "adminactive":
