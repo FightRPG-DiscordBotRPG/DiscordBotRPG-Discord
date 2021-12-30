@@ -566,7 +566,7 @@ class Utils {
      */
     static async recursiveUpdateData(interactions, interact) {
         for (let i of interactions) {
-            if (i.value) {
+            if (i.value !== undefined) {
                 const val = i.value.toString();
 
                 if (val.startsWith("<@!")) {
