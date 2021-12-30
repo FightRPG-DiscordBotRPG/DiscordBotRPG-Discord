@@ -86,7 +86,7 @@ class Guild {
 
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(data.name + " (ID " + data.id + ") - " + Translator.getString(lang, "guild", "members_out_of", [membersArray.length, data.maxMembers]), data.image)
+            .setAuthor({ name: data.name + " (ID " + data.id + ") - " + Translator.getString(lang, "guild", "members_out_of", [membersArray.length, data.maxMembers]), iconURL: data.image })
             .addField(Emojis.getString("loudspeaker") + " " + Translator.getString(lang, "guild", "guild_announcement"), (data.message !== "" ? data.message : Translator.getString(lang, "guild", "no_guild_announcement")))
 
             .addField(Emojis.getString("king") + " " + Translator.getString(lang, "guild", "guild_master"), rgmStr);
@@ -117,11 +117,11 @@ class Guild {
     territoriesToString(data) {
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(Translator.getString(data.lang, "guild", "guild_territories", [data.totalNumberOfTerritories]));
+            .setAuthor({ name: Translator.getString(data.lang, "guild", "guild_territories", [data.totalNumberOfTerritories]) });
         for (let region in data.territories) {
             let areas = "--------------------\n";
             for (let area of data.territories[region]) {
-                areas += Emojis.getAreaTypeEmoji(area.type_shorthand) + " - "+ area.idArea + " - "  + area.name + (area.statPoints > 0 ? " (" + Emojis.emojisProd.plussign.string + " " + Translator.getString(data.lang, "area", "conquest_points_to_distribute", [area.statPoints]) + ")" : "") + "\n";
+                areas += Emojis.getAreaTypeEmoji(area.type_shorthand) + " - " + area.idArea + " - " + area.name + (area.statPoints > 0 ? " (" + Emojis.emojisProd.plussign.string + " " + Translator.getString(data.lang, "area", "conquest_points_to_distribute", [area.statPoints]) + ")" : "") + "\n";
             }
             embed.addField(region, areas + "--------------------");
         }
@@ -161,7 +161,7 @@ class Guild {
 
 
         let embed = new Discord.MessageEmbed()
-            .setAuthor(Translator.getString(lang, "guild", "current_applications"));
+            .setAuthor({ name: Translator.getString(lang, "guild", "current_applications") });
 
 
         return ListedAppliances.getEmbed(embed);
@@ -193,7 +193,7 @@ class Guild {
 
 
         let embed = new Discord.MessageEmbed()
-            .setAuthor(Translator.getString(lang, "help_panel", "guilds_title"));
+            .setAuthor({ name: Translator.getString(lang, "help_panel", "guilds_title") });
 
 
 
@@ -204,7 +204,7 @@ class Guild {
     disbandConfirm(lang = "en") {
         return new Discord.MessageEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(Emojis.getString("warning") + " " + Translator.getString(lang, "guild", "head_disband") + " " + Emojis.getString("warning"))
+            .setAuthor({ name: Emojis.getString("warning") + " " + Translator.getString(lang, "guild", "head_disband") + " " + Emojis.getString("warning") })
             .addField(Translator.getString(lang, "general", "description"), Translator.getString(lang, "guild", "body_disband"), true);
     }
 }

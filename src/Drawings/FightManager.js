@@ -490,7 +490,7 @@ class FightManager {
         }
 
         let embed = new Discord.MessageEmbed()
-            .setAuthor(Emojis.getString("crossed_swords") + "  " + Translator.getString(lang, "fight_general", "status_of_fight", [battleStatus]) + "  " + Emojis.getString("crossed_swords"))
+            .setAuthor({ name: Emojis.getString("crossed_swords") + "  " + Translator.getString(lang, "fight_general", "status_of_fight", [battleStatus]) + "  " + Emojis.getString("crossed_swords") })
             .setColor(color)
             .setDescription(contentText)
             //.addField(Translator.getString(lang, "fight_general", "combat_log"), text)

@@ -24,7 +24,7 @@ class Area {
         let lang = data.lang;
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(area.name + " (" + area.id + ") | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by", [area.owner]), area.image);
+            .setAuthor({ name: area.name + " (" + area.id + ") | " + area.levels + " | " + Translator.getString(lang, "area", "owned_by", [area.owner]), iconURL: area.image });
 
         if (this.displayWeather) {
             embed = this.embedWeather(data, user, embed);
@@ -95,7 +95,7 @@ class Area {
 
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(data.name + " | " + data.levels + " | " + Translator.getString(lang, "area", "owned_by", [data.owner]), data.image)
+            .setAuthor({ name: data.name + " | " + data.levels + " | " + Translator.getString(lang, "area", "owned_by", [data.owner]), iconURL: data.image })
             .addField(Translator.getString(lang, "area", "conquest"), this.tournamentInfoToStr(data, user));
 
         return Utils.addBonusesToEmbed(data.bonuses, user, embed)

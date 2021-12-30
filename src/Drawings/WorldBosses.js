@@ -37,12 +37,13 @@ class WorldBosses {
                 }
             });
 
-            return ListOfWorldBosses.getEmbed(new Discord.MessageEmbed().setAuthor(Translator.getString(lang, "help_panel", "world_boss_title")));
+            return ListOfWorldBosses
+                .getEmbed(new Discord.MessageEmbed().setAuthor({ name: Translator.getString(lang, "help_panel", "world_boss_title") }));
         } else {
             if (data.bosses.length > 0) {
                 let str = "";
                 for (let info of data.bosses) {
-                    str += Emojis.general.national_park + " " + info.regionName + " - " + info.areaName + " (" + info.idArea  + ")\n";
+                    str += Emojis.general.national_park + " " + info.regionName + " - " + info.areaName + " (" + info.idArea + ")\n";
                     if (info.worldBoss != null) {
                         str += Emojis.emojisProd.boss.string + " " + info.worldBoss.name + " (" + Translator.getFormater(data.lang).format(info.worldBoss.actualHP) + "/" + Translator.getFormater(data.lang).format(info.worldBoss.maxHP) + ")\n" + pb.draw(info.worldBoss.actualHP, info.worldBoss.maxHP);
                     } else {
@@ -84,7 +85,7 @@ class WorldBosses {
         let lang = data_fight.lang;
         let damageString = data_fight.isCriticalHit ? Translator.getString(lang, "world_bosses", "boss_fight_damage_inflicted_critical", [data_fight.damage]) : Translator.getString(lang, "world_bosses", "boss_fight_damage_inflicted", [data_fight.damage]);
         return new Discord.MessageEmbed()
-            .setAuthor(data_ranks.worldBoss.bossName)
+            .setAuthor({ name: data_ranks.worldBoss.bossName })
             .addField(Emojis.getString("sword") + " " + Translator.getString(lang, "fight_general", "combat_log"), damageString)
             .addField(Emojis.general.yellow_book + " " + Translator.getString(lang, "world_bosses", "skill_used"), data_fight.skillUsed)
             .addField(Emojis.getString("win") + " " + Translator.getString(lang, "leaderboards", "wb_damage"), Translator.getString(lang, "world_bosses", "boss_fight_recap_damage_dealt", [data_ranks.worldBoss.damage, data_ranks.worldBoss.damageRank]), true)

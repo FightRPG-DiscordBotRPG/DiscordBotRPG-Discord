@@ -39,7 +39,7 @@ class Leaderboard {
 
         listEmbed.fields.unshift(this.getYourRankString());
 
-        return listEmbed.getEmbed(new Discord.MessageEmbed().setAuthor(title));
+        return listEmbed.getEmbed(new Discord.MessageEmbed().setAuthor({ name: title }));
     }
 
     getItemOffsetStr(i) {

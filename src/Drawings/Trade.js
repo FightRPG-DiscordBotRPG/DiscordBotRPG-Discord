@@ -18,7 +18,7 @@ class Trade {
     toString(data, user) {
         let rembed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(Translator.getString(data.lang, "trade", "title", [data.trade.playerOneName, data.trade.playerTwoName]));
+            .setAuthor({ name: Translator.getString(data.lang, "trade", "title", [data.trade.playerOneName, data.trade.playerTwoName]) });
 
         let id = 0;
 

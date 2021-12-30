@@ -353,7 +353,7 @@ class CharacterModule extends GModule {
 
                         let confirmEmbed = new Discord.MessageEmbed()
                             .setColor([0, 255, 0])
-                            .setAuthor(Translator.getString(user.lang, "character", "rebirth_title"));
+                            .setAuthor({ name: Translator.getString(user.lang, "character", "rebirth_title") });
 
                         if (canRebirthData.canRebirth) {
 
@@ -403,7 +403,7 @@ class CharacterModule extends GModule {
 
                         let options = InteractContainer.getReplyOptions(new Discord.MessageEmbed()
                             .setColor([0, 255, 0])
-                            .setAuthor(Translator.getString(user.lang, "character", "rebirth_title"))
+                            .setAuthor({ name: Translator.getString(user.lang, "character", "rebirth_title") })
                             .addField(Emojis.emojisProd.rebirth.string + " " + Translator.getString(user.lang, "character", "current_bonuses"), Rebirth.getRebirthBonuses(data, user, Rebirth.rebirthsBonusesTypes.all, true) + "\n")
                             .addField(Emojis.general.scroll + " " + Translator.getString(data.lang, "character", "rebirth_do_you_want"), description));
 
@@ -502,7 +502,7 @@ class CharacterModule extends GModule {
         }
         return new Discord.MessageEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(Emojis.getString("scroll") + " " + Translator.getString(data.lang, "character", "reset" + optionalType + "_price_title"))
+            .setAuthor({ name: Emojis.getString("scroll") + " " + Translator.getString(data.lang, "character", "reset" + optionalType + "_price_title") })
             .addField(Emojis.getString("money_bag") + " " + Translator.getString(data.lang, "travel", "gold_price_title"), Translator.getString(data.lang, "travel", "gold_price_body", [data.resetValue]), true)
             .addField(Emojis.getString("q_mark") + " " + Translator.getString(data.lang, "character", "sure_to_reset" + optionalType + "_title"), Translator.getString(data.lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]));
     }

@@ -121,7 +121,7 @@ class UserChallenge {
     getEmbed(content) {
         return new MessageEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(Translator.getString(this.user.lang, "antispam", "title"))
+            .setAuthor({ name: Translator.getString(this.user.lang, "antispam", "title") })
             .setDescription(content);
     }
 

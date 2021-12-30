@@ -26,7 +26,7 @@ class Group {
 
         let embed = new Discord.MessageEmbed()
             .setColor([0, 127, 255])
-            .setAuthor(Translator.getString(lang, "group", "group") + " | " + Translator.getString(lang, "group", "avg_level", [data.avgLevel]) + " | " + Translator.getString(lang, "group", "avg_power", [data.avgPower]), "http://www.cdhh.fr/wp-content/uploads/2012/04/icon_groupe2.jpg")
+            .setAuthor({ name: Translator.getString(lang, "group", "group") + " | " + Translator.getString(lang, "group", "avg_level", [data.avgLevel]) + " | " + Translator.getString(lang, "group", "avg_power", [data.avgPower]), iconURL: "http://www.cdhh.fr/wp-content/uploads/2012/04/icon_groupe2.jpg" })
             .addField("--------------------------------------", Translator.getString(lang, "group", "members_of_the_group") + " (" + data.numberOfPlayers + " / 5)");
 
         embed = membersList.getEmbed(embed);

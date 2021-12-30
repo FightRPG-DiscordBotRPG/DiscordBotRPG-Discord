@@ -26,7 +26,7 @@ class InfoPanel {
         let authorTitle = data.username + "  " + Emojis.general.collision + " " + Translator.getString(data.lang, "inventory_equipment", "power") + ": " + Translator.getFormater(data.lang).format(data.power);
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(authorTitle, user.avatar);
+            .setAuthor({ name: authorTitle, iconURL: user.avatar });
 
         if (this.displayAttributes) {
             embed = this.embedInfoPanelAddAttributes(data, user, embed);

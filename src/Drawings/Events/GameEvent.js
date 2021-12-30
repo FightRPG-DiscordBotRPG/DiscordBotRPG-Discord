@@ -37,7 +37,7 @@ class GameEvent {
         let lang = user.lang;
 
         let embed = new MessageEmbed()
-            .setAuthor(`${this.title}${this.isOngoing ? " - " + Translator.getString(lang, "events", "ongoing") : ""}${!this.willFireAgain ? " - " + Translator.getString(lang, "events", "wont_fire_again") : ""}`, this.icon)
+            .setAuthor({ name: `${this.title}${this.isOngoing ? " - " + Translator.getString(lang, "events", "ongoing") : ""}${!this.willFireAgain ? " - " + Translator.getString(lang, "events", "wont_fire_again") : ""}`, iconURL: this.icon })
             .setImage(this.background)
             .setDescription(this.desc ? this.desc : Translator.getString(lang, "skills", "no_desc"));
 
@@ -76,7 +76,7 @@ class GameEvent {
         return embed;
     }
 
-    getLootTableToDropNumber(lootTable, lang="en") {
+    getLootTableToDropNumber(lootTable, lang = "en") {
         let arr = [];
         for (let idRarity in lootTable) {
             let nameRarity = Globals.getRarityName(idRarity);

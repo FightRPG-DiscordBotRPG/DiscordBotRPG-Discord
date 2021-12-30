@@ -19,7 +19,7 @@ class Craft {
             let missingNumber = itemNeeded.missing;
             if (missingNumber > 0) {
                 missing = true;
-                let emojiMissing = missingNumber == itemNeeded.number ? Emojis.general.g_xmark : Emojis.emojisProd.tild.string ;
+                let emojiMissing = missingNumber == itemNeeded.number ? Emojis.general.g_xmark : Emojis.emojisProd.tild.string;
                 return `${emojiMissing} **${itemNeeded.name}** - x${Translator.getFormater(lang).format(missingNumber)}`;
             }
             return null;
@@ -37,7 +37,7 @@ class Craft {
 
     getSharedEmbed(craft, lang) {
         return new Discord.MessageEmbed()
-            .setAuthor(craft.name)
+            .setAuthor({ name: craft.name })
             .setColor(craft.rarityColor)
             .addField(this.getCraftTitleString(craft, lang), craft.desc);
     }
@@ -53,7 +53,7 @@ class Craft {
         });
 
         let embed = new Discord.MessageEmbed()
-            .setAuthor(Translator.getString(data.lang, "craft", "header_craft_list"));
+            .setAuthor({ name: Translator.getString(data.lang, "craft", "header_craft_list") });
 
         return listOfCrafts.getEmbed(embed);
     }

@@ -28,7 +28,7 @@ class Skill {
         }
         let embed = new Discord.MessageEmbed()
             .setColor(color)
-            .setAuthor(`${data.skill.id} - ${data.skill.name} (${titleBonus})`)
+            .setAuthor({ name: `${data.skill.id} - ${data.skill.name} (${titleBonus})` })
             .setDescription(data.skill.desc != null ? data.skill.desc : Translator.getString(lang, "skills", "no_desc"))
             .addField(Emojis.general.target + " " + Translator.getString(user.lang, "skills", "number_of_targets"), data.skill.numberOfTargets.toString(), true)
             .addField(Emojis.emojisProd.win.string + " " + Translator.getString(user.lang, "skills", "success_rate"), data.skill.successRate + "%", true)

@@ -259,7 +259,7 @@ class ModuleHandler extends GModule {
                     data = data.data;
 
                     msg = new Discord.MessageEmbed()
-                        .setAuthor("FightRPG")
+                        .setAuthor({ name: "FightRPG" })
                         .addField("Shard Uptime: ", "[ " + uptime + " ]", true).addField("Shard ID: ", `[ ${interact.client.shard.ids} ]`)
                         .addField("Server count: ", "[ " + total + " ]", true).addField("Shards: ", "[ " + interact.client.shard.count + " ]", true)
                         .addField("Server Version: ", "[ " + data.server + " ]", true).addField("Bot Version: ", "[ " + version + " ]", true)
@@ -349,7 +349,7 @@ class ModuleHandler extends GModule {
                     this.prefixChange(interact.guild.id, args[0]); // async
                     return new Discord.MessageEmbed()
                         .setColor([0, 128, 128])
-                        .setAuthor(Translator.getString(lang, "other", "prefix_changed"))
+                        .setAuthor({ name: Translator.getString(lang, "other", "prefix_changed") })
                         .addField(Translator.getString(lang, "other", "old_prefix"), oldPrefix)
                         .addField(Translator.getString(lang, "other", "new_prefix"), this.getPrefix(interact.guild.id));
                 } else {

@@ -22,7 +22,7 @@ class ItemShow {
         let itemName = item.name + (item.isFavorite == true ? " ★" : "") + numberStr + equippedStr;
 
         let embed = new Discord.MessageEmbed()
-            .setAuthor(itemName)
+            .setAuthor({ name: itemName })
             .setColor(item.rarityColor)
             .addField(Translator.getString(lang, "inventory_equipment", "type"), Emojis.getItemTypeEmoji(item.type_shorthand) + " " + item.type, true)
             .addField(Translator.getString(lang, "inventory_equipment", "subtype"), Emojis.getItemSubTypeEmoji(item.subtype_shorthand) + " " + item.subType, true)

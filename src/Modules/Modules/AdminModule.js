@@ -262,9 +262,9 @@ class AdminModule extends GModule {
                 genericList.load({ collection: emojis.slice(perPage * (page - 1), perPage * page), listType: 0, pageRelated: { page: page, maxPage: maxPage } }, "en", (i, str) => str);
 
 
-                await this.pageListener({ page: page, maxPage: maxPage }, interact, genericList.getEmbed(new Discord.MessageEmbed().setAuthor("Emojis").setTitle("All Bot Emojis")), async (currPage) => {
+                await this.pageListener({ page: page, maxPage: maxPage }, interact, genericList.getEmbed(new Discord.MessageEmbed().setAuthor({ name: "Emojis" }).setTitle("All Bot Emojis")), async (currPage) => {
                     genericList.load({ collection: emojis.slice(perPage * (currPage - 1), perPage * currPage), listType: 0, pageRelated: { page: currPage, maxPage: maxPage } }, "en", (i, str) => str);
-                    return { page: currPage, maxPage: maxPage, text: genericList.getEmbed(new Discord.MessageEmbed().setAuthor("Emojis").setTitle("All Bot Emojis")) }
+                    return { page: currPage, maxPage: maxPage, text: genericList.getEmbed(new Discord.MessageEmbed().setAuthor({ name: "Emojis" }).setTitle("All Bot Emojis")) }
                 }, async (newData) => {
                     return newData.text;
                 });

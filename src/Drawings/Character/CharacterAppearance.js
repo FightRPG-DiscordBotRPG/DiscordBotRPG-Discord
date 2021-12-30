@@ -711,7 +711,7 @@ class CharacterAppearance {
      */
     async getSelectEmbed(user) {
         return await this.addCurrentImageToEmbed(new Discord.MessageEmbed()
-            .setAuthor(Translator.getString(user.lang, "appearance", "title"))
+            .setAuthor({ name: Translator.getString(user.lang, "appearance", "title") })
             .setDescription(Translator.getString(user.lang, "appearance", "desc_select", [Emojis.general.clipboard]))
         );
 
@@ -723,7 +723,7 @@ class CharacterAppearance {
      */
     async getEditGeneralEmbed(user) {
         return await this.addCurrentImageToEmbed(new Discord.MessageEmbed()
-            .setAuthor(Translator.getString(user.lang, "appearance", "title"))
+            .setAuthor({ name: Translator.getString(user.lang, "appearance", "title") })
             .setDescription(
                 `${Translator.getString(user.lang, "appearance", "choose_modify")}
                 - ${this.getTypeDisplay(1, user.lang)}
@@ -770,7 +770,7 @@ class CharacterAppearance {
         const stringAppearances = this.editionPossibleValues.map((item, i) => i == this.editionSelectedIndex ? "[**" + (i + 1) + "**]" : i + 1).join(", ");
 
         let embed = await this.addCurrentImageToEmbed(new Discord.MessageEmbed()
-            .setAuthor(Translator.getString(user.lang, "appearance", "title") + " (" + this.getTypeDisplay(this.editionSelectedType, user.lang) + ")")
+            .setAuthor({ name: Translator.getString(user.lang, "appearance", "title") + " (" + this.getTypeDisplay(this.editionSelectedType, user.lang) + ")" })
             .setDescription(Translator.getString(user.lang, "appearance", "desc_select_one"))
             .addField(Translator.getString(user.lang, "appearance", "list_of_possible_for_type"), stringAppearances)
         );
@@ -1016,7 +1016,7 @@ class CharacterAppearance {
         }
 
         // Add at the end the validate
-        emojisPossible.push("confirm");        
+        emojisPossible.push("confirm");
 
         const canBeNull = this.isSelectedEditionTypeCanBeNull();
 

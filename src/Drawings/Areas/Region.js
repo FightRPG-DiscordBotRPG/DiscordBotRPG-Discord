@@ -48,7 +48,7 @@ class Region {
 
         return new Discord.MessageEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(region.name)
+            .setAuthor({ name: region.name })
             .addField(Translator.getString(lang, "area", "list"), strAreas)
             .addField(Translator.getString(lang, "area", "list_regions_connected"), strConnectedAreas)
             .setImage(region.image);

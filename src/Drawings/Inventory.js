@@ -45,7 +45,7 @@ class Inventory {
 
         let embed = new Discord.MessageEmbed()
             .setColor([128, 128, 128])
-            .setAuthor(titleEmbed)
+            .setAuthor({ name: titleEmbed })
             .setDescription(header)
             ;
 
@@ -115,7 +115,7 @@ class Inventory {
 
         return new Discord.MessageEmbed()
             .setColor([255, 215, 0])
-            .setAuthor(Translator.getString(lang, "inventory_equipment", "sellall_title"))
+            .setAuthor({ name: Translator.getString(lang, "inventory_equipment", "sellall_title") })
             .addField(Translator.getString(lang, "inventory_equipment", "sellall_going_to_sell"), str)
             .addField(Translator.getString(lang, "inventory_equipment", "sellall_total_value"), Translator.getFormater(lang).format(data.value) + " G")
             .addField(Translator.getString(lang, "inventory_equipment", "sellall_are_you_sure"), Translator.getString(data.lang, "travel", "sure_to_travel_body", [Emojis.getString("vmark"), Emojis.getString("xmark")]));

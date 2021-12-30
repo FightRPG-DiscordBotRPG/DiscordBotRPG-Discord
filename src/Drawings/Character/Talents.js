@@ -43,7 +43,7 @@ class Talents {
 
         let embed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(Translator.getString(lang, "talents", "header_talents") + " | " + Translator.getString(lang, "talents", "x_point" + (data.talentPoints > 1 ? "_plural" : ""), [data.talentPoints]))
+            .setAuthor({ name: Translator.getString(lang, "talents", "header_talents") + " | " + Translator.getString(lang, "talents", "x_point" + (data.talentPoints > 1 ? "_plural" : ""), [data.talentPoints]) })
             .addField(Translator.getString(lang, "talents", "reachable_talents_ids"), reachableNodes.length > 0 ? Emojis.general.link + " " + reachableNodes.join(", ") : Translator.getString(lang, "general", "none"))
             .addField(Translator.getString(lang, "talents", "unlocked_skills"), data.unlockedSkills.length > 0 ? Emojis.general.open_book + " " + data.unlockedSkills.join(", ") : Translator.getString(lang, "general", "none"));
 
@@ -93,7 +93,7 @@ class Talents {
 
         let embed = new Discord.MessageEmbed()
             .setColor(color)
-            .setAuthor(`${data.node.id} - ${data.node.visuals.name} (${titleBonus})`, data.node.visuals.icon)
+            .setAuthor({ name: `${data.node.id} - ${data.node.visuals.name} (${titleBonus})`, iconURL: data.node.visuals.icon })
             .addField(Translator.getString(lang, "talents", "cost"), Emojis.general.target + " " + Translator.getString(lang, "talents", "x_point" + (data.node.realCost > 1 ? "_plural" : ""), [data.node.realCost]))
             .addField(Translator.getString(lang, "talents", "reachable_talents_ids"), data.node.linkedNodes.length > 0 ? Emojis.general.link + " " + data.node.linkedNodes.join(", ") : Translator.getString(lang, "general", "none"))
             .addField(Translator.getString(lang, "talents", "unlockable_skills"), data.node.skillsUnlockedNames.length > 0 ? Emojis.general.open_book + " " + data.node.skillsUnlockedNames.join(", ") : Translator.getString(lang, "general", "none"));
@@ -183,7 +183,7 @@ class Talents {
         const diffX = xMaximum - xMinimum;
         const diffY = yMaximum - yMinimum;
 
-        let width = (diffX * (spacing + talentSize  + 20)) || (spacing + talentSize );
+        let width = (diffX * (spacing + talentSize + 20)) || (spacing + talentSize);
         let heigth = (diffY * (spacing + talentSize + 20)) || (spacing + talentSize);
 
         width = Math.max(width, heigth);
@@ -214,7 +214,7 @@ class Talents {
         const ctxLinks = allCanvas.getContext("2d");
 
         let decalX = 0;
-        let decalY =  spacing + talentSize;
+        let decalY = spacing + talentSize;
 
         ctxLinks.beginPath();
         ctxLinks.rect(0, 0, width, heigth);
@@ -261,7 +261,7 @@ class Talents {
         }
 
         const x = (talent.x * spacing) - size / 2;
-        const y = (-talent.y * spacing)  + size * 2;
+        const y = (-talent.y * spacing) + size * 2;
 
         ctx.drawImage(talentIcon, x, y, size, size);
 

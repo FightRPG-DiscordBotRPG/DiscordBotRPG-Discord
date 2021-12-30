@@ -7,7 +7,7 @@ class Achievements {
     toString(data) {
         let rembed = new Discord.MessageEmbed()
             .setColor([0, 255, 0])
-            .setAuthor(Translator.getString(data.lang, "character", "achievement_title", [data.totalAchievementsEarned, data.totalAchievements, data.totalPoints]));
+            .setAuthor({ name: Translator.getString(data.lang, "character", "achievement_title", [data.totalAchievementsEarned, data.totalAchievements, data.totalPoints]) });
 
 
         for (let achievement of data.achievements) {
