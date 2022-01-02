@@ -237,7 +237,7 @@ class ModuleHandler extends GModule {
                             msg = await this.showNotImplementedCommands();
                         }
                         break;
-                    case "botinfo": {
+                    case "otherbotinfo": {
 
                         let total = await Utils.getTotalNumberOfGuilds(interact.client.shard);
 
