@@ -105,6 +105,7 @@ class InventoryModule extends GModule {
                             let dataCollector = null;
                             let msgCollector = null;
                             interact.interaction = reaction;
+                            let usedCommand = null;
 
                             switch (reaction.customId) {
                                 case equipUnequipEmoji:
@@ -113,11 +114,13 @@ class InventoryModule extends GModule {
                                             idItem: data.item.id,
                                             isRealID: true,
                                         });
+                                        usedCommand = "unequip";
                                     } else {
                                         dataCollector = await axios.post("/game/equipment/equip", {
                                             idItem: data.item.id,
                                             isRealID: true,
                                         });
+                                        usedCommand = "equip";
                                     }
                                     break;
                                 case sellEmoji:
@@ -126,6 +129,7 @@ class InventoryModule extends GModule {
                                         number: 1,
                                         isRealID: true,
                                     });
+                                    usedCommand = "sell";
                                     break;
 
                                 case favoEmoji:
@@ -134,11 +138,13 @@ class InventoryModule extends GModule {
                                             idItem: data.item.id,
                                             isRealID: true,
                                         });
+                                        usedCommand = "itemfav";
                                     } else {
                                         dataCollector = await axios.post("/game/inventory/itemunfav", {
                                             idItem: data.item.id,
                                             isRealID: true,
                                         });
+                                        usedCommand = "itemunfav";
                                     }
                                     break;
                                 case addToTradeEmoji:
@@ -150,7 +156,7 @@ class InventoryModule extends GModule {
 
                             if (dataCollector != null) {
                                 msgCollector = this.getBasicSuccessErrorMessage(dataCollector);
-                                await this.sendMessage(interact, msgCollector);
+                                await this.sendMessage(interact, msgCollector, usedCommand);
                             }
                         });
                 });

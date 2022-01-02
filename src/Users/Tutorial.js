@@ -28,7 +28,7 @@ class Tutorial {
         },
         {
             toDisplay: "talents_first",
-            command: "talents",
+            command: "talentsshow",
         },
         {
             toDisplay: "talentshow_first",
@@ -122,7 +122,7 @@ class Tutorial {
         this.hasStarted = true;
         this.currentStep = Tutorial.Steps[0];
         this.nextStep = Tutorial.Steps[1];
-        this.indexStep = 1;       
+        this.indexStep = 1;
         await this.sendMessage(interact, Translator.getString(lang, "tutorial", "start"));
     }
 
