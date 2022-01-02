@@ -149,6 +149,7 @@ class ModuleHandler extends GModule {
                         break;
                     case "othertutorial":
                         await user.tutorial.start(interact, user.lang);
+                        msg = Translator.getString(user.lang, "other", "check_dm");
                         break;
                     case "othersetmobile":
                         if (Globals.yesNoByLang[args[0]]) {
