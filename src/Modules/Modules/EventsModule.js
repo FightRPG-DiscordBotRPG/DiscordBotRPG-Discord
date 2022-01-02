@@ -86,7 +86,7 @@ class EventsModule extends GModule {
                                 }));
                             }
 
-                            await interact.interaction.deferReply();
+                            await interact.interaction?.deferReply();
                             await Promise.all(arrOfEventsToBeCreated);
 
                             return Translator.getString(user.lang, "events", "events_created");
