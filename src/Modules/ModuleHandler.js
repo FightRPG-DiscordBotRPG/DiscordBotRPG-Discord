@@ -139,7 +139,7 @@ class ModuleHandler extends GModule {
                 user.setMobile(author.presence?.clientStatus);
             }
 
-            if (!interact.interaction.isAutocomplete()) {
+            if (!interact.interaction?.isAutocomplete()) {
                 await this.executeCommand(interact, command, nonDiscordArgs, prefix);
 
                 let axios = Globals.connectedUsers[authorIdentifier].getAxios();
