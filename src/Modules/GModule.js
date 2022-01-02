@@ -363,15 +363,13 @@ class GModule {
 
         let buttonActionRow = new Discord.MessageActionRow();
 
-        console.log(initialData);
-
         if (initialData.page > 1) {
             currentMessageReactions.push(backEmoji);
             buttonActionRow = buttonActionRow.addComponents(buttonBack);
         }
         if (initialData.page < initialData.maxPage) {
             currentMessageReactions.push(nextEmoji);
-            buttonActionRow= buttonActionRow.addComponents(buttonNext);
+            buttonActionRow = buttonActionRow.addComponents(buttonNext);
         }
 
         const replyOptions = interact.getReplyOptions(initialMessage);
@@ -403,7 +401,7 @@ class GModule {
                         break;
                 }
 
-                dataCollector = await dataCollectorCallback(currentPage);                
+                dataCollector = await dataCollectorCallback(currentPage);
                 let buttonActionRow = new Discord.MessageActionRow();
 
 
