@@ -1304,6 +1304,27 @@ var Globals = {
                         description: Translator.getString("en", "help_panel", "event_ongoing"),
                         type: "SUB_COMMAND",
                     },
+                    {
+                        name: "incoming",
+                        description: "List the incoming events in x months",
+                        options: [
+                            {
+                                name: "months",
+                                description: "Number of months to show",
+                                type: "INTEGER",
+                                required: true,
+                                maxValue: 12,
+                            },
+                            {
+                                name: "addtoserver",
+                                description: "Add the events to the discord server events (the bot must have the permission)",
+                                type: "BOOLEAN",
+                                required: false,
+                                required: false,
+                            }
+                        ],
+                        type: "SUB_COMMAND",
+                    }
                 ],
                 defaultPermission: true,
             },

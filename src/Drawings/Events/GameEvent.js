@@ -19,6 +19,14 @@ class GameEvent {
         this.length = data.length;
         this.startDate = data.startDate ? moment(data.startDate) : null;
         this.endDate = data.endDate ? moment(data.endDate) : null;
+
+        if (this.endDate == null && this.startDate != null) {
+            this.endDate = moment(data.startDate);
+            const duration = moment.duration(this.length * 60000);
+            this.endDate.add(duration);
+        }
+
+
         this.isOngoing = data.ongoing;
         /**
          * @type {Object<string, {id: number, name: string, value: number}>}
