@@ -179,6 +179,8 @@ class Talents {
             data.talents = data.initialTalents.map(e => { return { ...e, asLocked: true } });
         }
 
+        // console.time("Calculate Max");
+
         for (let talent of data.talents) {
             xMaximum = Math.max(xMaximum, talent.x);
             yMaximum = Math.max(yMaximum, talent.y);
@@ -200,21 +202,51 @@ class Talents {
         const diffY = yMaximum - yMinimum;
 
         let width = (diffX * (spacing + talentSize + 20)) || (spacing + talentSize);
-        let heigth = (diffY * (spacing + talentSize + 20)) || (spacing + talentSize);
+        let height = (diffY * (spacing + talentSize + 20)) || (spacing + talentSize);
 
-        width = Math.max(width, heigth);
-        heigth = width;
+        width = Math.max(width, height);
+        height = width;
 
-        const nodesCanvas = Canvas.createCanvas(width, heigth);
+        // console.timeEnd("Calculate Max");
+
+        // console.time("Create Image");
+        const nodesCanvas = Canvas.createCanvas(width, height);
         const ctxNodes = nodesCanvas.getContext("2d");
-        ctxNodes.translate(width / 2, heigth / 2);
+        ctxNodes.translate(width / 2, height / 2);
         ctxNodes.beginPath();
+
+        // console.timeEnd("Create Image");
+
+        // console.time("Pre-Cache images");
+
+        const preCacheImagesAsync = [];
+
+        for (let talent of data.talents) {
+            preCacheImagesAsync.push(CharacterAppearance.getImage(talent.visuals.icon, false));
+            for (let linkedTalent of Object.values(talent.linkedNodesItems)) {
+                preCacheImagesAsync.push(CharacterAppearance.getImage(linkedTalent.visuals.icon, false));
+            }
+        }
+
+        // console.timeEnd("Pre-Cache images");
+
+        // console.time("PreCacheImagesAsync");
+        await Promise.all(preCacheImagesAsync);
+        // console.timeEnd("PreCacheImagesAsync");
+
+
+
+        // console.time("Draw Unlocked Nodes");
 
         // Draws unlocked talents
         for (let talent of data.talents) {
             await this.drawTalent(ctxNodes, talent, talentSize, spacing, data.talentPoints, talent.asLocked);
             talentsByIds[talent.id] = talent;
         }
+
+        // console.timeEnd("Draw Unlocked Nodes");
+
+        // console.time("Draw Linked Nodes");
 
         // Draws locked talents
         for (let talent of data.talents) {
@@ -226,19 +258,23 @@ class Talents {
             }
         }
 
-        const allCanvas = Canvas.createCanvas(width, heigth);
+        // console.timeEnd("Draw Linked Nodes");
+
+        const allCanvas = Canvas.createCanvas(width, height);
         const ctxLinks = allCanvas.getContext("2d");
 
         let decalX = 0;
         let decalY = spacing + talentSize;
 
         ctxLinks.beginPath();
-        ctxLinks.rect(0, 0, width, heigth);
+        ctxLinks.rect(0, 0, width, height);
         ctxLinks.fillStyle = "#101010";
         ctxLinks.lineWidth = 3;
         ctxLinks.fill();
 
-        ctxLinks.translate(width / 2, heigth / 2);
+        ctxLinks.translate(width / 2, height / 2);
+
+        // console.time("Draw Links");
 
         for (let talent of data.talents) {
             for (let link of talent.linkedNodesIds) {
@@ -251,8 +287,13 @@ class Talents {
             }
         }
 
+        // console.timeEnd("Draw Links");
 
-        ctxLinks.drawImage(nodesCanvas, -(width / 2), -(heigth / 2));
+        // console.time("Draw Background");
+
+        ctxLinks.drawImage(nodesCanvas, -(width / 2), -(height / 2));
+
+        // console.timeEnd("Draw Background");
 
         return allCanvas;
 
