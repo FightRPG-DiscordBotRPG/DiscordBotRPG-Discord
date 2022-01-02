@@ -12,7 +12,7 @@ const InteractContainer = require("../../Discord/InteractContainer");
 class InventoryModule extends GModule {
     constructor() {
         super();
-        this.commands = ["itemid", "itemtype", "itemfavid", "itemfavtype", "itemunfavid", "itemunfavtype", "inventory", "sellid", "sellall", "sendmoney"];
+        this.commands = ["itemid", "itemtype", "itemfavid", "itemfavtype", "itemunfavid", "itemunfavtype", "inventory", "sell", "sellall", "sendmoney"];
         this.startLoading("Inventory");
         this.init();
         this.endLoading("Inventory");
@@ -190,7 +190,7 @@ class InventoryModule extends GModule {
                 });
                 break;
 
-            case "sellid":
+            case "sell":
                 msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/sell", {
                     idItem: args[0],
                     number: args[1],

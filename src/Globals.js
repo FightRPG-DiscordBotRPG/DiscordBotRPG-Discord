@@ -643,7 +643,7 @@ var Globals = {
             {
                 name: "sell",
                 description: Translator.getString("en", "help_panel", "sell"),
-                options: [idItemChoice],
+                options: [idItemOption],
                 defaultPermission: true,
             },
             {
@@ -807,6 +807,7 @@ var Globals = {
                     {
                         name: "list",
                         description: Translator.getString("en", "help_panel", "guilds"),
+                        options: [pageOption],
                         type: "SUB_COMMAND",
                     },
                     {
@@ -889,7 +890,6 @@ var Globals = {
                     {
                         name: "levelup",
                         description: Translator.getString("en", "help_panel", "glevelup"),
-                        options: [amountOption],
                         type: "SUB_COMMAND",
                     },
                     {
@@ -945,29 +945,13 @@ var Globals = {
                                 description: "Player identifier",
                                 type: "INTEGER",
                                 required: true,
-                            },
-                            {
-                                name: "rank",
-                                description: "Rank",
-                                choices: [
-                                    {
-                                        name: "Member",
-                                        value: 1
-                                    },
-                                    {
-                                        name: "Officer",
-                                        value: 2
-                                    }
-                                ],
-                                type: "INTEGER",
-                                required: true,
                             }
                         ],
                         type: "SUB_COMMAND",
                     },
                     {
                         name: "rename",
-                        description: Translator.getString("en", "help_panel", "grename").split(".")[0] + "." + Translator.getString("en", "help_panel", "grename").split(".")[2],
+                        description: Translator.getString("en", "help_panel", "grename", [data?.guildsBasePriceLevel]),
                         options: [
                             {
                                 name: "newname",
@@ -1123,7 +1107,7 @@ var Globals = {
                     {
                         name: "buy",
                         description: Translator.getString("en", "help_panel", "mkbuy"),
-                        options: [idItemOption],
+                        options: [idItemOption, amountOption],
                         type: "SUB_COMMAND",
                     },
                     {
@@ -1183,7 +1167,16 @@ var Globals = {
             {
                 name: "collect",
                 description: Translator.getString("en", "help_panel", "collect", [data?.collectTriesOnce]),
-                options: [idCollectOption],
+                options: [
+                    idCollectOption,
+                    {
+                        name: "amount",
+                        description: "Amount to collect",
+                        type: "INTEGER",
+                        required: false,
+                        maxValue: data?.collectTriesOnce,
+                    }
+                ],
                 defaultPermission: true,
             },
             {
@@ -1199,7 +1192,7 @@ var Globals = {
                     {
                         name: "buy",
                         description: Translator.getString("en", "help_panel", "sbuy"),
-                        options: [idItemOption],
+                        options: [idItemOption, amountOption],
                         type: "SUB_COMMAND",
                     },
                 ],
@@ -1290,23 +1283,32 @@ var Globals = {
                 defaultPermission: true,
             },
             {
-                name: "showevent",
-                description: Translator.getString("en", "help_panel", "event"),
+                name: "events",
+                description: "Group of commands related to events",
                 options: [
                     {
-                        name: "idevent",
-                        description: "Identifier of the event",
-                        type: "INTEGER",
-                        required: true,
-                    }
+                        name: "show",
+                        description: Translator.getString("en", "help_panel", "event"),
+                        options: [
+                            {
+                                name: "idevent",
+                                description: "Identifier of the event",
+                                type: "INTEGER",
+                                required: true,
+                            }
+                        ],
+                        type: "SUB_COMMAND",
+                    },
+                    {
+                        name: "ongoing",
+                        description: Translator.getString("en", "help_panel", "event_ongoing"),
+                        type: "SUB_COMMAND",
+                    },
                 ],
                 defaultPermission: true,
             },
-            {
-                name: "showongoingevents",
-                description: Translator.getString("en", "help_panel", "event_ongoing"),
-                defaultPermission: true,
-            },
+
+
             {
                 name: "talents",
                 description: "?",
@@ -1748,7 +1750,7 @@ var Globals = {
             }
         ];
 
-        //  console.log(Globals.commands[33].options[1]);
+        //console.log(Globals.commands[36].options[0]);
     },
 
     loadHelpPanel: async function () {
@@ -1764,7 +1766,7 @@ var Globals = {
             Globals.helpPanel[lang][1] = {};
 
             Globals.helpPanel[lang][1][Translator.getString(lang, "help_panel", "equipment_title")] = {
-                "equipment/equiplist": Translator.getString(lang, "help_panel", "equipment"),
+                "equiplist": Translator.getString(lang, "help_panel", "equipment"),
                 "equip <itemID>": Translator.getString(lang, "help_panel", "equip"),
                 "unequip <itemType>": Translator.getString(lang, "help_panel", "unequip") + " (chest, head, legs, weapon, mount)",
                 "use <itemID> <amount>": Translator.getString(lang, "help_panel", "use"),
@@ -1775,7 +1777,7 @@ var Globals = {
                 "appearance": Translator.getString(lang, "help_panel", "appearance"),
                 "attributes": Translator.getString(lang, "help_panel", "attributes"),
                 "up <statName> <number>": Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)",
-                "leaderboard <arg>": Translator.getString(lang, "help_panel", "leaderboard"),
+                "leaderboard <type>": Translator.getString(lang, "help_panel", "leaderboard"),
                 "reset": Translator.getString(lang, "help_panel", "reset"),
                 "achievements <page>": Translator.getString(lang, "help_panel", "achievements"),
                 "rebirth": Translator.getString(lang, "help_panel", "rebirth"),
@@ -1793,11 +1795,11 @@ var Globals = {
             Globals.helpPanel[lang][2] = {};
 
             Globals.helpPanel[lang][2][Translator.getString(lang, "help_panel", "inventory_title")] = {
-                "inv/inventory": Translator.getString(lang, "help_panel", "inv"),
-                "inv/inventory <filter> <filterValue>": Translator.getString(lang, "help_panel", "inv_filter", [filtersString]),
-                "item <itemID>": Translator.getString(lang, "help_panel", "item"),
-                "itemfav <itemID or itemType>": Translator.getString(lang, "help_panel", "itemfav"),
-                "itemunfav <itemID or itemType>": Translator.getString(lang, "help_panel", "itemunfav"),
+                "inventory": Translator.getString(lang, "help_panel", "inv"),
+                "inventory <filter> <filterValue>": Translator.getString(lang, "help_panel", "inv_filter", [filtersString]),
+                "item id/type <itemID or itemType>": Translator.getString(lang, "help_panel", "item"),
+                "itemfav id/type <itemID or itemType>": Translator.getString(lang, "help_panel", "itemfav"),
+                "itemunfav id/type <itemID or itemType>": Translator.getString(lang, "help_panel", "itemunfav"),
                 "sell <itemID>": Translator.getString(lang, "help_panel", "sell"),
                 "sellall": Translator.getString(lang, "help_panel", "sellall"),
                 "sellall <filter> <filterValue>": Translator.getString(lang, "help_panel", "sellall_filter", [filtersString]),
@@ -1805,143 +1807,142 @@ var Globals = {
             }
 
             Globals.helpPanel[lang][2][Translator.getString(lang, "help_panel", "filters_title")] = {
-                "rarities": Translator.getString(lang, "help_panel", "rarities"),
-                "types": Translator.getString(lang, "help_panel", "types"),
+                "other rarities": Translator.getString(lang, "help_panel", "rarities"),
+                "other types": Translator.getString(lang, "help_panel", "types"),
             }
 
             // Page 3
             Globals.helpPanel[lang][3] = {};
 
             Globals.helpPanel[lang][3][Translator.getString(lang, "help_panel", "areas_title")] = {
-                "area": Translator.getString(lang, "help_panel", "area"),
-                "areas/region": Translator.getString(lang, "help_panel", "areas"),
-                "areaconquest": Translator.getString(lang, "help_panel", "areaconquest"),
-                "arealevelup": Translator.getString(lang, "help_panel", "arealevelup"),
-                "areabonuseslist": Translator.getString(lang, "help_panel", "areabonuseslist"),
-                "areaplayers <page>": Translator.getString(lang, "help_panel", "areaplayers"),
-                "areaupbonus <bonus_identifier> <pts_to_allocate>": Translator.getString(lang, "help_panel", "areaupbonus"),
-                "travel <areaID>": Translator.getString(lang, "help_panel", "travel"),
-                "travelregion <regionID>": Translator.getString(lang, "help_panel", "travelregion"),
-                "traveldirect <realAreaID>": Translator.getString(lang, "help_panel", "traveldirect"),
-                "arearesetbonuses": Translator.getString(lang, "help_panel", "arearesetbonuses"),
+                "area info": Translator.getString(lang, "help_panel", "area"),
+                "region": Translator.getString(lang, "help_panel", "areas"),
+                "area conquest": Translator.getString(lang, "help_panel", "areaconquest"),
+                "area levelup": Translator.getString(lang, "help_panel", "arealevelup"),
+                "area bonuseslist": Translator.getString(lang, "help_panel", "areabonuseslist"),
+                "area players <page>": Translator.getString(lang, "help_panel", "areaplayers"),
+                "area upbonus <bonus_identifier> <pts_to_allocate>": Translator.getString(lang, "help_panel", "areaupbonus"),
+                "area resetbonuses": Translator.getString(lang, "help_panel", "arearesetbonuses"),
+                "travel area <areaID>": Translator.getString(lang, "help_panel", "travel"),
+                "travel region <regionID>": Translator.getString(lang, "help_panel", "travelregion"),
+                "travel direct <realAreaID>": Translator.getString(lang, "help_panel", "traveldirect"),
             }
 
             // Page 4
             Globals.helpPanel[lang][4] = {};
 
             Globals.helpPanel[lang][4][Translator.getString(lang, "help_panel", "guilds_title")] = {
-                "guild": Translator.getString(lang, "help_panel", "guild"),
-                "guilds <page>": Translator.getString(lang, "help_panel", "guilds"),
-                "gcreate \"<name>\"": Translator.getString(lang, "help_panel", "gcreate"),
-                "gdisband": Translator.getString(lang, "help_panel", "gdisband"),
-                "gapply <guildID>": Translator.getString(lang, "help_panel", "gapply"),
-                "gaccept <playerID>": Translator.getString(lang, "help_panel", "gaccept"),
-                "gapplies": Translator.getString(lang, "help_panel", "gapplies"),
-                "gapplyremove <applyID>": Translator.getString(lang, "help_panel", "gapplyremove"),
-                "gappliesremove": Translator.getString(lang, "help_panel", "gappliesremove"),
-                "gannounce <message>": Translator.getString(lang, "help_panel", "gannounce"),
-                "gaddmoney <amount>": Translator.getString(lang, "help_panel", "gaddmoney"),
-                "gremovemoney <message>": Translator.getString(lang, "help_panel", "gremovemoney"),
-                "glevelup": Translator.getString(lang, "help_panel", "glevelup"),
-                "genroll": Translator.getString(lang, "help_panel", "genroll"),
-                "gunenroll": Translator.getString(lang, "help_panel", "gunenroll"),
-                "gleave": Translator.getString(lang, "help_panel", "gleave"),
-                "gmod <playerID> <rank>": Translator.getString(lang, "help_panel", "gmod"),
-                "gleaderswitch <playerID>": Translator.getString(lang, "help_panel", "gleaderswitch"),
-                "grename \"<name>\"": Translator.getString(lang, "help_panel", "grename", [data?.guildsBasePriceLevel]),
-                "gterritories": Translator.getString(lang, "help_panel", "gterritories"),
-                "gkick <idCharacter>": Translator.getString(lang, "help_panel", "gkick"),
+                "guild info": Translator.getString(lang, "help_panel", "guild"),
+                "guild list <page>": Translator.getString(lang, "help_panel", "guilds"),
+                "guild create <name>": Translator.getString(lang, "help_panel", "gcreate"),
+                "guild disband": Translator.getString(lang, "help_panel", "gdisband"),
+                "guild apply <guildID>": Translator.getString(lang, "help_panel", "gapply"),
+                "guild accept <playerID>": Translator.getString(lang, "help_panel", "gaccept"),
+                "guild applies": Translator.getString(lang, "help_panel", "gapplies"),
+                "guild applyremove <applyID>": Translator.getString(lang, "help_panel", "gapplyremove"),
+                "guild appliesremove": Translator.getString(lang, "help_panel", "gappliesremove"),
+                "guild announce <message>": Translator.getString(lang, "help_panel", "gannounce"),
+                "guild addmoney <amount>": Translator.getString(lang, "help_panel", "gaddmoney"),
+                "guild removemoney <message>": Translator.getString(lang, "help_panel", "gremovemoney"),
+                "guild levelup": Translator.getString(lang, "help_panel", "glevelup"),
+                "guild enroll": Translator.getString(lang, "help_panel", "genroll"),
+                "guild unenroll": Translator.getString(lang, "help_panel", "gunenroll"),
+                "guild leave": Translator.getString(lang, "help_panel", "gleave"),
+                "guild mod <playerID> <rank>": Translator.getString(lang, "help_panel", "gmod"),
+                "guild leaderswitch <playerID>": Translator.getString(lang, "help_panel", "gleaderswitch"),
+                "guild rename \"<name>\"": Translator.getString(lang, "help_panel", "grename", [data?.guildsBasePriceLevel]),
+                "guild territories": Translator.getString(lang, "help_panel", "gterritories"),
+                "guild kick <idCharacter>": Translator.getString(lang, "help_panel", "gkick"),
             }
 
             // Page 5
             Globals.helpPanel[lang][5] = {};
 
             Globals.helpPanel[lang][5][Translator.getString(lang, "help_panel", "groups_title")] = {
-                "grp": Translator.getString(lang, "help_panel", "grp"),
-                "grpinvite @mention": Translator.getString(lang, "help_panel", "grpinvite_mention"),
-                "grpleave": Translator.getString(lang, "help_panel", "grpleave"),
-                "grpaccept": Translator.getString(lang, "help_panel", "grpaccept"),
-                "grpdecline": Translator.getString(lang, "help_panel", "grpdecline"),
-                "grpkick \"<name#tag>\"": Translator.getString(lang, "help_panel", "grpkick"),
-                "grpswap \"<name#tag>\"": Translator.getString(lang, "help_panel", "grpswap"),
-                "grpmute": Translator.getString(lang, "help_panel", "grpmute"),
-                "grpunmute": Translator.getString(lang, "help_panel", "grpunmute"),
-                "grpfight <monsterID>": Translator.getString(lang, "help_panel", "grpfight"),
+                "group info": Translator.getString(lang, "help_panel", "grp"),
+                "group invite @mention": Translator.getString(lang, "help_panel", "grpinvite_mention"),
+                "group leave": Translator.getString(lang, "help_panel", "grpleave"),
+                "group accept": Translator.getString(lang, "help_panel", "grpaccept"),
+                "group decline": Translator.getString(lang, "help_panel", "grpdecline"),
+                "group kick <name#tag>": Translator.getString(lang, "help_panel", "grpkick"),
+                "group swap <name#tag>": Translator.getString(lang, "help_panel", "grpswap"),
+                "group mute": Translator.getString(lang, "help_panel", "grpmute"),
+                "group unmute": Translator.getString(lang, "help_panel", "grpunmute"),
+                "group fight <monsterID>": Translator.getString(lang, "help_panel", "grpfight"),
             }
 
             Globals.helpPanel[lang][5][Translator.getString(lang, "help_panel", "market_title")] = {
-                "mkmylist": Translator.getString(lang, "help_panel", "mkmylist"),
-                "mkplace <idItemInInventory> <nb> <price>": Translator.getString(lang, "help_panel", "mkplace"),
-                "mkcancel <idItem>": Translator.getString(lang, "help_panel", "mkcancel"),
-                "mkbuy <idItem>": Translator.getString(lang, "help_panel", "mkbuy"),
-                "mkshow/mksearch <filter> <filterValue> <page>": Translator.getString(lang, "help_panel", "mksearch", [filtersString]),
-                "mksee <idItem>": Translator.getString(lang, "help_panel", "mksee"),
+                "marketplace mylist": Translator.getString(lang, "help_panel", "mkmylist"),
+                "marketplace place <idItemInInventory> <nb> <price>": Translator.getString(lang, "help_panel", "mkplace"),
+                "marketplace cancel <idItem>": Translator.getString(lang, "help_panel", "mkcancel"),
+                "marketplace buy <idItem> <amount?>": Translator.getString(lang, "help_panel", "mkbuy"),
+                "marketplace search <filter> <filterValue> <page>": Translator.getString(lang, "help_panel", "mksearch", [filtersString]),
+                "marketplace see <idItem>": Translator.getString(lang, "help_panel", "mksee"),
             }
 
             // Page 6
             Globals.helpPanel[lang][6] = {};
 
             Globals.helpPanel[lang][6][Translator.getString(lang, "help_panel", "craft_title")] = {
-                "craftlist <page>": Translator.getString(lang, "help_panel", "craftlist"),
-                "craftshow <idCraft>": Translator.getString(lang, "help_panel", "craftshow"),
-                "craft <idCraft> <?level> <?rebirthLevel>": Translator.getString(lang, "help_panel", "craft"),
-                "collect <idResource> <number>": Translator.getString(lang, "help_panel", "collect", [data?.collectTriesOnce]),
+                "craft list <page>": Translator.getString(lang, "help_panel", "craftlist"),
+                "craft show <idCraft>": Translator.getString(lang, "help_panel", "craftshow"),
+                "craft make <idCraft> <level?> <rebirthLevel?>": Translator.getString(lang, "help_panel", "craft"),
+                "collect <idResource> <number?>": Translator.getString(lang, "help_panel", "collect", [data?.collectTriesOnce]),
             }
 
             Globals.helpPanel[lang][6][Translator.getString(lang, "help_panel", "shop_title")] = {
-                "sitems/shop <page>": Translator.getString(lang, "help_panel", "sitems"),
-                "sbuy <idItem> <amount>": Translator.getString(lang, "help_panel", "sbuy"),
+                "shop list <page?>": Translator.getString(lang, "help_panel", "sitems"),
+                "shop buy <idItem> <amount?>": Translator.getString(lang, "help_panel", "sbuy"),
             }
 
             Globals.helpPanel[lang][6][Translator.getString(lang, "help_panel", "world_boss_title")] = {
-                "wbfight/wbattack": Translator.getString(lang, "help_panel", "wbfight"),
-                "wbshowall": Translator.getString(lang, "help_panel", "wbshowall"),
-                "wblastinfo": Translator.getString(lang, "help_panel", "wblastinfo"),
-                "wbleaderboard <type>": Translator.getString(lang, "help_panel", "wbleaderboard"),
+                "worldboss fight": Translator.getString(lang, "help_panel", "wbfight"),
+                "worldboss showall": Translator.getString(lang, "help_panel", "wbshowall"),
+                "worldboss lastinfo": Translator.getString(lang, "help_panel", "wblastinfo"),
             }
 
             // Page 7
             Globals.helpPanel[lang][7] = {};
 
             Globals.helpPanel[lang][7][Translator.getString(lang, "help_panel", "trade_title")] = {
-                "tpropose @mention": Translator.getString(lang, "help_panel", "tpropose"),
-                "taccept": Translator.getString(lang, "help_panel", "taccept"),
-                "tcancel": Translator.getString(lang, "help_panel", "tcancel"),
-                "tshow": Translator.getString(lang, "help_panel", "tshow"),
-                "titem <idInTrade>": Translator.getString(lang, "help_panel", "titem"),
-                "tadd <idItemInInventory> <amount>": Translator.getString(lang, "help_panel", "tadd"),
-                "tremove <idInTrade> <amount>": Translator.getString(lang, "help_panel", "tremove"),
-                "tsetmoney <amount>": Translator.getString(lang, "help_panel", "tsetmoney"),
-                "tvalidate": Translator.getString(lang, "help_panel", "tvalidate"),
+                "trade propose @mention": Translator.getString(lang, "help_panel", "tpropose"),
+                "trade accept": Translator.getString(lang, "help_panel", "taccept"),
+                "trade cancel": Translator.getString(lang, "help_panel", "tcancel"),
+                "trade show": Translator.getString(lang, "help_panel", "tshow"),
+                "trade item <idInTrade>": Translator.getString(lang, "help_panel", "titem"),
+                "trade add <idItemInInventory> <amount?>": Translator.getString(lang, "help_panel", "tadd"),
+                "trade remove <idInTrade> <amount?>": Translator.getString(lang, "help_panel", "tremove"),
+                "trade setmoney <amount>": Translator.getString(lang, "help_panel", "tsetmoney"),
+                "trade validate": Translator.getString(lang, "help_panel", "tvalidate"),
             }
 
             Globals.helpPanel[lang][7][Translator.getString(lang, "help_panel", "events_title")] = {
-                "showevent/sevt <idEvent>": Translator.getString(lang, "help_panel", "event"),
-                "showongoingevents/sogevts": Translator.getString(lang, "help_panel", "event_ongoing"),
+                "events show <idEvent>": Translator.getString(lang, "help_panel", "event"),
+                "events ongoing": Translator.getString(lang, "help_panel", "event_ongoing"),
             }
 
             // Page 8
             Globals.helpPanel[lang][8] = {};
 
             Globals.helpPanel[lang][8][Translator.getString(lang, "help_panel", "other_title")] = {
-                "lang": Translator.getString(lang, "help_panel", "lang"),
-                "lang <languageShort>": Translator.getString(lang, "help_panel", "lang_param"),
-                "settings": Translator.getString(lang, "help_panel", "settings"),
-                "setmobile <arg>": Translator.getString(lang, "help_panel", "setmobile"),
+                "other lang": Translator.getString(lang, "help_panel", "lang"),
+                "other lang <languageShort>": Translator.getString(lang, "help_panel", "lang_param"),
+                "other settings": Translator.getString(lang, "help_panel", "settings"),
+                "other setmobile <arg>": Translator.getString(lang, "help_panel", "setmobile"),
             }
 
             Globals.helpPanel[lang][8][Translator.getString(lang, "help_panel", "talents_title")] = {
-                "talents": Translator.getString(lang, "help_panel", "talents"),
-                "talentshow <idTalent>": Translator.getString(lang, "help_panel", "talentshow"),
-                "talentup <idTalent>": Translator.getString(lang, "help_panel", "talentup"),
-                "skillshow <idSkill>": Translator.getString(lang, "help_panel", "skillshow"),
-                "buildshow": Translator.getString(lang, "help_panel", "buildshow"),
-                "buildadd <idSkill>": Translator.getString(lang, "help_panel", "buildadd"),
-                "buildremove <idSkill>": Translator.getString(lang, "help_panel", "buildremove"),
-                "buildmove <idSkill> <slotNumber>": Translator.getString(lang, "help_panel", "buildmove"),
-                "buildclear": Translator.getString(lang, "help_panel", "buildclear"),
-                "talentsexport": Translator.getString(lang, "help_panel", "talentexport"),
-                "talentsimport <importString>": Translator.getString(lang, "help_panel", "talentimport"),
+                "talents show": Translator.getString(lang, "help_panel", "talents"),
+                "talent show <idTalent>": Translator.getString(lang, "help_panel", "talentshow"),
+                "talent up <idTalent>": Translator.getString(lang, "help_panel", "talentup"),
+                "skill show <idSkill>": Translator.getString(lang, "help_panel", "skillshow"),
+                "build show": Translator.getString(lang, "help_panel", "buildshow"),
+                "build add <idSkill>": Translator.getString(lang, "help_panel", "buildadd"),
+                "build remove <idSkill>": Translator.getString(lang, "help_panel", "buildremove"),
+                "build move <idSkill> <slotNumber>": Translator.getString(lang, "help_panel", "buildmove"),
+                "build clear": Translator.getString(lang, "help_panel", "buildclear"),
+                "talents export": Translator.getString(lang, "help_panel", "talentexport"),
+                "talents import <importString>": Translator.getString(lang, "help_panel", "talentimport"),
                 "resettalents": Translator.getString(lang, "help_panel", "resettalents"),
             }
 
