@@ -531,7 +531,7 @@ class ModuleHandler extends GModule {
         // Return missing commands as string separated by comma
         let missing = "";
 
-        console.log("\n\nImplemented commands in modules but not in slash commands:\n");
+        missing += "Implemented commands in modules but not in slash commands:\n";
         // Commands from modules not implemented
 
         let lastModuleName = "";
@@ -539,21 +539,22 @@ class ModuleHandler extends GModule {
 
             if (implementedCommands.indexOf(commandData.command) == -1) {
                 if (lastModuleName != commandData.module) {
-                    console.log("\n" + commandData.module + ":");
+                    missing += "\n" + commandData.module + ":\n";
                     lastModuleName = commandData.module;
                 }
-                //missing += command + ", ";
-                console.log("- " + commandData.command);
+                missing += "- " + commandData.command + "\n";
             }
         }
 
-        console.log("\n\nImplemented commands in slash commands but not in modules:\n");
+        missing += "\n\nImplemented commands in slash commands but not in modules:\n";
         // Commands from implemented not implemented in modules
         for (let command of implementedCommands) {
             if (commandsData.findIndex(c => c.command == command) == -1) {
-                console.log("- " + command);
+                missing += "- " + command + "\n";
             }
         }
+
+        console.log(missing);
 
         return missing;
 
