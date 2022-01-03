@@ -120,7 +120,7 @@ class ModuleHandler extends GModule {
         }
 
 
-        if (!author.bot && command != null && (this.allCommands[command] || interact.interaction.isAutocomplete())) {
+        if (!author.bot && command != null && (this.allCommands[command] || interact.interaction?.isAutocomplete())) {
             let isAdmin = Globals.admins.indexOf(authorIdentifier) > -1;
             let data;
             this.logCommand(authorIdentifier, command, Date.now());
