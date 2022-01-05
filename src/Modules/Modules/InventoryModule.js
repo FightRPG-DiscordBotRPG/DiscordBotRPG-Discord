@@ -174,7 +174,7 @@ class InventoryModule extends GModule {
                 } else {
                     body = { idItem: args[0] }
                 }
-                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/" + command, body));
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/" + (command.includes("unfav") ? "itemunfav" : "itemfav"), body));
             }
                 break;
 
