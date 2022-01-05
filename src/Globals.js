@@ -316,7 +316,8 @@ var Globals = {
                 name: "filtervalue",
                 description: "Filter value",
                 type: "STRING",
-                required: false
+                required: false,
+                autocomplete: true,
             },
             {
                 name: "filtername2",
@@ -330,21 +331,22 @@ var Globals = {
                 name: "filtervalue2",
                 description: "Filter value",
                 type: "STRING",
-                required: false
+                required: false,
+                autocomplete: true,
             },
             {
                 name: "filtername3",
                 description: "Filter",
                 type: "STRING",
                 choices: filtersChoices,
-                required: false
-
+                required: false,
             },
             {
                 name: "filtervalue3",
                 description: "Filter value",
                 type: "STRING",
-                required: false
+                required: false,
+                autocomplete: true,
             },
         ];
 
