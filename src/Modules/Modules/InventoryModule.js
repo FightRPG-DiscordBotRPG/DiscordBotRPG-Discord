@@ -149,7 +149,7 @@ class InventoryModule extends GModule {
                                     break;
                                 case addToTradeEmoji:
                                     if (this.allModulesReference["TradeModule"] != null) {
-                                        this.allModulesReference["TradeModule"].run(interact, "tadd", [data.idInInventory, data.item.number]);
+                                        this.allModulesReference["TradeModule"].run(interact, "tradeadd", [data.idInInventory, data.item.number]);
                                     }
                                     break;
                             }
