@@ -1134,7 +1134,7 @@ var Globals = {
                     {
                         name: "list",
                         description: Translator.getString("en", "help_panel", "craftlist"),
-                        options: [pageOption],
+                        options: [...filterSelectOptions, pageOption],
                         type: "SUB_COMMAND",
                     },
                     {
