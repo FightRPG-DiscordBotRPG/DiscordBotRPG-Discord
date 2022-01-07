@@ -1796,7 +1796,7 @@ var Globals = {
             };
 
             Globals.helpPanel[lang][1][Translator.getString(lang, "help_panel", "character_title")] = {
-                "info/profile": Translator.getString(lang, "help_panel", "info"),
+                "info": Translator.getString(lang, "help_panel", "info"),
                 "appearance": Translator.getString(lang, "help_panel", "appearance"),
                 "attributes": Translator.getString(lang, "help_panel", "attributes"),
                 "up <statName> <number>": Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)",
