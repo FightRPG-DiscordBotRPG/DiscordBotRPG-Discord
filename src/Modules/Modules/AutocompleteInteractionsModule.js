@@ -12,6 +12,10 @@ const FindTypes = {
     "Contains": 2,
 }
 
+let RaritiesByLang = {};
+let ItemsTypesByLang = {};
+let ItemsSubtypesByLang = {};
+
 class AutocompleteInteractionsModule extends GModule {
     constructor() {
         super();
@@ -20,6 +24,27 @@ class AutocompleteInteractionsModule extends GModule {
         this.init();
         this.endLoading("AutocompleteInteractionsModule");
     }
+
+    init() {
+        RaritiesByLang = this.getFromTranslatorAnArrayOfTranslatedStringsFromType("rarities");
+        ItemsTypesByLang = this.getFromTranslatorAnArrayOfTranslatedStringsFromType("item_types");
+        ItemsSubtypesByLang = this.getFromTranslatorAnArrayOfTranslatedStringsFromType("item_sous_types");
+    }
+
+    getFromTranslatorAnArrayOfTranslatedStringsFromType(type) {
+        // We are using this function since performance doesn't really matter and we prefer readability
+        const resp = {};
+        for (let lang in Translator.translations) {
+            resp[lang] = [];
+            for (let rarity in Translator.translations["en"][type]) {
+                // So we got the error message if not translated
+                resp[lang].push(Translator.getString(lang, type, rarity));
+            }
+        }
+
+        return resp;
+    }
+
 
     /**
      *
@@ -103,6 +128,14 @@ class AutocompleteInteractionsModule extends GModule {
                 data = (await axios.get("/game/character/talents/visible")).data;
                 response = Talents.getAllNodes(data, true);
                 break;
+            case "inventory":
+            case "marketplacesearch":
+            case "craftlist":
+                // Take before last argument and use getFiltersResponses to get the filters if args.length > 1
+                if (args.length > 1) {
+                    response = this.getFiltersResponses(args[args.length - 2], user.lang)
+                }
+                break;
 
         }
 
@@ -111,9 +144,9 @@ class AutocompleteInteractionsModule extends GModule {
             // Filter starting with first element of args
             if (args.length > 0) {
                 if (typeFind == FindTypes.StartsWith) {
-                    response = response.filter(e => e.name.toLowerCase().startsWith(args[0].toLowerCase()));
+                    response = response.filter(e => e.name.toLowerCase().startsWith(args[args.length - 1].toLowerCase()));
                 } else if (typeFind == FindTypes.Contains) {
-                    response = response.filter(e => e.name.toLowerCase().includes(args[0].toLowerCase()));
+                    response = response.filter(e => e.name.toLowerCase().includes(args[args.length - 1].toLowerCase()));
                 }
             }
 
@@ -137,6 +170,47 @@ class AutocompleteInteractionsModule extends GModule {
         }
 
         return response;
+    }
+
+    getFiltersResponses(type, lang = "en") {
+        // Using switch because it's faster than lookup table
+        // See /scripts/Benchmark.js and test it yourself, ~60% faster
+        // Since this may be use multiple times, performance may matters if the shard is on big servers
+        switch (type) {
+            case "favorite":
+                return [
+                    {
+                        name: Translator.getString(lang, "general", "yes"),
+                        value: "true",
+                    },
+                    {
+                        name: Translator.getString(lang, "general", "no"),
+                        value: "false",
+                    }
+                ];
+            case "rarity":
+                return this.getFilterFromArray(RaritiesByLang[lang]);
+            case "type":
+                return this.getFilterFromArray(ItemsTypesByLang[lang]);
+            case "subtype":
+                return this.getFilterFromArray(ItemsSubtypesByLang[lang]);
+        }
+        return [];
+    }
+
+    /**
+     * 
+     * @param {Object<string, string[]>} currentFilters 
+     * @param {string} lang 
+     * @returns 
+     */
+    getFilterFromArray(currentFilters) {
+        return currentFilters.map((e) => {
+            return {
+                name: e,
+                value: e.toLowerCase()
+            }
+        });
     }
 }
 
