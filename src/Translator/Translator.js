@@ -22,7 +22,7 @@ class Translator {
             return this.formatString(this.translations[lang][type][name], args, lang);
         }
 
-        
+
         if (lang != "en") {
             return this.getString("en", type, name, args, returnNull);
         }
@@ -237,6 +237,11 @@ class Translator {
         Translator.loadGlobalsYesNo();
     }
 }
+
+/**
+ * @type {Object<string, Object<string, Object<string, string>>>}
+ */
+Translator.translations = {};
 
 /*
 var sizeof = require('object-sizeof');
