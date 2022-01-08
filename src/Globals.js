@@ -1455,6 +1455,7 @@ var Globals = {
                         name: "help",
                         description: "Show Help",
                         type: "SUB_COMMAND",
+                        options: [pageOption]
                     },
                     {
                         name: "botinfo",
