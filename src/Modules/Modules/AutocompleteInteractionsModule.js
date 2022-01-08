@@ -71,6 +71,7 @@ class AutocompleteInteractionsModule extends GModule {
             case "fight":
             case "groupfight":
                 data = (await axios.get("/game/travel/area/monsters")).data;
+                // console.log(data);
                 response = data.monsters.map((e, i) => {
                     return {
                         name: WildArea.monsterToString(e, i, false, user.lang),
@@ -131,6 +132,7 @@ class AutocompleteInteractionsModule extends GModule {
             case "inventory":
             case "marketplacesearch":
             case "craftlist":
+            case "sellall":
                 // Take before last argument and use getFiltersResponses to get the filters if args.length > 1
                 if (args.length > 1) {
                     response = this.getFiltersResponses(args[args.length - 2], user.lang)
