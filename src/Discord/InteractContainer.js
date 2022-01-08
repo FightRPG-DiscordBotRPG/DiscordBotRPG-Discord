@@ -47,7 +47,7 @@ class InteractContainer {
     /**
      * 
      * @param {Discord.ReplyMessageOptions} data
-     * @returns {Discord.Message}
+     * @returns {Promise<Discord.Message>}
      */
     async reply(data) {
 

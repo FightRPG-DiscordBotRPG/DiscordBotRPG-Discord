@@ -91,7 +91,7 @@ class WorldBossModule extends GModule {
                     });
                 }, async (d1) => {
                     if (d1.error == Translator.getString(d1.lang, "world_bosses", "no_world_boss")) {
-                        this.run(interact, "wbshowall", []);
+                        this.run(interact, "worldbossshowall", []);
                         return d1.error;
                     } else {
                         return d1.error;

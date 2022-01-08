@@ -36,10 +36,6 @@ let timeStart = Date.now();
 
 async function startBot() {
     try {
-        console.time("Bot login");
-        await bot.login(conf.discordbotkey);
-        console.timeEnd("Bot login");
-
         console.time("Load Translator");
         await Translator.loadTranslator();
         console.timeEnd("Load Translator");
@@ -51,6 +47,12 @@ async function startBot() {
         console.time("Load Appearances");
         await Globals.loadAllAppearances();
         console.timeEnd("Load Appearances");
+
+        Globals.moduleHandler = new ModuleHandler();
+
+        console.time("Bot login");
+        await bot.login(conf.discordbotkey);
+        console.timeEnd("Bot login");
 
         setTimeoutToRemoveInactiveUsers();
 
@@ -212,8 +214,6 @@ bot.on("ready", async () => {
     console.log("Shard Loaded");
 
 });
-
-Globals.moduleHandler = new ModuleHandler();
 
 // Key Don't open
 startBot();

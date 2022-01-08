@@ -316,7 +316,8 @@ var Globals = {
                 name: "filtervalue",
                 description: "Filter value",
                 type: "STRING",
-                required: false
+                required: false,
+                autocomplete: true,
             },
             {
                 name: "filtername2",
@@ -330,21 +331,22 @@ var Globals = {
                 name: "filtervalue2",
                 description: "Filter value",
                 type: "STRING",
-                required: false
+                required: false,
+                autocomplete: true,
             },
             {
                 name: "filtername3",
                 description: "Filter",
                 type: "STRING",
                 choices: filtersChoices,
-                required: false
-
+                required: false,
             },
             {
                 name: "filtervalue3",
                 description: "Filter value",
                 type: "STRING",
-                required: false
+                required: false,
+                autocomplete: true,
             },
         ];
 
@@ -1022,6 +1024,7 @@ var Globals = {
                                 description: "name#tag",
                                 type: "STRING",
                                 required: true,
+                                autocomplete: true
                             },
                         ],
                         type: "SUB_COMMAND",
@@ -1035,6 +1038,7 @@ var Globals = {
                                 description: "name#tag",
                                 type: "STRING",
                                 required: true,
+                                autocomplete: true
                             },
                         ],
                         type: "SUB_COMMAND",
@@ -1132,7 +1136,7 @@ var Globals = {
                     {
                         name: "list",
                         description: Translator.getString("en", "help_panel", "craftlist"),
-                        options: [pageOption],
+                        options: [...filterSelectOptions, pageOption],
                         type: "SUB_COMMAND",
                     },
                     {
@@ -1453,6 +1457,7 @@ var Globals = {
                         name: "help",
                         description: "Show Help",
                         type: "SUB_COMMAND",
+                        options: [pageOption]
                     },
                     {
                         name: "botinfo",
@@ -1794,7 +1799,7 @@ var Globals = {
             };
 
             Globals.helpPanel[lang][1][Translator.getString(lang, "help_panel", "character_title")] = {
-                "info/profile": Translator.getString(lang, "help_panel", "info"),
+                "info": Translator.getString(lang, "help_panel", "info"),
                 "appearance": Translator.getString(lang, "help_panel", "appearance"),
                 "attributes": Translator.getString(lang, "help_panel", "attributes"),
                 "up <statName> <number>": Translator.getString(lang, "help_panel", "up") + " (str, int, con, dex, cha, will, luck, wis, per)",

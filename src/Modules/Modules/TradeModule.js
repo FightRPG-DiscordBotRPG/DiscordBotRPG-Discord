@@ -74,9 +74,9 @@ class TradeModule extends GModule {
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/trade/show"), (data) => {
                     this.confirmListener(interact, Trade.toString(data, Globals.connectedUsers[authorIdentifier]), async (validate) => {
                         if (validate) {
-                            this.run(interact, "tvalidate", args);
+                            this.run(interact, "tradevalidate", args);
                         } else {
-                            this.run(interact, "tcancel", args);
+                            this.run(interact, "tradecancel", args);
                         }
                     }, user.lang);
                 });

@@ -149,7 +149,7 @@ class InventoryModule extends GModule {
                                     break;
                                 case addToTradeEmoji:
                                     if (this.allModulesReference["TradeModule"] != null) {
-                                        this.allModulesReference["TradeModule"].run(interact, "tadd", [data.idInInventory, data.item.number]);
+                                        this.allModulesReference["TradeModule"].run(interact, "tradeadd", [data.idInInventory, data.item.number]);
                                     }
                                     break;
                             }
@@ -174,7 +174,7 @@ class InventoryModule extends GModule {
                 } else {
                     body = { idItem: args[0] }
                 }
-                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/" + command, body));
+                msg = this.getBasicSuccessErrorMessage(await axios.post("/game/inventory/" + (command.includes("unfav") ? "itemunfav" : "itemfav"), body));
             }
                 break;
 

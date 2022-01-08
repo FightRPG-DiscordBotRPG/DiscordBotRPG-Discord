@@ -274,7 +274,11 @@ class ModuleHandler extends GModule {
                 this.sendMessage(interact, msg);
                 //console.log("Performing command, took: " + ((Date.now() - dt) / 1000) + " seconds");
             } else {
-                await this.modules["AutocompleteInteractionsModule"].run(interact, command, args, prefix);
+                try {
+                    await this.modules["AutocompleteInteractionsModule"].run(interact, command, args, prefix);
+                } catch (ex) {
+                    console.error("AutocompleteInteractionsModule\n" + ex);
+                }
             }
 
 
