@@ -485,6 +485,13 @@ class GModule {
         return msg;
     }
 
+    /**
+     * 
+     * @param {*} axiosQueryResult 
+     * @param {Function<any>} callbackData 
+     * @param {Function<any>?} callbackError 
+     * @returns 
+     */
     async getDisplayIfSuccess(axiosQueryResult, callbackData, callbackError = null) {
         let data = axiosQueryResult.data ? axiosQueryResult.data : axiosQueryResult;
         let msg = "";

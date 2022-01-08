@@ -121,6 +121,17 @@ class AutocompleteInteractionsModule extends GModule {
                     }
                 });
                 break;
+            case "groupkick":
+            case "groupswap":
+                response = await this.getDisplayIfSuccess(await axios.get("/game/group/show"), (newData) => {
+                    return newData.members.map((e) => {
+                        return {
+                            name: e.name,
+                            value: e.name
+                        }
+                    });
+                });
+                break;
             case "talentup":
                 data = (await axios.get("/game/character/talents/visible")).data;
                 response = Talents.getAllNodes(data, false, true);
@@ -213,6 +224,25 @@ class AutocompleteInteractionsModule extends GModule {
                 value: e.toLowerCase()
             }
         });
+    }
+
+    /**
+     * 
+     * @param {*} axiosQueryResult 
+     * @param {Function<any>} callbackData 
+     * @param {Function<any>?} callbackError 
+     * @returns {Promise<{name: string, value: string}[]>}
+     */
+    async getDisplayIfSuccess(axiosQueryResult, callbackData, callbackError = null) {
+        let val = await super.getDisplayIfSuccess(axiosQueryResult, callbackData, callbackError);
+        if (val != null && (val instanceof String || typeof val == "string")) {
+            return [{
+                name: val,
+                value: val
+            }];
+        }
+
+        return val;
     }
 }
 

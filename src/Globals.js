@@ -1024,6 +1024,7 @@ var Globals = {
                                 description: "name#tag",
                                 type: "STRING",
                                 required: true,
+                                autocomplete: true
                             },
                         ],
                         type: "SUB_COMMAND",
@@ -1037,6 +1038,7 @@ var Globals = {
                                 description: "name#tag",
                                 type: "STRING",
                                 required: true,
+                                autocomplete: true
                             },
                         ],
                         type: "SUB_COMMAND",
