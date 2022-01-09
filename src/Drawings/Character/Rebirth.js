@@ -44,7 +44,7 @@ class Rebirth {
             }
 
 
-            content += Emojis.emojisProd.treasure.string + " " + Translator.getString(user.lang, "character", "rebirht_items_loot", [rebirthLevel]) + "\n";
+            content += Emojis.emojisProd.treasure.string + " " + Translator.getString(user.lang, "character", "rebirth_items_loot", [rebirthLevel]) + "\n";
             content += Emojis.emojisProd.sword2.string + " " + Translator.getString(user.lang, "character", "rebirth_items_stats", [rebirthLevel, modifiers.percentageBonusToItemsStats]) + "\n";
             content += Emojis.emojisProd.monster.string + " " + Translator.getString(user.lang, "character", "rebirth_monsters_stats", [rebirthLevel, modifiers.percentageBonusToMonstersStats]) + "\n";
             content += Emojis.general.clipboard + " " + Translator.getString(user.lang, "character", "rebirth_stats_points_more", [modifiers.nbrOfStatsPointsPerLevel]) + "\n";
@@ -61,7 +61,7 @@ class Rebirth {
                 rebirthLevel = data.craft.rebirthLevel + 1;
             }
 
-            content += Emojis.general.hammer + " " + Translator.getString(user.lang, "character", "rebirht_items_craft", [rebirthLevel]) + "\n";
+            content += Emojis.general.hammer + " " + Translator.getString(user.lang, "character", "rebirth_items_craft", [rebirthLevel]) + "\n";
         }
 
         return content;
