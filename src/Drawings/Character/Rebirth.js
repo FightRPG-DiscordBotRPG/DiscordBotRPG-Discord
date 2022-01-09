@@ -36,7 +36,7 @@ class Rebirth {
             let modifiers, rebirthLevel;
 
             if (showCurrent || data.nextRebirthsLevelsModifiers == null) {
-                modifiers = data.curentRebirthsLevelsModifiers;
+                modifiers = data.currentRebirthsLevelsModifiers;
                 rebirthLevel = data.rebirthLevel;
             } else {
                 modifiers = data.nextRebirthsLevelsModifiers;
