@@ -39,7 +39,7 @@ class EquipmentModule extends GModule {
                 break;
 
             case "equiplist":
-                interact.interaction?.deferReply();
+                await interact.interaction?.deferReply();
                 msg = await this.getDisplayIfSuccess(await axios.get("/game/equipment/show"), async (data) => {
                     return await Inventory.displayAsList(data, false, user);
                 });
