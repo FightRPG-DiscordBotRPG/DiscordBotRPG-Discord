@@ -1113,6 +1113,8 @@ class CharacterAppearance {
                             }
 
                             await this.mapProperties(appearanceToReload);
+                        } else {
+                            delete this.editionSelectedPerTypes[this.editionSelectedType];
                         }
 
 
