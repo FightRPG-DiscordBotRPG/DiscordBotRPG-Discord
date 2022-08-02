@@ -49,7 +49,7 @@ class EventsModule extends GModule {
                     await axios.get("/game/events/incoming/" + args[0]),
                     async (data) => {
                         // Add to discord events
-                        if (interact.channel.guild.ownerId == interact.author.id && args[1] == "true") {
+                        if (interact.channel.guild?.ownerId == interact.author.id && args[1] == "true") {
                             const arrOfEventsToBeCreated = [];
                             const guild = interact.channel.guild;
                             const guildEvents = await guild.scheduledEvents.fetch({ cache: false })
