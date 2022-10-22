@@ -156,8 +156,8 @@ async function recursiveUpdateData(interactions, interact) {
         if (i.value !== undefined) {
             const val = i.value.toString();
 
-            if (val.startsWith("<@!")) {
-                const id = val.slice(3, val.length - 1);
+            if (val.startsWith("<@")) {
+                const id = val.slice(2, val.length - 1);
                 interact.mentions.set(id, await bot.users.fetch(id))
             } else {
                 interact.args.push(i.value);
@@ -224,7 +224,7 @@ bot.on("interactionCreate",
      * 
      * @param {Discord.Interaction} interaction 
      */
-    async (interaction) => {
+    async function handleInteract(interaction) {
 
         const interact = new InteractContainer();
         interact.author = interaction.user;
